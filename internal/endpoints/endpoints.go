@@ -23,6 +23,9 @@ const (
 	// Quote Summary (info, financials, etc.)
 	QuoteSummaryURL = BaseURL + "/v10/finance/quoteSummary"
 
+	// Quote (real-time quote data)
+	QuoteURL = Query1URL + "/v7/finance/quote"
+
 	// Options
 	OptionsURL = BaseURL + "/v7/finance/options"
 
