@@ -11,7 +11,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 | 0 | Foundation | ✅ Complete | 100% |
 | 1 | Core Data | ✅ Complete | 100% |
 | 2 | Options | ✅ Complete | 100% |
-| 3 | Financials | ⬜ Not Started | 0% |
+| 3 | Financials | ✅ Complete | 100% |
 | 4 | Analysis | ⬜ Not Started | 0% |
 | 5 | Holdings & Actions | ⬜ Not Started | 0% |
 | 6 | Search & Screener | ⬜ Not Started | 0% |
@@ -128,17 +128,31 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 3: Financials ⬜
+## Phase 3: Financials ✅
 
-**Status**: Not Started
-**Branch**: `phase3/financials` (to be created)
+**Status**: Complete
+**Branch**: `phase3/financials` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] Income Statement (annual/quarterly)
-- [ ] Balance Sheet (annual/quarterly)
-- [ ] Cash Flow Statement (annual/quarterly)
-- [ ] Financial models
+- [x] **Financial Models** (`pkg/models/financials.go`)
+  - `FinancialStatement`: Date-keyed financial data with helper methods
+  - `FinancialItem`: Single data point with date, value, currency
+  - `Financials`: Container for all statement types
+  - `TimeseriesResponse`: API response structure
+  - Helper methods: `Get()`, `GetLatest()`, `Fields()`
+
+- [x] **Financial Statement Keys** (`internal/endpoints/endpoints.go`)
+  - `IncomeStatementKeys`: 26 fields (Revenue, Profit, EPS, EBITDA, etc.)
+  - `BalanceSheetKeys`: 41 fields (Assets, Liabilities, Equity, etc.)
+  - `CashFlowKeys`: 46 fields (Operating, Investing, Financing flows)
+
+- [x] **Financials Methods** (`pkg/ticker/financials.go`)
+  - `IncomeStatement(freq)`: Income statement (annual/quarterly)
+  - `BalanceSheet(freq)`: Balance sheet (annual/quarterly)
+  - `CashFlow(freq)`: Cash flow statement (annual/quarterly)
+  - `FinancialsJSON()`: Raw JSON for debugging
+  - Caching for all statement types and frequencies
 
 ### API Endpoint
 
@@ -247,7 +261,10 @@ main
 ├── phase2/options (merged)
 │   ├── phase2/option-models
 │   └── phase2/option-methods
-├── phase3/financials (future)
+├── phase3/financials (merged)
+│   ├── phase3/financial-models
+│   └── phase3/financial-methods
+├── phase4/analysis (future)
 └── ...
 ```
 
