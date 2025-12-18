@@ -48,6 +48,52 @@ const (
 	WebSocketURL = "wss://streamer.finance.yahoo.com/?version=2"
 )
 
+// IncomeStatementKeys defines fields for income statement (financials in Yahoo's terminology).
+var IncomeStatementKeys = []string{
+	"TotalRevenue", "OperatingRevenue", "CostOfRevenue", "GrossProfit",
+	"OperatingExpense", "SellingGeneralAndAdministration", "ResearchAndDevelopment",
+	"OperatingIncome", "NetNonOperatingInterestIncomeExpense", "InterestIncomeNonOperating",
+	"InterestExpenseNonOperating", "OtherIncomeExpense", "PretaxIncome",
+	"TaxProvision", "NetIncome", "NetIncomeCommonStockholders",
+	"DilutedEPS", "BasicEPS", "DilutedAverageShares", "BasicAverageShares",
+	"EBITDA", "EBIT", "NormalizedEBITDA", "NormalizedIncome",
+	"ReconciledDepreciation", "ReconciledCostOfRevenue",
+}
+
+// BalanceSheetKeys defines fields for balance sheet.
+var BalanceSheetKeys = []string{
+	"TotalAssets", "CurrentAssets", "CashAndCashEquivalents", "CashCashEquivalentsAndShortTermInvestments",
+	"Receivables", "AccountsReceivable", "Inventory", "PrepaidAssets", "OtherCurrentAssets",
+	"TotalNonCurrentAssets", "NetPPE", "GrossPPE", "AccumulatedDepreciation",
+	"GoodwillAndOtherIntangibleAssets", "Goodwill", "OtherIntangibleAssets",
+	"InvestmentsAndAdvances", "LongTermEquityInvestment", "OtherNonCurrentAssets",
+	"TotalLiabilitiesNetMinorityInterest", "CurrentLiabilities", "AccountsPayable",
+	"PayablesAndAccruedExpenses", "CurrentDebtAndCapitalLeaseObligation", "CurrentDebt",
+	"OtherCurrentLiabilities", "TotalNonCurrentLiabilitiesNetMinorityInterest",
+	"LongTermDebtAndCapitalLeaseObligation", "LongTermDebt", "OtherNonCurrentLiabilities",
+	"TotalEquityGrossMinorityInterest", "StockholdersEquity", "CommonStockEquity",
+	"RetainedEarnings", "AdditionalPaidInCapital", "TreasuryStock",
+	"TotalDebt", "NetDebt", "WorkingCapital", "TangibleBookValue", "InvestedCapital",
+}
+
+// CashFlowKeys defines fields for cash flow statement.
+var CashFlowKeys = []string{
+	"OperatingCashFlow", "NetIncomeFromContinuingOperations", "DepreciationAmortizationDepletion",
+	"Depreciation", "AmortizationOfIntangibles", "DeferredIncomeTax", "DeferredTax",
+	"StockBasedCompensation", "ChangeInWorkingCapital", "ChangeInReceivables",
+	"ChangeInInventory", "ChangeInPayablesAndAccruedExpense", "ChangeInAccountPayable",
+	"ChangeInOtherWorkingCapital", "OtherNonCashItems",
+	"InvestingCashFlow", "CapitalExpenditure", "PurchaseOfPPE", "PurchaseOfInvestment",
+	"SaleOfInvestment", "NetInvestmentPurchaseAndSale", "PurchaseOfBusiness",
+	"NetBusinessPurchaseAndSale", "NetIntangiblesPurchaseAndSale", "OtherInvestingChanges",
+	"FinancingCashFlow", "NetIssuancePaymentsOfDebt", "NetLongTermDebtIssuance",
+	"LongTermDebtIssuance", "LongTermDebtPayments", "NetShortTermDebtIssuance",
+	"NetCommonStockIssuance", "CommonStockIssuance", "CommonStockPayments",
+	"RepurchaseOfCapitalStock", "CashDividendsPaid", "CommonStockDividendPaid",
+	"NetOtherFinancingCharges", "FreeCashFlow",
+	"BeginningCashPosition", "EndCashPosition", "ChangesInCash", "EffectOfExchangeRateChanges",
+}
+
 // QuoteSummaryModules defines available modules for quoteSummary endpoint.
 var QuoteSummaryModules = []string{
 	"summaryProfile",
