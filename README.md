@@ -23,7 +23,13 @@ go get github.com/wnjoon/go-yfinance
   - [x] CSRF consent flow fallback (for EU users)
   - [x] Comprehensive error handling
   - [x] Configuration management
-- [ ] **Phase 1: Core Data** (Quote, History, Info)
+- [x] **Phase 1: Core Data**
+  - [x] Ticker interface with symbol management
+  - [x] Quote: real-time quote data
+  - [x] History: OHLCV with period/interval support
+  - [x] Info: company profile and financial data
+  - [x] FastInfo: quick access to common fields
+  - [x] Actions: dividends and splits history
 - [ ] **Phase 2: Options**
 - [ ] **Phase 3: Financials**
 - [ ] **Phase 4: Analysis**
@@ -40,30 +46,43 @@ package main
 
 import (
     "fmt"
+    "log"
+
+    "github.com/wnjoon/go-yfinance/pkg/models"
     "github.com/wnjoon/go-yfinance/pkg/ticker"
 )
 
 func main() {
     // Create a ticker
-    t := ticker.New("AAPL")
+    t, err := ticker.New("AAPL")
+    if err != nil {
+        log.Fatal(err)
+    }
     defer t.Close()
 
     // Get current quote
     quote, err := t.Quote()
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
-    fmt.Printf("AAPL: $%.2f\n", quote.RegularMarketPrice)
+    fmt.Printf("AAPL: $%.2f (%+.2f%%)\n",
+        quote.RegularMarketPrice,
+        quote.RegularMarketChangePercent)
 
     // Get historical data
-    history, err := t.History(ticker.HistoryParams{
+    bars, err := t.History(models.HistoryParams{
         Period:   "1mo",
         Interval: "1d",
     })
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
-    for _, bar := range history {
+    fmt.Printf("\nLast 5 days:\n")
+    start := len(bars) - 5
+    if start < 0 {
+        start = 0
+    }
+    for _, bar := range bars[start:] {
         fmt.Printf("%s: O=%.2f H=%.2f L=%.2f C=%.2f V=%d\n",
             bar.Date.Format("2006-01-02"),
             bar.Open, bar.High, bar.Low, bar.Close, bar.Volume)
@@ -72,10 +91,12 @@ func main() {
     // Get company info
     info, err := t.Info()
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
-    fmt.Printf("Company: %s\n", info.LongName)
-    fmt.Printf("Market Cap: %d\n", info.MarketCap)
+    fmt.Printf("\nCompany: %s\n", info.LongName)
+    fmt.Printf("Sector: %s\n", info.Sector)
+    fmt.Printf("Industry: %s\n", info.Industry)
+    fmt.Printf("Market Cap: $%d\n", info.MarketCap)
 }
 ```
 
