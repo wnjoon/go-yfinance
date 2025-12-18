@@ -21,11 +21,12 @@ type Ticker struct {
 	auth   *client.AuthManager
 
 	// Cached data
-	mu           sync.RWMutex
-	infoCache    *models.Info
-	quoteCache   *models.Quote
-	historyMeta  *models.ChartMeta
-	optionsCache *optionsCache
+	mu              sync.RWMutex
+	infoCache       *models.Info
+	quoteCache      *models.Quote
+	historyMeta     *models.ChartMeta
+	optionsCache    *optionsCache
+	financialsCache *financialsCache
 
 	// Ownership tracking for cleanup
 	ownsClient bool
@@ -133,6 +134,7 @@ func (t *Ticker) ClearCache() {
 	t.quoteCache = nil
 	t.historyMeta = nil
 	t.optionsCache = nil
+	t.financialsCache = nil
 }
 
 // GetHistoryMetadata returns the cached history metadata.
