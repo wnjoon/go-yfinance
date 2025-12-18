@@ -32,12 +32,39 @@ func (o *Option) ExpirationDatetime() time.Time {
 	return time.Unix(o.Expiration, 0)
 }
 
+// OptionQuote represents quote data within options API response.
+// Uses int64 for timestamps since options API returns Unix timestamps.
+type OptionQuote struct {
+	Symbol                     string  `json:"symbol"`
+	ShortName                  string  `json:"shortName"`
+	LongName                   string  `json:"longName"`
+	QuoteType                  string  `json:"quoteType"`
+	Exchange                   string  `json:"exchange"`
+	Currency                   string  `json:"currency"`
+	MarketState                string  `json:"marketState"`
+	RegularMarketPrice         float64 `json:"regularMarketPrice"`
+	RegularMarketChange        float64 `json:"regularMarketChange"`
+	RegularMarketChangePercent float64 `json:"regularMarketChangePercent"`
+	RegularMarketDayHigh       float64 `json:"regularMarketDayHigh"`
+	RegularMarketDayLow        float64 `json:"regularMarketDayLow"`
+	RegularMarketOpen          float64 `json:"regularMarketOpen"`
+	RegularMarketPreviousClose float64 `json:"regularMarketPreviousClose"`
+	RegularMarketVolume        int64   `json:"regularMarketVolume"`
+	RegularMarketTime          int64   `json:"regularMarketTime"`
+	Bid                        float64 `json:"bid"`
+	Ask                        float64 `json:"ask"`
+	BidSize                    int64   `json:"bidSize"`
+	AskSize                    int64   `json:"askSize"`
+	FiftyTwoWeekHigh           float64 `json:"fiftyTwoWeekHigh"`
+	FiftyTwoWeekLow            float64 `json:"fiftyTwoWeekLow"`
+}
+
 // OptionChain represents the complete option chain for a symbol.
 type OptionChain struct {
-	Calls      []Option       `json:"calls"`
-	Puts       []Option       `json:"puts"`
-	Underlying *Quote         `json:"underlying,omitempty"`
-	Expiration time.Time      `json:"expiration"`
+	Calls      []Option     `json:"calls"`
+	Puts       []Option     `json:"puts"`
+	Underlying *OptionQuote `json:"underlying,omitempty"`
+	Expiration time.Time    `json:"expiration"`
 }
 
 // OptionsData holds all expiration dates and the current option chain.
@@ -52,11 +79,11 @@ type OptionsData struct {
 type OptionChainResponse struct {
 	OptionChain struct {
 		Result []struct {
-			UnderlyingSymbol string    `json:"underlyingSymbol"`
-			ExpirationDates  []int64   `json:"expirationDates"`
-			Strikes          []float64 `json:"strikes"`
-			HasMiniOptions   bool      `json:"hasMiniOptions"`
-			Quote            Quote     `json:"quote"`
+			UnderlyingSymbol string      `json:"underlyingSymbol"`
+			ExpirationDates  []int64     `json:"expirationDates"`
+			Strikes          []float64   `json:"strikes"`
+			HasMiniOptions   bool        `json:"hasMiniOptions"`
+			Quote            OptionQuote `json:"quote"`
 			Options          []struct {
 				ExpirationDate int64    `json:"expirationDate"`
 				HasMiniOptions bool     `json:"hasMiniOptions"`
