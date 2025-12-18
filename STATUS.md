@@ -10,7 +10,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 |-------|------|--------|----------|
 | 0 | Foundation | ✅ Complete | 100% |
 | 1 | Core Data | ✅ Complete | 100% |
-| 2 | Options | ⬜ Not Started | 0% |
+| 2 | Options | ✅ Complete | 100% |
 | 3 | Financials | ⬜ Not Started | 0% |
 | 4 | Analysis | ⬜ Not Started | 0% |
 | 5 | Holdings & Actions | ⬜ Not Started | 0% |
@@ -100,17 +100,27 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 2: Options ⬜
+## Phase 2: Options ✅
 
-**Status**: Not Started
-**Branch**: `phase2/options` (to be created)
+**Status**: Complete
+**Branch**: `phase2/options` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] Option Chain (calls/puts)
-- [ ] Expiration Dates
-- [ ] Option Greeks (if available)
-- [ ] Option models
+- [x] **Option Models** (`pkg/models/option.go`)
+  - `Option`: Single option contract (call/put) with all fields
+  - `OptionQuote`: Quote data within options API response
+  - `OptionChain`: Calls, puts, and underlying quote
+  - `OptionChainResponse`: API response structure
+  - Helper methods: `LastTradeDatetime()`, `ExpirationDatetime()`
+
+- [x] **Options Methods** (`pkg/ticker/options.go`)
+  - `Options()`: Get all expiration dates
+  - `OptionChain(date)`: Get option chain for specific expiration
+  - `OptionChainAtExpiry(time.Time)`: Convenience method with time.Time
+  - `Strikes()`: Get all available strike prices
+  - `OptionsJSON()`: Raw JSON for debugging
+  - Caching for expiration dates and strikes
 
 ### API Endpoint
 
@@ -234,7 +244,10 @@ main
 ├── phase1/core-data (merged)
 │   ├── phase1/models
 │   └── phase1/ticker
-├── phase2/options (future)
+├── phase2/options (merged)
+│   ├── phase2/option-models
+│   └── phase2/option-methods
+├── phase3/financials (future)
 └── ...
 ```
 
