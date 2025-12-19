@@ -22,9 +22,22 @@ type financialsCache struct {
 	cashFlowQuarterly *models.FinancialStatement
 }
 
-// IncomeStatement returns the income statement.
-// freq should be "annual", "yearly", or "quarterly" (default: "annual").
+// IncomeStatement returns the income statement data.
+//
+// Parameters:
+//   - freq: "annual", "yearly", or "quarterly" (default: "annual")
+//
 // Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.
+//
+// The returned [models.FinancialStatement] contains fields like TotalRevenue, GrossProfit,
+// OperatingIncome, NetIncome, EBITDA, BasicEPS, and DilutedEPS.
+//
+// Example:
+//
+//	income, err := ticker.IncomeStatement("annual")
+//	if revenue, ok := income.GetLatest("TotalRevenue"); ok {
+//	    fmt.Printf("Revenue: %.2f\n", revenue)
+//	}
 func (t *Ticker) IncomeStatement(freq string) (*models.FinancialStatement, error) {
 	freq = normalizeFrequency(freq)
 
@@ -54,9 +67,22 @@ func (t *Ticker) IncomeStatement(freq string) (*models.FinancialStatement, error
 	return stmt, nil
 }
 
-// BalanceSheet returns the balance sheet.
-// freq should be "annual", "yearly", or "quarterly" (default: "annual").
+// BalanceSheet returns the balance sheet data.
+//
+// Parameters:
+//   - freq: "annual", "yearly", or "quarterly" (default: "annual")
+//
 // Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.
+//
+// The returned [models.FinancialStatement] contains fields like TotalAssets, TotalLiabilities,
+// TotalEquity, CashAndCashEquivalents, TotalDebt, and WorkingCapital.
+//
+// Example:
+//
+//	balance, err := ticker.BalanceSheet("quarterly")
+//	if assets, ok := balance.GetLatest("TotalAssets"); ok {
+//	    fmt.Printf("Total Assets: %.2f\n", assets)
+//	}
 func (t *Ticker) BalanceSheet(freq string) (*models.FinancialStatement, error) {
 	freq = normalizeFrequency(freq)
 
@@ -86,9 +112,22 @@ func (t *Ticker) BalanceSheet(freq string) (*models.FinancialStatement, error) {
 	return stmt, nil
 }
 
-// CashFlow returns the cash flow statement.
-// freq should be "annual", "yearly", or "quarterly" (default: "annual").
+// CashFlow returns the cash flow statement data.
+//
+// Parameters:
+//   - freq: "annual", "yearly", or "quarterly" (default: "annual")
+//
 // Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.
+//
+// The returned [models.FinancialStatement] contains fields like OperatingCashFlow,
+// InvestingCashFlow, FinancingCashFlow, FreeCashFlow, and CapitalExpenditure.
+//
+// Example:
+//
+//	cashFlow, err := ticker.CashFlow("annual")
+//	if fcf, ok := cashFlow.GetLatest("FreeCashFlow"); ok {
+//	    fmt.Printf("Free Cash Flow: %.2f\n", fcf)
+//	}
 func (t *Ticker) CashFlow(freq string) (*models.FinancialStatement, error) {
 	freq = normalizeFrequency(freq)
 

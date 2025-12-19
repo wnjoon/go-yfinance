@@ -12,6 +12,24 @@ import (
 )
 
 // History fetches historical OHLCV data for the ticker.
+//
+// The method returns a slice of [models.Bar] containing Open, High, Low, Close,
+// Adjusted Close, and Volume data for each period.
+//
+// Parameters can be configured via [models.HistoryParams]:
+//   - Period: Time range (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)
+//   - Interval: Data granularity (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
+//   - Start/End: Specific date range (overrides Period)
+//   - PrePost: Include pre/post market data
+//   - AutoAdjust: Adjust prices for splits/dividends
+//   - Actions: Include dividend and split data in bars
+//
+// Example:
+//
+//	bars, err := ticker.History(models.HistoryParams{
+//	    Period:   "1mo",
+//	    Interval: "1d",
+//	})
 func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 	// Apply defaults
 	if params.Period == "" && params.Start == nil && params.End == nil {
@@ -193,11 +211,22 @@ func filterValidBars(bars []models.Bar) []models.Bar {
 }
 
 // HistoryPeriod is a convenience method to fetch history with just a period string.
+//
+// Valid periods: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max
+//
+// Uses daily interval with auto-adjustment enabled.
 func (t *Ticker) HistoryPeriod(period string) ([]models.Bar, error) {
 	return t.History(models.HistoryParams{Period: period, Interval: "1d", AutoAdjust: true})
 }
 
 // HistoryRange fetches history for a specific date range.
+//
+// Parameters:
+//   - start: Start date (inclusive)
+//   - end: End date (exclusive)
+//   - interval: Data granularity (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
+//
+// Uses auto-adjustment enabled by default.
 func (t *Ticker) HistoryRange(start, end time.Time, interval string) ([]models.Bar, error) {
 	return t.History(models.HistoryParams{
 		Start:      &start,
@@ -208,6 +237,8 @@ func (t *Ticker) HistoryRange(start, end time.Time, interval string) ([]models.B
 }
 
 // Dividends returns the dividend history for the ticker.
+//
+// Returns all historical dividend payments with dates and amounts.
 func (t *Ticker) Dividends() ([]models.Dividend, error) {
 	bars, err := t.History(models.HistoryParams{
 		Period:   "max",
@@ -232,6 +263,8 @@ func (t *Ticker) Dividends() ([]models.Dividend, error) {
 }
 
 // Splits returns the stock split history for the ticker.
+//
+// Returns all historical stock splits with dates and ratios.
 func (t *Ticker) Splits() ([]models.Split, error) {
 	bars, err := t.History(models.HistoryParams{
 		Period:   "max",
@@ -263,6 +296,9 @@ func (t *Ticker) Splits() ([]models.Split, error) {
 }
 
 // Actions returns both dividends and splits for the ticker.
+//
+// This is a convenience method that combines [Ticker.Dividends] and [Ticker.Splits]
+// into a single response.
 func (t *Ticker) Actions() (*models.Actions, error) {
 	bars, err := t.History(models.HistoryParams{
 		Period:   "max",

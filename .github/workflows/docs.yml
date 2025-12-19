@@ -1,0 +1,53 @@
+name: Generate API Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pkg/**/*.go'
+      - 'internal/**/*.go'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Install gomarkdoc
+        run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+
+      - name: Generate API documentation
+        run: |
+          mkdir -p docs
+          gomarkdoc --output docs/API.md ./pkg/...
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet docs/API.md || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push documentation
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/API.md
+          git commit -m "docs: auto-generate API documentation
+
+          Updated by gomarkdoc based on code changes.
+
+          [skip ci]"
+          git push
