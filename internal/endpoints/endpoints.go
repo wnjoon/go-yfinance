@@ -44,6 +44,9 @@ const (
 	// Market Summary
 	MarketSummaryURL = Query1URL + "/v6/finance/quote/marketSummary"
 
+	// News
+	NewsURL = RootURL + "/xhr/ncp"
+
 	// WebSocket (real-time)
 	WebSocketURL = "wss://streamer.finance.yahoo.com/?version=2"
 )

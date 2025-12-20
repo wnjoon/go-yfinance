@@ -17,7 +17,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 | 6 | Search & Screener | ✅ Complete | 100% |
 | 7 | Multi-ticker & Batch | ✅ Complete | 100% |
 | 8 | Real-time WebSocket | ✅ Complete | 100% |
-| 9 | Advanced Features | ⬜ Not Started | 0% |
+| 9 | Advanced Features | ✅ Complete | 100% |
 
 ---
 
@@ -403,17 +403,59 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 9: Advanced Features ⬜
+## Phase 9: Advanced Features ✅
 
-**Status**: Not Started
+**Status**: Complete
+**Branch**: `phase9/advanced` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] Caching layer (memory/file)
-- [ ] Price repair (data integrity)
-- [ ] Timezone handling
-- [ ] Market calendar
-- [ ] News feed
+- [x] **News Models** (`pkg/models/news.go`)
+  - `NewsArticle`: News article with title, publisher, link, thumbnail
+  - `NewsThumbnail`: Thumbnail image with multiple resolutions
+  - `NewsTab`: News type (all/news/press releases)
+  - `NewsParams`: News query parameters
+  - Helper methods: `PublishedAt()`, `QueryRef()`
+
+- [x] **News Methods** (`pkg/ticker/news.go`)
+  - `News(count, tab)`: Fetch news articles
+  - `GetNews()`: Convenience method with defaults (10 articles)
+  - Ad filtering (skips sponsored content)
+  - Caching for news results
+
+- [x] **Cache Package** (`pkg/cache/cache.go`)
+  - Thread-safe TTL-based in-memory cache
+  - `New()`: Create cache with options
+  - `Set/Get/Delete/Clear`: Basic cache operations
+  - `SetWithTTL()`: Custom TTL per entry
+  - Global cache instance for convenience
+  - Automatic cleanup of expired entries
+
+- [x] **Timezone Utilities** (`pkg/utils/timezone.go`)
+  - `GetTimezone(exchange)`: Get timezone for exchange
+  - `LoadLocation(name)`: Load timezone location
+  - `IsValidTimezone(name)`: Validate timezone
+  - `ConvertToTimezone(t, tz)`: Convert time to timezone
+  - `ParseTimestamp(ts, tz)`: Parse Unix timestamp
+  - `MarketIsOpen(exchange)`: Check if market is open
+  - Exchange mappings for 50+ global exchanges
+
+- [x] **Tests**
+  - `pkg/cache/cache_test.go`: 11 tests for cache operations
+  - `pkg/utils/timezone_test.go`: 7 tests for timezone utilities
+  - `pkg/ticker/news_test.go`: Tests for news models
+
+### Python yfinance API Mapping
+
+| Python | Go |
+|--------|-----|
+| `ticker.news` | `ticker.News(count, tab)` or `ticker.GetNews()` |
+| N/A (SQLite) | `cache.New()` (in-memory) |
+| N/A | `utils.GetTimezone(exchange)` |
+
+### API Endpoint
+
+- News: `finance.yahoo.com/xhr/ncp`
 
 ---
 

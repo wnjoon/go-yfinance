@@ -68,6 +68,12 @@
 //   - [PricingData]: Real-time pricing data from WebSocket stream
 //   - [MarketState]: Market hours state (pre/regular/post/closed)
 //
+// News:
+//   - [NewsArticle]: News article with title, publisher, link, thumbnail
+//   - [NewsThumbnail]: Thumbnail image with multiple resolutions
+//   - [NewsTab]: News type (all/news/press releases)
+//   - [NewsParams]: News query parameters
+//
 // # History Parameters
 //
 // The [HistoryParams] type controls historical data fetching:
