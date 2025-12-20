@@ -156,7 +156,7 @@ func (c *Client) GetJSON(rawURL string, params url.Values, v interface{}) error 
 	return nil
 }
 
-// Post performs an HTTP POST request.
+// Post performs an HTTP POST request with form data.
 func (c *Client) Post(rawURL string, params url.Values, body map[string]string) (*Response, error) {
 	c.init()
 
@@ -178,6 +178,47 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 			"Content-Type":    "application/x-www-form-urlencoded",
 			"Connection":      "keep-alive",
 		},
+	}, "POST")
+	if err != nil {
+		return nil, fmt.Errorf("POST request failed: %w", err)
+	}
+
+	return &Response{
+		StatusCode: resp.Status,
+		Body:       resp.Body,
+		Headers:    resp.Headers,
+	}, nil
+}
+
+// PostJSON performs an HTTP POST request with JSON body.
+func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error) {
+	c.init()
+
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	if params != nil && len(params) > 0 {
+		rawURL = fmt.Sprintf("%s?%s", rawURL, params.Encode())
+	}
+
+	headers := map[string]string{
+		"Accept":          "application/json",
+		"Accept-Language": "en-US,en;q=0.5",
+		"Content-Type":    "application/json",
+		"Connection":      "keep-alive",
+	}
+
+	// Add cookie if available
+	if c.cookie != "" {
+		headers["Cookie"] = c.cookie
+	}
+
+	resp, err := c.cycleTLS.Do(rawURL, cycletls.Options{
+		Timeout:   c.timeout,
+		Ja3:       c.ja3,
+		UserAgent: c.userAgent,
+		Body:      string(body),
+		Headers:   headers,
 	}, "POST")
 	if err != nil {
 		return nil, fmt.Errorf("POST request failed: %w", err)

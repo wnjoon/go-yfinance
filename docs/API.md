@@ -76,6 +76,7 @@ Package client provides HTTP client functionality for Yahoo Finance API.
   - [func \(c \*Client\) GetCookie\(\) string](<#Client.GetCookie>)
   - [func \(c \*Client\) GetJSON\(rawURL string, params url.Values, v interface\{\}\) error](<#Client.GetJSON>)
   - [func \(c \*Client\) Post\(rawURL string, params url.Values, body map\[string\]string\) \(\*Response, error\)](<#Client.Post>)
+  - [func \(c \*Client\) PostJSON\(rawURL string, params url.Values, body \[\]byte\) \(\*Response, error\)](<#Client.PostJSON>)
   - [func \(c \*Client\) SetCookie\(cookie string\)](<#Client.SetCookie>)
 - [type ClientOption](<#ClientOption>)
   - [func WithJA3\(ja3 string\) ClientOption](<#WithJA3>)
@@ -337,7 +338,16 @@ GetJSON performs an HTTP GET request and unmarshals the JSON response.
 func (c *Client) Post(rawURL string, params url.Values, body map[string]string) (*Response, error)
 ```
 
-Post performs an HTTP POST request.
+Post performs an HTTP POST request with form data.
+
+<a name="Client.PostJSON"></a>
+### func \(\*Client\) PostJSON
+
+```go
+func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error)
+```
+
+PostJSON performs an HTTP POST request with JSON body.
 
 <a name="Client.SetCookie"></a>
 ### func \(\*Client\) SetCookie
@@ -945,6 +955,21 @@ Calendar:
 
 - [Calendar](<#Calendar>): Upcoming events including earnings and dividend dates
 
+Search:
+
+- [SearchResult](<#SearchResult>): Complete search response with quotes, news, lists
+- [SearchQuote](<#SearchQuote>): Quote match from search results
+- [SearchNews](<#SearchNews>): News article from search results
+- [SearchParams](<#SearchParams>): Search query parameters
+
+Screener:
+
+- [ScreenerResult](<#ScreenerResult>): Stock screener results with pagination
+- [ScreenerQuote](<#ScreenerQuote>): Stock from screener results with financial data
+- [ScreenerQuery](<#ScreenerQuery>): Custom screener query structure
+- [ScreenerParams](<#ScreenerParams>): Screener parameters \(offset, count, sort\)
+- [PredefinedScreener](<#PredefinedScreener>): Predefined screener identifiers \(day\_gainers, etc.\)
+
 ### History Parameters
 
 The [HistoryParams](<#HistoryParams>) type controls historical data fetching:
@@ -1025,7 +1050,10 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type OptionChainResponse](<#OptionChainResponse>)
 - [type OptionQuote](<#OptionQuote>)
 - [type OptionsData](<#OptionsData>)
+- [type PredefinedScreener](<#PredefinedScreener>)
+  - [func AllPredefinedScreeners\(\) \[\]PredefinedScreener](<#AllPredefinedScreeners>)
 - [type PriceTarget](<#PriceTarget>)
+- [type QueryOperator](<#QueryOperator>)
 - [type Quote](<#Quote>)
 - [type QuoteError](<#QuoteError>)
 - [type QuoteResponse](<#QuoteResponse>)
@@ -1037,8 +1065,26 @@ Package models provides data structures for Yahoo Finance API responses.
   - [func \(r \*Recommendation\) Total\(\) int](<#Recommendation.Total>)
 - [type RecommendationTrend](<#RecommendationTrend>)
 - [type RevenueEstimate](<#RevenueEstimate>)
+- [type ScreenerParams](<#ScreenerParams>)
+  - [func DefaultScreenerParams\(\) ScreenerParams](<#DefaultScreenerParams>)
+- [type ScreenerQuery](<#ScreenerQuery>)
+  - [func NewEquityQuery\(op QueryOperator, operands \[\]interface\{\}\) \*ScreenerQuery](<#NewEquityQuery>)
+- [type ScreenerQuote](<#ScreenerQuote>)
+- [type ScreenerResponse](<#ScreenerResponse>)
+- [type ScreenerResult](<#ScreenerResult>)
+- [type SearchList](<#SearchList>)
+- [type SearchNav](<#SearchNav>)
+- [type SearchNews](<#SearchNews>)
+- [type SearchParams](<#SearchParams>)
+  - [func DefaultSearchParams\(\) SearchParams](<#DefaultSearchParams>)
+- [type SearchQuote](<#SearchQuote>)
+- [type SearchResearch](<#SearchResearch>)
+- [type SearchResponse](<#SearchResponse>)
+- [type SearchResult](<#SearchResult>)
+- [type SearchThumbnail](<#SearchThumbnail>)
 - [type Split](<#Split>)
 - [type SplitEvent](<#SplitEvent>)
+- [type ThumbnailResolution](<#ThumbnailResolution>)
 - [type TimeseriesDataPoint](<#TimeseriesDataPoint>)
 - [type TimeseriesResponse](<#TimeseriesResponse>)
 - [type TimeseriesResult](<#TimeseriesResult>)
@@ -2165,6 +2211,49 @@ type OptionsData struct {
 }
 ```
 
+<a name="PredefinedScreener"></a>
+## type PredefinedScreener
+
+PredefinedScreener represents a predefined screener query name.
+
+```go
+type PredefinedScreener string
+```
+
+<a name="ScreenerAggressiveSmallCaps"></a>
+
+```go
+const (
+    // Equity Screeners
+    ScreenerAggressiveSmallCaps  PredefinedScreener = "aggressive_small_caps"
+    ScreenerDayGainers           PredefinedScreener = "day_gainers"
+    ScreenerDayLosers            PredefinedScreener = "day_losers"
+    ScreenerGrowthTech           PredefinedScreener = "growth_technology_stocks"
+    ScreenerMostActives          PredefinedScreener = "most_actives"
+    ScreenerMostShorted          PredefinedScreener = "most_shorted_stocks"
+    ScreenerSmallCapGainers      PredefinedScreener = "small_cap_gainers"
+    ScreenerUndervaluedGrowth    PredefinedScreener = "undervalued_growth_stocks"
+    ScreenerUndervaluedLargeCaps PredefinedScreener = "undervalued_large_caps"
+
+    // Fund Screeners
+    ScreenerConservativeForeign PredefinedScreener = "conservative_foreign_funds"
+    ScreenerHighYieldBond       PredefinedScreener = "high_yield_bond"
+    ScreenerPortfolioAnchors    PredefinedScreener = "portfolio_anchors"
+    ScreenerSolidLargeGrowth    PredefinedScreener = "solid_large_growth_funds"
+    ScreenerSolidMidcapGrowth   PredefinedScreener = "solid_midcap_growth_funds"
+    ScreenerTopMutualFunds      PredefinedScreener = "top_mutual_funds"
+)
+```
+
+<a name="AllPredefinedScreeners"></a>
+### func AllPredefinedScreeners
+
+```go
+func AllPredefinedScreeners() []PredefinedScreener
+```
+
+AllPredefinedScreeners returns all available predefined screener names.
+
 <a name="PriceTarget"></a>
 ## type PriceTarget
 
@@ -2182,6 +2271,33 @@ type PriceTarget struct {
     RecommendationKey  string  `json:"recommendationKey"`  // "buy", "hold", "sell"
     RecommendationMean float64 `json:"recommendationMean"` // 1.0 (strong buy) to 5.0 (strong sell)
 }
+```
+
+<a name="QueryOperator"></a>
+## type QueryOperator
+
+QueryOperator represents an operator for custom screener queries.
+
+```go
+type QueryOperator string
+```
+
+<a name="OpEQ"></a>
+
+```go
+const (
+    // Comparison operators
+    OpEQ   QueryOperator = "eq"   // Equals
+    OpGT   QueryOperator = "gt"   // Greater than
+    OpLT   QueryOperator = "lt"   // Less than
+    OpGTE  QueryOperator = "gte"  // Greater than or equal
+    OpLTE  QueryOperator = "lte"  // Less than or equal
+    OpBTWN QueryOperator = "btwn" // Between
+
+    // Logical operators
+    OpAND QueryOperator = "and" // All conditions must match
+    OpOR  QueryOperator = "or"  // Any condition can match
+)
 ```
 
 <a name="Quote"></a>
@@ -2489,6 +2605,478 @@ type RevenueEstimate struct {
 }
 ```
 
+<a name="ScreenerParams"></a>
+## type ScreenerParams
+
+ScreenerParams represents parameters for the Screen function.
+
+```go
+type ScreenerParams struct {
+    // Offset is the result offset for pagination (default 0).
+    Offset int
+
+    // Count is the number of results to return (default 25, max 250).
+    Count int
+
+    // SortField is the field to sort by (default "ticker").
+    SortField string
+
+    // SortAsc sorts in ascending order if true (default false/descending).
+    SortAsc bool
+}
+```
+
+<a name="DefaultScreenerParams"></a>
+### func DefaultScreenerParams
+
+```go
+func DefaultScreenerParams() ScreenerParams
+```
+
+DefaultScreenerParams returns default screener parameters.
+
+<a name="ScreenerQuery"></a>
+## type ScreenerQuery
+
+ScreenerQuery represents a custom screener query.
+
+```go
+type ScreenerQuery struct {
+    // Operator is the query operator (eq, gt, lt, and, or, etc.).
+    Operator QueryOperator `json:"operator"`
+
+    // Operands contains the operands for this query.
+    // For comparison operators: [fieldName, value] or [fieldName, min, max] for btwn
+    // For logical operators: nested ScreenerQuery objects
+    Operands []interface{} `json:"operands"`
+}
+```
+
+<a name="NewEquityQuery"></a>
+### func NewEquityQuery
+
+```go
+func NewEquityQuery(op QueryOperator, operands []interface{}) *ScreenerQuery
+```
+
+NewEquityQuery creates a new equity screener query.
+
+Example:
+
+```
+// Find US tech stocks with price > $10
+q := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"eodprice", 10}),
+})
+```
+
+<a name="ScreenerQuote"></a>
+## type ScreenerQuote
+
+ScreenerQuote represents a single stock from screener results.
+
+```go
+type ScreenerQuote struct {
+    // Symbol is the ticker symbol.
+    Symbol string `json:"symbol"`
+
+    // ShortName is the short company name.
+    ShortName string `json:"shortName,omitempty"`
+
+    // LongName is the full company name.
+    LongName string `json:"longName,omitempty"`
+
+    // Exchange is the exchange where the stock is traded.
+    Exchange string `json:"exchange,omitempty"`
+
+    // ExchangeDisp is the display name of the exchange.
+    ExchangeDisp string `json:"fullExchangeName,omitempty"`
+
+    // QuoteType is the type of asset.
+    QuoteType string `json:"quoteType,omitempty"`
+
+    // Region is the geographic region.
+    Region string `json:"region,omitempty"`
+
+    // Sector is the sector of the company.
+    Sector string `json:"sector,omitempty"`
+
+    // Industry is the industry of the company.
+    Industry string `json:"industry,omitempty"`
+
+    // Currency is the trading currency.
+    Currency string `json:"currency,omitempty"`
+
+    // MarketState is the current market state (PRE, REGULAR, POST, CLOSED).
+    MarketState string `json:"marketState,omitempty"`
+
+    // RegularMarketPrice is the current/last regular market price.
+    RegularMarketPrice float64 `json:"regularMarketPrice,omitempty"`
+
+    // RegularMarketChange is the price change.
+    RegularMarketChange float64 `json:"regularMarketChange,omitempty"`
+
+    // RegularMarketChangePercent is the percentage change.
+    RegularMarketChangePercent float64 `json:"regularMarketChangePercent,omitempty"`
+
+    // RegularMarketVolume is the trading volume.
+    RegularMarketVolume int64 `json:"regularMarketVolume,omitempty"`
+
+    // RegularMarketDayHigh is the day's high price.
+    RegularMarketDayHigh float64 `json:"regularMarketDayHigh,omitempty"`
+
+    // RegularMarketDayLow is the day's low price.
+    RegularMarketDayLow float64 `json:"regularMarketDayLow,omitempty"`
+
+    // RegularMarketOpen is the opening price.
+    RegularMarketOpen float64 `json:"regularMarketOpen,omitempty"`
+
+    // RegularMarketPreviousClose is the previous close price.
+    RegularMarketPreviousClose float64 `json:"regularMarketPreviousClose,omitempty"`
+
+    // MarketCap is the market capitalization.
+    MarketCap int64 `json:"marketCap,omitempty"`
+
+    // FiftyTwoWeekHigh is the 52-week high price.
+    FiftyTwoWeekHigh float64 `json:"fiftyTwoWeekHigh,omitempty"`
+
+    // FiftyTwoWeekLow is the 52-week low price.
+    FiftyTwoWeekLow float64 `json:"fiftyTwoWeekLow,omitempty"`
+
+    // FiftyTwoWeekChange is the 52-week change percentage.
+    FiftyTwoWeekChange float64 `json:"fiftyTwoWeekChangePercent,omitempty"`
+
+    // FiftyDayAverage is the 50-day average price.
+    FiftyDayAverage float64 `json:"fiftyDayAverage,omitempty"`
+
+    // TwoHundredDayAverage is the 200-day average price.
+    TwoHundredDayAverage float64 `json:"twoHundredDayAverage,omitempty"`
+
+    // AverageVolume is the average trading volume.
+    AverageVolume int64 `json:"averageDailyVolume3Month,omitempty"`
+
+    // TrailingPE is the trailing P/E ratio.
+    TrailingPE float64 `json:"trailingPE,omitempty"`
+
+    // ForwardPE is the forward P/E ratio.
+    ForwardPE float64 `json:"forwardPE,omitempty"`
+
+    // PriceToBook is the price to book ratio.
+    PriceToBook float64 `json:"priceToBook,omitempty"`
+
+    // DividendYield is the dividend yield.
+    DividendYield float64 `json:"dividendYield,omitempty"`
+
+    // TrailingEPS is the trailing earnings per share.
+    TrailingEPS float64 `json:"epsTrailingTwelveMonths,omitempty"`
+
+    // BookValue is the book value per share.
+    BookValue float64 `json:"bookValue,omitempty"`
+}
+```
+
+<a name="ScreenerResponse"></a>
+## type ScreenerResponse
+
+ScreenerResponse represents the raw API response from Yahoo Finance screener.
+
+```go
+type ScreenerResponse struct {
+    Finance struct {
+        Result []struct {
+            Total  int                      `json:"total"`
+            Count  int                      `json:"count"`
+            Quotes []map[string]interface{} `json:"quotes"`
+        }   `json:"result"`
+        Error *struct {
+            Code        string `json:"code"`
+            Description string `json:"description"`
+        }   `json:"error"`
+    } `json:"finance"`
+}
+```
+
+<a name="ScreenerResult"></a>
+## type ScreenerResult
+
+ScreenerResult represents the result from a stock screener query.
+
+Example:
+
+```
+result, err := screener.Screen(screener.DayGainers, nil)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Found %d stocks\n", result.Total)
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.PercentChange)
+}
+```
+
+```go
+type ScreenerResult struct {
+    // Total is the total number of matching results.
+    Total int `json:"total"`
+
+    // Count is the number of results returned in this batch.
+    Count int `json:"count"`
+
+    // Offset is the offset used for pagination.
+    Offset int `json:"offset"`
+
+    // Quotes contains the matching stocks.
+    Quotes []ScreenerQuote `json:"quotes"`
+}
+```
+
+<a name="SearchList"></a>
+## type SearchList
+
+SearchList represents a Yahoo Finance list from search results.
+
+```go
+type SearchList struct {
+    // ID is the list identifier.
+    ID  string `json:"id"`
+
+    // Name is the list name.
+    Name string `json:"name"`
+
+    // Description is the list description.
+    Description string `json:"description,omitempty"`
+
+    // SymbolCount is the number of symbols in the list.
+    SymbolCount int `json:"symbolCount,omitempty"`
+
+    // URL is the link to the list.
+    URL string `json:"url,omitempty"`
+}
+```
+
+<a name="SearchNav"></a>
+## type SearchNav
+
+SearchNav represents a navigation link from search results.
+
+```go
+type SearchNav struct {
+    // Name is the navigation item name.
+    Name string `json:"name"`
+
+    // URL is the navigation URL.
+    URL string `json:"url"`
+}
+```
+
+<a name="SearchNews"></a>
+## type SearchNews
+
+SearchNews represents a news article from search results.
+
+```go
+type SearchNews struct {
+    // UUID is the unique identifier for the news article.
+    UUID string `json:"uuid"`
+
+    // Title is the headline of the article.
+    Title string `json:"title"`
+
+    // Publisher is the source of the article.
+    Publisher string `json:"publisher"`
+
+    // Link is the URL to the article.
+    Link string `json:"link"`
+
+    // PublishTime is the Unix timestamp when the article was published.
+    PublishTime int64 `json:"providerPublishTime"`
+
+    // Type is the news type (e.g., "STORY").
+    Type string `json:"type,omitempty"`
+
+    // Thumbnail contains thumbnail image information.
+    Thumbnail *SearchThumbnail `json:"thumbnail,omitempty"`
+
+    // RelatedTickers contains symbols related to this news.
+    RelatedTickers []string `json:"relatedTickers,omitempty"`
+}
+```
+
+<a name="SearchParams"></a>
+## type SearchParams
+
+SearchParams represents parameters for the Search function.
+
+```go
+type SearchParams struct {
+    // Query is the search query (required).
+    Query string
+
+    // MaxResults is the maximum number of stock quotes to return (default 8).
+    MaxResults int
+
+    // NewsCount is the number of news articles to return (default 8).
+    NewsCount int
+
+    // ListsCount is the number of lists to return (default 8).
+    ListsCount int
+
+    // IncludeResearch includes research reports in results.
+    IncludeResearch bool
+
+    // IncludeNav includes navigation links in results.
+    IncludeNav bool
+
+    // EnableFuzzyQuery enables fuzzy matching for typos.
+    EnableFuzzyQuery bool
+}
+```
+
+<a name="DefaultSearchParams"></a>
+### func DefaultSearchParams
+
+```go
+func DefaultSearchParams() SearchParams
+```
+
+DefaultSearchParams returns default search parameters.
+
+<a name="SearchQuote"></a>
+## type SearchQuote
+
+SearchQuote represents a single quote result from search.
+
+```go
+type SearchQuote struct {
+    // Symbol is the ticker symbol.
+    Symbol string `json:"symbol"`
+
+    // ShortName is the short company name.
+    ShortName string `json:"shortname"`
+
+    // LongName is the full company name.
+    LongName string `json:"longname,omitempty"`
+
+    // Exchange is the exchange where the asset is traded.
+    Exchange string `json:"exchange"`
+
+    // ExchangeDisp is the display name of the exchange.
+    ExchangeDisp string `json:"exchDisp,omitempty"`
+
+    // QuoteType is the type of asset (EQUITY, ETF, MUTUALFUND, etc.).
+    QuoteType string `json:"quoteType"`
+
+    // TypeDisp is the display name of the asset type.
+    TypeDisp string `json:"typeDisp,omitempty"`
+
+    // Score is the relevance score of this result.
+    Score float64 `json:"score,omitempty"`
+
+    // IsYahooFinance indicates if this is a Yahoo Finance asset.
+    IsYahooFinance bool `json:"isYahooFinance,omitempty"`
+
+    // Industry is the industry of the company.
+    Industry string `json:"industry,omitempty"`
+
+    // Sector is the sector of the company.
+    Sector string `json:"sector,omitempty"`
+}
+```
+
+<a name="SearchResearch"></a>
+## type SearchResearch
+
+SearchResearch represents a research report from search results.
+
+```go
+type SearchResearch struct {
+    // ReportID is the unique identifier.
+    ReportID string `json:"reportId"`
+
+    // Title is the report title.
+    Title string `json:"title"`
+
+    // Provider is the research provider.
+    Provider string `json:"provider"`
+
+    // Ticker is the related ticker symbol.
+    Ticker string `json:"ticker,omitempty"`
+
+    // PublishDate is the publication date.
+    PublishDate string `json:"publishDate,omitempty"`
+}
+```
+
+<a name="SearchResponse"></a>
+## type SearchResponse
+
+SearchResponse represents the raw API response from Yahoo Finance search.
+
+```go
+type SearchResponse struct {
+    Quotes   []map[string]interface{} `json:"quotes"`
+    News     []map[string]interface{} `json:"news"`
+    Lists    []map[string]interface{} `json:"lists,omitempty"`
+    Research []map[string]interface{} `json:"researchReports,omitempty"`
+    Nav      []map[string]interface{} `json:"nav,omitempty"`
+    Count    int                      `json:"count,omitempty"`
+}
+```
+
+<a name="SearchResult"></a>
+## type SearchResult
+
+SearchResult represents the complete search response from Yahoo Finance.
+
+This includes quotes \(stock matches\), news articles, lists, and research reports.
+
+Example:
+
+```
+result, err := search.Search("AAPL")
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %s\n", quote.Symbol, quote.ShortName)
+}
+```
+
+```go
+type SearchResult struct {
+    // Quotes contains matching stock/asset quotes.
+    Quotes []SearchQuote `json:"quotes"`
+
+    // News contains related news articles.
+    News []SearchNews `json:"news,omitempty"`
+
+    // Lists contains Yahoo Finance lists.
+    Lists []SearchList `json:"lists,omitempty"`
+
+    // Research contains research reports (if requested).
+    Research []SearchResearch `json:"research,omitempty"`
+
+    // Nav contains navigation links (if requested).
+    Nav []SearchNav `json:"nav,omitempty"`
+
+    // TotalCount is the total number of matching results.
+    TotalCount int `json:"totalCount,omitempty"`
+}
+```
+
+<a name="SearchThumbnail"></a>
+## type SearchThumbnail
+
+SearchThumbnail represents thumbnail image information.
+
+```go
+type SearchThumbnail struct {
+    Resolutions []ThumbnailResolution `json:"resolutions,omitempty"`
+}
+```
+
 <a name="Split"></a>
 ## type Split
 
@@ -2514,6 +3102,20 @@ type SplitEvent struct {
     Numerator   float64 `json:"numerator"`
     Denominator float64 `json:"denominator"`
     SplitRatio  string  `json:"splitRatio"`
+}
+```
+
+<a name="ThumbnailResolution"></a>
+## type ThumbnailResolution
+
+ThumbnailResolution represents a single thumbnail resolution.
+
+```go
+type ThumbnailResolution struct {
+    URL    string `json:"url"`
+    Width  int    `json:"width"`
+    Height int    `json:"height"`
+    Tag    string `json:"tag,omitempty"`
 }
 ```
 
@@ -2583,6 +3185,564 @@ type TransactionStats struct {
     // Transactions is the number of transactions.
     Transactions int `json:"transactions"`
 }
+```
+
+# screener
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/screener"
+```
+
+Package screener provides Yahoo Finance stock screener functionality.
+
+### Overview
+
+The screener package allows you to filter stocks based on various criteria using Yahoo Finance's predefined screeners or custom queries.
+
+### Predefined Screeners
+
+Yahoo Finance provides several predefined screeners:
+
+- day\_gainers: Stocks with highest percentage gain today
+- day\_losers: Stocks with highest percentage loss today
+- most\_actives: Stocks with highest trading volume
+- aggressive\_small\_caps: Aggressive small cap stocks
+- growth\_technology\_stocks: Growth technology stocks
+- undervalued\_growth\_stocks: Undervalued growth stocks
+- undervalued\_large\_caps: Undervalued large cap stocks
+- most\_shorted\_stocks: Most shorted stocks
+- small\_cap\_gainers: Small cap gainers
+
+### Basic Usage
+
+```
+s, err := screener.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+
+result, err := s.DayGainers(10)
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
+}
+```
+
+### Screener Methods
+
+The Screener struct provides the following methods:
+
+Predefined Screeners:
+
+- [Screener.Screen](<#Screener.Screen>): Use any predefined screener
+- [Screener.DayGainers](<#Screener.DayGainers>): Top gaining stocks
+- [Screener.DayLosers](<#Screener.DayLosers>): Top losing stocks
+- [Screener.MostActives](<#Screener.MostActives>): Most actively traded stocks
+
+Custom Queries:
+
+- [Screener.ScreenWithQuery](<#Screener.ScreenWithQuery>): Use custom query criteria
+
+### Custom Queries
+
+Build custom queries using \[models.ScreenerQuery\]:
+
+```
+// Find US tech stocks with price > $50
+query := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
+})
+result, err := s.ScreenWithQuery(query, nil)
+```
+
+### Query Operators
+
+Available operators for custom queries:
+
+- OpEQ: Equals
+- OpGT: Greater than
+- OpLT: Less than
+- OpGTE: Greater than or equal
+- OpLTE: Less than or equal
+- OpBTWN: Between \(requires min and max values\)
+- OpAND: All conditions must match
+- OpOR: Any condition can match
+
+### Thread Safety
+
+All Screener methods are safe for concurrent use from multiple goroutines.
+
+Package screener provides Yahoo Finance stock screener functionality.
+
+### Overview
+
+The screener package allows you to filter stocks based on various criteria using Yahoo Finance's predefined screeners or custom queries.
+
+### Predefined Screeners
+
+Yahoo Finance provides several predefined screeners:
+
+- day\_gainers: Stocks with highest percentage gain today
+- day\_losers: Stocks with highest percentage loss today
+- most\_actives: Stocks with highest trading volume
+- aggressive\_small\_caps: Aggressive small cap stocks
+- growth\_technology\_stocks: Growth technology stocks
+- undervalued\_growth\_stocks: Undervalued growth stocks
+- undervalued\_large\_caps: Undervalued large cap stocks
+- most\_shorted\_stocks: Most shorted stocks
+- small\_cap\_gainers: Small cap gainers
+
+### Basic Usage
+
+```
+s, err := screener.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+
+// Use predefined screener
+result, err := s.Screen(models.ScreenerDayGainers, nil)
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
+}
+```
+
+### Custom Queries
+
+```
+// Find US tech stocks with price > $50
+query := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
+})
+result, err := s.ScreenWithQuery(query, nil)
+```
+
+### Thread Safety
+
+All Screener methods are safe for concurrent use from multiple goroutines.
+
+## Index
+
+- [type Option](<#Option>)
+  - [func WithClient\(c \*client.Client\) Option](<#WithClient>)
+- [type Screener](<#Screener>)
+  - [func New\(opts ...Option\) \(\*Screener, error\)](<#New>)
+  - [func \(s \*Screener\) Close\(\)](<#Screener.Close>)
+  - [func \(s \*Screener\) DayGainers\(count int\) \(\*models.ScreenerResult, error\)](<#Screener.DayGainers>)
+  - [func \(s \*Screener\) DayLosers\(count int\) \(\*models.ScreenerResult, error\)](<#Screener.DayLosers>)
+  - [func \(s \*Screener\) MostActives\(count int\) \(\*models.ScreenerResult, error\)](<#Screener.MostActives>)
+  - [func \(s \*Screener\) Screen\(screener models.PredefinedScreener, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.Screen>)
+  - [func \(s \*Screener\) ScreenWithQuery\(query \*models.ScreenerQuery, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.ScreenWithQuery>)
+
+
+<a name="Option"></a>
+## type Option
+
+Option is a function that configures a Screener instance.
+
+```go
+type Option func(*Screener)
+```
+
+<a name="WithClient"></a>
+### func WithClient
+
+```go
+func WithClient(c *client.Client) Option
+```
+
+WithClient sets a custom HTTP client.
+
+<a name="Screener"></a>
+## type Screener
+
+Screener provides Yahoo Finance stock screener functionality.
+
+```go
+type Screener struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="New"></a>
+### func New
+
+```go
+func New(opts ...Option) (*Screener, error)
+```
+
+New creates a new Screener instance.
+
+Example:
+
+```
+s, err := screener.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+```
+
+<a name="Screener.Close"></a>
+### func \(\*Screener\) Close
+
+```go
+func (s *Screener) Close()
+```
+
+Close releases resources used by the Screener instance.
+
+<a name="Screener.DayGainers"></a>
+### func \(\*Screener\) DayGainers
+
+```go
+func (s *Screener) DayGainers(count int) (*models.ScreenerResult, error)
+```
+
+DayGainers returns stocks with the highest percentage gain today.
+
+Example:
+
+```
+result, err := s.DayGainers(10)
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: +%.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
+}
+```
+
+<a name="Screener.DayLosers"></a>
+### func \(\*Screener\) DayLosers
+
+```go
+func (s *Screener) DayLosers(count int) (*models.ScreenerResult, error)
+```
+
+DayLosers returns stocks with the highest percentage loss today.
+
+Example:
+
+```
+result, err := s.DayLosers(10)
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
+}
+```
+
+<a name="Screener.MostActives"></a>
+### func \(\*Screener\) MostActives
+
+```go
+func (s *Screener) MostActives(count int) (*models.ScreenerResult, error)
+```
+
+MostActives returns stocks with the highest trading volume today.
+
+Example:
+
+```
+result, err := s.MostActives(10)
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %d shares\n", quote.Symbol, quote.RegularMarketVolume)
+}
+```
+
+<a name="Screener.Screen"></a>
+### func \(\*Screener\) Screen
+
+```go
+func (s *Screener) Screen(screener models.PredefinedScreener, params *models.ScreenerParams) (*models.ScreenerResult, error)
+```
+
+Screen uses a predefined screener to find matching stocks.
+
+Example:
+
+```
+result, err := s.Screen(models.ScreenerDayGainers, nil)
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
+}
+```
+
+<a name="Screener.ScreenWithQuery"></a>
+### func \(\*Screener\) ScreenWithQuery
+
+```go
+func (s *Screener) ScreenWithQuery(query *models.ScreenerQuery, params *models.ScreenerParams) (*models.ScreenerResult, error)
+```
+
+ScreenWithQuery uses a custom query to find matching stocks.
+
+Example:
+
+```
+// Find US stocks with market cap > $10B
+query := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"intradaymarketcap", 10000000000}),
+})
+result, err := s.ScreenWithQuery(query, nil)
+```
+
+# search
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/search"
+```
+
+Package search provides Yahoo Finance search functionality.
+
+### Overview
+
+The search package allows you to search for stock symbols, company names, and other financial assets on Yahoo Finance. It also retrieves related news articles, lists, and research reports.
+
+### Basic Usage
+
+```
+s, err := search.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+
+result, err := s.Search("AAPL")
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %s (%s)\n", quote.Symbol, quote.ShortName, quote.Exchange)
+}
+```
+
+### Search Methods
+
+The Search struct provides the following methods:
+
+- [Search.Search](<#Search.Search>): Simple search with default parameters
+- [Search.SearchWithParams](<#Search.SearchWithParams>): Search with custom parameters
+- [Search.Quotes](<#Search.Quotes>): Get only quote results
+- [Search.News](<#Search.News>): Get only news results
+
+### Search Parameters
+
+Use \[models.SearchParams\] to customize your search:
+
+```
+params := models.SearchParams{
+    Query:            "Apple",
+    MaxResults:       10,
+    NewsCount:        5,
+    EnableFuzzyQuery: true,
+}
+result, err := s.SearchWithParams(params)
+```
+
+### Thread Safety
+
+All Search methods are safe for concurrent use from multiple goroutines.
+
+Package search provides Yahoo Finance search functionality.
+
+### Overview
+
+The search package allows you to search for stock symbols, company names, and other financial assets on Yahoo Finance. It also retrieves related news articles, lists, and research reports.
+
+### Basic Usage
+
+```
+s, err := search.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+
+result, err := s.Search("AAPL")
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %s (%s)\n", quote.Symbol, quote.ShortName, quote.Exchange)
+}
+```
+
+### Search with Parameters
+
+```
+params := models.SearchParams{
+    Query:            "Apple",
+    MaxResults:       10,
+    NewsCount:        5,
+    EnableFuzzyQuery: true,
+}
+result, err := s.SearchWithParams(params)
+```
+
+### Thread Safety
+
+All Search methods are safe for concurrent use from multiple goroutines.
+
+## Index
+
+- [type Option](<#Option>)
+  - [func WithClient\(c \*client.Client\) Option](<#WithClient>)
+- [type Search](<#Search>)
+  - [func New\(opts ...Option\) \(\*Search, error\)](<#New>)
+  - [func \(s \*Search\) Close\(\)](<#Search.Close>)
+  - [func \(s \*Search\) News\(query string, newsCount int\) \(\[\]models.SearchNews, error\)](<#Search.News>)
+  - [func \(s \*Search\) Quotes\(query string, maxResults int\) \(\[\]models.SearchQuote, error\)](<#Search.Quotes>)
+  - [func \(s \*Search\) Search\(query string\) \(\*models.SearchResult, error\)](<#Search.Search>)
+  - [func \(s \*Search\) SearchWithParams\(params models.SearchParams\) \(\*models.SearchResult, error\)](<#Search.SearchWithParams>)
+
+
+<a name="Option"></a>
+## type Option
+
+Option is a function that configures a Search instance.
+
+```go
+type Option func(*Search)
+```
+
+<a name="WithClient"></a>
+### func WithClient
+
+```go
+func WithClient(c *client.Client) Option
+```
+
+WithClient sets a custom HTTP client.
+
+<a name="Search"></a>
+## type Search
+
+Search provides Yahoo Finance search functionality.
+
+```go
+type Search struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="New"></a>
+### func New
+
+```go
+func New(opts ...Option) (*Search, error)
+```
+
+New creates a new Search instance.
+
+Example:
+
+```
+s, err := search.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer s.Close()
+```
+
+<a name="Search.Close"></a>
+### func \(\*Search\) Close
+
+```go
+func (s *Search) Close()
+```
+
+Close releases resources used by the Search instance.
+
+<a name="Search.News"></a>
+### func \(\*Search\) News
+
+```go
+func (s *Search) News(query string, newsCount int) ([]models.SearchNews, error)
+```
+
+News returns only the news results for a search query.
+
+Example:
+
+```
+news, err := s.News("Apple", 10)
+for _, n := range news {
+    fmt.Printf("%s: %s\n", n.Publisher, n.Title)
+}
+```
+
+<a name="Search.Quotes"></a>
+### func \(\*Search\) Quotes
+
+```go
+func (s *Search) Quotes(query string, maxResults int) ([]models.SearchQuote, error)
+```
+
+Quotes returns only the quote results for a search query.
+
+Example:
+
+```
+quotes, err := s.Quotes("Apple", 10)
+for _, q := range quotes {
+    fmt.Printf("%s: %s\n", q.Symbol, q.ShortName)
+}
+```
+
+<a name="Search.Search"></a>
+### func \(\*Search\) Search
+
+```go
+func (s *Search) Search(query string) (*models.SearchResult, error)
+```
+
+Search searches for symbols and returns matching quotes.
+
+This is a convenience method that uses default parameters.
+
+Example:
+
+```
+result, err := s.Search("AAPL")
+if err != nil {
+    log.Fatal(err)
+}
+for _, quote := range result.Quotes {
+    fmt.Printf("%s: %s\n", quote.Symbol, quote.ShortName)
+}
+```
+
+<a name="Search.SearchWithParams"></a>
+### func \(\*Search\) SearchWithParams
+
+```go
+func (s *Search) SearchWithParams(params models.SearchParams) (*models.SearchResult, error)
+```
+
+SearchWithParams searches with custom parameters.
+
+Example:
+
+```
+params := models.SearchParams{
+    Query:            "Apple",
+    MaxResults:       10,
+    NewsCount:        5,
+    EnableFuzzyQuery: true,
+}
+result, err := s.SearchWithParams(params)
 ```
 
 # ticker

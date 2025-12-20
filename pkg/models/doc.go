@@ -47,6 +47,19 @@
 // Calendar:
 //   - [Calendar]: Upcoming events including earnings and dividend dates
 //
+// Search:
+//   - [SearchResult]: Complete search response with quotes, news, lists
+//   - [SearchQuote]: Quote match from search results
+//   - [SearchNews]: News article from search results
+//   - [SearchParams]: Search query parameters
+//
+// Screener:
+//   - [ScreenerResult]: Stock screener results with pagination
+//   - [ScreenerQuote]: Stock from screener results with financial data
+//   - [ScreenerQuery]: Custom screener query structure
+//   - [ScreenerParams]: Screener parameters (offset, count, sort)
+//   - [PredefinedScreener]: Predefined screener identifiers (day_gainers, etc.)
+//
 // # History Parameters
 //
 // The [HistoryParams] type controls historical data fetching:

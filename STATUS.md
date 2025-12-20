@@ -14,7 +14,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 | 3 | Financials | ✅ Complete | 100% |
 | 4 | Analysis | ✅ Complete | 100% |
 | 5 | Holdings & Actions | ✅ Complete | 100% |
-| 6 | Search & Screener | ⬜ Not Started | 0% |
+| 6 | Search & Screener | ✅ Complete | 100% |
 | 7 | Multi-ticker & Batch | ⬜ Not Started | 0% |
 | 8 | Real-time WebSocket | ⬜ Not Started | 0% |
 | 9 | Advanced Features | ⬜ Not Started | 0% |
@@ -241,16 +241,69 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 6: Search & Screener ⬜
+## Phase 6: Search & Screener ✅
 
-**Status**: Not Started
+**Status**: Complete
+**Branch**: `phase6/search` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] Symbol Search
-- [ ] Symbol Lookup
-- [ ] Stock Screener
-- [ ] Custom Query Builder
+- [x] **Search Models** (`pkg/models/search.go`)
+  - `SearchResult`: Complete search response with quotes, news, lists
+  - `SearchQuote`: Quote match from search results
+  - `SearchNews`: News article from search results
+  - `SearchList`: Yahoo Finance list
+  - `SearchResearch`: Research report
+  - `SearchParams`: Search query parameters
+  - `DefaultSearchParams()`: Default search parameters
+
+- [x] **Screener Models** (`pkg/models/screener.go`)
+  - `ScreenerResult`: Stock screener results with pagination
+  - `ScreenerQuote`: Stock from screener results with full financial data
+  - `PredefinedScreener`: Predefined screener identifiers
+  - `ScreenerQuery`: Custom screener query structure
+  - `ScreenerParams`: Screener parameters (offset, count, sort)
+  - `QueryOperator`: Query operators (EQ, GT, LT, GTE, LTE, BTWN, AND, OR)
+  - `NewEquityQuery()`: Helper for building custom queries
+
+- [x] **Search Package** (`pkg/search/search.go`)
+  - `New()`: Create search instance with optional client
+  - `Search(query)`: Simple search with default parameters
+  - `SearchWithParams(params)`: Search with custom parameters
+  - `Quotes(query, count)`: Get only quote results
+  - `News(query, count)`: Get only news results
+  - `Close()`: Release resources
+
+- [x] **Screener Package** (`pkg/screener/screener.go`)
+  - `New()`: Create screener instance with optional client
+  - `Screen(screener, params)`: Use predefined screener
+  - `ScreenWithQuery(query, params)`: Use custom query
+  - `DayGainers(count)`: Top gaining stocks
+  - `DayLosers(count)`: Top losing stocks
+  - `MostActives(count)`: Most actively traded stocks
+  - `Close()`: Release resources
+
+### Predefined Screeners
+
+| Screener | Description |
+|----------|-------------|
+| `day_gainers` | Stocks with highest percentage gain today |
+| `day_losers` | Stocks with highest percentage loss today |
+| `most_actives` | Stocks with highest trading volume |
+| `aggressive_small_caps` | Aggressive small cap stocks |
+| `growth_technology_stocks` | Growth technology stocks |
+| `undervalued_growth_stocks` | Undervalued growth stocks |
+| `undervalued_large_caps` | Undervalued large cap stocks |
+| `most_shorted_stocks` | Most shorted stocks |
+| `small_cap_gainers` | Small cap gainers |
+
+### API Endpoints Used
+
+| Feature | Endpoint |
+|---------|----------|
+| Search | `query2.finance.yahoo.com/v1/finance/search` |
+| Screener (predefined) | `query1.finance.yahoo.com/v1/finance/screener/predefined/{name}` |
+| Screener (custom) | `query1.finance.yahoo.com/v1/finance/screener` (POST) |
 
 ---
 
@@ -321,7 +374,8 @@ main
 │   ├── phase4/analysis-models
 │   └── phase4/analysis-methods
 ├── phase5/holdings (merged)
-├── phase6/search (future)
+├── phase6/search (merged)
+├── phase7/multi-ticker (future)
 └── ...
 ```
 
