@@ -64,6 +64,10 @@
 //   - [DownloadParams]: Parameters for batch downloads (symbols, period, threads)
 //   - [MultiTickerResult]: Results from multi-ticker download with data and errors
 //
+// Live Streaming:
+//   - [PricingData]: Real-time pricing data from WebSocket stream
+//   - [MarketState]: Market hours state (pre/regular/post/closed)
+//
 // # History Parameters
 //
 // The [HistoryParams] type controls historical data fetching:

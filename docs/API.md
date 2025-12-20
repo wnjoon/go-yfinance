@@ -890,6 +890,359 @@ func (c *Config) SetUserAgent(ua string) *Config
 
 SetUserAgent sets the User\-Agent string.
 
+# live
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/live"
+```
+
+Package live provides real\-time WebSocket streaming for Yahoo Finance data.
+
+### Overview
+
+The live package enables real\-time price updates via Yahoo Finance's WebSocket streaming API. Messages are delivered as protobuf\-encoded pricing data and decoded into \[models.PricingData\] structs.
+
+### Basic Usage
+
+```
+ws, err := live.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer ws.Close()
+
+// Subscribe to symbols
+ws.Subscribe([]string{"AAPL", "MSFT", "GOOGL"})
+
+// Listen for updates
+ws.Listen(func(data *models.PricingData) {
+    fmt.Printf("%s: $%.2f (%.2f%%)\n",
+        data.ID, data.Price, data.ChangePercent)
+})
+```
+
+### Async Listening
+
+For non\-blocking operation, use ListenAsync:
+
+```
+ws.Subscribe([]string{"AAPL"})
+ws.ListenAsync(func(data *models.PricingData) {
+    fmt.Printf("%s: $%.2f\n", data.ID, data.Price)
+})
+
+// Do other work...
+time.Sleep(10 * time.Second)
+ws.Close()
+```
+
+### Error Handling
+
+Set an error handler to receive connection errors:
+
+```
+ws, _ := live.New(
+    live.WithErrorHandler(func(err error) {
+        log.Printf("WebSocket error: %v", err)
+    }),
+)
+```
+
+### Configuration Options
+
+- [WithURL](<#WithURL>): Set custom WebSocket URL
+- [WithHeartbeatInterval](<#WithHeartbeatInterval>): Set heartbeat interval \(default 15s\)
+- [WithReconnectDelay](<#WithReconnectDelay>): Set reconnection delay \(default 3s\)
+- [WithErrorHandler](<#WithErrorHandler>): Set error callback
+
+### Data Fields
+
+The \[models.PricingData\] struct contains real\-time market data:
+
+- ID: Ticker symbol
+- Price: Current price
+- Change: Price change from previous close
+- ChangePercent: Percentage change
+- DayHigh, DayLow: Day's high and low
+- DayVolume: Trading volume
+- Bid, Ask: Current bid/ask prices
+- MarketHours: Market state \(pre/regular/post/closed\)
+
+### Thread Safety
+
+All WebSocket methods are safe for concurrent use from multiple goroutines.
+
+Package live provides real\-time WebSocket streaming for Yahoo Finance data.
+
+### Overview
+
+The live package enables real\-time price updates via Yahoo Finance's WebSocket streaming API. Messages are delivered as protobuf\-encoded pricing data.
+
+### Basic Usage
+
+```
+ws, err := live.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer ws.Close()
+
+// Subscribe to symbols
+ws.Subscribe([]string{"AAPL", "MSFT", "GOOGL"})
+
+// Listen for updates
+ws.Listen(func(data *models.PricingData) {
+    fmt.Printf("%s: $%.2f\n", data.ID, data.Price)
+})
+```
+
+### With Ticker Integration
+
+```
+ticker, _ := ticker.New("AAPL")
+ticker.Live(func(data *models.PricingData) {
+    fmt.Printf("Price: $%.2f\n", data.Price)
+})
+```
+
+### Thread Safety
+
+All WebSocket methods are safe for concurrent use from multiple goroutines.
+
+## Index
+
+- [Constants](<#constants>)
+- [type ErrorHandler](<#ErrorHandler>)
+- [type MessageHandler](<#MessageHandler>)
+- [type Option](<#Option>)
+  - [func WithErrorHandler\(handler ErrorHandler\) Option](<#WithErrorHandler>)
+  - [func WithHeartbeatInterval\(d time.Duration\) Option](<#WithHeartbeatInterval>)
+  - [func WithReconnectDelay\(d time.Duration\) Option](<#WithReconnectDelay>)
+  - [func WithURL\(url string\) Option](<#WithURL>)
+- [type WebSocket](<#WebSocket>)
+  - [func New\(opts ...Option\) \(\*WebSocket, error\)](<#New>)
+  - [func \(ws \*WebSocket\) Close\(\) error](<#WebSocket.Close>)
+  - [func \(ws \*WebSocket\) Connect\(\) error](<#WebSocket.Connect>)
+  - [func \(ws \*WebSocket\) IsConnected\(\) bool](<#WebSocket.IsConnected>)
+  - [func \(ws \*WebSocket\) Listen\(handler MessageHandler\) error](<#WebSocket.Listen>)
+  - [func \(ws \*WebSocket\) ListenAsync\(handler MessageHandler\) error](<#WebSocket.ListenAsync>)
+  - [func \(ws \*WebSocket\) Subscribe\(symbols \[\]string\) error](<#WebSocket.Subscribe>)
+  - [func \(ws \*WebSocket\) Subscriptions\(\) \[\]string](<#WebSocket.Subscriptions>)
+  - [func \(ws \*WebSocket\) Unsubscribe\(symbols \[\]string\) error](<#WebSocket.Unsubscribe>)
+
+
+## Constants
+
+<a name="DefaultURL"></a>
+
+```go
+const (
+    // DefaultURL is the Yahoo Finance WebSocket endpoint.
+    DefaultURL = "wss://streamer.finance.yahoo.com/?version=2"
+
+    // DefaultHeartbeatInterval is the interval for re-sending subscriptions.
+    DefaultHeartbeatInterval = 15 * time.Second
+
+    // DefaultReconnectDelay is the delay before attempting reconnection.
+    DefaultReconnectDelay = 3 * time.Second
+)
+```
+
+<a name="ErrorHandler"></a>
+## type ErrorHandler
+
+ErrorHandler is a callback function for handling errors.
+
+```go
+type ErrorHandler func(error)
+```
+
+<a name="MessageHandler"></a>
+## type MessageHandler
+
+MessageHandler is a callback function for handling pricing data.
+
+```go
+type MessageHandler func(*models.PricingData)
+```
+
+<a name="Option"></a>
+## type Option
+
+Option is a function that configures a WebSocket.
+
+```go
+type Option func(*WebSocket)
+```
+
+<a name="WithErrorHandler"></a>
+### func WithErrorHandler
+
+```go
+func WithErrorHandler(handler ErrorHandler) Option
+```
+
+WithErrorHandler sets the error handler callback.
+
+<a name="WithHeartbeatInterval"></a>
+### func WithHeartbeatInterval
+
+```go
+func WithHeartbeatInterval(d time.Duration) Option
+```
+
+WithHeartbeatInterval sets the heartbeat interval.
+
+<a name="WithReconnectDelay"></a>
+### func WithReconnectDelay
+
+```go
+func WithReconnectDelay(d time.Duration) Option
+```
+
+WithReconnectDelay sets the reconnection delay.
+
+<a name="WithURL"></a>
+### func WithURL
+
+```go
+func WithURL(url string) Option
+```
+
+WithURL sets a custom WebSocket URL.
+
+<a name="WebSocket"></a>
+## type WebSocket
+
+WebSocket represents a WebSocket client for Yahoo Finance streaming.
+
+```go
+type WebSocket struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="New"></a>
+### func New
+
+```go
+func New(opts ...Option) (*WebSocket, error)
+```
+
+New creates a new WebSocket client.
+
+Example:
+
+```
+ws, err := live.New()
+if err != nil {
+    log.Fatal(err)
+}
+defer ws.Close()
+```
+
+<a name="WebSocket.Close"></a>
+### func \(\*WebSocket\) Close
+
+```go
+func (ws *WebSocket) Close() error
+```
+
+Close closes the WebSocket connection.
+
+<a name="WebSocket.Connect"></a>
+### func \(\*WebSocket\) Connect
+
+```go
+func (ws *WebSocket) Connect() error
+```
+
+Connect establishes the WebSocket connection.
+
+<a name="WebSocket.IsConnected"></a>
+### func \(\*WebSocket\) IsConnected
+
+```go
+func (ws *WebSocket) IsConnected() bool
+```
+
+IsConnected returns true if the WebSocket is connected.
+
+<a name="WebSocket.Listen"></a>
+### func \(\*WebSocket\) Listen
+
+```go
+func (ws *WebSocket) Listen(handler MessageHandler) error
+```
+
+Listen starts listening for messages and calls the handler for each message. This method blocks until Close\(\) is called or an unrecoverable error occurs.
+
+Example:
+
+```
+ws.Listen(func(data *models.PricingData) {
+    fmt.Printf("%s: $%.2f\n", data.ID, data.Price)
+})
+```
+
+<a name="WebSocket.ListenAsync"></a>
+### func \(\*WebSocket\) ListenAsync
+
+```go
+func (ws *WebSocket) ListenAsync(handler MessageHandler) error
+```
+
+ListenAsync starts listening in a separate goroutine. Returns immediately. Use Close\(\) to stop listening.
+
+Example:
+
+```
+ws.ListenAsync(func(data *models.PricingData) {
+    fmt.Printf("%s: $%.2f\n", data.ID, data.Price)
+})
+// ... do other work ...
+ws.Close()
+```
+
+<a name="WebSocket.Subscribe"></a>
+### func \(\*WebSocket\) Subscribe
+
+```go
+func (ws *WebSocket) Subscribe(symbols []string) error
+```
+
+Subscribe adds symbols to the subscription list and sends subscribe message.
+
+Example:
+
+```
+ws.Subscribe([]string{"AAPL", "MSFT"})
+```
+
+<a name="WebSocket.Subscriptions"></a>
+### func \(\*WebSocket\) Subscriptions
+
+```go
+func (ws *WebSocket) Subscriptions() []string
+```
+
+Subscriptions returns the current list of subscribed symbols.
+
+<a name="WebSocket.Unsubscribe"></a>
+### func \(\*WebSocket\) Unsubscribe
+
+```go
+func (ws *WebSocket) Unsubscribe(symbols []string) error
+```
+
+Unsubscribe removes symbols from the subscription list.
+
+Example:
+
+```
+ws.Unsubscribe([]string{"AAPL"})
+```
+
 # models
 
 ```go
@@ -975,6 +1328,11 @@ Multi\-ticker:
 - [DownloadParams](<#DownloadParams>): Parameters for batch downloads \(symbols, period, threads\)
 - [MultiTickerResult](<#MultiTickerResult>): Results from multi\-ticker download with data and errors
 
+Live Streaming:
+
+- [PricingData](<#PricingData>): Real\-time pricing data from WebSocket stream
+- [MarketState](<#MarketState>): Market hours state \(pre/regular/post/closed\)
+
 ### History Parameters
 
 The [HistoryParams](<#HistoryParams>) type controls historical data fetching:
@@ -1049,6 +1407,8 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type InsiderPurchases](<#InsiderPurchases>)
 - [type InsiderTransaction](<#InsiderTransaction>)
 - [type MajorHolders](<#MajorHolders>)
+- [type MarketState](<#MarketState>)
+  - [func \(m MarketState\) String\(\) string](<#MarketState.String>)
 - [type MultiTickerResult](<#MultiTickerResult>)
   - [func \(r \*MultiTickerResult\) ErrorCount\(\) int](<#MultiTickerResult.ErrorCount>)
   - [func \(r \*MultiTickerResult\) Get\(symbol string\) \[\]Bar](<#MultiTickerResult.Get>)
@@ -1065,6 +1425,12 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type PredefinedScreener](<#PredefinedScreener>)
   - [func AllPredefinedScreeners\(\) \[\]PredefinedScreener](<#AllPredefinedScreeners>)
 - [type PriceTarget](<#PriceTarget>)
+- [type PricingData](<#PricingData>)
+  - [func \(p \*PricingData\) ExpireTime\(\) time.Time](<#PricingData.ExpireTime>)
+  - [func \(p \*PricingData\) IsPostMarket\(\) bool](<#PricingData.IsPostMarket>)
+  - [func \(p \*PricingData\) IsPreMarket\(\) bool](<#PricingData.IsPreMarket>)
+  - [func \(p \*PricingData\) IsRegularMarket\(\) bool](<#PricingData.IsRegularMarket>)
+  - [func \(p \*PricingData\) Timestamp\(\) time.Time](<#PricingData.Timestamp>)
 - [type QueryOperator](<#QueryOperator>)
 - [type Quote](<#Quote>)
 - [type QuoteError](<#QuoteError>)
@@ -2132,6 +2498,39 @@ type MajorHolders struct {
 }
 ```
 
+<a name="MarketState"></a>
+## type MarketState
+
+MarketState represents the market hours state.
+
+```go
+type MarketState int32
+```
+
+<a name="MarketStatePreMarket"></a>
+
+```go
+const (
+    // MarketStatePreMarket indicates pre-market hours.
+    MarketStatePreMarket MarketState = 0
+    // MarketStateRegular indicates regular trading hours.
+    MarketStateRegular MarketState = 1
+    // MarketStatePostMarket indicates post-market hours.
+    MarketStatePostMarket MarketState = 2
+    // MarketStateClosed indicates market is closed.
+    MarketStateClosed MarketState = 3
+)
+```
+
+<a name="MarketState.String"></a>
+### func \(MarketState\) String
+
+```go
+func (m MarketState) String() string
+```
+
+String returns the string representation of MarketState.
+
 <a name="MultiTickerResult"></a>
 ## type MultiTickerResult
 
@@ -2400,6 +2799,161 @@ type PriceTarget struct {
     RecommendationMean float64 `json:"recommendationMean"` // 1.0 (strong buy) to 5.0 (strong sell)
 }
 ```
+
+<a name="PricingData"></a>
+## type PricingData
+
+PricingData represents real\-time pricing data from Yahoo Finance WebSocket.
+
+This structure contains live market data including price, volume, bid/ask, and various market indicators.
+
+```go
+type PricingData struct {
+    // ID is the ticker symbol.
+    ID  string `json:"id,omitempty"`
+
+    // Price is the current price.
+    Price float32 `json:"price,omitempty"`
+
+    // Time is the quote timestamp (Unix timestamp).
+    Time int64 `json:"time,omitempty"`
+
+    // Currency is the trading currency (e.g., "USD").
+    Currency string `json:"currency,omitempty"`
+
+    // Exchange is the exchange name (e.g., "NMS").
+    Exchange string `json:"exchange,omitempty"`
+
+    // QuoteType indicates the type of quote (1=equity, 2=option, etc.).
+    QuoteType int32 `json:"quote_type,omitempty"`
+
+    // MarketHours indicates market state (0=pre, 1=regular, 2=post, 3=closed).
+    MarketHours int32 `json:"market_hours,omitempty"`
+
+    // ChangePercent is the percentage change from previous close.
+    ChangePercent float32 `json:"change_percent,omitempty"`
+
+    // DayVolume is the trading volume for the day.
+    DayVolume int64 `json:"day_volume,omitempty"`
+
+    // DayHigh is the day's high price.
+    DayHigh float32 `json:"day_high,omitempty"`
+
+    // DayLow is the day's low price.
+    DayLow float32 `json:"day_low,omitempty"`
+
+    // Change is the absolute change from previous close.
+    Change float32 `json:"change,omitempty"`
+
+    // ShortName is the company short name.
+    ShortName string `json:"short_name,omitempty"`
+
+    // ExpireDate is the option expiration date (Unix timestamp).
+    ExpireDate int64 `json:"expire_date,omitempty"`
+
+    // OpenPrice is the day's opening price.
+    OpenPrice float32 `json:"open_price,omitempty"`
+
+    // PreviousClose is the previous day's closing price.
+    PreviousClose float32 `json:"previous_close,omitempty"`
+
+    // StrikePrice is the option strike price.
+    StrikePrice float32 `json:"strike_price,omitempty"`
+
+    // UnderlyingSymbol is the underlying symbol for options.
+    UnderlyingSymbol string `json:"underlying_symbol,omitempty"`
+
+    // OpenInterest is the option open interest.
+    OpenInterest int64 `json:"open_interest,omitempty"`
+
+    // OptionsType indicates call (0) or put (1).
+    OptionsType int64 `json:"options_type,omitempty"`
+
+    // MiniOption indicates if this is a mini option.
+    MiniOption int64 `json:"mini_option,omitempty"`
+
+    // LastSize is the last trade size.
+    LastSize int64 `json:"last_size,omitempty"`
+
+    // Bid is the current bid price.
+    Bid float32 `json:"bid,omitempty"`
+
+    // BidSize is the bid size.
+    BidSize int64 `json:"bid_size,omitempty"`
+
+    // Ask is the current ask price.
+    Ask float32 `json:"ask,omitempty"`
+
+    // AskSize is the ask size.
+    AskSize int64 `json:"ask_size,omitempty"`
+
+    // PriceHint is the decimal precision hint.
+    PriceHint int64 `json:"price_hint,omitempty"`
+
+    // Vol24Hr is 24-hour volume (for crypto).
+    Vol24Hr int64 `json:"vol_24hr,omitempty"`
+
+    // VolAllCurrencies is volume in all currencies (for crypto).
+    VolAllCurrencies int64 `json:"vol_all_currencies,omitempty"`
+
+    // FromCurrency is the source currency (for crypto).
+    FromCurrency string `json:"from_currency,omitempty"`
+
+    // LastMarket is the last market (for crypto).
+    LastMarket string `json:"last_market,omitempty"`
+
+    // CirculatingSupply is the circulating supply (for crypto).
+    CirculatingSupply float64 `json:"circulating_supply,omitempty"`
+
+    // MarketCap is the market capitalization.
+    MarketCap float64 `json:"market_cap,omitempty"`
+}
+```
+
+<a name="PricingData.ExpireTime"></a>
+### func \(\*PricingData\) ExpireTime
+
+```go
+func (p *PricingData) ExpireTime() time.Time
+```
+
+ExpireTime returns the option expiration date as time.Time.
+
+<a name="PricingData.IsPostMarket"></a>
+### func \(\*PricingData\) IsPostMarket
+
+```go
+func (p *PricingData) IsPostMarket() bool
+```
+
+IsPostMarket returns true if trading during post\-market hours.
+
+<a name="PricingData.IsPreMarket"></a>
+### func \(\*PricingData\) IsPreMarket
+
+```go
+func (p *PricingData) IsPreMarket() bool
+```
+
+IsPreMarket returns true if trading during pre\-market hours.
+
+<a name="PricingData.IsRegularMarket"></a>
+### func \(\*PricingData\) IsRegularMarket
+
+```go
+func (p *PricingData) IsRegularMarket() bool
+```
+
+IsRegularMarket returns true if trading during regular market hours.
+
+<a name="PricingData.Timestamp"></a>
+### func \(\*PricingData\) Timestamp
+
+```go
+func (p *PricingData) Timestamp() time.Time
+```
+
+Timestamp returns the quote time as time.Time.
 
 <a name="QueryOperator"></a>
 ## type QueryOperator

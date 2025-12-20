@@ -16,7 +16,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 | 5 | Holdings & Actions | ✅ Complete | 100% |
 | 6 | Search & Screener | ✅ Complete | 100% |
 | 7 | Multi-ticker & Batch | ✅ Complete | 100% |
-| 8 | Real-time WebSocket | ⬜ Not Started | 0% |
+| 8 | Real-time WebSocket | ✅ Complete | 100% |
 | 9 | Advanced Features | ⬜ Not Started | 0% |
 
 ---
@@ -355,16 +355,47 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 8: Real-time WebSocket ⬜
+## Phase 8: Real-time WebSocket ✅
 
-**Status**: Not Started
+**Status**: Complete
+**Branch**: `phase8/websocket` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] WebSocket client
-- [ ] Protobuf decoder
-- [ ] Subscribe/Unsubscribe
-- [ ] Reconnection logic
+- [x] **Live Models** (`pkg/models/live.go`)
+  - `PricingData`: Real-time pricing data from WebSocket stream
+  - `MarketState`: Market hours state (pre/regular/post/closed)
+  - Helper methods: `Timestamp()`, `IsRegularMarket()`, `IsPreMarket()`, `IsPostMarket()`
+
+- [x] **Protobuf Decoder** (`pkg/live/proto.go`)
+  - Manual protobuf decoder for Yahoo Finance pricing schema
+  - Base64 decoding for WebSocket messages
+  - Support for all 33 PricingData fields
+
+- [x] **WebSocket Client** (`pkg/live/websocket.go`)
+  - `New()`: Create WebSocket client with options
+  - `Subscribe(symbols)`: Subscribe to ticker symbols
+  - `Unsubscribe(symbols)`: Unsubscribe from symbols
+  - `Listen(handler)`: Blocking listen for messages
+  - `ListenAsync(handler)`: Non-blocking async listen
+  - `Close()`: Close connection
+  - Automatic heartbeat for connection keep-alive
+  - Automatic reconnection on connection failure
+
+- [x] **Tests** (`pkg/live/live_test.go`)
+  - Unit tests for WebSocket client
+  - Protobuf decoder tests
+  - PricingData helper method tests
+
+### Python yfinance API Mapping
+
+| Python | Go |
+|--------|-----|
+| `yf.WebSocket()` | `live.New()` |
+| `ws.subscribe(symbols)` | `ws.Subscribe(symbols)` |
+| `ws.unsubscribe(symbols)` | `ws.Unsubscribe(symbols)` |
+| `ws.listen(handler)` | `ws.Listen(handler)` |
+| `ws.close()` | `ws.Close()` |
 
 ### API Endpoint
 
@@ -411,7 +442,8 @@ main
 ├── phase5/holdings (merged)
 ├── phase6/search (merged)
 ├── phase7/multi-ticker (merged)
-├── phase8/websocket (future)
+├── phase8/websocket (merged)
+├── phase9/advanced (future)
 └── ...
 ```
 
