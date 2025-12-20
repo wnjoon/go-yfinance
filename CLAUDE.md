@@ -12,6 +12,10 @@ go-yfinance is a Go port of Python yfinance library for accessing Yahoo Finance 
 - `CONTRIBUTING.md` - Development workflow and code style guidelines
 - `docs/API.md` - Auto-generated API documentation (gomarkdoc)
 
+**Python yfinance Reference (상위 디렉토리):**
+- `../yfinance/` - Python yfinance 소스 코드 (API 참조용)
+- `../YFINANCE_ANALYSIS.md` - Python yfinance 분석 문서
+
 ## Phase Development Workflow
 
 ### Before Starting a New Phase
@@ -38,6 +42,16 @@ go-yfinance is a Go port of Python yfinance library for accessing Yahoo Finance 
    - `STATUS.md` - Update completion status
 
 ### API Consistency Check (CRITICAL)
+
+**IMPORTANT: 웹 검색 대신 로컬 Python yfinance 소스를 참조할 것!**
+
+Python yfinance 소스 코드 위치 (`../yfinance/`):
+- `ticker.py` - Ticker 클래스
+- `tickers.py` - Tickers (멀티 티커) 클래스
+- `multi.py` - download() 함수
+- `search.py` - Search 기능
+- `screener/` - Screener 기능
+- `base.py` - 기본 클래스 및 공통 로직
 
 **Before completing any phase, verify consistency with Python yfinance:**
 
