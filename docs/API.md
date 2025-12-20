@@ -970,6 +970,11 @@ Screener:
 - [ScreenerParams](<#ScreenerParams>): Screener parameters \(offset, count, sort\)
 - [PredefinedScreener](<#PredefinedScreener>): Predefined screener identifiers \(day\_gainers, etc.\)
 
+Multi\-ticker:
+
+- [DownloadParams](<#DownloadParams>): Parameters for batch downloads \(symbols, period, threads\)
+- [MultiTickerResult](<#MultiTickerResult>): Results from multi\-ticker download with data and errors
+
 ### History Parameters
 
 The [HistoryParams](<#HistoryParams>) type controls historical data fetching:
@@ -1016,6 +1021,8 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type ChartResult](<#ChartResult>)
 - [type Dividend](<#Dividend>)
 - [type DividendEvent](<#DividendEvent>)
+- [type DownloadParams](<#DownloadParams>)
+  - [func DefaultDownloadParams\(\) DownloadParams](<#DefaultDownloadParams>)
 - [type EPSRevision](<#EPSRevision>)
 - [type EPSTrend](<#EPSTrend>)
 - [type EarningsEstimate](<#EarningsEstimate>)
@@ -1042,6 +1049,11 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type InsiderPurchases](<#InsiderPurchases>)
 - [type InsiderTransaction](<#InsiderTransaction>)
 - [type MajorHolders](<#MajorHolders>)
+- [type MultiTickerResult](<#MultiTickerResult>)
+  - [func \(r \*MultiTickerResult\) ErrorCount\(\) int](<#MultiTickerResult.ErrorCount>)
+  - [func \(r \*MultiTickerResult\) Get\(symbol string\) \[\]Bar](<#MultiTickerResult.Get>)
+  - [func \(r \*MultiTickerResult\) HasErrors\(\) bool](<#MultiTickerResult.HasErrors>)
+  - [func \(r \*MultiTickerResult\) SuccessCount\(\) int](<#MultiTickerResult.SuccessCount>)
 - [type Officer](<#Officer>)
 - [type Option](<#Option>)
   - [func \(o \*Option\) ExpirationDatetime\(\) time.Time](<#Option.ExpirationDatetime>)
@@ -1410,6 +1422,66 @@ type DividendEvent struct {
     Date   int64   `json:"date"`
 }
 ```
+
+<a name="DownloadParams"></a>
+## type DownloadParams
+
+DownloadParams represents parameters for downloading multiple tickers.
+
+Example:
+
+```
+params := models.DownloadParams{
+    Symbols:  []string{"AAPL", "MSFT", "GOOGL"},
+    Period:   "1mo",
+    Interval: "1d",
+}
+```
+
+```go
+type DownloadParams struct {
+    // Symbols is the list of ticker symbols to download.
+    Symbols []string
+
+    // Period is the data period (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max).
+    // Either use Period or Start/End.
+    Period string
+
+    // Interval is the data interval (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo).
+    Interval string
+
+    // Start is the start date.
+    Start *time.Time
+
+    // End is the end date.
+    End *time.Time
+
+    // PrePost includes pre and post market data.
+    PrePost bool
+
+    // Actions includes dividend and stock split data.
+    Actions bool
+
+    // AutoAdjust adjusts OHLC for splits and dividends.
+    AutoAdjust bool
+
+    // Threads is the number of concurrent downloads.
+    // 0 or 1 means sequential, >1 means parallel.
+    Threads int
+
+    // Timeout is the request timeout in seconds.
+    Timeout int
+}
+```
+
+<a name="DefaultDownloadParams"></a>
+### func DefaultDownloadParams
+
+```go
+func DefaultDownloadParams() DownloadParams
+```
+
+DefaultDownloadParams returns default download parameters.
 
 <a name="EPSRevision"></a>
 ## type EPSRevision
@@ -2059,6 +2131,62 @@ type MajorHolders struct {
     InstitutionsCount int `json:"institutionsCount"`
 }
 ```
+
+<a name="MultiTickerResult"></a>
+## type MultiTickerResult
+
+MultiTickerResult represents the result of downloading multiple tickers.
+
+```go
+type MultiTickerResult struct {
+    // Data contains the history data for each ticker.
+    // Key is the ticker symbol.
+    Data map[string][]Bar
+
+    // Errors contains any errors that occurred during download.
+    // Key is the ticker symbol.
+    Errors map[string]error
+
+    // Symbols is the list of successfully downloaded symbols.
+    Symbols []string
+}
+```
+
+<a name="MultiTickerResult.ErrorCount"></a>
+### func \(\*MultiTickerResult\) ErrorCount
+
+```go
+func (r *MultiTickerResult) ErrorCount() int
+```
+
+ErrorCount returns the number of tickers that had errors.
+
+<a name="MultiTickerResult.Get"></a>
+### func \(\*MultiTickerResult\) Get
+
+```go
+func (r *MultiTickerResult) Get(symbol string) []Bar
+```
+
+Get returns the history data for a specific ticker.
+
+<a name="MultiTickerResult.HasErrors"></a>
+### func \(\*MultiTickerResult\) HasErrors
+
+```go
+func (r *MultiTickerResult) HasErrors() bool
+```
+
+HasErrors returns true if any ticker had an error.
+
+<a name="MultiTickerResult.SuccessCount"></a>
+### func \(\*MultiTickerResult\) SuccessCount
+
+```go
+func (r *MultiTickerResult) SuccessCount() int
+```
+
+SuccessCount returns the number of successfully downloaded tickers.
 
 <a name="Officer"></a>
 ## type Officer
@@ -3186,6 +3314,247 @@ type TransactionStats struct {
     Transactions int `json:"transactions"`
 }
 ```
+
+# multi
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/multi"
+```
+
+Package multi provides functionality for downloading data for multiple tickers.
+
+### Overview
+
+The multi package allows you to efficiently download historical data for multiple stock symbols at once, with optional parallel processing.
+
+### Basic Usage
+
+```
+result, err := multi.Download([]string{"AAPL", "MSFT", "GOOGL"}, nil)
+if err != nil {
+    log.Fatal(err)
+}
+for symbol, bars := range result.Data {
+    fmt.Printf("%s: %d bars\n", symbol, len(bars))
+}
+```
+
+### With Parameters
+
+```
+params := &models.DownloadParams{
+    Period:   "3mo",
+    Interval: "1d",
+    Threads:  4,
+}
+result, err := multi.Download([]string{"AAPL", "MSFT"}, params)
+```
+
+### Tickers Class
+
+```
+tickers, err := multi.NewTickers([]string{"AAPL", "MSFT", "GOOGL"})
+if err != nil {
+    log.Fatal(err)
+}
+defer tickers.Close()
+
+// Access individual ticker
+aapl := tickers.Get("AAPL")
+info, _ := aapl.Info()
+
+// Download history for all
+result, _ := tickers.History(nil)
+```
+
+### Thread Safety
+
+All multi package functions are safe for concurrent use.
+
+## Index
+
+- [func Download\(symbols \[\]string, params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#Download>)
+- [func DownloadString\(tickerStr string, params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#DownloadString>)
+- [type Option](<#Option>)
+  - [func WithClient\(c \*client.Client\) Option](<#WithClient>)
+- [type Tickers](<#Tickers>)
+  - [func NewTickers\(symbols \[\]string, opts ...Option\) \(\*Tickers, error\)](<#NewTickers>)
+  - [func NewTickersFromString\(tickerStr string, opts ...Option\) \(\*Tickers, error\)](<#NewTickersFromString>)
+  - [func \(t \*Tickers\) Close\(\)](<#Tickers.Close>)
+  - [func \(t \*Tickers\) Count\(\) int](<#Tickers.Count>)
+  - [func \(t \*Tickers\) Download\(\) \(\*models.MultiTickerResult, error\)](<#Tickers.Download>)
+  - [func \(t \*Tickers\) Get\(symbol string\) \*ticker.Ticker](<#Tickers.Get>)
+  - [func \(t \*Tickers\) History\(params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#Tickers.History>)
+  - [func \(t \*Tickers\) Symbols\(\) \[\]string](<#Tickers.Symbols>)
+
+
+<a name="Download"></a>
+## func Download
+
+```go
+func Download(symbols []string, params *models.DownloadParams) (*models.MultiTickerResult, error)
+```
+
+Download is a convenience function to download data for multiple tickers.
+
+Example:
+
+```
+result, err := multi.Download([]string{"AAPL", "MSFT"}, nil)
+if err != nil {
+    log.Fatal(err)
+}
+for symbol, bars := range result.Data {
+    fmt.Printf("%s: %d bars\n", symbol, len(bars))
+}
+```
+
+<a name="DownloadString"></a>
+## func DownloadString
+
+```go
+func DownloadString(tickerStr string, params *models.DownloadParams) (*models.MultiTickerResult, error)
+```
+
+DownloadString is like Download but accepts a space/comma separated string.
+
+Example:
+
+```
+result, err := multi.DownloadString("AAPL MSFT GOOGL", nil)
+```
+
+<a name="Option"></a>
+## type Option
+
+Option is a function that configures Tickers.
+
+```go
+type Option func(*Tickers)
+```
+
+<a name="WithClient"></a>
+### func WithClient
+
+```go
+func WithClient(c *client.Client) Option
+```
+
+WithClient sets a custom HTTP client.
+
+<a name="Tickers"></a>
+## type Tickers
+
+Tickers represents a collection of multiple ticker symbols.
+
+```go
+type Tickers struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="NewTickers"></a>
+### func NewTickers
+
+```go
+func NewTickers(symbols []string, opts ...Option) (*Tickers, error)
+```
+
+NewTickers creates a new Tickers instance for multiple symbols.
+
+Symbols can be provided as a slice of strings.
+
+Example:
+
+```
+tickers, err := multi.NewTickers([]string{"AAPL", "MSFT", "GOOGL"})
+if err != nil {
+    log.Fatal(err)
+}
+defer tickers.Close()
+```
+
+<a name="NewTickersFromString"></a>
+### func NewTickersFromString
+
+```go
+func NewTickersFromString(tickerStr string, opts ...Option) (*Tickers, error)
+```
+
+NewTickersFromString creates Tickers from a space or comma separated string.
+
+Example:
+
+```
+tickers, err := multi.NewTickersFromString("AAPL MSFT GOOGL")
+// or
+tickers, err := multi.NewTickersFromString("AAPL,MSFT,GOOGL")
+```
+
+<a name="Tickers.Close"></a>
+### func \(\*Tickers\) Close
+
+```go
+func (t *Tickers) Close()
+```
+
+Close releases all resources used by Tickers.
+
+<a name="Tickers.Count"></a>
+### func \(\*Tickers\) Count
+
+```go
+func (t *Tickers) Count() int
+```
+
+Count returns the number of tickers.
+
+<a name="Tickers.Download"></a>
+### func \(\*Tickers\) Download
+
+```go
+func (t *Tickers) Download() (*models.MultiTickerResult, error)
+```
+
+Download downloads historical data for all tickers with default parameters.
+
+<a name="Tickers.Get"></a>
+### func \(\*Tickers\) Get
+
+```go
+func (t *Tickers) Get(symbol string) *ticker.Ticker
+```
+
+Get returns the Ticker instance for a specific symbol.
+
+Returns nil if the symbol is not found.
+
+<a name="Tickers.History"></a>
+### func \(\*Tickers\) History
+
+```go
+func (t *Tickers) History(params *models.DownloadParams) (*models.MultiTickerResult, error)
+```
+
+History downloads historical data for all tickers.
+
+Example:
+
+```
+result, err := tickers.History(&models.DownloadParams{
+    Period:   "1mo",
+    Interval: "1d",
+})
+```
+
+<a name="Tickers.Symbols"></a>
+### func \(\*Tickers\) Symbols
+
+```go
+func (t *Tickers) Symbols() []string
+```
+
+Symbols returns the list of ticker symbols.
 
 # screener
 

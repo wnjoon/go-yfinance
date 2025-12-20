@@ -60,6 +60,10 @@
 //   - [ScreenerParams]: Screener parameters (offset, count, sort)
 //   - [PredefinedScreener]: Predefined screener identifiers (day_gainers, etc.)
 //
+// Multi-ticker:
+//   - [DownloadParams]: Parameters for batch downloads (symbols, period, threads)
+//   - [MultiTickerResult]: Results from multi-ticker download with data and errors
+//
 // # History Parameters
 //
 // The [HistoryParams] type controls historical data fetching:

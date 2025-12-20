@@ -15,7 +15,7 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 | 4 | Analysis | ✅ Complete | 100% |
 | 5 | Holdings & Actions | ✅ Complete | 100% |
 | 6 | Search & Screener | ✅ Complete | 100% |
-| 7 | Multi-ticker & Batch | ⬜ Not Started | 0% |
+| 7 | Multi-ticker & Batch | ✅ Complete | 100% |
 | 8 | Real-time WebSocket | ⬜ Not Started | 0% |
 | 9 | Advanced Features | ⬜ Not Started | 0% |
 
@@ -307,16 +307,51 @@ For architecture and design details, see [DESIGN.md](./DESIGN.md).
 
 ---
 
-## Phase 7: Multi-ticker & Batch ⬜
+## Phase 7: Multi-ticker & Batch ✅
 
-**Status**: Not Started
+**Status**: Complete
+**Branch**: `phase7/multi-ticker` (merged to main)
 
-### Planned Items
+### Completed Items
 
-- [ ] Tickers (multiple symbols)
-- [ ] Batch Download
-- [ ] Parallel processing with goroutines
-- [ ] Rate limiting
+- [x] **Multi-ticker Models** (`pkg/models/multi.go`)
+  - `DownloadParams`: Parameters for batch downloads (symbols, period, interval, threads)
+  - `MultiTickerResult`: Results container with Data, Errors, Symbols
+  - Helper methods: `Get()`, `HasErrors()`, `SuccessCount()`, `ErrorCount()`
+  - `DefaultDownloadParams()`: Default parameters
+
+- [x] **Multi Package** (`pkg/multi/multi.go`)
+  - `Tickers`: Collection of multiple ticker symbols with shared client
+  - `NewTickers(symbols)`: Create tickers from slice
+  - `NewTickersFromString(str)`: Create from space/comma separated string
+  - `Get(symbol)`: Get individual ticker instance
+  - `Symbols()`: Get list of symbols
+  - `History(params)`: Download history for all tickers
+  - `Download()`: Download with default parameters
+  - `Close()`: Release resources
+
+- [x] **Standalone Functions** (`pkg/multi/multi.go`)
+  - `Download(symbols, params)`: Convenience function for batch download
+  - `DownloadString(str, params)`: Download from string input
+
+- [x] **Parallel Processing**
+  - Worker pool pattern with configurable thread count
+  - Sequential mode (Threads=0 or 1)
+  - Parallel mode (Threads>1) with goroutines
+
+- [x] **Tests** (`pkg/multi/multi_test.go`)
+  - Unit tests for all constructors and methods
+  - Test coverage for edge cases (empty input, whitespace, etc.)
+
+### Python yfinance API Mapping
+
+| Python | Go |
+|--------|-----|
+| `yf.Tickers(symbols)` | `multi.NewTickers(symbols)` |
+| `yf.Tickers(symbol_str)` | `multi.NewTickersFromString(str)` |
+| `tickers.tickers[symbol]` | `tickers.Get(symbol)` |
+| `tickers.history()` | `tickers.History(params)` |
+| `yf.download(symbols)` | `multi.Download(symbols, params)` |
 
 ---
 
@@ -375,7 +410,8 @@ main
 │   └── phase4/analysis-methods
 ├── phase5/holdings (merged)
 ├── phase6/search (merged)
-├── phase7/multi-ticker (future)
+├── phase7/multi-ticker (merged)
+├── phase8/websocket (future)
 └── ...
 ```
 
