@@ -50,6 +50,13 @@
 //   - [Ticker.EPSRevisions]: EPS revision data
 //   - [Ticker.EarningsHistory]: Historical earnings data
 //   - [Ticker.GrowthEstimates]: Growth estimates
+//   - [Ticker.MajorHolders]: Major shareholders breakdown
+//   - [Ticker.InstitutionalHolders]: Institutional holder list
+//   - [Ticker.MutualFundHolders]: Mutual fund holder list
+//   - [Ticker.InsiderTransactions]: Insider transaction history
+//   - [Ticker.InsiderRoster]: Company insiders list
+//   - [Ticker.InsiderPurchases]: Insider purchase activity summary
+//   - [Ticker.Calendar]: Upcoming events (earnings, dividends)
 //
 // # Caching
 //

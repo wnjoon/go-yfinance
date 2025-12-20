@@ -36,6 +36,17 @@
 //   - [EarningsHistory]: Historical earnings vs estimates
 //   - [GrowthEstimate]: Growth estimates from various sources
 //
+// Holders:
+//   - [MajorHolders]: Major shareholders breakdown (insiders, institutions)
+//   - [Holder]: Institutional or mutual fund holder information
+//   - [InsiderTransaction]: Insider purchase/sale transaction
+//   - [InsiderHolder]: Company insider with holdings
+//   - [InsiderPurchases]: Net share purchase activity summary
+//   - [HoldersData]: Aggregate holder data container
+//
+// Calendar:
+//   - [Calendar]: Upcoming events including earnings and dividend dates
+//
 // # History Parameters
 //
 // The [HistoryParams] type controls historical data fetching:
