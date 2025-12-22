@@ -1,0 +1,64 @@
+name: Generate Documentation & Deploy Site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pkg/**'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'README.md'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # 1. Install gomarkdoc and generate API.md
+      - name: Install gomarkdoc
+        run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+
+      - name: Generate API Documentation
+        run: |
+          mkdir -p docs
+          gomarkdoc --output docs/API.md ./pkg/...
+
+      # 2. Copy README.md to docs/index.md (for homepage)
+      - name: Copy README to docs/index.md
+        run: cp README.md docs/index.md
+
+      # 3. Install MkDocs and build site
+      - name: Install MkDocs Material
+        run: pip install mkdocs-material
+
+      - name: Build Site
+        run: mkdocs build
+
+      # 4. Commit updated API.md to repository
+      - name: Commit updated API.md
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update API documentation"
+          file_pattern: docs/API.md
+
+      # 5. Deploy to GitHub Pages (gh-pages branch)
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
