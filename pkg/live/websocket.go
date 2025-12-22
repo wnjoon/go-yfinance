@@ -402,7 +402,7 @@ func (ws *WebSocket) reconnect() error {
 	ws.mu.Lock()
 	ws.isConnected = false
 	if ws.conn != nil {
-		ws.conn.Close()
+		_ = ws.conn.Close()
 		ws.conn = nil
 	}
 	subscriptions := ws.getSubscriptionList()

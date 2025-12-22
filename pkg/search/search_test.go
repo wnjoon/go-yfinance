@@ -13,7 +13,7 @@ func TestNew(t *testing.T) {
 	}
 
 	if s == nil {
-		t.Error("Search should not be nil")
+		t.Fatal("Search should not be nil")
 	}
 
 	if s.ownsClient != true {

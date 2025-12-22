@@ -240,9 +240,7 @@ func (c *Client) Close() {
 	if c.initialized && !c.closed {
 		// Recover from panic in case CycleTLS has internal nil channel issue
 		defer func() {
-			if r := recover(); r != nil {
-				// Silently ignore panic from CycleTLS close
-			}
+			_ = recover() // Silently ignore panic from CycleTLS close
 		}()
 		c.cycleTLS.Close()
 		c.closed = true

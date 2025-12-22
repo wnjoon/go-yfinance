@@ -156,7 +156,7 @@ func TestDecodeProtobuf(t *testing.T) {
 	buf = append(buf, "USD"...)
 
 	// Field 7: market_hours = 1 (wire type 0 = varint)
-	buf = append(buf, (7<<3)|0)
+	buf = append(buf, 7<<3)
 	buf = append(buf, 1)
 
 	pd, err := decodeProtobuf(buf)

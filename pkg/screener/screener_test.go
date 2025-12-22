@@ -13,7 +13,7 @@ func TestNew(t *testing.T) {
 	}
 
 	if s == nil {
-		t.Error("Screener should not be nil")
+		t.Fatal("Screener should not be nil")
 	}
 
 	if s.ownsClient != true {
@@ -98,7 +98,7 @@ func TestNewEquityQuery(t *testing.T) {
 	})
 
 	if query == nil {
-		t.Error("Query should not be nil")
+		t.Fatal("Query should not be nil")
 	}
 
 	if query.Operator != models.OpAND {
