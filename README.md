@@ -1,6 +1,8 @@
 # go-yfinance
 
-Go implementation of Yahoo Finance API client, inspired by Python's [yfinance](https://github.com/ranaroussi/yfinance).
+Unofficial Go port of the popular Python library [yfinance](https://github.com/ranaroussi/yfinance).
+
+This project is a Go implementation based on the logic of yfinance. It aims to provide a native Go experience (rewrite) while respecting the original API structure.
 
 ## Features
 
@@ -112,37 +114,32 @@ go-yfinance/
 │   ├── config/               # Configuration management
 │   ├── ticker/               # Ticker data (Phase 1+)
 │   └── models/               # Data models (Phase 1+)
-├── DESIGN.md                 # Detailed design document
 └── README.md
 ```
 
-## Documentation
-
-- [DESIGN.md](./DESIGN.md) - Architecture and implementation roadmap
-- [STATUS.md](./STATUS.md) - Current implementation progress and status
-
-## Credits
-
-This project is a Go implementation inspired by the Python library [yfinance](https://github.com/ranaroussi/yfinance).
-Special thanks to [Ran Aroussi](https://github.com/ranaroussi) and all contributors of the original project for their excellent work.
-
-### Dependencies
+## Dependencies
 
 - [CycleTLS](https://github.com/Danny-Dasilva/CycleTLS) - TLS fingerprint spoofing
 - [gorilla/websocket](https://github.com/gorilla/websocket) - WebSocket client for real-time streaming
 
-## Disclaimer
+## Legal & License
+
+**go-yfinance** is distributed under the **Apache Software License 2.0**. See the `LICENSE` file in the repository for details.
+
+### Disclaimer
 
 > **Please read this carefully before using this library.**
 
-1. **Unofficial API**: This library is **not affiliated with, endorsed by, or connected to Yahoo! Finance**. It wraps unofficial API endpoints intended for web browser consumption.
+1.  **Unofficial API**: This library is **not affiliated with, endorsed by, or connected to Yahoo! Finance**. It wraps unofficial API endpoints intended for web browser consumption.
 
-2. **Terms of Service**: Use of this library must comply with [Yahoo!'s Terms of Service](https://policies.yahoo.com/us/en/yahoo/terms/index.htm). Users are solely responsible for ensuring their usage is compliant.
+2.  **Research & Educational Use**: This library is intended for **research and educational purposes**.
 
-3. **Risk of Blocking**: Since this library relies on unofficial methods, Yahoo! Finance may change their API structure or block IP addresses making excessive requests at any time without notice.
+3.  **Terms of Service**: Use of this library must comply with [Yahoo!'s Terms of Service](https://policies.yahoo.com/us/en/yahoo/terms/index.htm). Users are solely responsible for ensuring their usage is compliant.
 
-4. **No Warranty**: This software is provided "as is", without warranty of any kind, express or implied. The authors shall not be held liable for any damages or legal issues arising from the use of this software.
+4.  **Risk of Blocking**: Since this library relies on unofficial methods, Yahoo! Finance may change their API structure or block IP addresses making excessive requests at any time without notice.
 
-## License
+5.  **No Warranty**: This software is provided "as is", without warranty of any kind, express or implied. The authors shall not be held liable for any damages or legal issues arising from the use of this software.
 
-MIT License
+### Credits
+
+This project is a Go implementation based on the logic of [yfinance](https://github.com/ranaroussi/yfinance). Special thanks to **Ran Aroussi** and all contributors of the original project for their excellent work.
