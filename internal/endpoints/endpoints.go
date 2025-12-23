@@ -47,6 +47,10 @@ const (
 	// Market Time
 	MarketTimeURL = Query1URL + "/v6/finance/markettime"
 
+	// Sector/Industry (Domain)
+	SectorURL   = Query1URL + "/v1/finance/sectors"
+	IndustryURL = Query1URL + "/v1/finance/industries"
+
 	// News
 	NewsURL = RootURL + "/xhr/ncp"
 
