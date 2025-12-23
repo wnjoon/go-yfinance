@@ -19,6 +19,7 @@ type Sector struct {
 	key string
 
 	client     *client.Client
+	auth       *client.AuthManager
 	ownsClient bool
 
 	// Cached data
@@ -74,6 +75,8 @@ func New(key string, opts ...Option) (*Sector, error) {
 		s.client = c
 	}
 
+	s.auth = client.NewAuthManager(s.client)
+
 	return s, nil
 }
 
@@ -117,6 +120,12 @@ func (s *Sector) fetchData() error {
 	params.Set("withReturns", "true")
 	params.Set("lang", "en-US")
 	params.Set("region", "US")
+
+	// Add crumb authentication
+	params, err := s.auth.AddCrumbToParams(params)
+	if err != nil {
+		return fmt.Errorf("failed to add crumb: %w", err)
+	}
 
 	resp, err := s.client.Get(queryURL, params)
 	if err != nil {
