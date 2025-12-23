@@ -51,6 +51,9 @@ const (
 	SectorURL   = Query1URL + "/v1/finance/sectors"
 	IndustryURL = Query1URL + "/v1/finance/industries"
 
+	// Calendars (Earnings, IPO, Economic Events, Splits)
+	CalendarURL = Query1URL + "/v1/finance/visualization"
+
 	// News
 	NewsURL = RootURL + "/xhr/ncp"
 
