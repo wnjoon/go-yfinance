@@ -115,8 +115,8 @@ type EconomicEvent struct {
 	Revised float64 `json:"revised,omitempty"`
 }
 
-// SplitEvent represents a stock split calendar event.
-type SplitEvent struct {
+// CalendarSplitEvent represents a stock split calendar event.
+type CalendarSplitEvent struct {
 	// Symbol is the ticker symbol.
 	Symbol string `json:"symbol"`
 
