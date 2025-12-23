@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -119,11 +120,14 @@ func (m *Market) fetchData() error {
 	m.mu.RUnlock()
 
 	// Fetch summary
+	// Extract region from market identifier (e.g., "us_market" -> "US")
+	region := extractRegion(m.market)
+
 	summaryParams := url.Values{}
 	summaryParams.Set("fields", "shortName,regularMarketPrice,regularMarketChange,regularMarketChangePercent")
 	summaryParams.Set("formatted", "false")
 	summaryParams.Set("lang", "en-US")
-	summaryParams.Set("market", m.market)
+	summaryParams.Set("region", region)
 
 	summaryResp, err := m.client.Get(endpoints.MarketSummaryURL, summaryParams)
 	if err != nil {
@@ -139,7 +143,7 @@ func (m *Market) fetchData() error {
 	statusParams.Set("formatted", "true")
 	statusParams.Set("key", "finance")
 	statusParams.Set("lang", "en-US")
-	statusParams.Set("market", m.market)
+	statusParams.Set("region", region)
 
 	statusResp, err := m.client.Get(endpoints.MarketTimeURL, statusParams)
 	if err != nil {
@@ -347,6 +351,36 @@ func (m *Market) IsOpen() (bool, error) {
 
 	// Simple check - this may need timezone adjustment
 	return now.After(*status.Open) && now.Before(*status.Close), nil
+}
+
+// extractRegion extracts the region code from market identifier.
+// e.g., "us_market" -> "US", "gb_market" -> "GB"
+func extractRegion(market string) string {
+	regionMap := map[string]string{
+		"us_market": "US",
+		"gb_market": "GB",
+		"de_market": "DE",
+		"fr_market": "FR",
+		"jp_market": "JP",
+		"hk_market": "HK",
+		"cn_market": "CN",
+		"ca_market": "CA",
+		"au_market": "AU",
+		"in_market": "IN",
+		"kr_market": "KR",
+		"br_market": "BR",
+	}
+
+	if region, ok := regionMap[market]; ok {
+		return region
+	}
+
+	// Fallback: try to extract from pattern "{code}_market"
+	if len(market) >= 3 && market[2] == '_' {
+		return strings.ToUpper(market[:2])
+	}
+
+	return "US" // Default to US
 }
 
 // Helper functions for parsing map values
