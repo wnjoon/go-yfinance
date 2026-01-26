@@ -3250,6 +3250,8 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type Recommendation](<#Recommendation>)
   - [func \(r \*Recommendation\) Total\(\) int](<#Recommendation.Total>)
 - [type RecommendationTrend](<#RecommendationTrend>)
+- [type RepairOptions](<#RepairOptions>)
+  - [func DefaultRepairOptions\(\) RepairOptions](<#DefaultRepairOptions>)
 - [type ResearchReport](<#ResearchReport>)
 - [type RevenueEstimate](<#RevenueEstimate>)
 - [type ScreenerParams](<#ScreenerParams>)
@@ -3356,15 +3358,17 @@ Bar represents a single OHLCV bar \(candlestick\).
 
 ```go
 type Bar struct {
-    Date      time.Time `json:"date"`
-    Open      float64   `json:"open"`
-    High      float64   `json:"high"`
-    Low       float64   `json:"low"`
-    Close     float64   `json:"close"`
-    AdjClose  float64   `json:"adjClose"`
-    Volume    int64     `json:"volume"`
-    Dividends float64   `json:"dividends,omitempty"`
-    Splits    float64   `json:"splits,omitempty"`
+    Date         time.Time `json:"date"`
+    Open         float64   `json:"open"`
+    High         float64   `json:"high"`
+    Low          float64   `json:"low"`
+    Close        float64   `json:"close"`
+    AdjClose     float64   `json:"adjClose"`
+    Volume       int64     `json:"volume"`
+    Dividends    float64   `json:"dividends,omitempty"`
+    Splits       float64   `json:"splits,omitempty"`
+    CapitalGains float64   `json:"capitalGains,omitempty"` // Capital gains distribution (ETF/MutualFund)
+    Repaired     bool      `json:"repaired,omitempty"`     // True if this bar was repaired
 }
 ```
 
@@ -4139,6 +4143,10 @@ type HistoryParams struct {
 
     // Repair bad data (100x errors, missing data)
     Repair bool `json:"repair,omitempty"`
+
+    // RepairOptions provides fine-grained control over repair operations.
+    // If nil, all repairs are enabled when Repair is true.
+    RepairOptions *RepairOptions `json:"repairOptions,omitempty"`
 
     // Keep NaN rows
     KeepNA bool `json:"keepna,omitempty"`
@@ -6238,6 +6246,39 @@ type RecommendationTrend struct {
 }
 ```
 
+<a name="RepairOptions"></a>
+## type RepairOptions
+
+RepairOptions provides fine\-grained control over which repairs to apply.
+
+```go
+type RepairOptions struct {
+    // FixUnitMixups repairs 100x currency errors ($/cents, £/pence)
+    FixUnitMixups bool `json:"fixUnitMixups,omitempty"`
+
+    // FixZeroes repairs missing/zero price values
+    FixZeroes bool `json:"fixZeroes,omitempty"`
+
+    // FixSplits repairs bad stock split adjustments
+    FixSplits bool `json:"fixSplits,omitempty"`
+
+    // FixDividends repairs bad dividend adjustments
+    FixDividends bool `json:"fixDividends,omitempty"`
+
+    // FixCapitalGains repairs capital gains double-counting (ETF/MutualFund only)
+    FixCapitalGains bool `json:"fixCapitalGains,omitempty"`
+}
+```
+
+<a name="DefaultRepairOptions"></a>
+### func DefaultRepairOptions
+
+```go
+func DefaultRepairOptions() RepairOptions
+```
+
+DefaultRepairOptions returns options with all repairs enabled.
+
 <a name="ResearchReport"></a>
 ## type ResearchReport
 
@@ -7248,6 +7289,421 @@ func (t *Tickers) Symbols() []string
 
 Symbols returns the list of ticker symbols.
 
+# repair
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/repair"
+```
+
+Package repair provides price data repair functionality for financial time series.
+
+This package detects and corrects common data quality issues in Yahoo Finance data, including 100x currency errors, bad stock split adjustments, dividend double\-counting, capital gains double\-counting, and missing/zero values.
+
+### Overview
+
+Yahoo Finance data sometimes contains errors that need to be repaired:
+
+- 100x errors: Price appears in cents instead of dollars \(or vice versa\)
+- Bad stock splits: Split adjustments not applied or applied incorrectly
+- Bad dividends: Dividend adjustments not applied correctly
+- Capital gains double\-counting: For ETFs/MutualFunds, capital gains counted twice
+- Zero/missing values: Prices showing as 0 or NaN
+
+### Usage
+
+Create a Repairer and call Repair on your bar data:
+
+```
+opts := repair.DefaultOptions()
+opts.Interval = "1d"
+opts.QuoteType = "ETF"
+
+repairer := repair.New(opts)
+repairedBars, err := repairer.Repair(bars)
+```
+
+### Repair Options
+
+Individual repair functions can be enabled/disabled:
+
+```
+opts := repair.Options{
+    FixUnitMixups:   true,   // Fix 100x errors
+    FixZeroes:       true,   // Fix zero/missing values
+    FixSplits:       true,   // Fix stock split errors
+    FixDividends:    true,   // Fix dividend adjustment errors
+    FixCapitalGains: true,   // Fix capital gains double-counting
+}
+```
+
+### Capital Gains Repair \\\(v1.1.0\\\)
+
+For ETFs and Mutual Funds, Yahoo Finance sometimes double\-counts capital gains in the Adjusted Close calculation. This repair detects and corrects this issue:
+
+```
+// Only applies to ETF and MUTUALFUND quote types
+opts.QuoteType = "ETF"
+opts.FixCapitalGains = true
+```
+
+The algorithm compares price drops on distribution days against expected drops based on dividend vs dividend\+capital\_gains to detect double\-counting.
+
+### Stock Split Repair
+
+Detects when Yahoo fails to apply stock split adjustments to historical data:
+
+```
+opts.FixSplits = true
+```
+
+Uses IQR\-based outlier detection to identify suspicious price changes that match the split ratio, then applies corrections.
+
+This package is designed to match the behavior of Python yfinance's price repair functionality.
+
+## Index
+
+- [func CountRepaired\(bars \[\]models.Bar\) int](<#CountRepaired>)
+- [func DetectBadDividends\(bars \[\]models.Bar, currency string\) \[\]int](<#DetectBadDividends>)
+- [func DetectBadSplits\(bars \[\]models.Bar\) \[\]int](<#DetectBadSplits>)
+- [func DetectUnitMixups\(bars \[\]models.Bar\) \[\]int](<#DetectUnitMixups>)
+- [func DetectZeroes\(bars \[\]models.Bar\) \[\]int](<#DetectZeroes>)
+- [func HasCapitalGains\(bars \[\]models.Bar\) bool](<#HasCapitalGains>)
+- [func HasDividends\(bars \[\]models.Bar\) bool](<#HasDividends>)
+- [func HasSplits\(bars \[\]models.Bar\) bool](<#HasSplits>)
+- [type CapitalGainsRepairStats](<#CapitalGainsRepairStats>)
+- [type DividendInfo](<#DividendInfo>)
+- [type DividendRepairStats](<#DividendRepairStats>)
+- [type Options](<#Options>)
+  - [func DefaultOptions\(\) Options](<#DefaultOptions>)
+- [type QuoteType](<#QuoteType>)
+- [type Repairer](<#Repairer>)
+  - [func New\(opts Options\) \*Repairer](<#New>)
+  - [func \(r \*Repairer\) AnalyzeCapitalGains\(bars \[\]models.Bar\) CapitalGainsRepairStats](<#Repairer.AnalyzeCapitalGains>)
+  - [func \(r \*Repairer\) AnalyzeDividends\(bars \[\]models.Bar\) DividendRepairStats](<#Repairer.AnalyzeDividends>)
+  - [func \(r \*Repairer\) AnalyzeSplits\(bars \[\]models.Bar\) SplitRepairStats](<#Repairer.AnalyzeSplits>)
+  - [func \(r \*Repairer\) AnalyzeUnitMixups\(bars \[\]models.Bar\) UnitMixupStats](<#Repairer.AnalyzeUnitMixups>)
+  - [func \(r \*Repairer\) AnalyzeZeroes\(bars \[\]models.Bar\) ZeroRepairStats](<#Repairer.AnalyzeZeroes>)
+  - [func \(r \*Repairer\) Repair\(bars \[\]models.Bar\) \(\[\]models.Bar, error\)](<#Repairer.Repair>)
+- [type SplitInfo](<#SplitInfo>)
+- [type SplitRepairStats](<#SplitRepairStats>)
+- [type UnitMixupStats](<#UnitMixupStats>)
+- [type ZeroRepairStats](<#ZeroRepairStats>)
+
+
+<a name="CountRepaired"></a>
+## func CountRepaired
+
+```go
+func CountRepaired(bars []models.Bar) int
+```
+
+CountRepaired counts how many bars have been repaired.
+
+<a name="DetectBadDividends"></a>
+## func DetectBadDividends
+
+```go
+func DetectBadDividends(bars []models.Bar, currency string) []int
+```
+
+DetectBadDividends checks if there are dividend issues in the data. Returns indices of bars with suspected dividend problems.
+
+<a name="DetectBadSplits"></a>
+## func DetectBadSplits
+
+```go
+func DetectBadSplits(bars []models.Bar) []int
+```
+
+DetectBadSplits checks if there are unadjusted splits in the data.
+
+<a name="DetectUnitMixups"></a>
+## func DetectUnitMixups
+
+```go
+func DetectUnitMixups(bars []models.Bar) []int
+```
+
+DetectUnitMixups checks if there are 100x errors in the data. Returns indices of bars with suspected 100x errors.
+
+<a name="DetectZeroes"></a>
+## func DetectZeroes
+
+```go
+func DetectZeroes(bars []models.Bar) []int
+```
+
+DetectZeroes checks for bars with zero/missing values. Returns indices of bars that may need repair.
+
+<a name="HasCapitalGains"></a>
+## func HasCapitalGains
+
+```go
+func HasCapitalGains(bars []models.Bar) bool
+```
+
+HasCapitalGains checks if any bar has capital gains data.
+
+<a name="HasDividends"></a>
+## func HasDividends
+
+```go
+func HasDividends(bars []models.Bar) bool
+```
+
+HasDividends checks if any bar has dividend data.
+
+<a name="HasSplits"></a>
+## func HasSplits
+
+```go
+func HasSplits(bars []models.Bar) bool
+```
+
+HasSplits checks if any bar has split data.
+
+<a name="CapitalGainsRepairStats"></a>
+## type CapitalGainsRepairStats
+
+CapitalGainsRepairStats returns statistics about capital gains repair.
+
+```go
+type CapitalGainsRepairStats struct {
+    TotalEvents       int     // Number of capital gains events
+    DoubleCountEvents int     // Number detected as double-counted
+    DoubleCountRatio  float64 // Ratio of double-counted events
+    RepairApplied     bool    // Whether repair was applied
+    BarsRepaired      int     // Number of bars that were repaired
+}
+```
+
+<a name="DividendInfo"></a>
+## type DividendInfo
+
+DividendInfo contains information about a single dividend.
+
+```go
+type DividendInfo struct {
+    Date         time.Time
+    Amount       float64
+    IsMissingAdj bool
+    IsTooSmall   bool
+    IsTooLarge   bool
+    IsPhantom    bool
+    WasRepaired  bool
+}
+```
+
+<a name="DividendRepairStats"></a>
+## type DividendRepairStats
+
+DividendRepairStats contains statistics about dividend repairs.
+
+```go
+type DividendRepairStats struct {
+    TotalDividends int            // Number of dividend events found
+    MissingAdj     int            // Dividends with missing adjustment
+    TooSmall       int            // Dividends 100x too small
+    TooLarge       int            // Dividends 100x too big
+    Phantoms       int            // Phantom (duplicate) dividends
+    BarsRepaired   int            // Total bars modified
+    Dividends      []DividendInfo // Details of each dividend
+}
+```
+
+<a name="Options"></a>
+## type Options
+
+Options configures the repair behavior.
+
+```go
+type Options struct {
+    // Data context
+    Ticker    string    // Ticker symbol
+    Interval  string    // Data interval (1d, 1wk, 1mo, etc.)
+    Timezone  string    // Exchange timezone
+    Currency  string    // Price currency
+    QuoteType QuoteType // Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)
+
+    // Feature flags - which repairs to apply
+    FixUnitMixups   bool // Fix 100x currency errors ($/cents, £/pence)
+    FixZeroes       bool // Fix missing/zero values
+    FixSplits       bool // Fix bad stock split adjustments
+    FixDividends    bool // Fix bad dividend adjustments
+    FixCapitalGains bool // Fix capital gains double-counting (ETF/MutualFund only)
+}
+```
+
+<a name="DefaultOptions"></a>
+### func DefaultOptions
+
+```go
+func DefaultOptions() Options
+```
+
+DefaultOptions returns options with all repairs enabled.
+
+<a name="QuoteType"></a>
+## type QuoteType
+
+QuoteType represents the type of financial instrument.
+
+```go
+type QuoteType string
+```
+
+<a name="QuoteTypeEquity"></a>
+
+```go
+const (
+    QuoteTypeEquity     QuoteType = "EQUITY"
+    QuoteTypeETF        QuoteType = "ETF"
+    QuoteTypeMutualFund QuoteType = "MUTUALFUND"
+    QuoteTypeIndex      QuoteType = "INDEX"
+    QuoteTypeCurrency   QuoteType = "CURRENCY"
+    QuoteTypeCrypto     QuoteType = "CRYPTOCURRENCY"
+)
+```
+
+<a name="Repairer"></a>
+## type Repairer
+
+Repairer handles price data repair operations.
+
+```go
+type Repairer struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="New"></a>
+### func New
+
+```go
+func New(opts Options) *Repairer
+```
+
+New creates a new Repairer with the given options.
+
+<a name="Repairer.AnalyzeCapitalGains"></a>
+### func \(\*Repairer\) AnalyzeCapitalGains
+
+```go
+func (r *Repairer) AnalyzeCapitalGains(bars []models.Bar) CapitalGainsRepairStats
+```
+
+AnalyzeCapitalGains analyzes bars for capital gains issues without modifying. Useful for debugging and understanding the data.
+
+<a name="Repairer.AnalyzeDividends"></a>
+### func \(\*Repairer\) AnalyzeDividends
+
+```go
+func (r *Repairer) AnalyzeDividends(bars []models.Bar) DividendRepairStats
+```
+
+AnalyzeDividends analyzes bars for dividend issues without modifying.
+
+<a name="Repairer.AnalyzeSplits"></a>
+### func \(\*Repairer\) AnalyzeSplits
+
+```go
+func (r *Repairer) AnalyzeSplits(bars []models.Bar) SplitRepairStats
+```
+
+AnalyzeSplits analyzes bars for split issues without modifying.
+
+<a name="Repairer.AnalyzeUnitMixups"></a>
+### func \(\*Repairer\) AnalyzeUnitMixups
+
+```go
+func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats
+```
+
+AnalyzeUnitMixups analyzes bars for 100x errors without modifying.
+
+<a name="Repairer.AnalyzeZeroes"></a>
+### func \(\*Repairer\) AnalyzeZeroes
+
+```go
+func (r *Repairer) AnalyzeZeroes(bars []models.Bar) ZeroRepairStats
+```
+
+AnalyzeZeroes analyzes bars for zero/missing values without modifying.
+
+<a name="Repairer.Repair"></a>
+### func \(\*Repairer\) Repair
+
+```go
+func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error)
+```
+
+Repair applies all enabled repair operations to the bar data. The order of operations matters:
+
+1. Fix dividend adjustments \(must come before price\-level errors\)
+2. Fix 100x unit errors
+3. Fix stock split errors
+4. Fix zero/missing values
+5. Fix capital gains double\-counting \(last, needs clean adjustment data\)
+
+Returns the repaired bars and any error encountered.
+
+<a name="SplitInfo"></a>
+## type SplitInfo
+
+SplitInfo contains information about a single split.
+
+```go
+type SplitInfo struct {
+    Date        time.Time
+    Ratio       float64
+    WasRepaired bool
+}
+```
+
+<a name="SplitRepairStats"></a>
+## type SplitRepairStats
+
+SplitRepairStats contains statistics about split repair.
+
+```go
+type SplitRepairStats struct {
+    TotalSplits    int         // Number of split events found
+    SplitsRepaired int         // Number of splits that were repaired
+    BarsRepaired   int         // Total bars modified
+    Splits         []SplitInfo // Details of each split
+}
+```
+
+<a name="UnitMixupStats"></a>
+## type UnitMixupStats
+
+UnitMixupStats contains statistics about unit mixup repairs.
+
+```go
+type UnitMixupStats struct {
+    TotalBars        int  // Total bars analyzed
+    BarsRepaired     int  // Bars with 100x errors fixed
+    HasUnitSwitch    bool // Whether a permanent unit switch was detected
+    SwitchIndex      int  // Index where unit switch occurred (-1 if none)
+    RandomMixupCount int  // Number of random 100x errors found
+}
+```
+
+<a name="ZeroRepairStats"></a>
+## type ZeroRepairStats
+
+ZeroRepairStats contains statistics about zero value repairs.
+
+```go
+type ZeroRepairStats struct {
+    TotalBars       int // Total bars analyzed
+    ZeroBars        int // Bars with zero prices
+    PartialZeroBars int // Bars with some zero values
+    ZeroVolumeBars  int // Bars with zero volume but price changed
+    BarsRepaired    int // Total bars repaired
+}
+```
+
 # screener
 
 ```go
@@ -8236,6 +8692,391 @@ for symbol, name := range funds {
 }
 ```
 
+# stats
+
+```go
+import "github.com/wnjoon/go-yfinance/pkg/stats"
+```
+
+Package stats provides statistical utility functions for price repair operations.
+
+This package includes functions for percentile calculations, z\-score computations, median filtering, and outlier detection. These utilities are essential for detecting and correcting data quality issues in financial time series.
+
+### Percentile Functions
+
+The package provides percentile calculation using linear interpolation:
+
+```
+p50 := stats.Percentile(data, 50.0)  // Median
+q1, q3, iqr := stats.IQR(data)       // Interquartile range
+```
+
+### Z\\\-Score Functions
+
+Z\-score calculations for standardization and outlier detection:
+
+```
+z := stats.ZScore(value, mean, std)
+zScores := stats.ZScoreSlice(data)
+```
+
+### Filtering Functions
+
+Median filter and outlier detection for noise reduction:
+
+```
+filtered := stats.MedianFilter(data, windowSize)
+mask := stats.OutlierMask(data, multiplier)
+```
+
+These functions are designed to match the behavior of numpy and scipy functions used in the Python yfinance implementation.
+
+## Index
+
+- [func Abs\(data \[\]float64\) \[\]float64](<#Abs>)
+- [func All\(mask \[\]bool\) bool](<#All>)
+- [func Any\(mask \[\]bool\) bool](<#Any>)
+- [func ClipOutliers\(data \[\]float64, multiplier float64\) \[\]float64](<#ClipOutliers>)
+- [func CountTrue\(mask \[\]bool\) int](<#CountTrue>)
+- [func DetectOutliersByZScore\(data \[\]float64, threshold float64\) \[\]bool](<#DetectOutliersByZScore>)
+- [func Diff\(data \[\]float64\) \[\]float64](<#Diff>)
+- [func FilterByMask\(data \[\]float64, mask \[\]bool\) \[\]float64](<#FilterByMask>)
+- [func FindBlocks\(mask \[\]bool\) \[\]\[2\]int](<#FindBlocks>)
+- [func IQR\(data \[\]float64\) \(q1, q3, iqr float64\)](<#IQR>)
+- [func InlierMask\(data \[\]float64, multiplier float64\) \[\]bool](<#InlierMask>)
+- [func Mean\(data \[\]float64\) float64](<#Mean>)
+- [func Median\(data \[\]float64\) float64](<#Median>)
+- [func MedianFilter\(data \[\]float64, windowSize int\) \[\]float64](<#MedianFilter>)
+- [func MedianFilter2D\(data \[\]\[\]float64, windowSize int\) \[\]\[\]float64](<#MedianFilter2D>)
+- [func MedianOfSlice\(data \[\]float64\) float64](<#MedianOfSlice>)
+- [func OHLCMedian\(open, high, low, close float64\) float64](<#OHLCMedian>)
+- [func OutlierBounds\(data \[\]float64, multiplier float64\) \(lower, upper float64\)](<#OutlierBounds>)
+- [func OutlierMask\(data \[\]float64, multiplier float64\) \[\]bool](<#OutlierMask>)
+- [func PctChange\(data \[\]float64\) \[\]float64](<#PctChange>)
+- [func Percentile\(data \[\]float64, p float64\) float64](<#Percentile>)
+- [func RemoveNaN\(data \[\]float64\) \[\]float64](<#RemoveNaN>)
+- [func RollingMean\(data \[\]float64, windowSize int\) \[\]float64](<#RollingMean>)
+- [func RollingStd\(data \[\]float64, windowSize int\) \[\]float64](<#RollingStd>)
+- [func Std\(data \[\]float64, ddof int\) float64](<#Std>)
+- [func WeightedMean\(data, weights \[\]float64\) float64](<#WeightedMean>)
+- [func ZScore\(value, mean, std float64\) float64](<#ZScore>)
+- [func ZScoreSlice\(data \[\]float64\) \[\]float64](<#ZScoreSlice>)
+- [func ZScoreWithParams\(data \[\]float64, mean, std float64\) \[\]float64](<#ZScoreWithParams>)
+
+
+<a name="Abs"></a>
+## func Abs
+
+```go
+func Abs(data []float64) []float64
+```
+
+Abs returns absolute values of the data.
+
+<a name="All"></a>
+## func All
+
+```go
+func All(mask []bool) bool
+```
+
+All returns true if all values in the mask are true.
+
+<a name="Any"></a>
+## func Any
+
+```go
+func Any(mask []bool) bool
+```
+
+Any returns true if any value in the mask is true.
+
+<a name="ClipOutliers"></a>
+## func ClipOutliers
+
+```go
+func ClipOutliers(data []float64, multiplier float64) []float64
+```
+
+ClipOutliers replaces outliers with boundary values.
+
+<a name="CountTrue"></a>
+## func CountTrue
+
+```go
+func CountTrue(mask []bool) int
+```
+
+CountTrue counts the number of true values in a boolean slice.
+
+<a name="DetectOutliersByZScore"></a>
+## func DetectOutliersByZScore
+
+```go
+func DetectOutliersByZScore(data []float64, threshold float64) []bool
+```
+
+DetectOutliersByZScore identifies outliers based on z\-score threshold. Returns a boolean mask where true indicates an outlier.
+
+Parameters:
+
+- data: slice of float64 values
+- threshold: z\-score threshold \(typically 2.0 or 3.0\)
+
+<a name="Diff"></a>
+## func Diff
+
+```go
+func Diff(data []float64) []float64
+```
+
+Diff calculates the difference between consecutive elements. Returns slice of length n\-1.
+
+<a name="FilterByMask"></a>
+## func FilterByMask
+
+```go
+func FilterByMask(data []float64, mask []bool) []float64
+```
+
+FilterByMask returns elements where mask is true.
+
+<a name="FindBlocks"></a>
+## func FindBlocks
+
+```go
+func FindBlocks(mask []bool) [][2]int
+```
+
+FindBlocks identifies contiguous blocks of True values in a boolean mask. Returns slice of \[start, end\) pairs.
+
+<a name="IQR"></a>
+## func IQR
+
+```go
+func IQR(data []float64) (q1, q3, iqr float64)
+```
+
+IQR calculates the interquartile range \(Q3 \- Q1\). Returns Q1, Q3, and IQR.
+
+The interquartile range is used for outlier detection:
+
+- Lower bound: Q1 \- 1.5 \* IQR
+- Upper bound: Q3 \+ 1.5 \* IQR
+
+<a name="InlierMask"></a>
+## func InlierMask
+
+```go
+func InlierMask(data []float64, multiplier float64) []bool
+```
+
+InlierMask creates a boolean mask for inliers \(non\-outliers\). Returns true for values that are NOT outliers.
+
+<a name="Mean"></a>
+## func Mean
+
+```go
+func Mean(data []float64) float64
+```
+
+Mean calculates the arithmetic mean of the data. Returns NaN for empty data.
+
+<a name="Median"></a>
+## func Median
+
+```go
+func Median(data []float64) float64
+```
+
+Median calculates the median \(50th percentile\) of the data.
+
+<a name="MedianFilter"></a>
+## func MedianFilter
+
+```go
+func MedianFilter(data []float64, windowSize int) []float64
+```
+
+MedianFilter applies a 1D median filter to the data. This is similar to scipy.ndimage.median\_filter for 1D arrays.
+
+Parameters:
+
+- data: input slice
+- windowSize: filter window size \(should be odd\)
+
+Returns filtered data with same length as input. Edge values use smaller windows.
+
+<a name="MedianFilter2D"></a>
+## func MedianFilter2D
+
+```go
+func MedianFilter2D(data [][]float64, windowSize int) [][]float64
+```
+
+MedianFilter2D applies a 2D median filter to the data matrix. This is similar to scipy.ndimage.median\_filter for 2D arrays.
+
+Parameters:
+
+- data: 2D slice \[rows\]\[cols\]
+- windowSize: filter window size for both dimensions
+
+Returns filtered 2D data.
+
+<a name="MedianOfSlice"></a>
+## func MedianOfSlice
+
+```go
+func MedianOfSlice(data []float64) float64
+```
+
+MedianOfSlice calculates the median without sorting the original slice.
+
+<a name="OHLCMedian"></a>
+## func OHLCMedian
+
+```go
+func OHLCMedian(open, high, low, close float64) float64
+```
+
+OHLC calculates the median of Open, High, Low, Close values. This provides a robust estimate of the "typical" price.
+
+<a name="OutlierBounds"></a>
+## func OutlierBounds
+
+```go
+func OutlierBounds(data []float64, multiplier float64) (lower, upper float64)
+```
+
+OutlierBounds calculates the lower and upper bounds for outlier detection using the IQR method with a configurable multiplier.
+
+Parameters:
+
+- data: slice of float64 values
+- multiplier: IQR multiplier \(typically 1.5 for outliers, 3.0 for extreme outliers\)
+
+Returns lower bound, upper bound.
+
+<a name="OutlierMask"></a>
+## func OutlierMask
+
+```go
+func OutlierMask(data []float64, multiplier float64) []bool
+```
+
+OutlierMask creates a boolean mask for outliers using the IQR method. Returns true for values that are outliers.
+
+Parameters:
+
+- data: slice of float64 values
+- multiplier: IQR multiplier \(typically 1.5\)
+
+<a name="PctChange"></a>
+## func PctChange
+
+```go
+func PctChange(data []float64) []float64
+```
+
+PctChange calculates the percentage change between consecutive elements. Returns slice of length n\-1.
+
+<a name="Percentile"></a>
+## func Percentile
+
+```go
+func Percentile(data []float64, p float64) float64
+```
+
+Percentile calculates the p\-th percentile of the given data using linear interpolation. This matches numpy.percentile with default interpolation method.
+
+Parameters:
+
+- data: slice of float64 values
+- p: percentile to compute \(0\-100\)
+
+Returns the percentile value. Returns NaN for empty data.
+
+<a name="RemoveNaN"></a>
+## func RemoveNaN
+
+```go
+func RemoveNaN(data []float64) []float64
+```
+
+RemoveNaN returns a new slice with NaN values removed.
+
+<a name="RollingMean"></a>
+## func RollingMean
+
+```go
+func RollingMean(data []float64, windowSize int) []float64
+```
+
+RollingMean calculates a rolling \(moving\) mean with the specified window size. Uses center alignment. Returns NaN for positions where window is incomplete.
+
+<a name="RollingStd"></a>
+## func RollingStd
+
+```go
+func RollingStd(data []float64, windowSize int) []float64
+```
+
+RollingStd calculates a rolling \(moving\) standard deviation. Uses center alignment and sample std \(ddof=1\).
+
+<a name="Std"></a>
+## func Std
+
+```go
+func Std(data []float64, ddof int) float64
+```
+
+Std calculates the standard deviation of the data. Uses n\-1 denominator \(sample standard deviation\) by default.
+
+Parameters:
+
+- data: slice of float64 values
+- ddof: delta degrees of freedom \(0 for population, 1 for sample\)
+
+<a name="WeightedMean"></a>
+## func WeightedMean
+
+```go
+func WeightedMean(data, weights []float64) float64
+```
+
+WeightedMean calculates the weighted arithmetic mean. Returns NaN if weights sum to zero or if slices have different lengths.
+
+<a name="ZScore"></a>
+## func ZScore
+
+```go
+func ZScore(value, mean, std float64) float64
+```
+
+ZScore calculates the z\-score \(standard score\) for a single value.
+
+Z\-score = \(value \- mean\) / std
+
+Returns NaN if std is zero or NaN.
+
+<a name="ZScoreSlice"></a>
+## func ZScoreSlice
+
+```go
+func ZScoreSlice(data []float64) []float64
+```
+
+ZScoreSlice calculates z\-scores for all values in the data. Uses sample standard deviation \(ddof=1\).
+
+<a name="ZScoreWithParams"></a>
+## func ZScoreWithParams
+
+```go
+func ZScoreWithParams(data []float64, mean, std float64) []float64
+```
+
+ZScoreWithParams calculates z\-scores using provided mean and std.
+
 # ticker
 
 ```go
@@ -9055,18 +9896,205 @@ if utils.MarketIsOpen("NYQ") {
 
 All utility functions are thread\-safe.
 
+Package utils provides utility functions for yfinance.
+
 Package utils provides utility functions for go\-yfinance.
 
 ## Index
 
+- [Variables](<#variables>)
+- [func AllMICs\(\) \[\]string](<#AllMICs>)
+- [func AllYahooSuffixes\(\) \[\]string](<#AllYahooSuffixes>)
 - [func CacheTimezone\(exchange, timezone string\)](<#CacheTimezone>)
 - [func ConvertToTimezone\(t time.Time, timezone string\) time.Time](<#ConvertToTimezone>)
+- [func FormatYahooTicker\(baseTicker, mic string\) string](<#FormatYahooTicker>)
+- [func GetMIC\(suffix string\) string](<#GetMIC>)
 - [func GetTimezone\(exchange string\) string](<#GetTimezone>)
+- [func GetYahooSuffix\(mic string\) string](<#GetYahooSuffix>)
+- [func IsUSExchange\(mic string\) bool](<#IsUSExchange>)
 - [func IsValidTimezone\(name string\) bool](<#IsValidTimezone>)
 - [func LoadLocation\(name string\) \*time.Location](<#LoadLocation>)
 - [func MarketIsOpen\(exchange string\) bool](<#MarketIsOpen>)
 - [func ParseTimestamp\(timestamp int64, timezone string\) time.Time](<#ParseTimestamp>)
+- [func ParseYahooTicker\(ticker string\) \(baseTicker, suffix string\)](<#ParseYahooTicker>)
 
+
+## Variables
+
+<a name="MICToYahooSuffix"></a>MICToYahooSuffix maps ISO 10383 Market Identifier Codes \(MIC\) to Yahoo Finance ticker suffixes. This allows converting standard exchange codes to the format used by Yahoo Finance.
+
+Reference:
+
+- Yahoo Finance suffixes: https://help.yahoo.com/kb/finance-for-web/SLN2310.html
+- ISO 10383 MIC codes: https://www.iso20022.org/market-identifier-codes
+
+Example: "XLON" \(London Stock Exchange\) maps to "L", so AAPL traded on LSE would be "AAPL.L"
+
+```go
+var MICToYahooSuffix = map[string]string{
+
+    "XCBT": "CBT",
+    "XCME": "CME",
+    "IFUS": "NYB",
+    "CECS": "CMX",
+    "XNYM": "NYM",
+    "XNYS": "",
+    "XNAS": "",
+
+    "XBUE": "BA",
+
+    "XVIE": "VI",
+
+    "XASX": "AX",
+    "XAUS": "XA",
+
+    "XBRU": "BR",
+
+    "BVMF": "SA",
+
+    "CNSX": "CN",
+    "NEOE": "NE",
+    "XTSE": "TO",
+    "XTSX": "V",
+
+    "XSGO": "SN",
+
+    "XSHG": "SS",
+    "XSHE": "SZ",
+
+    "XBOG": "CL",
+
+    "XPRA": "PR",
+
+    "XCSE": "CO",
+
+    "XCAI": "CA",
+
+    "XTAL": "TL",
+
+    "CEUX": "XD",
+    "XEUR": "NX",
+
+    "XHEL": "HE",
+
+    "XPAR": "PA",
+
+    "XBER": "BE",
+    "XBMS": "BM",
+    "XDUS": "DU",
+    "XFRA": "F",
+    "XHAM": "HM",
+    "XHAN": "HA",
+    "XMUN": "MU",
+    "XSTU": "SG",
+    "XETR": "DE",
+
+    "XATH": "AT",
+
+    "XHKG": "HK",
+
+    "XBUD": "BD",
+
+    "XICE": "IC",
+
+    "XBOM": "BO",
+    "XNSE": "NS",
+
+    "XIDX": "JK",
+
+    "XDUB": "IR",
+
+    "XTAE": "TA",
+
+    "MTAA": "MI",
+    "EUTL": "TI",
+
+    "XTKS": "T",
+
+    "XKFE": "KW",
+
+    "XRIS": "RG",
+
+    "XVIL": "VS",
+
+    "XKLS": "KL",
+
+    "XMEX": "MX",
+
+    "XAMS": "AS",
+
+    "XNZE": "NZ",
+
+    "XOSL": "OL",
+
+    "XPHS": "PS",
+
+    "XWAR": "WA",
+
+    "XLIS": "LS",
+
+    "XQAT": "QA",
+
+    "XBSE": "RO",
+
+    "XSES": "SI",
+
+    "XJSE": "JO",
+
+    "XKRX": "KS",
+    "KQKS": "KQ",
+
+    "BMEX": "MC",
+
+    "XSAU": "SR",
+
+    "XSTO": "ST",
+
+    "XSWX": "SW",
+
+    "ROCO": "TWO",
+    "XTAI": "TW",
+
+    "XBKK": "BK",
+
+    "XIST": "IS",
+
+    "XDFM": "AE",
+
+    "AQXE": "AQ",
+    "XCHI": "XC",
+    "XLON": "L",
+    "ILSE": "IL",
+
+    "XCAR": "CR",
+
+    "XSTC": "VN",
+}
+```
+
+<a name="YahooSuffixToMIC"></a>YahooSuffixToMIC is the reverse mapping from Yahoo Finance suffix to MIC code. Note: Some Yahoo suffixes may map to multiple MIC codes. In such cases, the primary/most common exchange is used.
+
+```go
+var YahooSuffixToMIC map[string]string
+```
+
+<a name="AllMICs"></a>
+## func AllMICs
+
+```go
+func AllMICs() []string
+```
+
+AllMICs returns all supported MIC codes.
+
+<a name="AllYahooSuffixes"></a>
+## func AllYahooSuffixes
+
+```go
+func AllYahooSuffixes() []string
+```
+
+AllYahooSuffixes returns all supported Yahoo Finance suffixes \(excluding empty for US\).
 
 <a name="CacheTimezone"></a>
 ## func CacheTimezone
@@ -9086,6 +10114,31 @@ func ConvertToTimezone(t time.Time, timezone string) time.Time
 
 ConvertToTimezone converts a UTC time to the specified timezone.
 
+<a name="FormatYahooTicker"></a>
+## func FormatYahooTicker
+
+```go
+func FormatYahooTicker(baseTicker, mic string) string
+```
+
+FormatYahooTicker formats a base ticker symbol with the appropriate Yahoo Finance suffix for the given MIC code.
+
+Example:
+
+```
+FormatYahooTicker("AAPL", "XLON") returns "AAPL.L"
+FormatYahooTicker("AAPL", "XNYS") returns "AAPL" (no suffix for US)
+```
+
+<a name="GetMIC"></a>
+## func GetMIC
+
+```go
+func GetMIC(suffix string) string
+```
+
+GetMIC returns the MIC code for a given Yahoo Finance ticker suffix. Returns an empty string if the suffix is not found.
+
 <a name="GetTimezone"></a>
 ## func GetTimezone
 
@@ -9094,6 +10147,24 @@ func GetTimezone(exchange string) string
 ```
 
 GetTimezone returns the timezone for a given exchange code. It first checks the cache, then falls back to the known exchange timezones. Returns "America/New\_York" as default if exchange is unknown.
+
+<a name="GetYahooSuffix"></a>
+## func GetYahooSuffix
+
+```go
+func GetYahooSuffix(mic string) string
+```
+
+GetYahooSuffix returns the Yahoo Finance ticker suffix for a given MIC code. Returns an empty string if the MIC code is not found or maps to a US exchange.
+
+<a name="IsUSExchange"></a>
+## func IsUSExchange
+
+```go
+func IsUSExchange(mic string) bool
+```
+
+IsUSExchange returns true if the MIC code represents a US exchange.
 
 <a name="IsValidTimezone"></a>
 ## func IsValidTimezone
@@ -9130,5 +10201,21 @@ func ParseTimestamp(timestamp int64, timezone string) time.Time
 ```
 
 ParseTimestamp parses a Unix timestamp and converts to the specified timezone.
+
+<a name="ParseYahooTicker"></a>
+## func ParseYahooTicker
+
+```go
+func ParseYahooTicker(ticker string) (baseTicker, suffix string)
+```
+
+ParseYahooTicker parses a Yahoo Finance ticker into base ticker and suffix.
+
+Example:
+
+```
+ParseYahooTicker("AAPL.L") returns ("AAPL", "L")
+ParseYahooTicker("AAPL") returns ("AAPL", "")
+```
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)
