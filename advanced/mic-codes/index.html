@@ -1,0 +1,1597 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/advanced/mic-codes/">
+      
+      
+        <link rel="prev" href="../price-repair/">
+      
+      
+        <link rel="next" href="../../development/v1.1.0-progress/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>MIC Codes - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mic-code-mapping" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MIC Codes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format-ticker-for-yahoo-finance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format Ticker for Yahoo Finance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-yahoo-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parse Yahoo Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lookup-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lookup Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-all-supported-exchanges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List All Supported Exchanges
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-exchanges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Exchanges
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported Exchanges">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#americas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Americas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#europe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Europe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asia-pacific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asia-Pacific
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#middle-east-africa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middle East &amp; Africa
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fetching-international-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetching International Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-multi-exchange-portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Multi-Exchange Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-exchange-from-yahoo-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifying Exchange from Yahoo Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direct-map-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direct Map Access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format-ticker-for-yahoo-finance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format Ticker for Yahoo Finance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-yahoo-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parse Yahoo Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lookup-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lookup Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-all-supported-exchanges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List All Supported Exchanges
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-exchanges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Exchanges
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported Exchanges">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#americas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Americas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#europe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Europe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asia-pacific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asia-Pacific
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#middle-east-africa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middle East &amp; Africa
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fetching-international-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetching International Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-multi-exchange-portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building Multi-Exchange Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-exchange-from-yahoo-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifying Exchange from Yahoo Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direct-map-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direct Map Access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mic-code-mapping">MIC Code Mapping</h1>
+<p>The <code>utils</code> package provides Market Identifier Code (MIC) to Yahoo Finance ticker suffix mapping, enabling seamless support for international exchanges.</p>
+<h2 id="overview">Overview</h2>
+<p>ISO 10383 Market Identifier Codes (MIC) are standardized exchange identifiers. Yahoo Finance uses suffix-based ticker formats (e.g., <code>AAPL.L</code> for London). This package bridges the two standards.</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="format-ticker-for-yahoo-finance">Format Ticker for Yahoo Finance</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/utils&quot;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">// Convert MIC to Yahoo format</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nx">ticker</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">FormatYahooTicker</span><span class="p">(</span><span class="s">&quot;AAPL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XLON&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">// Result: &quot;AAPL.L&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nx">ticker</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">FormatYahooTicker</span><span class="p">(</span><span class="s">&quot;7203&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XTKS&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1">// Result: &quot;7203.T&quot; (Toyota on Tokyo Stock Exchange)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1">// US exchanges have no suffix</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nx">ticker</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">FormatYahooTicker</span><span class="p">(</span><span class="s">&quot;AAPL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XNYS&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1">// Result: &quot;AAPL&quot;</span>
+</code></pre></div>
+<h3 id="parse-yahoo-ticker">Parse Yahoo Ticker</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Extract base ticker and suffix</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">base</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">ParseYahooTicker</span><span class="p">(</span><span class="s">&quot;AAPL.L&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">// Result: base=&quot;AAPL&quot;, suffix=&quot;L&quot;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nx">base</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">ParseYahooTicker</span><span class="p">(</span><span class="s">&quot;AAPL&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1">// Result: base=&quot;AAPL&quot;, suffix=&quot;&quot;</span>
+</code></pre></div>
+<h3 id="lookup-functions">Lookup Functions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// MIC to Yahoo suffix</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nx">suffix</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">GetYahooSuffix</span><span class="p">(</span><span class="s">&quot;XLON&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// Result: &quot;L&quot;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">// Yahoo suffix to MIC</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nx">mic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">GetMIC</span><span class="p">(</span><span class="s">&quot;L&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1">// Result: &quot;XLON&quot;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1">// Check if US exchange</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nx">isUS</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">IsUSExchange</span><span class="p">(</span><span class="s">&quot;XNYS&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">// Result: true</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="nx">isUS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">IsUSExchange</span><span class="p">(</span><span class="s">&quot;XLON&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1">// Result: false</span>
+</code></pre></div>
+<h3 id="list-all-supported-exchanges">List All Supported Exchanges</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// Get all supported MIC codes</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nx">mics</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">AllMICs</span><span class="p">()</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">// Result: [&quot;XNYS&quot;, &quot;XNAS&quot;, &quot;XLON&quot;, &quot;XTKS&quot;, ...]</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1">// Get all Yahoo suffixes (excluding US which has no suffix)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nx">suffixes</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">AllYahooSuffixes</span><span class="p">()</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1">// Result: [&quot;L&quot;, &quot;T&quot;, &quot;HK&quot;, &quot;AX&quot;, ...]</span>
+</code></pre></div>
+<h2 id="supported-exchanges">Supported Exchanges</h2>
+<h3 id="americas">Americas</h3>
+<table>
+<thead>
+<tr>
+<th>MIC</th>
+<th>Yahoo</th>
+<th>Exchange</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XNYS</td>
+<td>(none)</td>
+<td>New York Stock Exchange</td>
+</tr>
+<tr>
+<td>XNAS</td>
+<td>(none)</td>
+<td>NASDAQ</td>
+</tr>
+<tr>
+<td>XCBT</td>
+<td>CBT</td>
+<td>Chicago Board of Trade</td>
+</tr>
+<tr>
+<td>XCME</td>
+<td>CME</td>
+<td>Chicago Mercantile Exchange</td>
+</tr>
+<tr>
+<td>XNYM</td>
+<td>NYM</td>
+<td>New York Mercantile Exchange</td>
+</tr>
+<tr>
+<td>XTSE</td>
+<td>TO</td>
+<td>Toronto Stock Exchange</td>
+</tr>
+<tr>
+<td>XTSX</td>
+<td>V</td>
+<td>TSX Venture Exchange</td>
+</tr>
+<tr>
+<td>CNSX</td>
+<td>CN</td>
+<td>Canadian Securities Exchange</td>
+</tr>
+<tr>
+<td>NEOE</td>
+<td>NE</td>
+<td>Aequitas NEO Exchange</td>
+</tr>
+<tr>
+<td>BVMF</td>
+<td>SA</td>
+<td>B3 (Brasil Bolsa Balcao)</td>
+</tr>
+<tr>
+<td>XBUE</td>
+<td>BA</td>
+<td>Buenos Aires Stock Exchange</td>
+</tr>
+<tr>
+<td>XSGO</td>
+<td>SN</td>
+<td>Santiago Stock Exchange</td>
+</tr>
+<tr>
+<td>XMEX</td>
+<td>MX</td>
+<td>Mexican Stock Exchange</td>
+</tr>
+<tr>
+<td>XBOG</td>
+<td>CL</td>
+<td>Colombia Stock Exchange</td>
+</tr>
+<tr>
+<td>XCAR</td>
+<td>CR</td>
+<td>Caracas Stock Exchange</td>
+</tr>
+</tbody>
+</table>
+<h3 id="europe">Europe</h3>
+<table>
+<thead>
+<tr>
+<th>MIC</th>
+<th>Yahoo</th>
+<th>Exchange</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XLON</td>
+<td>L</td>
+<td>London Stock Exchange</td>
+</tr>
+<tr>
+<td>XETR</td>
+<td>DE</td>
+<td>XETRA (Germany)</td>
+</tr>
+<tr>
+<td>XFRA</td>
+<td>F</td>
+<td>Frankfurt Stock Exchange</td>
+</tr>
+<tr>
+<td>XPAR</td>
+<td>PA</td>
+<td>Euronext Paris</td>
+</tr>
+<tr>
+<td>XAMS</td>
+<td>AS</td>
+<td>Euronext Amsterdam</td>
+</tr>
+<tr>
+<td>XBRU</td>
+<td>BR</td>
+<td>Euronext Brussels</td>
+</tr>
+<tr>
+<td>XLIS</td>
+<td>LS</td>
+<td>Euronext Lisbon</td>
+</tr>
+<tr>
+<td>XDUB</td>
+<td>IR</td>
+<td>Euronext Dublin</td>
+</tr>
+<tr>
+<td>XSWX</td>
+<td>SW</td>
+<td>SIX Swiss Exchange</td>
+</tr>
+<tr>
+<td>XSTO</td>
+<td>ST</td>
+<td>Nasdaq Stockholm</td>
+</tr>
+<tr>
+<td>XCSE</td>
+<td>CO</td>
+<td>Nasdaq Copenhagen</td>
+</tr>
+<tr>
+<td>XHEL</td>
+<td>HE</td>
+<td>Nasdaq Helsinki</td>
+</tr>
+<tr>
+<td>XOSL</td>
+<td>OL</td>
+<td>Oslo Stock Exchange</td>
+</tr>
+<tr>
+<td>BMEX</td>
+<td>MC</td>
+<td>BME Spanish Exchanges</td>
+</tr>
+<tr>
+<td>MTAA</td>
+<td>MI</td>
+<td>Borsa Italiana</td>
+</tr>
+<tr>
+<td>XVIE</td>
+<td>VI</td>
+<td>Vienna Stock Exchange</td>
+</tr>
+<tr>
+<td>XWAR</td>
+<td>WA</td>
+<td>Warsaw Stock Exchange</td>
+</tr>
+<tr>
+<td>XATH</td>
+<td>AT</td>
+<td>Athens Stock Exchange</td>
+</tr>
+<tr>
+<td>XPRA</td>
+<td>PR</td>
+<td>Prague Stock Exchange</td>
+</tr>
+<tr>
+<td>XBUD</td>
+<td>BD</td>
+<td>Budapest Stock Exchange</td>
+</tr>
+<tr>
+<td>XICE</td>
+<td>IC</td>
+<td>Nasdaq Iceland</td>
+</tr>
+<tr>
+<td>XTAL</td>
+<td>TL</td>
+<td>Nasdaq Tallinn</td>
+</tr>
+<tr>
+<td>XRIS</td>
+<td>RG</td>
+<td>Nasdaq Riga</td>
+</tr>
+<tr>
+<td>XVIL</td>
+<td>VS</td>
+<td>Nasdaq Vilnius</td>
+</tr>
+<tr>
+<td>XBSE</td>
+<td>RO</td>
+<td>Bucharest Stock Exchange</td>
+</tr>
+</tbody>
+</table>
+<h3 id="asia-pacific">Asia-Pacific</h3>
+<table>
+<thead>
+<tr>
+<th>MIC</th>
+<th>Yahoo</th>
+<th>Exchange</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XTKS</td>
+<td>T</td>
+<td>Tokyo Stock Exchange</td>
+</tr>
+<tr>
+<td>XHKG</td>
+<td>HK</td>
+<td>Hong Kong Stock Exchange</td>
+</tr>
+<tr>
+<td>XSHG</td>
+<td>SS</td>
+<td>Shanghai Stock Exchange</td>
+</tr>
+<tr>
+<td>XSHE</td>
+<td>SZ</td>
+<td>Shenzhen Stock Exchange</td>
+</tr>
+<tr>
+<td>XTAI</td>
+<td>TW</td>
+<td>Taiwan Stock Exchange</td>
+</tr>
+<tr>
+<td>ROCO</td>
+<td>TWO</td>
+<td>Taipei Exchange (TPEX)</td>
+</tr>
+<tr>
+<td>XKRX</td>
+<td>KS</td>
+<td>Korea Exchange</td>
+</tr>
+<tr>
+<td>KQKS</td>
+<td>KQ</td>
+<td>KOSDAQ</td>
+</tr>
+<tr>
+<td>XASX</td>
+<td>AX</td>
+<td>Australian Securities Exchange</td>
+</tr>
+<tr>
+<td>XAUS</td>
+<td>XA</td>
+<td>National Stock Exchange of Australia</td>
+</tr>
+<tr>
+<td>XNZE</td>
+<td>NZ</td>
+<td>New Zealand Stock Exchange</td>
+</tr>
+<tr>
+<td>XSES</td>
+<td>SI</td>
+<td>Singapore Exchange</td>
+</tr>
+<tr>
+<td>XKLS</td>
+<td>KL</td>
+<td>Bursa Malaysia</td>
+</tr>
+<tr>
+<td>XIDX</td>
+<td>JK</td>
+<td>Indonesia Stock Exchange</td>
+</tr>
+<tr>
+<td>XBKK</td>
+<td>BK</td>
+<td>Stock Exchange of Thailand</td>
+</tr>
+<tr>
+<td>XPHS</td>
+<td>PS</td>
+<td>Philippine Stock Exchange</td>
+</tr>
+<tr>
+<td>XSTC</td>
+<td>VN</td>
+<td>Ho Chi Minh Stock Exchange</td>
+</tr>
+<tr>
+<td>XBOM</td>
+<td>BO</td>
+<td>Bombay Stock Exchange</td>
+</tr>
+<tr>
+<td>XNSE</td>
+<td>NS</td>
+<td>National Stock Exchange of India</td>
+</tr>
+</tbody>
+</table>
+<h3 id="middle-east-africa">Middle East &amp; Africa</h3>
+<table>
+<thead>
+<tr>
+<th>MIC</th>
+<th>Yahoo</th>
+<th>Exchange</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XSAU</td>
+<td>SR</td>
+<td>Saudi Stock Exchange (Tadawul)</td>
+</tr>
+<tr>
+<td>XDFM</td>
+<td>AE</td>
+<td>Dubai Financial Market</td>
+</tr>
+<tr>
+<td>XQAT</td>
+<td>QA</td>
+<td>Qatar Stock Exchange</td>
+</tr>
+<tr>
+<td>XKFE</td>
+<td>KW</td>
+<td>Kuwait Stock Exchange</td>
+</tr>
+<tr>
+<td>XTAE</td>
+<td>TA</td>
+<td>Tel Aviv Stock Exchange</td>
+</tr>
+<tr>
+<td>XCAI</td>
+<td>CA</td>
+<td>Egyptian Exchange</td>
+</tr>
+<tr>
+<td>XJSE</td>
+<td>JO</td>
+<td>Johannesburg Stock Exchange</td>
+</tr>
+</tbody>
+</table>
+<h2 id="use-cases">Use Cases</h2>
+<h3 id="fetching-international-data">Fetching International Data</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/ticker&quot;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/utils&quot;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1">// When you have the base ticker and exchange MIC</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nx">baseTicker</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;VOD&quot;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nx">exchangeMIC</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;XLON&quot;</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1">// Format for Yahoo Finance</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nx">yahooTicker</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">FormatYahooTicker</span><span class="p">(</span><span class="nx">baseTicker</span><span class="p">,</span><span class="w"> </span><span class="nx">exchangeMIC</span><span class="p">)</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="c1">// Result: &quot;VOD.L&quot;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="c1">// Fetch data</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ticker</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">yahooTicker</span><span class="p">)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="k">defer</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span><span class="nx">Period</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1y&quot;</span><span class="p">})</span>
+</code></pre></div>
+<h3 id="building-multi-exchange-portfolio">Building Multi-Exchange Portfolio</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// International portfolio</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nx">holdings</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nx">Ticker</span><span class="w">   </span><span class="kt">string</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nx">Exchange</span><span class="w"> </span><span class="kt">string</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="p">{</span><span class="s">&quot;AAPL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XNAS&quot;</span><span class="p">},</span><span class="w">  </span><span class="c1">// Apple on NASDAQ</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="p">{</span><span class="s">&quot;TSM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XTAI&quot;</span><span class="p">},</span><span class="w">   </span><span class="c1">// TSMC on Taiwan</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="p">{</span><span class="s">&quot;7203&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XTKS&quot;</span><span class="p">},</span><span class="w">  </span><span class="c1">// Toyota on Tokyo</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="p">{</span><span class="s">&quot;NESN&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XSWX&quot;</span><span class="p">},</span><span class="w">  </span><span class="c1">// Nestle on Swiss</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">}</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">h</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">holdings</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nx">yahooTicker</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">FormatYahooTicker</span><span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nx">Ticker</span><span class="p">,</span><span class="w"> </span><span class="nx">h</span><span class="p">.</span><span class="nx">Exchange</span><span class="p">)</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="c1">// Fetch each ticker...</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="identifying-exchange-from-yahoo-ticker">Identifying Exchange from Yahoo Ticker</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Parse unknown ticker</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nx">ticker</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="s">&quot;SAP.DE&quot;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nx">base</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">ParseYahooTicker</span><span class="p">(</span><span class="nx">ticker</span><span class="p">)</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">if</span><span class="w"> </span><span class="nx">suffix</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nx">mic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">GetMIC</span><span class="p">(</span><span class="nx">suffix</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">mic</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s is listed on %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">base</span><span class="p">,</span><span class="w"> </span><span class="nx">mic</span><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="c1">// Output: SAP is listed on XETR</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="direct-map-access">Direct Map Access</h2>
+<p>For bulk operations, access the maps directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// MIC to suffix map</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">for</span><span class="w"> </span><span class="nx">mic</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">MICToYahooSuffix</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s -&gt; %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">mic</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="p">)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">}</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1">// Suffix to MIC map (auto-generated reverse mapping)</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">for</span><span class="w"> </span><span class="nx">suffix</span><span class="p">,</span><span class="w"> </span><span class="nx">mic</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">utils</span><span class="p">.</span><span class="nx">YahooSuffixToMIC</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s -&gt; %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">suffix</span><span class="p">,</span><span class="w"> </span><span class="nx">mic</span><span class="p">)</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="notes">Notes</h2>
+<ul>
+<li><strong>US Exchanges</strong>: NYSE, NASDAQ, and other US exchanges have no suffix (empty string)</li>
+<li><strong>Reverse Mapping</strong>: Some suffixes may map to multiple MICs; the primary exchange is used</li>
+<li><strong>Class Shares</strong>: Tickers like <code>BRK.A</code> (Berkshire Class A) use dot notation - <code>ParseYahooTicker</code> handles this correctly by using the last dot as separator</li>
+</ul>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../price-repair/">Price Repair</a> - Data quality repair for international exchanges</li>
+<li><a href="../../API/">API Reference</a> - Full API documentation</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
