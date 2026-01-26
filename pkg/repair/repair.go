@@ -110,12 +110,7 @@ func (r *Repairer) isCapitalGainsApplicable() bool {
 	return r.opts.QuoteType == QuoteTypeETF || r.opts.QuoteType == QuoteTypeMutualFund
 }
 
-// repairDividends fixes bad dividend adjustments.
-// This is a placeholder - full implementation in Phase 4.
-func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
-	// TODO: Implement in Phase 4
-	return bars
-}
+// repairDividends is implemented in dividend.go
 
 // repairUnitMixups is implemented in unit_mixup.go
 
