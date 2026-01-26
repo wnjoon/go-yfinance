@@ -3,7 +3,27 @@
 // # Overview
 //
 // The utils package contains helper functions for common operations
-// such as timezone handling and exchange-specific utilities.
+// such as timezone handling, MIC code mapping, and exchange-specific utilities.
+//
+// # MIC Code Mapping (v1.1.0)
+//
+// ISO 10383 Market Identifier Code (MIC) to Yahoo Finance suffix mapping:
+//
+//	suffix := utils.GetYahooSuffix("XLON")     // Returns "L"
+//	mic := utils.GetMIC("T")                   // Returns "XTKS"
+//	ticker := utils.FormatYahooTicker("7203", "XTKS")  // Returns "7203.T"
+//	base, suffix := utils.ParseYahooTicker("AAPL.L")   // Returns "AAPL", "L"
+//
+// Check if an exchange is US-based:
+//
+//	if utils.IsUSExchange("XNYS") {
+//	    // NYSE - no suffix needed
+//	}
+//
+// List all supported exchanges:
+//
+//	mics := utils.AllMICs()           // []string{"XNYS", "XNAS", "XLON", ...}
+//	suffixes := utils.AllYahooSuffixes()  // []string{"", "L", "T", ...}
 //
 // # Timezone Functions
 //
