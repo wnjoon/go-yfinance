@@ -98,6 +98,43 @@ for _, bar := range bars {
 }
 ```
 
+## Dividend Repair
+
+Fixes various dividend-related errors in Yahoo Finance data.
+
+### Error Types
+
+1. **Missing Adjustment**: Adj Close = Close (no dividend applied)
+2. **Dividend 100x Too Big**: Currency unit error (e.g., $ shown as cents)
+3. **Dividend 100x Too Small**: Currency unit error (e.g., cents shown as $)
+4. **Phantom Dividend**: Duplicate dividend within 7-17 days
+
+### Detection Algorithm
+
+For each dividend:
+1. Calculate expected price drop based on dividend yield
+2. Compare with typical window volatility
+3. Check Adj Close ratio before/after dividend
+4. Identify anomalies exceeding normal volatility
+
+### Example
+
+```go
+// Fix dividend errors
+bars, _ := t.History(models.HistoryParams{
+    Period:   "1y",
+    Interval: "1d",
+    Repair:   true,
+    RepairOptions: &models.RepairOptions{
+        FixDividends: true,
+    },
+})
+```
+
+### Interval Restrictions
+
+Dividend repair is **only applied to 1d intervals**. Weekly and monthly intervals are too volatile for reliable detection. For longer intervals, fetch daily data, repair, then resample.
+
 ## Stock Split Repair
 
 Detects when Yahoo fails to apply split adjustments to historical prices.
