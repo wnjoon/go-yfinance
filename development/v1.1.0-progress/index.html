@@ -1288,14 +1288,18 @@
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>└── repair.go            ← Modified (placeholder removed)
 </code></pre></div>
 <h3 id="algorithm-details">Algorithm Details</h3>
-<p><strong>Unit Mixup Repair:</strong>
-1. Random 100x errors: Detect ~100x values using 2D MedianFilter
-2. Unit Switch: IQR-based detection of sudden 100x price changes
-3. KWF (Kuwaiti Dinar) special handling (1000 unit)</p>
-<p><strong>Zero Value Repair:</strong>
-1. Detect zero bars where trading occurred (Volume &gt; 0, Splits, Dividends)
-2. Neighbor-based interpolation (Forward fill, Backward fill)
-3. Partial zero correction (when only some OHLC values are zero)</p>
+<p><strong>Unit Mixup Repair:</strong></p>
+<ol>
+<li>Random 100x errors: Detect ~100x values using 2D MedianFilter</li>
+<li>Unit Switch: IQR-based detection of sudden 100x price changes</li>
+<li>KWF (Kuwaiti Dinar) special handling (1000 unit)</li>
+</ol>
+<p><strong>Zero Value Repair:</strong></p>
+<ol>
+<li>Detect zero bars where trading occurred (Volume &gt; 0, Splits, Dividends)</li>
+<li>Neighbor-based interpolation (Forward fill, Backward fill)</li>
+<li>Partial zero correction (when only some OHLC values are zero)</li>
+</ol>
 <hr />
 <h2 id="phase-4-dividend-repair-completed">Phase 4: Dividend Repair (Completed)</h2>
 <p><strong>Goal:</strong> Implement Dividend Repair</p>
@@ -1333,12 +1337,14 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>└── repair.go            ← Modified (placeholder removed)
 </code></pre></div>
 <h3 id="algorithm-details_1">Algorithm Details</h3>
-<p><strong>Dividend Repair:</strong>
-1. Missing Adjustment: Detect and fix when Adj Close = Close
-2. Too Large (100x): Dividend currency unit error (100x too large)
-3. Too Small (0.01x): Dividend currency unit error (100x too small)
-4. Phantom Detection: Detect duplicate dividends within 7-17 days
-5. Window Volatility: Error determination based on surrounding price volatility</p>
+<p><strong>Dividend Repair:</strong></p>
+<ol>
+<li>Missing Adjustment: Detect and fix when Adj Close = Close</li>
+<li>Too Large (100x): Dividend currency unit error (100x too large)</li>
+<li>Too Small (0.01x): Dividend currency unit error (100x too small)</li>
+<li>Phantom Detection: Detect duplicate dividends within 7-17 days</li>
+<li>Window Volatility: Error determination based on surrounding price volatility</li>
+</ol>
 <hr />
 <h2 id="phase-5-mic-mapping-and-finalization-completed">Phase 5: MIC Mapping and Finalization (Completed)</h2>
 <p><strong>Goal:</strong> MIC code support and final cleanup</p>
