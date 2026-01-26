@@ -123,6 +123,87 @@ bars, _ := t.History(models.HistoryParams{
 })
 ```
 
+## Unit Mixup Repair (100x Errors)
+
+Yahoo Finance sometimes returns prices in wrong currency units (e.g., dollars vs cents, pounds vs pence).
+
+### Types of Errors
+
+1. **Random 100x Errors**: Sporadic errors scattered throughout data
+2. **Unit Switch**: Permanent change in currency unit at some date
+
+### Detection Algorithm
+
+For random errors:
+1. Apply 2D median filter (3x3 window) to OHLC prices
+2. Calculate ratio of actual to median-filtered prices
+3. Round ratio to nearest 20, check if ~100
+4. Correct outliers by dividing/multiplying by 100
+
+For unit switch:
+1. Calculate daily percentage changes
+2. Use IQR to estimate normal volatility
+3. Detect changes ~100x larger than normal
+4. Apply correction to all preceding bars
+
+### Example
+
+```go
+// Fix 100x currency errors
+bars, _ := t.History(models.HistoryParams{
+    Period:   "1y",
+    Interval: "1d",
+    Repair:   true,
+    RepairOptions: &models.RepairOptions{
+        FixUnitMixups: true,
+    },
+})
+```
+
+### Currency-Specific Handling
+
+- **USD, GBP, EUR, etc.**: 100x multiplier (dollars/cents)
+- **KWF (Kuwaiti Dinar)**: 1000x multiplier (dinar/fils)
+
+## Zero Value Repair
+
+Fixes bars where prices are 0 or NaN but trading likely occurred.
+
+### Detection Criteria
+
+A zero bar is flagged for repair if:
+- Volume > 0 (trading occurred)
+- Stock split event present
+- Dividend payment present
+- Continuous price movement around the gap
+
+### Repair Methods
+
+1. **Interpolation**: If both prev and next bars exist, average the boundary prices
+2. **Forward Fill**: Use previous bar's close if only prev available
+3. **Backward Fill**: Use next bar's open if only next available
+
+### Example
+
+```go
+// Fix zero/missing values
+bars, _ := t.History(models.HistoryParams{
+    Period:   "1y",
+    Interval: "1d",
+    Repair:   true,
+    RepairOptions: &models.RepairOptions{
+        FixZeroes: true,
+    },
+})
+```
+
+### Partial Zero Handling
+
+When only some OHLC values are zero:
+- Calculate mean of valid prices
+- Fill zero values with the mean
+- Ensure High >= all prices, Low <= all prices
+
 ## Data Fields
 
 The `Bar` struct includes repair-related fields:

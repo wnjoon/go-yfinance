@@ -117,21 +117,11 @@ func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
 	return bars
 }
 
-// repairUnitMixups fixes 100x currency errors.
-// This is a placeholder - full implementation in Phase 3.
-func (r *Repairer) repairUnitMixups(bars []models.Bar) []models.Bar {
-	// TODO: Implement in Phase 3
-	return bars
-}
+// repairUnitMixups is implemented in unit_mixup.go
 
 // repairStockSplits is implemented in split.go
 
-// repairZeroes fixes missing/zero price values.
-// This is a placeholder - full implementation in Phase 3.
-func (r *Repairer) repairZeroes(bars []models.Bar) []models.Bar {
-	// TODO: Implement in Phase 3
-	return bars
-}
+// repairZeroes is implemented in zeroes.go
 
 // repairCapitalGains is implemented in capital_gains.go
 
