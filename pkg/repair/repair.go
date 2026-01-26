@@ -124,12 +124,7 @@ func (r *Repairer) repairUnitMixups(bars []models.Bar) []models.Bar {
 	return bars
 }
 
-// repairStockSplits fixes bad stock split adjustments.
-// This is a placeholder - full implementation in Phase 2.
-func (r *Repairer) repairStockSplits(bars []models.Bar) []models.Bar {
-	// TODO: Implement in Phase 2
-	return bars
-}
+// repairStockSplits is implemented in split.go
 
 // repairZeroes fixes missing/zero price values.
 // This is a placeholder - full implementation in Phase 3.
@@ -138,12 +133,7 @@ func (r *Repairer) repairZeroes(bars []models.Bar) []models.Bar {
 	return bars
 }
 
-// repairCapitalGains fixes capital gains double-counting.
-// This is a placeholder - full implementation in Phase 2.
-func (r *Repairer) repairCapitalGains(bars []models.Bar) []models.Bar {
-	// TODO: Implement in Phase 2
-	return bars
-}
+// repairCapitalGains is implemented in capital_gains.go
 
 // HasCapitalGains checks if any bar has capital gains data.
 func HasCapitalGains(bars []models.Bar) bool {
