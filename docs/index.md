@@ -10,7 +10,8 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 
 ## Features
 
-- **Full Python yfinance Compatibility**: Complete Go implementation matching Python yfinance v1.0.0
+- **Full Python yfinance Compatibility**: Complete Go implementation matching Python yfinance v1.1.0
+- **Price Repair System**: Fix common Yahoo Finance data issues (100x errors, bad splits, capital gains double-counting)
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
 - **Thread-Safe**: Concurrent-safe client and configuration
