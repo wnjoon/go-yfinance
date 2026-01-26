@@ -126,9 +126,10 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 		adjClose = result.Indicators.AdjClose[0].AdjClose
 	}
 
-	// Parse dividends and splits
+	// Parse dividends, splits, and capital gains
 	dividends := make(map[int64]float64)
 	splits := make(map[int64]float64)
+	capitalGains := make(map[int64]float64)
 
 	if includeActions && result.Events != nil {
 		if result.Events.Dividends != nil {
@@ -139,6 +140,11 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 		if result.Events.Splits != nil {
 			for _, split := range result.Events.Splits {
 				splits[split.Date] = split.Numerator / split.Denominator
+			}
+		}
+		if result.Events.CapitalGains != nil {
+			for _, cg := range result.Events.CapitalGains {
+				capitalGains[cg.Date] = cg.Amount
 			}
 		}
 	}
@@ -180,6 +186,9 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 		}
 		if split, ok := splits[ts]; ok {
 			bar.Splits = split
+		}
+		if cg, ok := capitalGains[ts]; ok {
+			bar.CapitalGains = cg
 		}
 
 		// Auto-adjust OHLC if requested

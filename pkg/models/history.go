@@ -4,15 +4,17 @@ import "time"
 
 // Bar represents a single OHLCV bar (candlestick).
 type Bar struct {
-	Date      time.Time `json:"date"`
-	Open      float64   `json:"open"`
-	High      float64   `json:"high"`
-	Low       float64   `json:"low"`
-	Close     float64   `json:"close"`
-	AdjClose  float64   `json:"adjClose"`
-	Volume    int64     `json:"volume"`
-	Dividends float64   `json:"dividends,omitempty"`
-	Splits    float64   `json:"splits,omitempty"`
+	Date         time.Time `json:"date"`
+	Open         float64   `json:"open"`
+	High         float64   `json:"high"`
+	Low          float64   `json:"low"`
+	Close        float64   `json:"close"`
+	AdjClose     float64   `json:"adjClose"`
+	Volume       int64     `json:"volume"`
+	Dividends    float64   `json:"dividends,omitempty"`
+	Splits       float64   `json:"splits,omitempty"`
+	CapitalGains float64   `json:"capitalGains,omitempty"` // Capital gains distribution (ETF/MutualFund)
+	Repaired     bool      `json:"repaired,omitempty"`     // True if this bar was repaired
 }
 
 // History represents historical price data.
@@ -48,8 +50,41 @@ type HistoryParams struct {
 	// Repair bad data (100x errors, missing data)
 	Repair bool `json:"repair,omitempty"`
 
+	// RepairOptions provides fine-grained control over repair operations.
+	// If nil, all repairs are enabled when Repair is true.
+	RepairOptions *RepairOptions `json:"repairOptions,omitempty"`
+
 	// Keep NaN rows
 	KeepNA bool `json:"keepna,omitempty"`
+}
+
+// RepairOptions provides fine-grained control over which repairs to apply.
+type RepairOptions struct {
+	// FixUnitMixups repairs 100x currency errors ($/cents, £/pence)
+	FixUnitMixups bool `json:"fixUnitMixups,omitempty"`
+
+	// FixZeroes repairs missing/zero price values
+	FixZeroes bool `json:"fixZeroes,omitempty"`
+
+	// FixSplits repairs bad stock split adjustments
+	FixSplits bool `json:"fixSplits,omitempty"`
+
+	// FixDividends repairs bad dividend adjustments
+	FixDividends bool `json:"fixDividends,omitempty"`
+
+	// FixCapitalGains repairs capital gains double-counting (ETF/MutualFund only)
+	FixCapitalGains bool `json:"fixCapitalGains,omitempty"`
+}
+
+// DefaultRepairOptions returns options with all repairs enabled.
+func DefaultRepairOptions() RepairOptions {
+	return RepairOptions{
+		FixUnitMixups:   true,
+		FixZeroes:       true,
+		FixSplits:       true,
+		FixDividends:    true,
+		FixCapitalGains: true,
+	}
 }
 
 // DefaultHistoryParams returns default history parameters.

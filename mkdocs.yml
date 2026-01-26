@@ -33,6 +33,10 @@ theme:
 nav:
   - Home: index.md
   - API Reference: API.md
+  - Advanced:
+    - Price Repair: advanced/price-repair.md
+  - Development:
+    - v1.1.0 Progress: development/v1.1.0-progress.md
 
 markdown_extensions:
   - pymdownx.highlight:
