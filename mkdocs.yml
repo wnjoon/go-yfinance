@@ -35,6 +35,7 @@ nav:
   - API Reference: API.md
   - Advanced:
     - Price Repair: advanced/price-repair.md
+    - MIC Codes: advanced/mic-codes.md
   - Development:
     - v1.1.0 Progress: development/v1.1.0-progress.md
 
