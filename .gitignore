@@ -43,3 +43,6 @@ __debug_bin*
 
 # MkDocs build output
 site/
+
+# Claude
+CLAUDE.md
