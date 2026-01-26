@@ -109,7 +109,6 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 		for i, idx := range nonZeroIndices {
 			filteredData[i] = data[idx]
 		}
-		data = filteredData
 
 		// Process the filtered data
 		corrections := detectAndCorrectMixups(filteredData)
