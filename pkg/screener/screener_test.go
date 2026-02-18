@@ -61,6 +61,14 @@ func TestDefaultScreenerParams(t *testing.T) {
 	if params.SortAsc != false {
 		t.Error("Expected SortAsc to be false")
 	}
+
+	if params.UserID != "" {
+		t.Errorf("Expected UserID to be empty, got '%s'", params.UserID)
+	}
+
+	if params.UserIDType != "guid" {
+		t.Errorf("Expected UserIDType to be 'guid', got '%s'", params.UserIDType)
+	}
 }
 
 func TestPredefinedScreeners(t *testing.T) {
@@ -92,28 +100,155 @@ func TestPredefinedScreeners(t *testing.T) {
 }
 
 func TestNewEquityQuery(t *testing.T) {
-	query := models.NewEquityQuery(models.OpAND, []interface{}{
-		models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-		models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 10}),
-	})
+	eq1, err := models.NewEquityQuery("eq", []any{"region", "us"})
+	if err != nil {
+		t.Fatalf("Failed to create EQ query: %v", err)
+	}
+
+	gt1, err := models.NewEquityQuery("gt", []any{"intradayprice", 10})
+	if err != nil {
+		t.Fatalf("Failed to create GT query: %v", err)
+	}
+
+	query, err := models.NewEquityQuery("and", []any{eq1, gt1})
+	if err != nil {
+		t.Fatalf("Failed to create AND query: %v", err)
+	}
 
 	if query == nil {
 		t.Fatal("Query should not be nil")
 	}
 
-	if query.Operator != models.OpAND {
-		t.Errorf("Expected operator AND, got %s", query.Operator)
+	if query.QuoteType() != "EQUITY" {
+		t.Errorf("Expected quoteType EQUITY, got %s", query.QuoteType())
 	}
 
-	if len(query.Operands) != 2 {
-		t.Errorf("Expected 2 operands, got %d", len(query.Operands))
+	dict := query.ToDict()
+	if dict["operator"] != "AND" {
+		t.Errorf("Expected operator AND, got %v", dict["operator"])
+	}
+
+	ops, ok := dict["operands"].([]any)
+	if !ok {
+		t.Fatal("operands should be []any")
+	}
+	if len(ops) != 2 {
+		t.Errorf("Expected 2 operands, got %d", len(ops))
+	}
+}
+
+func TestNewFundQuery(t *testing.T) {
+	eq1, err := models.NewFundQuery("eq", []any{"exchange", "NAS"})
+	if err != nil {
+		t.Fatalf("Failed to create FundQuery EQ: %v", err)
+	}
+
+	if eq1.QuoteType() != "MUTUALFUND" {
+		t.Errorf("Expected quoteType MUTUALFUND, got %s", eq1.QuoteType())
+	}
+
+	dict := eq1.ToDict()
+	if dict["operator"] != "EQ" {
+		t.Errorf("Expected operator EQ, got %v", dict["operator"])
+	}
+}
+
+func TestISINExpansion(t *testing.T) {
+	q, err := models.NewEquityQuery("is-in", []any{"exchange", "NMS", "NYQ"})
+	if err != nil {
+		t.Fatalf("Failed to create IS-IN query: %v", err)
+	}
+
+	dict := q.ToDict()
+
+	// IS-IN should expand to OR
+	if dict["operator"] != "OR" {
+		t.Errorf("Expected IS-IN to expand to OR, got %v", dict["operator"])
+	}
+
+	ops, ok := dict["operands"].([]any)
+	if !ok {
+		t.Fatal("operands should be []any")
+	}
+	if len(ops) != 2 {
+		t.Errorf("Expected 2 expanded EQ operands, got %d", len(ops))
+	}
+
+	// Each expanded child should be an EQ query
+	for i, op := range ops {
+		child, ok := op.(map[string]any)
+		if !ok {
+			t.Fatalf("operand %d should be map[string]any", i)
+		}
+		if child["operator"] != "EQ" {
+			t.Errorf("operand %d: expected operator EQ, got %v", i, child["operator"])
+		}
+	}
+}
+
+func TestQueryValidation(t *testing.T) {
+	tests := []struct {
+		name      string
+		op        string
+		operands  []any
+		expectErr bool
+	}{
+		{"valid EQ", "eq", []any{"region", "us"}, false},
+		{"invalid field", "eq", []any{"nonexistent_field", "value"}, true},
+		{"invalid EQ value", "eq", []any{"region", "invalid_region"}, true},
+		{"valid GT", "gt", []any{"intradayprice", 10}, false},
+		{"GT non-numeric", "gt", []any{"intradayprice", "not_a_number"}, true},
+		{"valid BTWN", "btwn", []any{"peratio.lasttwelvemonths", 0, 20}, false},
+		{"BTWN wrong length", "btwn", []any{"peratio.lasttwelvemonths", 0}, true},
+		{"invalid operator", "INVALID", []any{"field", "value"}, true},
+		{"empty operands", "eq", []any{}, true},
+		{"valid sector", "eq", []any{"sector", "Technology"}, false},
+		{"invalid sector", "eq", []any{"sector", "FakeSector"}, true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := models.NewEquityQuery(tc.op, tc.operands)
+			if tc.expectErr && err == nil {
+				t.Error("Expected error but got nil")
+			}
+			if !tc.expectErr && err != nil {
+				t.Errorf("Expected no error but got: %v", err)
+			}
+		})
+	}
+}
+
+func TestFundQueryValidation(t *testing.T) {
+	tests := []struct {
+		name      string
+		op        string
+		operands  []any
+		expectErr bool
+	}{
+		{"valid exchange", "eq", []any{"exchange", "NAS"}, false},
+		{"invalid exchange", "eq", []any{"exchange", "FAKE"}, true},
+		{"valid categoryname", "eq", []any{"categoryname", "Large Blend"}, false},
+		{"valid performanceratingoverall", "gt", []any{"performanceratingoverall", 3}, false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := models.NewFundQuery(tc.op, tc.operands)
+			if tc.expectErr && err == nil {
+				t.Error("Expected error but got nil")
+			}
+			if !tc.expectErr && err != nil {
+				t.Errorf("Expected no error but got: %v", err)
+			}
+		})
 	}
 }
 
 func TestQueryOperators(t *testing.T) {
 	testCases := []struct {
 		name     string
-		operator models.QueryOperator
+		operator string
 		expected string
 	}{
 		{"Equals", models.OpEQ, "eq"},
@@ -124,11 +259,12 @@ func TestQueryOperators(t *testing.T) {
 		{"Between", models.OpBTWN, "btwn"},
 		{"AND", models.OpAND, "and"},
 		{"OR", models.OpOR, "or"},
+		{"IS-IN", models.OpISIN, "is-in"},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if string(tc.operator) != tc.expected {
+			if tc.operator != tc.expected {
 				t.Errorf("Expected %s, got %s", tc.expected, tc.operator)
 			}
 		})
@@ -147,8 +283,83 @@ func TestScreenWithQueryNilQuery(t *testing.T) {
 	}
 }
 
+func TestScreenWithQueryCountLimit(t *testing.T) {
+	s, err := New()
+	if err != nil {
+		t.Fatalf("Failed to create Screener: %v", err)
+	}
+
+	q, _ := models.NewEquityQuery("eq", []any{"region", "us"})
+	params := &models.ScreenerParams{Count: 300}
+	_, err = s.ScreenWithQuery(q, params)
+	if err == nil {
+		t.Error("Expected error for count > 250")
+	}
+}
+
+func TestPredefinedScreenerQueries(t *testing.T) {
+	expectedEquity := []string{
+		"aggressive_small_caps", "day_gainers", "day_losers",
+		"growth_technology_stocks", "most_actives", "most_shorted_stocks",
+		"small_cap_gainers", "undervalued_growth_stocks", "undervalued_large_caps",
+	}
+
+	expectedFund := []string{
+		"conservative_foreign_funds", "high_yield_bond", "portfolio_anchors",
+		"solid_large_growth_funds", "solid_midcap_growth_funds", "top_mutual_funds",
+	}
+
+	for _, name := range expectedEquity {
+		pq, ok := PredefinedScreenerQueries[name]
+		if !ok {
+			t.Errorf("Expected predefined screener %q not found", name)
+			continue
+		}
+		if pq.Query.QuoteType() != "EQUITY" {
+			t.Errorf("Screener %q: expected EQUITY, got %s", name, pq.Query.QuoteType())
+		}
+	}
+
+	for _, name := range expectedFund {
+		pq, ok := PredefinedScreenerQueries[name]
+		if !ok {
+			t.Errorf("Expected predefined screener %q not found", name)
+			continue
+		}
+		if pq.Query.QuoteType() != "MUTUALFUND" {
+			t.Errorf("Screener %q: expected MUTUALFUND, got %s", name, pq.Query.QuoteType())
+		}
+	}
+
+	// Check total count
+	if len(PredefinedScreenerQueries) != 15 {
+		t.Errorf("Expected 15 predefined screeners, got %d", len(PredefinedScreenerQueries))
+	}
+
+	// Verify day_losers has SortAsc = true
+	if !PredefinedScreenerQueries["day_losers"].SortAsc {
+		t.Error("day_losers should have SortAsc = true")
+	}
+}
+
+func TestPredefinedScreenerToDicts(t *testing.T) {
+	// Verify all predefined queries can serialize without panic
+	for name, pq := range PredefinedScreenerQueries {
+		dict := pq.Query.ToDict()
+		if dict == nil {
+			t.Errorf("Screener %q: ToDict returned nil", name)
+		}
+		if _, ok := dict["operator"]; !ok {
+			t.Errorf("Screener %q: ToDict missing operator", name)
+		}
+		if _, ok := dict["operands"]; !ok {
+			t.Errorf("Screener %q: ToDict missing operands", name)
+		}
+	}
+}
+
 func TestHelperFunctions(t *testing.T) {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"str":     "hello",
 		"int":     42,
 		"int64":   int64(100),
@@ -191,63 +402,3 @@ func TestHelperFunctions(t *testing.T) {
 		t.Errorf("getInt64 for float64 expected 2, got %d", got)
 	}
 }
-
-// Integration tests (require network access)
-// Run with: go test -v -run Integration
-
-// func TestScreenDayGainersIntegration(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("Skipping integration test")
-// 	}
-//
-// 	s, err := New()
-// 	if err != nil {
-// 		t.Fatalf("Failed to create Screener: %v", err)
-// 	}
-// 	defer s.Close()
-//
-// 	result, err := s.DayGainers(10)
-// 	if err != nil {
-// 		t.Fatalf("DayGainers failed: %v", err)
-// 	}
-//
-// 	if len(result.Quotes) == 0 {
-// 		t.Error("Expected at least one quote")
-// 	}
-//
-// 	// Check that all quotes have positive change
-// 	for _, q := range result.Quotes {
-// 		if q.RegularMarketChangePercent <= 0 {
-// 			t.Logf("Warning: Quote %s has non-positive change: %.2f%%",
-// 				q.Symbol, q.RegularMarketChangePercent)
-// 		}
-// 	}
-// }
-//
-// func TestScreenMostActivesIntegration(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("Skipping integration test")
-// 	}
-//
-// 	s, err := New()
-// 	if err != nil {
-// 		t.Fatalf("Failed to create Screener: %v", err)
-// 	}
-// 	defer s.Close()
-//
-// 	result, err := s.MostActives(5)
-// 	if err != nil {
-// 		t.Fatalf("MostActives failed: %v", err)
-// 	}
-//
-// 	if len(result.Quotes) == 0 {
-// 		t.Error("Expected at least one quote")
-// 	}
-//
-// 	// Check that all quotes have volume
-// 	for _, q := range result.Quotes {
-// 		if q.RegularMarketVolume <= 0 {
-// 			t.Errorf("Quote %s has no volume", q.Symbol)
-// 		}
-// 	}
-// }
