@@ -132,6 +132,26 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 		params = &defaultParams
 	}
 
+	if params.Count > 250 {
+		return nil, fmt.Errorf("yahoo limits query count to 250, reduce count")
+	}
+
+	// If offset is specified, switch to POST endpoint with predefined query body
+	// (Yahoo's predefined GET endpoint ignores offset)
+	if params.Offset > 0 {
+		predefined, ok := PredefinedScreenerQueries[string(screener)]
+		if ok {
+			// Use predefined's sort settings as defaults
+			if params.SortField == "" || params.SortField == "ticker" {
+				params.SortField = predefined.SortField
+			}
+			if !params.SortAsc {
+				params.SortAsc = predefined.SortAsc
+			}
+			return s.ScreenWithQuery(predefined.Query, params)
+		}
+	}
+
 	// Build URL for predefined screener
 	screenerURL := fmt.Sprintf("%s/predefined/%s", endpoints.ScreenerURL, string(screener))
 
@@ -139,6 +159,12 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 	urlParams := url.Values{}
 	urlParams.Set("count", strconv.Itoa(params.Count))
 	urlParams.Set("offset", strconv.Itoa(params.Offset))
+	if params.SortField != "" {
+		urlParams.Set("sortField", params.SortField)
+	}
+	if params.SortAsc {
+		urlParams.Set("sortAsc", "true")
+	}
 
 	resp, err := s.client.Get(screenerURL, urlParams)
 	if err != nil {
@@ -148,17 +174,19 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 	return s.parseResponse(resp.Body, params.Offset)
 }
 
-// ScreenWithQuery uses a custom query to find matching stocks.
+// ScreenWithQuery uses a custom query to find matching stocks or funds.
+// Accepts both *models.EquityQuery and *models.FundQuery.
+// The quoteType is automatically determined from the query type:
+// "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
 //
 // Example:
 //
 //	// Find US stocks with market cap > $10B
-//	query := models.NewEquityQuery(models.OpAND, []interface{}{
-//	    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-//	    models.NewEquityQuery(models.OpGT, []interface{}{"intradaymarketcap", 10000000000}),
-//	})
+//	q1, _ := models.NewEquityQuery("eq", []interface{}{"region", "us"})
+//	q2, _ := models.NewEquityQuery("gt", []interface{}{"intradaymarketcap", 10000000000})
+//	query, _ := models.NewEquityQuery("and", []interface{}{q1, q2})
 //	result, err := s.ScreenWithQuery(query, nil)
-func (s *Screener) ScreenWithQuery(query *models.ScreenerQuery, params *models.ScreenerParams) (*models.ScreenerResult, error) {
+func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *models.ScreenerParams) (*models.ScreenerResult, error) {
 	if query == nil {
 		return nil, fmt.Errorf("query is required")
 	}
@@ -168,18 +196,26 @@ func (s *Screener) ScreenWithQuery(query *models.ScreenerQuery, params *models.S
 		params = &defaultParams
 	}
 
-	// Build request body
-	body := map[string]interface{}{
-		"offset":    params.Offset,
-		"size":      params.Count,
-		"sortField": params.SortField,
-		"sortType":  "desc",
-		"quoteType": "equity",
-		"query":     query,
+	if params.Count > 250 {
+		return nil, fmt.Errorf("yahoo limits query count to 250, reduce count")
 	}
 
+	// Determine sort type
+	sortType := "DESC"
 	if params.SortAsc {
-		body["sortType"] = "asc"
+		sortType = "ASC"
+	}
+
+	// Build request body matching Python's format
+	body := map[string]any{
+		"offset":     params.Offset,
+		"count":      params.Count,
+		"sortField":  params.SortField,
+		"sortType":   sortType,
+		"userId":     params.UserID,
+		"userIdType": params.UserIDType,
+		"quoteType":  query.QuoteType(),
+		"query":      query.ToDict(),
 	}
 
 	bodyBytes, err := json.Marshal(body)
@@ -296,6 +332,13 @@ func (s *Screener) parseResponse(body string, offset int) (*models.ScreenerResul
 			DividendYield:              getFloat(q, "dividendYield"),
 			TrailingEPS:                getFloat(q, "epsTrailingTwelveMonths"),
 			BookValue:                  getFloat(q, "bookValue"),
+			// Fund-specific fields
+			FundNetAssets:                 getFloat(q, "fundNetAssets"),
+			CategoryName:                 getString(q, "categoryName"),
+			PerformanceRatingOverall:      getInt(q, "performanceRatingOverall"),
+			RiskRatingOverall:             getInt(q, "riskRatingOverall"),
+			InitialInvestment:             getFloat(q, "initialInvestment"),
+			AnnualReturnNavY1CategoryRank: getFloat(q, "annualReturnNavY1CategoryRank"),
 		}
 		screenerResult.Quotes = append(screenerResult.Quotes, quote)
 	}
@@ -304,14 +347,14 @@ func (s *Screener) parseResponse(body string, offset int) (*models.ScreenerResul
 }
 
 // Helper functions
-func getString(m map[string]interface{}, key string) string {
+func getString(m map[string]any, key string) string {
 	if v, ok := m[key].(string); ok {
 		return v
 	}
 	return ""
 }
 
-func getFloat(m map[string]interface{}, key string) float64 {
+func getFloat(m map[string]any, key string) float64 {
 	switch v := m[key].(type) {
 	case float64:
 		return v
@@ -323,7 +366,19 @@ func getFloat(m map[string]interface{}, key string) float64 {
 	return 0
 }
 
-func getInt64(m map[string]interface{}, key string) int64 {
+func getInt(m map[string]any, key string) int {
+	switch v := m[key].(type) {
+	case float64:
+		return int(v)
+	case int:
+		return v
+	case int64:
+		return int(v)
+	}
+	return 0
+}
+
+func getInt64(m map[string]any, key string) int64 {
 	switch v := m[key].(type) {
 	case float64:
 		return int64(v)
