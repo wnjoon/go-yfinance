@@ -3082,7 +3082,7 @@ Screener:
 
 - [ScreenerResult](<#ScreenerResult>): Stock screener results with pagination
 - [ScreenerQuote](<#ScreenerQuote>): Stock from screener results with financial data
-- [ScreenerQuery](<#ScreenerQuery>): Custom screener query structure
+- ScreenerQueryBuilder: Interface for custom screener queries (EquityQuery and FundQuery)
 - [ScreenerParams](<#ScreenerParams>): Screener parameters \(offset, count, sort\)
 - [PredefinedScreener](<#PredefinedScreener>): Predefined screener identifiers \(day\_gainers, etc.\)
 
@@ -3239,7 +3239,11 @@ Package models provides data structures for Yahoo Finance API responses.
   - [func \(p \*PricingData\) IsPreMarket\(\) bool](<#PricingData.IsPreMarket>)
   - [func \(p \*PricingData\) IsRegularMarket\(\) bool](<#PricingData.IsRegularMarket>)
   - [func \(p \*PricingData\) Timestamp\(\) time.Time](<#PricingData.Timestamp>)
-- [type QueryOperator](<#QueryOperator>)
+- [type ScreenerQueryBuilder](<#ScreenerQueryBuilder>)
+- [type EquityQuery](<#EquityQuery>)
+  - [func NewEquityQuery\(operator string, operands \[\]any\) \(\*EquityQuery, error\)](<#NewEquityQuery>)
+- [type FundQuery](<#FundQuery>)
+  - [func NewFundQuery\(operator string, operands \[\]any\) \(\*FundQuery, error\)](<#NewFundQuery>)
 - [type Quote](<#Quote>)
 - [type QuoteError](<#QuoteError>)
 - [type QuoteResponse](<#QuoteResponse>)
@@ -3256,8 +3260,6 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type RevenueEstimate](<#RevenueEstimate>)
 - [type ScreenerParams](<#ScreenerParams>)
   - [func DefaultScreenerParams\(\) ScreenerParams](<#DefaultScreenerParams>)
-- [type ScreenerQuery](<#ScreenerQuery>)
-  - [func NewEquityQuery\(op QueryOperator, operands \[\]interface\{\}\) \*ScreenerQuery](<#NewEquityQuery>)
 - [type ScreenerQuote](<#ScreenerQuote>)
 - [type ScreenerResponse](<#ScreenerResponse>)
 - [type ScreenerResult](<#ScreenerResult>)
@@ -5932,30 +5934,32 @@ func (p *PricingData) Timestamp() time.Time
 
 Timestamp returns the quote time as time.Time.
 
-<a name="QueryOperator"></a>
-## type QueryOperator
+<a name="ScreenerQueryBuilder"></a>
+## type ScreenerQueryBuilder
 
-QueryOperator represents an operator for custom screener queries.
+ScreenerQueryBuilder is the interface for custom screener queries.
+Both EquityQuery and FundQuery implement this interface.
 
 ```go
-type QueryOperator string
+type ScreenerQueryBuilder interface {
+    ToDict() map[string]any
+    QuoteType() string
+}
 ```
 
-<a name="OpEQ"></a>
+Screener query operator constants:
 
 ```go
 const (
-    // Comparison operators
-    OpEQ   QueryOperator = "eq"   // Equals
-    OpGT   QueryOperator = "gt"   // Greater than
-    OpLT   QueryOperator = "lt"   // Less than
-    OpGTE  QueryOperator = "gte"  // Greater than or equal
-    OpLTE  QueryOperator = "lte"  // Less than or equal
-    OpBTWN QueryOperator = "btwn" // Between
-
-    // Logical operators
-    OpAND QueryOperator = "and" // All conditions must match
-    OpOR  QueryOperator = "or"  // Any condition can match
+    OpEQ   = "eq"    // Equals
+    OpGT   = "gt"    // Greater than
+    OpLT   = "lt"    // Less than
+    OpGTE  = "gte"   // Greater than or equal
+    OpLTE  = "lte"   // Less than or equal
+    OpBTWN = "btwn"  // Between
+    OpISIN = "is-in" // Is in (expanded to OR of EQ)
+    OpAND  = "and"   // All conditions must match
+    OpOR   = "or"    // Any condition can match
 )
 ```
 
@@ -6339,6 +6343,12 @@ type ScreenerParams struct {
 
     // SortAsc sorts in ascending order if true (default false/descending).
     SortAsc bool
+
+    // UserID is the user identifier (default "").
+    UserID string
+
+    // UserIDType is the type of user ID (default "guid").
+    UserIDType string
 }
 ```
 
@@ -6351,20 +6361,14 @@ func DefaultScreenerParams() ScreenerParams
 
 DefaultScreenerParams returns default screener parameters.
 
-<a name="ScreenerQuery"></a>
-## type ScreenerQuery
+<a name="EquityQuery"></a>
+## type EquityQuery
 
-ScreenerQuery represents a custom screener query.
+EquityQuery represents a custom equity screener query with client-side validation.
 
 ```go
-type ScreenerQuery struct {
-    // Operator is the query operator (eq, gt, lt, and, or, etc.).
-    Operator QueryOperator `json:"operator"`
-
-    // Operands contains the operands for this query.
-    // For comparison operators: [fieldName, value] or [fieldName, min, max] for btwn
-    // For logical operators: nested ScreenerQuery objects
-    Operands []interface{} `json:"operands"`
+type EquityQuery struct {
+    // contains filtered or unexported fields
 }
 ```
 
@@ -6372,20 +6376,48 @@ type ScreenerQuery struct {
 ### func NewEquityQuery
 
 ```go
-func NewEquityQuery(op QueryOperator, operands []interface{}) *ScreenerQuery
+func NewEquityQuery(operator string, operands []any) (*EquityQuery, error)
 ```
 
-NewEquityQuery creates a new equity screener query.
+NewEquityQuery creates a new equity screener query with validation.
+Fields and values are validated against known Yahoo Finance screener fields.
 
 Example:
 
 ```
-// Find US tech stocks with price > $10
-q := models.NewEquityQuery(models.OpAND, []interface{}{
-    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
-    models.NewEquityQuery(models.OpGT, []interface{}{"eodprice", 10}),
-})
+q1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
+q2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
+q3, _ := models.NewEquityQuery("gt", []any{"eodprice", 10})
+query, _ := models.NewEquityQuery("and", []any{q1, q2, q3})
+```
+
+<a name="FundQuery"></a>
+## type FundQuery
+
+FundQuery represents a custom mutual fund screener query with client-side validation.
+
+```go
+type FundQuery struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="NewFundQuery"></a>
+### func NewFundQuery
+
+```go
+func NewFundQuery(operator string, operands []any) (*FundQuery, error)
+```
+
+NewFundQuery creates a new mutual fund screener query with validation.
+Fields and values are validated against known Yahoo Finance fund screener fields.
+
+Example:
+
+```
+q1, _ := models.NewFundQuery("eq", []any{"exchange", "NAS"})
+q2, _ := models.NewFundQuery("gt", []any{"performanceratingoverall", 3})
+query, _ := models.NewFundQuery("and", []any{q1, q2})
 ```
 
 <a name="ScreenerQuote"></a>
@@ -6490,6 +6522,26 @@ type ScreenerQuote struct {
 
     // BookValue is the book value per share.
     BookValue float64 `json:"bookValue,omitempty"`
+
+    // Fund-specific fields
+
+    // FundNetAssets is the fund's total net assets.
+    FundNetAssets float64 `json:"fundNetAssets,omitempty"`
+
+    // CategoryName is the fund category name.
+    CategoryName string `json:"categoryName,omitempty"`
+
+    // PerformanceRatingOverall is the overall performance rating (1-5).
+    PerformanceRatingOverall int `json:"performanceRatingOverall,omitempty"`
+
+    // RiskRatingOverall is the overall risk rating (1-5).
+    RiskRatingOverall int `json:"riskRatingOverall,omitempty"`
+
+    // InitialInvestment is the minimum initial investment amount.
+    InitialInvestment float64 `json:"initialInvestment,omitempty"`
+
+    // AnnualReturnNavY1CategoryRank is the 1-year annual return category rank.
+    AnnualReturnNavY1CategoryRank float64 `json:"annualReturnNavY1CategoryRank,omitempty"`
 }
 ```
 
@@ -6504,7 +6556,7 @@ type ScreenerResponse struct {
         Result []struct {
             Total  int                      `json:"total"`
             Count  int                      `json:"count"`
-            Quotes []map[string]interface{} `json:"quotes"`
+            Quotes []map[string]any `json:"quotes"`
         }   `json:"result"`
         Error *struct {
             Code        string `json:"code"`
@@ -7730,6 +7782,15 @@ Yahoo Finance provides several predefined screeners:
 - most\_shorted\_stocks: Most shorted stocks
 - small\_cap\_gainers: Small cap gainers
 
+Fund Screeners:
+
+- conservative\_foreign\_funds: Conservative foreign funds
+- high\_yield\_bond: High yield bond funds
+- portfolio\_anchors: Portfolio anchor funds
+- solid\_large\_growth\_funds: Solid large growth funds
+- solid\_midcap\_growth\_funds: Solid midcap growth funds
+- top\_mutual\_funds: Top mutual funds
+
 ### Basic Usage
 
 ```
@@ -7765,15 +7826,14 @@ Custom Queries:
 
 ### Custom Queries
 
-Build custom queries using \[models.ScreenerQuery\]:
+Build custom queries using EquityQuery or FundQuery:
 
 ```
 // Find US tech stocks with price > $50
-query := models.NewEquityQuery(models.OpAND, []interface{}{
-    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
-    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
-})
+eq1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
+eq2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
+eq3, _ := models.NewEquityQuery("gt", []any{"intradayprice", 50})
+query, _ := models.NewEquityQuery("and", []any{eq1, eq2, eq3})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
@@ -7787,6 +7847,7 @@ Available operators for custom queries:
 - OpGTE: Greater than or equal
 - OpLTE: Less than or equal
 - OpBTWN: Between \(requires min and max values\)
+- OpISIN: Is in \(expanded to OR of EQ\)
 - OpAND: All conditions must match
 - OpOR: Any condition can match
 
@@ -7814,6 +7875,15 @@ Yahoo Finance provides several predefined screeners:
 - most\_shorted\_stocks: Most shorted stocks
 - small\_cap\_gainers: Small cap gainers
 
+Fund Screeners:
+
+- conservative\_foreign\_funds: Conservative foreign funds
+- high\_yield\_bond: High yield bond funds
+- portfolio\_anchors: Portfolio anchor funds
+- solid\_large\_growth\_funds: Solid large growth funds
+- solid\_midcap\_growth\_funds: Solid midcap growth funds
+- top\_mutual\_funds: Top mutual funds
+
 ### Basic Usage
 
 ```
@@ -7837,11 +7907,10 @@ for _, quote := range result.Quotes {
 
 ```
 // Find US tech stocks with price > $50
-query := models.NewEquityQuery(models.OpAND, []interface{}{
-    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
-    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
-})
+eq1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
+eq2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
+eq3, _ := models.NewEquityQuery("gt", []any{"intradayprice", 50})
+query, _ := models.NewEquityQuery("and", []any{eq1, eq2, eq3})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
@@ -7860,7 +7929,7 @@ All Screener methods are safe for concurrent use from multiple goroutines.
   - [func \(s \*Screener\) DayLosers\(count int\) \(\*models.ScreenerResult, error\)](<#Screener.DayLosers>)
   - [func \(s \*Screener\) MostActives\(count int\) \(\*models.ScreenerResult, error\)](<#Screener.MostActives>)
   - [func \(s \*Screener\) Screen\(screener models.PredefinedScreener, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.Screen>)
-  - [func \(s \*Screener\) ScreenWithQuery\(query \*models.ScreenerQuery, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.ScreenWithQuery>)
+  - [func \(s \*Screener\) ScreenWithQuery\(query models.ScreenerQueryBuilder, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.ScreenWithQuery>)
 
 
 <a name="Option"></a>
@@ -7999,19 +8068,21 @@ for _, quote := range result.Quotes {
 ### func \(\*Screener\) ScreenWithQuery
 
 ```go
-func (s *Screener) ScreenWithQuery(query *models.ScreenerQuery, params *models.ScreenerParams) (*models.ScreenerResult, error)
+func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *models.ScreenerParams) (*models.ScreenerResult, error)
 ```
 
-ScreenWithQuery uses a custom query to find matching stocks.
+ScreenWithQuery uses a custom query to find matching stocks or funds.
+Accepts both *models.EquityQuery and *models.FundQuery.
+The quoteType is automatically determined from the query type:
+"EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
 
 Example:
 
 ```
 // Find US stocks with market cap > $10B
-query := models.NewEquityQuery(models.OpAND, []interface{}{
-    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-    models.NewEquityQuery(models.OpGT, []interface{}{"intradaymarketcap", 10000000000}),
-})
+q1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
+q2, _ := models.NewEquityQuery("gt", []any{"intradaymarketcap", 10000000000})
+query, _ := models.NewEquityQuery("and", []any{q1, q2})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
