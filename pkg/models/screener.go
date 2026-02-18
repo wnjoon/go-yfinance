@@ -123,6 +123,26 @@ type ScreenerQuote struct {
 
 	// BookValue is the book value per share.
 	BookValue float64 `json:"bookValue,omitempty"`
+
+	// Fund-specific fields
+
+	// FundNetAssets is the fund's total net assets.
+	FundNetAssets float64 `json:"fundNetAssets,omitempty"`
+
+	// CategoryName is the fund category name.
+	CategoryName string `json:"categoryName,omitempty"`
+
+	// PerformanceRatingOverall is the overall performance rating (1-5).
+	PerformanceRatingOverall int `json:"performanceRatingOverall,omitempty"`
+
+	// RiskRatingOverall is the overall risk rating (1-5).
+	RiskRatingOverall int `json:"riskRatingOverall,omitempty"`
+
+	// InitialInvestment is the minimum initial investment amount.
+	InitialInvestment float64 `json:"initialInvestment,omitempty"`
+
+	// AnnualReturnNavY1CategoryRank is the 1-year annual return category rank.
+	AnnualReturnNavY1CategoryRank float64 `json:"annualReturnNavY1CategoryRank,omitempty"`
 }
 
 // PredefinedScreener represents a predefined screener query name.
@@ -183,70 +203,50 @@ type ScreenerParams struct {
 
 	// SortAsc sorts in ascending order if true (default false/descending).
 	SortAsc bool
+
+	// UserID is the user identifier (default "").
+	UserID string
+
+	// UserIDType is the type of user ID (default "guid").
+	UserIDType string
 }
 
 // DefaultScreenerParams returns default screener parameters.
 func DefaultScreenerParams() ScreenerParams {
 	return ScreenerParams{
-		Offset:    0,
-		Count:     25,
-		SortField: "ticker",
-		SortAsc:   false,
+		Offset:     0,
+		Count:      25,
+		SortField:  "ticker",
+		SortAsc:    false,
+		UserID:     "",
+		UserIDType: "guid",
 	}
 }
 
-// QueryOperator represents an operator for custom screener queries.
-type QueryOperator string
-
+// Screener query operator constants.
+// These are case-insensitive when passed to NewEquityQuery/NewFundQuery (auto-uppercased).
 const (
 	// Comparison operators
-	OpEQ   QueryOperator = "eq"   // Equals
-	OpGT   QueryOperator = "gt"   // Greater than
-	OpLT   QueryOperator = "lt"   // Less than
-	OpGTE  QueryOperator = "gte"  // Greater than or equal
-	OpLTE  QueryOperator = "lte"  // Less than or equal
-	OpBTWN QueryOperator = "btwn" // Between
+	OpEQ   = "eq"    // Equals
+	OpGT   = "gt"    // Greater than
+	OpLT   = "lt"    // Less than
+	OpGTE  = "gte"   // Greater than or equal
+	OpLTE  = "lte"   // Less than or equal
+	OpBTWN = "btwn"  // Between
+	OpISIN = "is-in" // Is in (expanded to OR of EQ)
 
 	// Logical operators
-	OpAND QueryOperator = "and" // All conditions must match
-	OpOR  QueryOperator = "or"  // Any condition can match
+	OpAND = "and" // All conditions must match
+	OpOR  = "or"  // Any condition can match
 )
-
-// ScreenerQuery represents a custom screener query.
-type ScreenerQuery struct {
-	// Operator is the query operator (eq, gt, lt, and, or, etc.).
-	Operator QueryOperator `json:"operator"`
-
-	// Operands contains the operands for this query.
-	// For comparison operators: [fieldName, value] or [fieldName, min, max] for btwn
-	// For logical operators: nested ScreenerQuery objects
-	Operands []interface{} `json:"operands"`
-}
-
-// NewEquityQuery creates a new equity screener query.
-//
-// Example:
-//
-//	// Find US tech stocks with price > $10
-//	q := models.NewEquityQuery(models.OpAND, []interface{}{
-//	    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
-//	    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
-//	    models.NewEquityQuery(models.OpGT, []interface{}{"eodprice", 10}),
-//	})
-func NewEquityQuery(op QueryOperator, operands []interface{}) *ScreenerQuery {
-	return &ScreenerQuery{
-		Operator: op,
-		Operands: operands,
-	}
-}
 
 // ScreenerResponse represents the raw API response from Yahoo Finance screener.
 type ScreenerResponse struct {
 	Finance struct {
 		Result []struct {
-			Total  int                      `json:"total"`
-			Count  int                      `json:"count"`
-			Quotes []map[string]interface{} `json:"quotes"`
+			Total  int               `json:"total"`
+			Count  int               `json:"count"`
+			Quotes []map[string]any `json:"quotes"`
 		} `json:"result"`
 		Error *struct {
 			Code        string `json:"code"`
