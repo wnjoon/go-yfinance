@@ -3082,7 +3082,7 @@ Screener:
 
 - [ScreenerResult](<#ScreenerResult>): Stock screener results with pagination
 - [ScreenerQuote](<#ScreenerQuote>): Stock from screener results with financial data
-- ScreenerQueryBuilder: Interface for custom screener queries (EquityQuery and FundQuery)
+- \[ScreenerQuery\]: Custom screener query structure
 - [ScreenerParams](<#ScreenerParams>): Screener parameters \(offset, count, sort\)
 - [PredefinedScreener](<#PredefinedScreener>): Predefined screener identifiers \(day\_gainers, etc.\)
 
@@ -3127,6 +3127,8 @@ Package models provides data structures for Yahoo Finance API responses.
 
 ## Index
 
+- [Constants](<#constants>)
+- [Variables](<#variables>)
 - [func IsValidInterval\(interval string\) bool](<#IsValidInterval>)
 - [func IsValidPeriod\(period string\) bool](<#IsValidPeriod>)
 - [func ValidIntervals\(\) \[\]string](<#ValidIntervals>)
@@ -3163,6 +3165,11 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type EarningsHistory](<#EarningsHistory>)
 - [type EarningsHistoryItem](<#EarningsHistoryItem>)
 - [type EconomicEvent](<#EconomicEvent>)
+- [type EquityQuery](<#EquityQuery>)
+  - [func NewEquityQuery\(operator string, operands \[\]any\) \(\*EquityQuery, error\)](<#NewEquityQuery>)
+  - [func \(q \*EquityQuery\) QuoteType\(\) string](<#EquityQuery.QuoteType>)
+  - [func \(q \*EquityQuery\) String\(\) string](<#EquityQuery.String>)
+  - [func \(q \*EquityQuery\) ToDict\(\) map\[string\]any](<#EquityQuery.ToDict>)
 - [type FastInfo](<#FastInfo>)
 - [type FinancialItem](<#FinancialItem>)
 - [type FinancialStatement](<#FinancialStatement>)
@@ -3172,6 +3179,11 @@ Package models provides data structures for Yahoo Finance API responses.
   - [func \(fs \*FinancialStatement\) GetLatest\(field string\) \(float64, bool\)](<#FinancialStatement.GetLatest>)
 - [type Financials](<#Financials>)
 - [type Frequency](<#Frequency>)
+- [type FundQuery](<#FundQuery>)
+  - [func NewFundQuery\(operator string, operands \[\]any\) \(\*FundQuery, error\)](<#NewFundQuery>)
+  - [func \(q \*FundQuery\) QuoteType\(\) string](<#FundQuery.QuoteType>)
+  - [func \(q \*FundQuery\) String\(\) string](<#FundQuery.String>)
+  - [func \(q \*FundQuery\) ToDict\(\) map\[string\]any](<#FundQuery.ToDict>)
 - [type GrowthCompany](<#GrowthCompany>)
 - [type GrowthEstimate](<#GrowthEstimate>)
 - [type History](<#History>)
@@ -3239,11 +3251,6 @@ Package models provides data structures for Yahoo Finance API responses.
   - [func \(p \*PricingData\) IsPreMarket\(\) bool](<#PricingData.IsPreMarket>)
   - [func \(p \*PricingData\) IsRegularMarket\(\) bool](<#PricingData.IsRegularMarket>)
   - [func \(p \*PricingData\) Timestamp\(\) time.Time](<#PricingData.Timestamp>)
-- [type ScreenerQueryBuilder](<#ScreenerQueryBuilder>)
-- [type EquityQuery](<#EquityQuery>)
-  - [func NewEquityQuery\(operator string, operands \[\]any\) \(\*EquityQuery, error\)](<#NewEquityQuery>)
-- [type FundQuery](<#FundQuery>)
-  - [func NewFundQuery\(operator string, operands \[\]any\) \(\*FundQuery, error\)](<#NewFundQuery>)
 - [type Quote](<#Quote>)
 - [type QuoteError](<#QuoteError>)
 - [type QuoteResponse](<#QuoteResponse>)
@@ -3260,6 +3267,7 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type RevenueEstimate](<#RevenueEstimate>)
 - [type ScreenerParams](<#ScreenerParams>)
   - [func DefaultScreenerParams\(\) ScreenerParams](<#DefaultScreenerParams>)
+- [type ScreenerQueryBuilder](<#ScreenerQueryBuilder>)
 - [type ScreenerQuote](<#ScreenerQuote>)
 - [type ScreenerResponse](<#ScreenerResponse>)
 - [type ScreenerResult](<#ScreenerResult>)
@@ -3286,6 +3294,388 @@ Package models provides data structures for Yahoo Finance API responses.
 - [type TimeseriesResult](<#TimeseriesResult>)
 - [type TransactionStats](<#TransactionStats>)
 
+
+## Constants
+
+<a name="OpEQ"></a>Screener query operator constants. These are case\-insensitive when passed to NewEquityQuery/NewFundQuery \(auto\-uppercased\).
+
+```go
+const (
+    // Comparison operators
+    OpEQ   = "eq"    // Equals
+    OpGT   = "gt"    // Greater than
+    OpLT   = "lt"    // Less than
+    OpGTE  = "gte"   // Greater than or equal
+    OpLTE  = "lte"   // Less than or equal
+    OpBTWN = "btwn"  // Between
+    OpISIN = "is-in" // Is in (expanded to OR of EQ)
+
+    // Logical operators
+    OpAND = "and" // All conditions must match
+    OpOR  = "or"  // Any condition can match
+)
+```
+
+## Variables
+
+<a name="EquityScreenerExchangeMap"></a>EquityScreenerExchangeMap maps region codes to valid exchange codes for equity screener. Matches Python's EQUITY\_SCREENER\_EQ\_MAP\["exchange"\].
+
+```go
+var EquityScreenerExchangeMap = map[string][]string{
+    "ae": {"DFM"},
+    "ar": {"BUE"},
+    "at": {"VIE"},
+    "au": {"ASX", "CXA"},
+    "be": {"BRU"},
+    "br": {"SAO"},
+    "ca": {"CNQ", "NEO", "TOR", "VAN"},
+    "ch": {"EBS"},
+    "cl": {"SGO"},
+    "cn": {"SHH", "SHZ"},
+    "co": {"BVC"},
+    "cz": {"PRA"},
+    "de": {"BER", "DUS", "EUX", "FRA", "HAM", "HAN", "GER", "MUN", "STU"},
+    "dk": {"CPH"},
+    "ee": {"TAL"},
+    "eg": {"CAI"},
+    "es": {"MAD", "MCE"},
+    "fi": {"HEL"},
+    "fr": {"ENX", "PAR"},
+    "gb": {"AQS", "CXE", "IOB", "LSE"},
+    "gr": {"ATH"},
+    "hk": {"HKG"},
+    "hu": {"BUD"},
+    "id": {"JKT"},
+    "ie": {"ISE"},
+    "il": {"TLV"},
+    "in": {"BSE", "NSI"},
+    "is": {"ICE"},
+    "it": {"MDD", "MIL", "TLO"},
+    "jp": {"FKA", "JPX", "OSA", "SAP"},
+    "kr": {"KOE", "KSC"},
+    "kw": {"KUW"},
+    "lk": {"CSE"},
+    "lt": {"LIT"},
+    "lv": {"RIS"},
+    "mx": {"MEX"},
+    "my": {"KLS"},
+    "nl": {"AMS", "DXE"},
+    "no": {"OSL"},
+    "nz": {"NZE"},
+    "pe": {},
+    "ph": {"PHP", "PHS"},
+    "pk": {"KAR"},
+    "pl": {"WSE"},
+    "pt": {"LIS"},
+    "qa": {"DOH"},
+    "ro": {"BVB"},
+    "ru": {"MCX"},
+    "sa": {"SAU"},
+    "se": {"STO"},
+    "sg": {"SES"},
+    "sr": {},
+    "th": {"SET"},
+    "tr": {"IST"},
+    "tw": {"TAI", "TWO"},
+    "us": {"ASE", "BTS", "CXI", "NAE", "NCM", "NGM", "NMS", "NYQ", "OEM", "OQB", "OQX", "PCX", "PNK", "YHD"},
+    "ve": {"CCS"},
+    "vn": {"VSE"},
+    "za": {"JNB"},
+}
+```
+
+<a name="EquityScreenerFields"></a>EquityScreenerFields defines valid field names by category for equity screener. After merging with CommonScreenerFields, matches Python's EQUITY\_SCREENER\_FIELDS.
+
+```go
+var EquityScreenerFields = map[string][]string{
+    "eq_fields": {"region", "sector", "peer_group", "industry", "exchange"},
+    "price": {
+        "lastclosemarketcap.lasttwelvemonths", "percentchange",
+        "lastclose52weekhigh.lasttwelvemonths", "fiftytwowkpercentchange",
+        "lastclose52weeklow.lasttwelvemonths", "intradaymarketcap",
+        "eodprice", "intradaypricechange", "intradayprice",
+    },
+    "trading": {"beta", "avgdailyvol3m", "pctheldinsider", "pctheldinst", "dayvolume", "eodvolume"},
+    "short_interest": {
+        "short_percentage_of_shares_outstanding.value", "short_interest.value",
+        "short_percentage_of_float.value", "days_to_cover_short.value",
+        "short_interest_percentage_change.value",
+    },
+    "valuation": {
+        "bookvalueshare.lasttwelvemonths", "lastclosemarketcaptotalrevenue.lasttwelvemonths",
+        "lastclosetevtotalrevenue.lasttwelvemonths", "pricebookratio.quarterly",
+        "peratio.lasttwelvemonths", "lastclosepricetangiblebookvalue.lasttwelvemonths",
+        "lastclosepriceearnings.lasttwelvemonths", "pegratio_5y",
+    },
+    "profitability": {
+        "consecutive_years_of_dividend_growth_count", "returnonassets.lasttwelvemonths",
+        "returnonequity.lasttwelvemonths", "forward_dividend_per_share",
+        "forward_dividend_yield", "returnontotalcapital.lasttwelvemonths",
+    },
+    "leverage": {
+        "lastclosetevebit.lasttwelvemonths", "netdebtebitda.lasttwelvemonths",
+        "totaldebtequity.lasttwelvemonths", "ltdebtequity.lasttwelvemonths",
+        "ebitinterestexpense.lasttwelvemonths", "ebitdainterestexpense.lasttwelvemonths",
+        "lastclosetevebitda.lasttwelvemonths", "totaldebtebitda.lasttwelvemonths",
+    },
+    "liquidity": {
+        "quickratio.lasttwelvemonths",
+        "altmanzscoreusingtheaveragestockinformationforaperiod.lasttwelvemonths",
+        "currentratio.lasttwelvemonths",
+        "operatingcashflowtocurrentliabilities.lasttwelvemonths",
+    },
+    "income_statement": {
+        "totalrevenues.lasttwelvemonths", "netincomemargin.lasttwelvemonths",
+        "grossprofit.lasttwelvemonths", "ebitda1yrgrowth.lasttwelvemonths",
+        "dilutedepscontinuingoperations.lasttwelvemonths", "quarterlyrevenuegrowth.quarterly",
+        "epsgrowth.lasttwelvemonths", "netincomeis.lasttwelvemonths",
+        "ebitda.lasttwelvemonths", "dilutedeps1yrgrowth.lasttwelvemonths",
+        "totalrevenues1yrgrowth.lasttwelvemonths", "operatingincome.lasttwelvemonths",
+        "netincome1yrgrowth.lasttwelvemonths", "grossprofitmargin.lasttwelvemonths",
+        "ebitdamargin.lasttwelvemonths", "ebit.lasttwelvemonths",
+        "basicepscontinuingoperations.lasttwelvemonths",
+        "netepsbasic.lasttwelvemonthsnetepsdiluted.lasttwelvemonths",
+    },
+    "balance_sheet": {
+        "totalassets.lasttwelvemonths", "totalcommonsharesoutstanding.lasttwelvemonths",
+        "totaldebt.lasttwelvemonths", "totalequity.lasttwelvemonths",
+        "totalcurrentassets.lasttwelvemonths",
+        "totalcashandshortterminvestments.lasttwelvemonths",
+        "totalcommonequity.lasttwelvemonths",
+        "totalcurrentliabilities.lasttwelvemonths", "totalsharesoutstanding",
+    },
+    "cash_flow": {
+        "forward_dividend_yield", "leveredfreecashflow.lasttwelvemonths",
+        "capitalexpenditure.lasttwelvemonths", "cashfromoperations.lasttwelvemonths",
+        "leveredfreecashflow1yrgrowth.lasttwelvemonths",
+        "unleveredfreecashflow.lasttwelvemonths",
+        "cashfromoperations1yrgrowth.lasttwelvemonths",
+    },
+    "esg": {"esg_score", "environmental_score", "governance_score", "social_score", "highest_controversy"},
+}
+```
+
+<a name="EquityScreenerPeerGroups"></a>EquityScreenerPeerGroups is the set of valid peer group names for equity screener.
+
+```go
+var EquityScreenerPeerGroups = []string{
+    "US Fund Equity Energy", "US CE Convertibles", "EAA CE UK Large-Cap Equity",
+    "EAA CE Other", "US Fund Financial", "India CE Multi-Cap",
+    "US Fund Foreign Large Blend", "US Fund Consumer Cyclical",
+    "EAA Fund Global Equity Income",
+    "China Fund Sector Equity Financial and Real Estate",
+    "US Fund Equity Precious Metals", "EAA Fund RMB Bond - Onshore",
+    "China Fund QDII Greater China Equity", "US Fund Large Growth",
+    "EAA Fund Germany Equity", "EAA Fund Hong Kong Equity",
+    "EAA CE UK Small-Cap Equity", "US Fund Natural Resources",
+    "US CE Preferred Stock", "India Fund Sector - Financial Services",
+    "US Fund Diversified Emerging Mkts",
+    "EAA Fund South Africa & Namibia Equity",
+    "China Fund QDII Sector Equity", "EAA CE Sector Equity Biotechnology",
+    "EAA Fund Switzerland Equity", "US Fund Large Value",
+    "EAA Fund Asia ex-Japan Equity", "US Fund Health", "US Fund China Region",
+    "EAA Fund Emerging Europe ex-Russia Equity",
+    "EAA Fund Sector Equity Industrial Materials",
+    "EAA Fund Japan Large-Cap Equity", "EAA Fund EUR Corporate Bond",
+    "US Fund Technology", "EAA CE Global Large-Cap Blend Equity",
+    "Mexico Fund Mexico Equity", "US Fund Trading--Leveraged Equity",
+    "EAA Fund Sector Equity Consumer Goods & Services", "US Fund Large Blend",
+    "EAA Fund Global Flex-Cap Equity",
+    "EAA Fund EUR Aggressive Allocation - Global", "EAA Fund China Equity",
+    "EAA Fund Global Large-Cap Growth Equity", "US CE Options-based",
+    "EAA Fund Sector Equity Financial Services",
+    "EAA Fund Europe Large-Cap Blend Equity",
+    "EAA Fund China Equity - A Shares", "EAA Fund USD Corporate Bond",
+    "EAA Fund Eurozone Large-Cap Equity",
+    "China Fund Aggressive Allocation Fund",
+    "EAA Fund Sector Equity Technology",
+    "EAA Fund Global Emerging Markets Equity",
+    "EAA Fund EUR Moderate Allocation - Global", "EAA Fund Other Bond",
+    "EAA Fund Denmark Equity", "EAA Fund US Large-Cap Blend Equity",
+    "India Fund Large-Cap", "Paper & Forestry", "Containers & Packaging",
+    "US Fund Miscellaneous Region", "Energy Services", "EAA Fund Other Equity",
+    "Homebuilders", "Construction Materials", "China Fund Equity Funds",
+    "Steel", "Consumer Durables", "EAA Fund Global Large-Cap Blend Equity",
+    "Transportation Infrastructure", "Precious Metals", "Building Products",
+    "Traders & Distributors", "Electrical Equipment", "Auto Components",
+    "Construction & Engineering", "Aerospace & Defense",
+    "Refiners & Pipelines", "Diversified Metals", "Textiles & Apparel",
+    "Industrial Conglomerates", "Household Products", "Commercial Services",
+    "Food Retailers", "Semiconductors", "Media", "Automobiles",
+    "Consumer Services", "Technology Hardware", "Transportation",
+    "Telecommunication Services", "Oil & Gas Producers", "Machinery",
+    "Retailing", "Healthcare", "Chemicals", "Food Products",
+    "Diversified Financials", "Real Estate", "Insurance", "Utilities",
+    "Pharmaceuticals", "Software & Services", "Banks",
+}
+```
+
+<a name="EquityScreenerSectors"></a>EquityScreenerSectors is the set of valid sector names for equity screener.
+
+```go
+var EquityScreenerSectors = []string{
+    "Basic Materials", "Industrials", "Communication Services", "Healthcare",
+    "Real Estate", "Technology", "Energy", "Utilities", "Financial Services",
+    "Consumer Defensive", "Consumer Cyclical",
+}
+```
+
+<a name="FundScreenerExchangeMap"></a>FundScreenerExchangeMap maps region codes to valid exchange codes for fund screener. Matches Python's FUND\_SCREENER\_EQ\_MAP\["exchange"\].
+
+```go
+var FundScreenerExchangeMap = map[string][]string{
+    "ae": {"DFM"},
+    "ar": {"BUE"},
+    "at": {"VIE"},
+    "au": {"ASX", "CXA"},
+    "be": {"BRU"},
+    "br": {"SAO"},
+    "ca": {"CNQ", "NEO", "TOR", "VAN"},
+    "ch": {"EBS"},
+    "cl": {"SGO"},
+    "co": {"BVC"},
+    "cn": {"SHH", "SHZ"},
+    "cz": {"PRA"},
+    "de": {"BER", "DUS", "EUX", "FRA", "GER", "HAM", "HAN", "MUN", "STU"},
+    "dk": {"CPH"},
+    "ee": {"TAL"},
+    "eg": {"CAI"},
+    "es": {"BAR", "MAD", "MCE"},
+    "fi": {"HEL"},
+    "fr": {"ENX", "PAR"},
+    "gb": {"CXE", "IOB", "LSE"},
+    "gr": {"ATH"},
+    "hk": {"HKG"},
+    "hu": {"BUD"},
+    "id": {"JKT"},
+    "ie": {"ISE"},
+    "il": {"TLV"},
+    "in": {"BSE", "NSI"},
+    "is": {"ICE"},
+    "it": {"MIL"},
+    "jp": {"FKA", "JPX", "OSA", "SAP"},
+    "kr": {"KOE", "KSC"},
+    "kw": {"KUW"},
+    "lk": {"CSE"},
+    "lt": {"LIT"},
+    "lv": {"RIS"},
+    "mx": {"MEX"},
+    "my": {"KLS"},
+    "nl": {"AMS"},
+    "no": {"OSL"},
+    "nz": {"NZE"},
+    "pe": {""},
+    "ph": {"PHP", "PHS"},
+    "pk": {"KAR"},
+    "pl": {"WSE"},
+    "pt": {"LIS"},
+    "qa": {"DOH"},
+    "ro": {"BVB"},
+    "ru": {"MCX"},
+    "sa": {"SAU"},
+    "se": {"STO"},
+    "sg": {"SES"},
+    "sr": {""},
+    "th": {"SET"},
+    "tr": {"IST"},
+    "tw": {"TAI", "TWO"},
+    "us": {"ASE", "NAS", "NCM", "NGM", "NMS", "NYQ", "OEM", "OGM", "OQB", "PNK", "WCB"},
+    "ve": {"CCS"},
+    "vn": {"VSE"},
+    "za": {"JNB"},
+}
+```
+
+<a name="FundScreenerFields"></a>FundScreenerFields defines valid field names by category for fund screener. After merging with CommonScreenerFields, matches Python's FUND\_SCREENER\_FIELDS.
+
+```go
+var FundScreenerFields = map[string][]string{
+    "eq_fields": {
+        "categoryname", "performanceratingoverall", "initialinvestment",
+        "annualreturnnavy1categoryrank", "riskratingoverall", "exchange",
+    },
+    "price": {"eodprice", "intradaypricechange", "intradayprice"},
+}
+```
+
+<a name="SectorIndustryMapping"></a>SectorIndustryMapping maps sector names to their industries. Matches Python's SECTOR\_INDUSTY\_MAPPING from yfinance/const.py.
+
+```go
+var SectorIndustryMapping = map[string][]string{
+    "Basic Materials": {
+        "Specialty Chemicals", "Gold", "Building Materials", "Copper", "Steel",
+        "Agricultural Inputs", "Chemicals", "Other Industrial Metals & Mining",
+        "Lumber & Wood Production", "Aluminum", "Other Precious Metals & Mining",
+        "Coking Coal", "Paper & Paper Products", "Silver",
+    },
+    "Communication Services": {
+        "Advertising Agencies", "Broadcasting", "Electronic Gaming & Multimedia",
+        "Entertainment", "Internet Content & Information", "Publishing", "Telecom Services",
+    },
+    "Consumer Cyclical": {
+        "Apparel Manufacturing", "Apparel Retail", "Auto & Truck Dealerships",
+        "Auto Manufacturers", "Auto Parts", "Department Stores", "Footwear & Accessories",
+        "Furnishings, Fixtures & Appliances", "Gambling", "Home Improvement Retail",
+        "Internet Retail", "Leisure", "Lodging", "Luxury Goods",
+        "Packaging & Containers", "Personal Services", "Recreational Vehicles",
+        "Residential Construction", "Resorts & Casinos", "Restaurants",
+        "Specialty Retail", "Textile Manufacturing", "Travel Services",
+    },
+    "Consumer Defensive": {
+        "Beverages—Brewers", "Beverages—Non-Alcoholic", "Beverages—Wineries & Distilleries",
+        "Confectioners", "Discount Stores", "Education & Training Services",
+        "Farm Products", "Food Distribution", "Grocery Stores",
+        "Household & Personal Products", "Packaged Foods", "Tobacco",
+    },
+    "Energy": {
+        "Oil & Gas Drilling", "Oil & Gas E&P", "Oil & Gas Equipment & Services",
+        "Oil & Gas Integrated", "Oil & Gas Midstream", "Oil & Gas Refining & Marketing",
+        "Thermal Coal", "Uranium",
+    },
+    "Financial Services": {
+        "Asset Management", "Banks—Diversified", "Banks—Regional", "Capital Markets",
+        "Credit Services", "Financial Conglomerates", "Financial Data & Stock Exchanges",
+        "Insurance Brokers", "Insurance—Diversified", "Insurance—Life",
+        "Insurance—Property & Casualty", "Insurance—Reinsurance", "Insurance—Specialty",
+        "Mortgage Finance", "Shell Companies",
+    },
+    "Healthcare": {
+        "Biotechnology", "Diagnostics & Research", "Drug Manufacturers—General",
+        "Drug Manufacturers—Specialty & Generic", "Health Information Services",
+        "Healthcare Plans", "Medical Care Facilities", "Medical Devices",
+        "Medical Instruments & Supplies", "Medical Distribution", "Pharmaceutical Retailers",
+    },
+    "Industrials": {
+        "Aerospace & Defense", "Airlines", "Airports & Air Services",
+        "Building Products & Equipment", "Business Equipment & Supplies", "Conglomerates",
+        "Consulting Services", "Electrical Equipment & Parts", "Engineering & Construction",
+        "Farm & Heavy Construction Machinery", "Industrial Distribution",
+        "Infrastructure Operations", "Integrated Freight & Logistics", "Marine Shipping",
+        "Metal Fabrication", "Pollution & Treatment Controls", "Railroads",
+        "Rental & Leasing Services", "Security & Protection Services",
+        "Specialty Business Services", "Specialty Industrial Machinery",
+        "Staffing & Employment Services", "Tools & Accessories", "Trucking", "Waste Management",
+    },
+    "Real Estate": {
+        "Real Estate—Development", "Real Estate Services", "Real Estate—Diversified",
+        "REIT—Healthcare Facilities", "REIT—Hotel & Motel", "REIT—Industrial",
+        "REIT—Office", "REIT—Residential", "REIT—Retail", "REIT—Mortgage",
+        "REIT—Specialty", "REIT—Diversified",
+    },
+    "Technology": {
+        "Communication Equipment", "Computer Hardware", "Consumer Electronics",
+        "Electronic Components", "Electronics & Computer Distribution",
+        "Information Technology Services", "Scientific & Technical Instruments",
+        "Semiconductor Equipment & Materials", "Semiconductors",
+        "Software—Application", "Software—Infrastructure", "Solar",
+    },
+    "Utilities": {
+        "Utilities—Diversified", "Utilities—Independent Power Producers",
+        "Utilities—Regulated Electric", "Utilities—Regulated Gas",
+        "Utilities—Regulated Water", "Utilities—Renewable",
+    },
+}
+```
 
 <a name="IsValidInterval"></a>
 ## func IsValidInterval
@@ -3926,6 +4316,62 @@ type EconomicEvent struct {
 }
 ```
 
+<a name="EquityQuery"></a>
+## type EquityQuery
+
+EquityQuery represents a validated equity screener query.
+
+```go
+type EquityQuery struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="NewEquityQuery"></a>
+### func NewEquityQuery
+
+```go
+func NewEquityQuery(operator string, operands []any) (*EquityQuery, error)
+```
+
+NewEquityQuery creates a new validated equity screener query. Operator is case\-insensitive and will be uppercased. Valid operators: "EQ", "GT", "LT", "GTE", "LTE", "BTWN", "AND", "OR", "IS\-IN"
+
+Example:
+
+```
+q, err := models.NewEquityQuery("and", []any{
+    mustEquityQuery("eq", []any{"region", "us"}),
+    mustEquityQuery("gt", []any{"intradayprice", 10}),
+})
+```
+
+<a name="EquityQuery.QuoteType"></a>
+### func \(\*EquityQuery\) QuoteType
+
+```go
+func (q *EquityQuery) QuoteType() string
+```
+
+QuoteType returns "EQUITY".
+
+<a name="EquityQuery.String"></a>
+### func \(\*EquityQuery\) String
+
+```go
+func (q *EquityQuery) String() string
+```
+
+String returns a human\-readable representation of the query.
+
+<a name="EquityQuery.ToDict"></a>
+### func \(\*EquityQuery\) ToDict
+
+```go
+func (q *EquityQuery) ToDict() map[string]any
+```
+
+ToDict serializes the EquityQuery to a map for JSON encoding. IS\-IN is expanded to OR of EQ queries.
+
 <a name="FastInfo"></a>
 ## type FastInfo
 
@@ -4065,6 +4511,53 @@ const (
     FrequencyTrailing  Frequency = "trailing"
 )
 ```
+
+<a name="FundQuery"></a>
+## type FundQuery
+
+FundQuery represents a validated fund screener query.
+
+```go
+type FundQuery struct {
+    // contains filtered or unexported fields
+}
+```
+
+<a name="NewFundQuery"></a>
+### func NewFundQuery
+
+```go
+func NewFundQuery(operator string, operands []any) (*FundQuery, error)
+```
+
+NewFundQuery creates a new validated fund screener query. Same operator rules as NewEquityQuery.
+
+<a name="FundQuery.QuoteType"></a>
+### func \(\*FundQuery\) QuoteType
+
+```go
+func (q *FundQuery) QuoteType() string
+```
+
+QuoteType returns "MUTUALFUND".
+
+<a name="FundQuery.String"></a>
+### func \(\*FundQuery\) String
+
+```go
+func (q *FundQuery) String() string
+```
+
+String returns a human\-readable representation of the query.
+
+<a name="FundQuery.ToDict"></a>
+### func \(\*FundQuery\) ToDict
+
+```go
+func (q *FundQuery) ToDict() map[string]any
+```
+
+ToDict serializes the FundQuery to a map for JSON encoding.
 
 <a name="GrowthCompany"></a>
 ## type GrowthCompany
@@ -5934,35 +6427,6 @@ func (p *PricingData) Timestamp() time.Time
 
 Timestamp returns the quote time as time.Time.
 
-<a name="ScreenerQueryBuilder"></a>
-## type ScreenerQueryBuilder
-
-ScreenerQueryBuilder is the interface for custom screener queries.
-Both EquityQuery and FundQuery implement this interface.
-
-```go
-type ScreenerQueryBuilder interface {
-    ToDict() map[string]any
-    QuoteType() string
-}
-```
-
-Screener query operator constants:
-
-```go
-const (
-    OpEQ   = "eq"    // Equals
-    OpGT   = "gt"    // Greater than
-    OpLT   = "lt"    // Less than
-    OpGTE  = "gte"   // Greater than or equal
-    OpLTE  = "lte"   // Less than or equal
-    OpBTWN = "btwn"  // Between
-    OpISIN = "is-in" // Is in (expanded to OR of EQ)
-    OpAND  = "and"   // All conditions must match
-    OpOR   = "or"    // Any condition can match
-)
-```
-
 <a name="Quote"></a>
 ## type Quote
 
@@ -6361,63 +6825,20 @@ func DefaultScreenerParams() ScreenerParams
 
 DefaultScreenerParams returns default screener parameters.
 
-<a name="EquityQuery"></a>
-## type EquityQuery
+<a name="ScreenerQueryBuilder"></a>
+## type ScreenerQueryBuilder
 
-EquityQuery represents a custom equity screener query with client-side validation.
+ScreenerQueryBuilder is the interface for both EquityQuery and FundQuery. It provides methods for serializing queries and identifying the quote type.
 
 ```go
-type EquityQuery struct {
-    // contains filtered or unexported fields
+type ScreenerQueryBuilder interface {
+    // ToDict serializes the query to a map suitable for JSON encoding.
+    // IS-IN operators are expanded to OR-of-EQ queries.
+    ToDict() map[string]any
+
+    // QuoteType returns "EQUITY" for EquityQuery or "MUTUALFUND" for FundQuery.
+    QuoteType() string
 }
-```
-
-<a name="NewEquityQuery"></a>
-### func NewEquityQuery
-
-```go
-func NewEquityQuery(operator string, operands []any) (*EquityQuery, error)
-```
-
-NewEquityQuery creates a new equity screener query with validation.
-Fields and values are validated against known Yahoo Finance screener fields.
-
-Example:
-
-```
-q1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
-q2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
-q3, _ := models.NewEquityQuery("gt", []any{"eodprice", 10})
-query, _ := models.NewEquityQuery("and", []any{q1, q2, q3})
-```
-
-<a name="FundQuery"></a>
-## type FundQuery
-
-FundQuery represents a custom mutual fund screener query with client-side validation.
-
-```go
-type FundQuery struct {
-    // contains filtered or unexported fields
-}
-```
-
-<a name="NewFundQuery"></a>
-### func NewFundQuery
-
-```go
-func NewFundQuery(operator string, operands []any) (*FundQuery, error)
-```
-
-NewFundQuery creates a new mutual fund screener query with validation.
-Fields and values are validated against known Yahoo Finance fund screener fields.
-
-Example:
-
-```
-q1, _ := models.NewFundQuery("eq", []any{"exchange", "NAS"})
-q2, _ := models.NewFundQuery("gt", []any{"performanceratingoverall", 3})
-query, _ := models.NewFundQuery("and", []any{q1, q2})
 ```
 
 <a name="ScreenerQuote"></a>
@@ -6523,8 +6944,6 @@ type ScreenerQuote struct {
     // BookValue is the book value per share.
     BookValue float64 `json:"bookValue,omitempty"`
 
-    // Fund-specific fields
-
     // FundNetAssets is the fund's total net assets.
     FundNetAssets float64 `json:"fundNetAssets,omitempty"`
 
@@ -6554,8 +6973,8 @@ ScreenerResponse represents the raw API response from Yahoo Finance screener.
 type ScreenerResponse struct {
     Finance struct {
         Result []struct {
-            Total  int                      `json:"total"`
-            Count  int                      `json:"count"`
+            Total  int              `json:"total"`
+            Count  int              `json:"count"`
             Quotes []map[string]any `json:"quotes"`
         }   `json:"result"`
         Error *struct {
@@ -7782,15 +8201,6 @@ Yahoo Finance provides several predefined screeners:
 - most\_shorted\_stocks: Most shorted stocks
 - small\_cap\_gainers: Small cap gainers
 
-Fund Screeners:
-
-- conservative\_foreign\_funds: Conservative foreign funds
-- high\_yield\_bond: High yield bond funds
-- portfolio\_anchors: Portfolio anchor funds
-- solid\_large\_growth\_funds: Solid large growth funds
-- solid\_midcap\_growth\_funds: Solid midcap growth funds
-- top\_mutual\_funds: Top mutual funds
-
 ### Basic Usage
 
 ```
@@ -7826,14 +8236,15 @@ Custom Queries:
 
 ### Custom Queries
 
-Build custom queries using EquityQuery or FundQuery:
+Build custom queries using \[models.ScreenerQuery\]:
 
 ```
 // Find US tech stocks with price > $50
-eq1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
-eq2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
-eq3, _ := models.NewEquityQuery("gt", []any{"intradayprice", 50})
-query, _ := models.NewEquityQuery("and", []any{eq1, eq2, eq3})
+query := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
+})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
@@ -7847,7 +8258,6 @@ Available operators for custom queries:
 - OpGTE: Greater than or equal
 - OpLTE: Less than or equal
 - OpBTWN: Between \(requires min and max values\)
-- OpISIN: Is in \(expanded to OR of EQ\)
 - OpAND: All conditions must match
 - OpOR: Any condition can match
 
@@ -7875,15 +8285,6 @@ Yahoo Finance provides several predefined screeners:
 - most\_shorted\_stocks: Most shorted stocks
 - small\_cap\_gainers: Small cap gainers
 
-Fund Screeners:
-
-- conservative\_foreign\_funds: Conservative foreign funds
-- high\_yield\_bond: High yield bond funds
-- portfolio\_anchors: Portfolio anchor funds
-- solid\_large\_growth\_funds: Solid large growth funds
-- solid\_midcap\_growth\_funds: Solid midcap growth funds
-- top\_mutual\_funds: Top mutual funds
-
 ### Basic Usage
 
 ```
@@ -7907,10 +8308,11 @@ for _, quote := range result.Quotes {
 
 ```
 // Find US tech stocks with price > $50
-eq1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
-eq2, _ := models.NewEquityQuery("eq", []any{"sector", "Technology"})
-eq3, _ := models.NewEquityQuery("gt", []any{"intradayprice", 50})
-query, _ := models.NewEquityQuery("and", []any{eq1, eq2, eq3})
+query := models.NewEquityQuery(models.OpAND, []interface{}{
+    models.NewEquityQuery(models.OpEQ, []interface{}{"region", "us"}),
+    models.NewEquityQuery(models.OpEQ, []interface{}{"sector", "Technology"}),
+    models.NewEquityQuery(models.OpGT, []interface{}{"intradayprice", 50}),
+})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
@@ -7920,8 +8322,10 @@ All Screener methods are safe for concurrent use from multiple goroutines.
 
 ## Index
 
+- [Variables](<#variables>)
 - [type Option](<#Option>)
   - [func WithClient\(c \*client.Client\) Option](<#WithClient>)
+- [type PredefinedQuery](<#PredefinedQuery>)
 - [type Screener](<#Screener>)
   - [func New\(opts ...Option\) \(\*Screener, error\)](<#New>)
   - [func \(s \*Screener\) Close\(\)](<#Screener.Close>)
@@ -7931,6 +8335,14 @@ All Screener methods are safe for concurrent use from multiple goroutines.
   - [func \(s \*Screener\) Screen\(screener models.PredefinedScreener, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.Screen>)
   - [func \(s \*Screener\) ScreenWithQuery\(query models.ScreenerQueryBuilder, params \*models.ScreenerParams\) \(\*models.ScreenerResult, error\)](<#Screener.ScreenWithQuery>)
 
+
+## Variables
+
+<a name="PredefinedScreenerQueries"></a>PredefinedScreenerQueries maps predefined screener names to their query definitions. Matches Python's PREDEFINED\_SCREENER\_QUERIES from yfinance v1.2.0.
+
+```go
+var PredefinedScreenerQueries map[string]PredefinedQuery
+```
 
 <a name="Option"></a>
 ## type Option
@@ -7949,6 +8361,19 @@ func WithClient(c *client.Client) Option
 ```
 
 WithClient sets a custom HTTP client.
+
+<a name="PredefinedQuery"></a>
+## type PredefinedQuery
+
+PredefinedQuery holds a predefined screener query with its sort configuration.
+
+```go
+type PredefinedQuery struct {
+    SortField string
+    SortAsc   bool
+    Query     models.ScreenerQueryBuilder
+}
+```
 
 <a name="Screener"></a>
 ## type Screener
@@ -8071,18 +8496,15 @@ for _, quote := range result.Quotes {
 func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *models.ScreenerParams) (*models.ScreenerResult, error)
 ```
 
-ScreenWithQuery uses a custom query to find matching stocks or funds.
-Accepts both *models.EquityQuery and *models.FundQuery.
-The quoteType is automatically determined from the query type:
-"EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
+ScreenWithQuery uses a custom query to find matching stocks or funds. Accepts both \*models.EquityQuery and \*models.FundQuery. The quoteType is automatically determined from the query type: "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
 
 Example:
 
 ```
 // Find US stocks with market cap > $10B
-q1, _ := models.NewEquityQuery("eq", []any{"region", "us"})
-q2, _ := models.NewEquityQuery("gt", []any{"intradaymarketcap", 10000000000})
-query, _ := models.NewEquityQuery("and", []any{q1, q2})
+q1, _ := models.NewEquityQuery("eq", []interface{}{"region", "us"})
+q2, _ := models.NewEquityQuery("gt", []interface{}{"intradaymarketcap", 10000000000})
+query, _ := models.NewEquityQuery("and", []interface{}{q1, q2})
 result, err := s.ScreenWithQuery(query, nil)
 ```
 
