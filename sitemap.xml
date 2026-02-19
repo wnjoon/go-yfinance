@@ -2,22 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/</loc>
-         <lastmod>2026-01-26</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/API/</loc>
-         <lastmod>2026-01-26</lastmod>
+         <lastmod>2026-02-19</lastmod>
+    </url>
+    <url>
+         <loc>https://wnjoon.github.io/go-yfinance/CLAUDE/</loc>
+         <lastmod>2026-02-19</lastmod>
+    </url>
+    <url>
+         <loc>https://wnjoon.github.io/go-yfinance/advanced/CLAUDE/</loc>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/advanced/mic-codes/</loc>
-         <lastmod>2026-01-26</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/advanced/price-repair/</loc>
-         <lastmod>2026-01-26</lastmod>
+         <lastmod>2026-02-19</lastmod>
+    </url>
+    <url>
+         <loc>https://wnjoon.github.io/go-yfinance/development/CLAUDE/</loc>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/development/v1.1.0-progress/</loc>
-         <lastmod>2026-01-26</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
 </urlset>
