@@ -37,6 +37,7 @@ nav:
     - Price Repair: advanced/price-repair.md
     - MIC Codes: advanced/mic-codes.md
   - Development:
+    - v1.2.0 Progress: development/v1.2.0-progress.md
     - v1.1.0 Progress: development/v1.1.0-progress.md
 
 markdown_extensions:
