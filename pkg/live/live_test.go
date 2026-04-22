@@ -315,3 +315,28 @@ func TestProtoReaderSint64(t *testing.T) {
 // 		t.Error("Timeout waiting for message")
 // 	}
 // }
+
+// TestSendSubscribeNilConn verifies that sendSubscribe returns an error
+// instead of panicking when ws.conn is nil (e.g. during reconnect window).
+// Reproduces: rodherz/go-yfinance#1
+func TestSendSubscribeNilConn(t *testing.T) {
+	ws, err := New()
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	// Populate subscriptions without connecting, so conn stays nil.
+	ws.subscriptions["AAPL"] = struct{}{}
+
+	// Without the fix this panics with a nil pointer dereference.
+	// The recover() turns the panic into a test failure with a clear message.
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("sendSubscribe panicked with nil conn: %v", r)
+		}
+	}()
+
+	err = ws.sendSubscribe([]string{"AAPL"})
+	if err == nil {
+		t.Fatal("expected error when conn is nil, got nil")
+	}
+}
