@@ -205,6 +205,151 @@ var FundScreenerExchangeMap = map[string][]string{
 	"za": {"JNB"},
 }
 
+// ETFScreenerExchangeMap maps region codes to valid exchange codes for ETF screener.
+// Matches Python's ETF_SCREENER_EQ_MAP["exchange"] from yfinance v1.3.0.
+var ETFScreenerExchangeMap = map[string][]string{
+	"ae": {"DFM"},
+	"ar": {"BUE"},
+	"at": {"VIE"},
+	"au": {"ASX", "CXA"},
+	"be": {"BRU"},
+	"br": {"SAO"},
+	"ca": {"CNQ", "NEO", "TOR", "VAN"},
+	"ch": {"EBS"},
+	"cl": {"SGO"},
+	"cn": {"SHH", "SHZ"},
+	"co": {"BVC"},
+	"cz": {"PRA"},
+	"de": {"BER", "DUS", "EUX", "FRA", "HAM", "HAN", "GER", "MUN", "STU"},
+	"dk": {"CPH"},
+	"ee": {"TAL"},
+	"eg": {"CAI"},
+	"es": {"MAD", "MCE"},
+	"fi": {"HEL"},
+	"fr": {"ENX", "PAR"},
+	"gb": {"AQS", "CXE", "IOB", "LSE"},
+	"gr": {"ATH"},
+	"hk": {"HKG"},
+	"hu": {"BUD"},
+	"id": {"JKT"},
+	"ie": {"ISE"},
+	"il": {"TLV"},
+	"in": {"BSE", "NSI"},
+	"is": {"ICE"},
+	"it": {"MDD", "MIL", "TLO"},
+	"jp": {"FKA", "JPX", "OSA", "SAP"},
+	"kr": {"KOE", "KSC"},
+	"kw": {"KUW"},
+	"lk": {"CSE"},
+	"lt": {"LIT"},
+	"lv": {"RIS"},
+	"mx": {"MEX"},
+	"my": {"KLS"},
+	"nl": {"AMS", "DXE"},
+	"no": {"OSL"},
+	"nz": {"NZE"},
+	"pe": {},
+	"ph": {"PHP", "PHS"},
+	"pk": {"KAR"},
+	"pl": {"WSE"},
+	"pt": {"LIS"},
+	"qa": {"DOH"},
+	"ro": {"BVB"},
+	"ru": {"MCX"},
+	"sa": {"SAU"},
+	"se": {"STO"},
+	"sg": {"SES"},
+	"sr": {},
+	"th": {"SET"},
+	"tr": {"IST"},
+	"tw": {"TAI", "TWO"},
+	"us": {"ASE", "BTS", "CXI", "NAE", "NCM", "NGM", "NMS", "NYQ", "OEM", "OQB", "OQX", "PCX", "PNK", "YHD"},
+	"ve": {"CCS"},
+	"vn": {"VSE"},
+	"za": {"JNB"},
+}
+
+// ETFScreenerCategories is the set of valid categoryname values for ETF screener.
+var ETFScreenerCategories = []string{
+	"Allocation--15% to 30% Equity", "Allocation--30% to 50% Equity",
+	"Allocation--50% to 70% Equity", "Allocation--70% to 85% Equity",
+	"Allocation--85%+ Equity", "Bank Loan", "Bear Market", "China Region",
+	"Commodities Agriculture", "Commodities Broad Basket", "Convertibles",
+	"Corporate Bond", "Diversified Emerging Mkts", "Diversified Pacific/Asia",
+	"Emerging Markets Bond", "Emerging-Markets Local-Currency Bond",
+	"Energy Limited Partnership", "Equity Energy", "Equity Precious Metals",
+	"Europe Stock", "Financial", "Foreign Large Blend", "Foreign Large Growth",
+	"Foreign Large Value", "Foreign Small/Mid Blend", "Foreign Small/Mid Growth",
+	"Foreign Small/Mid Value", "Global Real Estate", "Health", "High Yield Bond",
+	"High Yield Muni", "Inflation-Protected Bond", "Infrastructure",
+	"Intermediate Government", "Intermediate-Term Bond", "Japan Stock",
+	"Large Blend", "Large Growth", "Large Value", "Long Government",
+	"Long-Short Credit", "Long-Short Equity", "Long-Term Bond", "Managed Futures",
+	"Market Neutral", "Mid-Cap Blend", "Mid-Cap Growth", "Mid-Cap Value",
+	"Miscellaneous Region", "Multialternative", "Multicurrency",
+	"Multisector Bond", "Muni California Intermediate", "Muni California Long",
+	"Muni Massachusetts", "Muni Minnesota", "Muni National Interm",
+	"Muni National Long", "Muni National Short", "Muni New Jersey",
+	"Muni New York Intermediate", "Muni New York Long", "Muni Ohio",
+	"Muni Pennsylvania", "Muni Single State Interm", "Muni Single State Long",
+	"Muni Single State Short", "Natural Resources", "Nontraditional Bond",
+	"Option Writing", "Other", "Other Allocation", "Pacific/Asia ex-Japan Stk",
+	"Preferred Stock", "Real Estate", "Short Government", "Short-Term Bond",
+	"Small Blend", "Small Growth", "Small Value", "Tactical Allocation",
+	"Target-Date 2000-2010", "Target-Date 2015", "Target-Date 2020",
+	"Target-Date 2025", "Target-Date 2030", "Target-Date 2035",
+	"Target-Date 2040", "Target-Date 2045", "Target-Date 2050",
+	"Target-Date 2055", "Target-Date 2060+", "Target-Date Retirement",
+	"Technology", "Trading - Leveraged/Inverse Commodities",
+	"Trading - Leveraged/Inverse Equity", "Trading--Inverse Equity",
+	"Trading--Leveraged Equity", "Ultrashort Bond", "Utilities",
+	"World Allocation", "World Bond", "World Stock",
+}
+
+// ETFScreenerFundFamilies is the set of valid fundfamilyname values for ETF screener.
+var ETFScreenerFundFamilies = []string{
+	"ALPS", "AMG Funds", "AQR Funds", "Aberdeen", "Alger", "AllianceBernstein",
+	"Allianz Funds", "American Beacon", "American Century Investments",
+	"American Funds", "Aquila", "Artisan", "BMO Funds", "BNY Mellon Funds",
+	"Baird", "Barclays Funds", "Barings Funds", "Baron Capital Group",
+	"BlackRock", "Brown Advisory Funds", "Calamos", "Calvert Investments",
+	"Catalyst Mutual Funds", "Cohen & Steers", "Columbia",
+	"Commerz Funds Solutions SA", "Commerzbank AG, Frankfurt am Main",
+	"Davis Funds", "Delaware Investments", "Deutsche Asset Management",
+	"Deutsche Bank AG", "Diamond Hill Funds", "Dimensional Fund Advisors",
+	"Direxion Funds", "DoubleLine", "Dreyfus", "Dunham Funds", "Eagle Funds",
+	"Eaton Vance", "Federated", "Fidelity Investments", "First Investors",
+	"First Trust", "Flexshares Trust", "Franklin Templeton Investments", "GMO",
+	"Gabelli", "Global X Funds", "Goldman Sachs", "Great-West Funds",
+	"Guggenheim Investments", "GuideStone Funds", "HSBC", "Hancock Horizon",
+	"Harbor", "Hartford Mutual Funds", "Henderson Global", "Hennessy",
+	"Highland Funds", "ICON Funds", "Invesco", "Ivy Funds", "JPMorgan",
+	"Janus", "John Hancock", "Lazard", "Legg Mason", "Lord Abbett", "MFS",
+	"Madison Funds", "MainStay", "Manning & Napier", "Market Vectors",
+	"MassMutual", "Matthews Asia Funds", "Morgan Stanley", "Nationwide",
+	"Natixis Funds", "Neuberger Berman", "Northern Funds", "Nuveen",
+	"OppenheimerFunds", "PNC Funds", "Pacific funds series trust", "Pax World",
+	"Paydenfunds", "Pimco", "Pioneer Investments", "PowerShares",
+	"Principal Funds", "ProFunds", "ProShares", "Prudential Investments",
+	"Putnam", "RBC Global Asset Management.", "RidgeWorth", "Royce", "Russell",
+	"Rydex Funds", "SEI", "SPDR State Street Global Advisors", "Salient Funds",
+	"Saratoga", "Schwab Funds", "Sentinel", "Shelton Capital Management",
+	"State Farm", "State Street Global Advisors (Chicago)", "Sterling Capital Funds",
+	"SunAmerica", "T. Rowe Price", "TCW", "TIAA-CREF Asset Management",
+	"Teton Westwood Funds", "Thornburg", "Thrivent", "Timothy Plan", "Touchstone",
+	"Transamerica", "UBS", "UBS Group AG", "USAA", "VALIC", "Vanguard",
+	"Vantagepoint Funds", "Victory", "Virtus", "Voya", "Waddell & Reed",
+	"Wasatch", "Wells Fargo Funds", "William Blair", "WisdomTree", "iShares",
+}
+
+var (
+	ETFScreenerEconomicMoats = []string{"Wide", "Narrow", "None"}
+	ETFScreenerStewardship   = []string{"Exemplary", "Standard", "Poor"}
+	ETFScreenerUncertainty   = []string{"Low", "Medium", "High", "Very High", "Extreme"}
+	ETFScreenerMoatTrend     = []string{"Stable", "Positive", "Negative"}
+	ETFScreenerRatingChange  = []string{"Upgrade", "Downgrade"}
+)
+
 // EquityScreenerSectors is the set of valid sector names for equity screener.
 var EquityScreenerSectors = []string{
 	"Basic Materials", "Industrials", "Communication Services", "Healthcare",
@@ -343,6 +488,40 @@ var FundScreenerFields = map[string][]string{
 	"price": {"eodprice", "intradaypricechange", "intradayprice"},
 }
 
+// ETFScreenerFields defines valid field names by category for ETF screener.
+// After merging with CommonScreenerFields, matches Python's ETF_SCREENER_FIELDS.
+var ETFScreenerFields = map[string][]string{
+	"eq_fields": {
+		"categoryname", "fundfamilyname", "region", "primary_sector",
+		"morningstar_economic_moat", "morningstar_stewardship",
+		"morningstar_uncertainty", "morningstar_moat_trend",
+		"morningstar_rating_change",
+	},
+	"fundamentals": {"fundnetassets", "ticker"},
+	"feesandexpenses": {
+		"annualreportgrossexpenseratio", "annualreportnetexpenseratio", "turnoverratio",
+	},
+	"historicalperformance": {
+		"annualreturnnavy1", "annualreturnnavy1categoryrank",
+		"annualreturnnavy3", "annualreturnnavy5",
+	},
+	"keystats": {
+		"avgdailyvol3m", "dayvolume", "eodvolume", "fiftytwowkpercentchange",
+		"percentchange",
+	},
+	"morningstar_rating": {
+		"morningstar_last_close_price_to_fair_value", "morningstar_rating",
+		"morningstar_rating_updated_time",
+	},
+	"portfoliostatistics": {"marketcapitalvaluelong"},
+	"purchasedetails":     {"initialinvestment"},
+	"trailingperformance": {
+		"performanceratingoverall", "quarterendtrailingreturnytd",
+		"riskratingoverall", "trailing_3m_return", "trailing_ytd_return",
+	},
+	"price": {"eodprice", "intradaypricechange", "intradayprice"},
+}
+
 // allEquityValidFields returns a flattened set of all valid equity screener field names.
 func allEquityValidFields() map[string]bool {
 	result := make(map[string]bool)
@@ -358,6 +537,17 @@ func allEquityValidFields() map[string]bool {
 func allFundValidFields() map[string]bool {
 	result := make(map[string]bool)
 	for _, fields := range FundScreenerFields {
+		for _, f := range fields {
+			result[f] = true
+		}
+	}
+	return result
+}
+
+// allETFValidFields returns a flattened set of all valid ETF screener field names.
+func allETFValidFields() map[string]bool {
+	result := make(map[string]bool)
+	for _, fields := range ETFScreenerFields {
 		for _, f := range fields {
 			result[f] = true
 		}

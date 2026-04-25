@@ -28,6 +28,7 @@ type Ticker struct {
 	optionsCache    *optionsCache
 	financialsCache *financialsCache
 	analysisCache   *analysisCache
+	valuationCache  *models.ValuationMeasures
 	holdersCache    *holdersCache
 	calendarCache   *models.Calendar
 	newsCache       []models.NewsArticle
@@ -140,6 +141,7 @@ func (t *Ticker) ClearCache() {
 	t.optionsCache = nil
 	t.financialsCache = nil
 	t.analysisCache = nil
+	t.valuationCache = nil
 	t.holdersCache = nil
 	t.calendarCache = nil
 	t.newsCache = nil

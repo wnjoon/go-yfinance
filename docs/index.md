@@ -10,7 +10,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 
 ## Features
 
-- **Full Python yfinance Compatibility**: Complete Go implementation matching Python yfinance v1.1.0
+- **Full Python yfinance Compatibility**: Complete Go implementation matching Python yfinance v1.3.0 feature parity
 - **Price Repair System**: Fix common Yahoo Finance data issues (100x errors, bad splits, capital gains double-counting)
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
@@ -24,7 +24,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 | **ticker** | Single ticker data (quotes, history, financials, options, etc.) |
 | **multi** | Multi-ticker downloads and batch operations |
 | **search** | Search for tickers by keywords |
-| **screener** | Stock screener with predefined/custom queries |
+| **screener** | Stock, fund, and ETF screener with predefined/custom queries |
 | **lookup** | Lookup ticker symbols by type (Stock, ETF, Crypto, etc.) |
 | **market** | Market status and summary for global markets |
 | **sector** | Sector data and top companies |

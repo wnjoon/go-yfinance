@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-// ScreenerQueryBuilder is the interface for both EquityQuery and FundQuery.
+// ScreenerQueryBuilder is the interface for EquityQuery, FundQuery, and ETFQuery.
 // It provides methods for serializing queries and identifying the quote type.
 type ScreenerQueryBuilder interface {
 	// ToDict serializes the query to a map suitable for JSON encoding.
 	// IS-IN operators are expanded to OR-of-EQ queries.
 	ToDict() map[string]any
 
-	// QuoteType returns "EQUITY" for EquityQuery or "MUTUALFUND" for FundQuery.
+	// QuoteType returns "EQUITY", "MUTUALFUND", or "ETF".
 	QuoteType() string
 }
 
@@ -29,6 +29,11 @@ type EquityQuery struct {
 
 // FundQuery represents a validated fund screener query.
 type FundQuery struct {
+	queryBase
+}
+
+// ETFQuery represents a validated ETF screener query.
+type ETFQuery struct {
 	queryBase
 }
 
@@ -62,11 +67,25 @@ func NewFundQuery(operator string, operands []any) (*FundQuery, error) {
 	return q, nil
 }
 
+// NewETFQuery creates a new validated ETF screener query.
+// Same operator rules as NewEquityQuery.
+func NewETFQuery(operator string, operands []any) (*ETFQuery, error) {
+	op := strings.ToUpper(operator)
+	q := &ETFQuery{queryBase{operator: op, operands: operands}}
+	if err := q.validate(); err != nil {
+		return nil, err
+	}
+	return q, nil
+}
+
 // QuoteType returns "EQUITY".
 func (q *EquityQuery) QuoteType() string { return "EQUITY" }
 
 // QuoteType returns "MUTUALFUND".
 func (q *FundQuery) QuoteType() string { return "MUTUALFUND" }
+
+// QuoteType returns "ETF".
+func (q *ETFQuery) QuoteType() string { return "ETF" }
 
 // validFields returns the flattened set of valid field names for equity screener.
 func (q *EquityQuery) validFields() map[string]bool {
@@ -76,6 +95,11 @@ func (q *EquityQuery) validFields() map[string]bool {
 // validFields returns the flattened set of valid field names for fund screener.
 func (q *FundQuery) validFields() map[string]bool {
 	return allFundValidFields()
+}
+
+// validFields returns the flattened set of valid field names for ETF screener.
+func (q *ETFQuery) validFields() map[string]bool {
+	return allETFValidFields()
 }
 
 // validValues returns the constrained field->values map for equity screener.
@@ -98,6 +122,21 @@ func (q *FundQuery) validValues() map[string]map[string]bool {
 	}
 }
 
+// validValues returns the constrained field->values map for ETF screener.
+func (q *ETFQuery) validValues() map[string]map[string]bool {
+	return map[string]map[string]bool{
+		"exchange":                  allExchangeCodes(ETFScreenerExchangeMap),
+		"region":                    regionCodes(ETFScreenerExchangeMap),
+		"categoryname":              sliceToSet(ETFScreenerCategories),
+		"fundfamilyname":            sliceToSet(ETFScreenerFundFamilies),
+		"morningstar_economic_moat": sliceToSet(ETFScreenerEconomicMoats),
+		"morningstar_stewardship":   sliceToSet(ETFScreenerStewardship),
+		"morningstar_uncertainty":   sliceToSet(ETFScreenerUncertainty),
+		"morningstar_moat_trend":    sliceToSet(ETFScreenerMoatTrend),
+		"morningstar_rating_change": sliceToSet(ETFScreenerRatingChange),
+	}
+}
+
 // sliceToSet converts a string slice to a bool map.
 func sliceToSet(s []string) map[string]bool {
 	m := make(map[string]bool, len(s))
@@ -114,6 +153,10 @@ func (q *EquityQuery) validate() error {
 
 func (q *FundQuery) validate() error {
 	return validateQuery(q.operator, q.operands, q.validFields(), q.validValues(), "FundQuery")
+}
+
+func (q *ETFQuery) validate() error {
+	return validateQuery(q.operator, q.operands, q.validFields(), q.validValues(), "ETFQuery")
 }
 
 // validateQuery is the shared validation logic matching Python's QueryBase.__init__.
@@ -259,6 +302,14 @@ func (q *FundQuery) ToDict() map[string]any {
 	})
 }
 
+// ToDict serializes the ETFQuery to a map for JSON encoding.
+func (q *ETFQuery) ToDict() map[string]any {
+	return toDict(q.operator, q.operands, func(op string, operands []any) ScreenerQueryBuilder {
+		eq := &ETFQuery{queryBase{operator: op, operands: operands}}
+		return eq
+	})
+}
+
 // toDict is the shared serialization logic.
 func toDict(operator string, operands []any, makeChild func(string, []any) ScreenerQueryBuilder) map[string]any {
 	op := operator
@@ -303,6 +354,11 @@ func (q *FundQuery) String() string {
 	return queryString("FundQuery", q.operator, q.operands, 0)
 }
 
+// String returns a human-readable representation of the query.
+func (q *ETFQuery) String() string {
+	return queryString("ETFQuery", q.operator, q.operands, 0)
+}
+
 func queryString(typeName, operator string, operands []any, indent int) string {
 	prefix := strings.Repeat("  ", indent)
 	hasNested := false
@@ -320,6 +376,8 @@ func queryString(typeName, operator string, operands []any, indent int) string {
 				parts[i] = queryString("EquityQuery", eq.operator, eq.operands, indent+1)
 			} else if fq, ok := op.(*FundQuery); ok {
 				parts[i] = queryString("FundQuery", fq.operator, fq.operands, indent+1)
+			} else if etfq, ok := op.(*ETFQuery); ok {
+				parts[i] = queryString("ETFQuery", etfq.operator, etfq.operands, indent+1)
 			} else {
 				parts[i] = fmt.Sprintf("%s  %v", prefix, op)
 			}

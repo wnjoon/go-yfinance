@@ -11,6 +11,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 ## Features
 
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
+- **Python yfinance v1.3.0 Parity**: ETFQuery screeners, valuation measures, analysis currency fields, dividend currency preservation, and capital gain actions
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
 - **Thread-Safe**: Concurrent-safe client and configuration
 - **Comprehensive Error Handling**: Typed errors with proper Go error wrapping
@@ -79,6 +80,15 @@ func main() {
     fmt.Printf("Sector: %s\n", info.Sector)
     fmt.Printf("Industry: %s\n", info.Industry)
     fmt.Printf("Market Cap: $%d\n", info.MarketCap)
+
+    // Get valuation measures from the key-statistics page
+    valuation, err := t.Valuation()
+    if err != nil {
+        log.Fatal(err)
+    }
+    if marketCap, ok := valuation.Value("Market Cap", "Current"); ok {
+        fmt.Printf("Current Market Cap: %s\n", marketCap)
+    }
 }
 ```
 

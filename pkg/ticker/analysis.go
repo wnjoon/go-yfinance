@@ -356,6 +356,7 @@ func (t *Ticker) parseEarningsEstimates() []models.EarningsEstimate {
 		est := models.EarningsEstimate{
 			Period:           getString(itemMap, "period"),
 			EndDate:          getString(itemMap, "endDate"),
+			Currency:         getNestedString(earningsEst, "earningsCurrency"),
 			NumberOfAnalysts: getNestedInt(earningsEst, "numberOfAnalysts"),
 			Avg:              getNestedFloat(earningsEst, "avg"),
 			Low:              getNestedFloat(earningsEst, "low"),
@@ -401,6 +402,7 @@ func (t *Ticker) parseRevenueEstimates() []models.RevenueEstimate {
 		est := models.RevenueEstimate{
 			Period:           getString(itemMap, "period"),
 			EndDate:          getString(itemMap, "endDate"),
+			Currency:         getNestedString(revenueEst, "revenueCurrency"),
 			NumberOfAnalysts: getNestedInt(revenueEst, "numberOfAnalysts"),
 			Avg:              getNestedFloat(revenueEst, "avg"),
 			Low:              getNestedFloat(revenueEst, "low"),
@@ -445,6 +447,7 @@ func (t *Ticker) parseEPSTrends() []models.EPSTrend {
 
 		est := models.EPSTrend{
 			Period:     getString(itemMap, "period"),
+			Currency:   getNestedString(epsTrend, "epsTrendCurrency"),
 			Current:    getNestedFloat(epsTrend, "current"),
 			SevenDays:  getNestedFloat(epsTrend, "7daysAgo"),
 			ThirtyDays: getNestedFloat(epsTrend, "30daysAgo"),
@@ -488,9 +491,10 @@ func (t *Ticker) parseEPSRevisions() []models.EPSRevision {
 
 		rev := models.EPSRevision{
 			Period:         getString(itemMap, "period"),
+			Currency:       getNestedString(epsRevisions, "epsRevisionsCurrency"),
 			UpLast7Days:    getNestedInt(epsRevisions, "upLast7days"),
 			UpLast30Days:   getNestedInt(epsRevisions, "upLast30days"),
-			DownLast7Days:  getNestedInt(epsRevisions, "downLast7Days"),
+			DownLast7Days:  getNestedInt(epsRevisions, "downLast7days"),
 			DownLast30Days: getNestedInt(epsRevisions, "downLast30days"),
 		}
 		result = append(result, rev)
@@ -657,6 +661,21 @@ func getNestedFloat(m map[string]interface{}, key string) float64 {
 		return v
 	}
 	return 0
+}
+
+func getNestedString(m map[string]interface{}, key string) string {
+	if nested, ok := m[key].(map[string]interface{}); ok {
+		if v, ok := nested["raw"].(string); ok {
+			return v
+		}
+		if v, ok := nested["fmt"].(string); ok {
+			return v
+		}
+	}
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
 }
 
 func getNestedInt(m map[string]interface{}, key string) int {

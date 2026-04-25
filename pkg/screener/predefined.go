@@ -10,7 +10,7 @@ type PredefinedQuery struct {
 }
 
 // PredefinedScreenerQueries maps predefined screener names to their query definitions.
-// Matches Python's PREDEFINED_SCREENER_QUERIES from yfinance v1.2.0.
+// Matches Python's PREDEFINED_SCREENER_QUERIES from yfinance v1.3.0.
 var PredefinedScreenerQueries map[string]PredefinedQuery
 
 func init() {
@@ -190,6 +190,54 @@ func init() {
 				mustFundQuery("eq", []any{"exchange", "NAS"}),
 			}),
 		},
+
+		// --- ETF Screeners ---
+
+		"top_etfs_us": {
+			SortField: "percentchange",
+			SortAsc:   false, // "DESC"
+			Query: mustETFQuery("and", []any{
+				mustETFQuery("gt", []any{"intradayprice", 10}),
+				mustETFQuery("is-in", []any{"performanceratingoverall", 4, 5}),
+				mustETFQuery("eq", []any{"region", "us"}),
+			}),
+		},
+
+		"top_performing_etfs": {
+			SortField: "annualreportnetexpenseratio",
+			SortAsc:   true, // "ASC"
+			Query: mustETFQuery("and", []any{
+				mustETFQuery("eq", []any{"region", "us"}),
+				mustETFQuery("is-in", []any{"performanceratingoverall", 4, 5}),
+				mustETFQuery("gt", []any{"intradayprice", 10}),
+			}),
+		},
+
+		"technology_etfs": {
+			SortField: "annualreportnetexpenseratio",
+			SortAsc:   true, // "ASC"
+			Query: mustETFQuery("and", []any{
+				mustETFQuery("eq", []any{"region", "us"}),
+				mustETFQuery("eq", []any{"categoryname", "Technology"}),
+			}),
+		},
+
+		"bond_etfs": {
+			SortField: "annualreportnetexpenseratio",
+			SortAsc:   true, // "ASC"
+			Query: mustETFQuery("and", []any{
+				mustETFQuery("eq", []any{"region", "us"}),
+				mustETFQuery("is-in", []any{
+					"categoryname",
+					"Corporate Bond", "Emerging Markets Bond",
+					"Emerging-Markets Local-Currency Bond", "High Yield Bond",
+					"Intermediate-Term Bond", "Long-Term Bond",
+					"Inflation-Protected Bond", "Multisector Bond",
+					"Nontraditional Bond", "Short-Term Bond", "Ultrashort Bond",
+					"World Bond",
+				}),
+			}),
+		},
 	}
 }
 
@@ -209,6 +257,16 @@ func mustFundQuery(op string, operands []any) *models.FundQuery {
 	q, err := models.NewFundQuery(op, operands)
 	if err != nil {
 		panic("predefined fund query construction failed: " + err.Error())
+	}
+	return q
+}
+
+// mustETFQuery creates an ETFQuery, panicking on error.
+// Only for use with known-valid predefined queries at init time.
+func mustETFQuery(op string, operands []any) *models.ETFQuery {
+	q, err := models.NewETFQuery(op, operands)
+	if err != nil {
+		panic("predefined ETF query construction failed: " + err.Error())
 	}
 	return q
 }

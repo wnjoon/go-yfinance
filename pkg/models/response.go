@@ -31,8 +31,9 @@ type ChartEvents struct {
 
 // DividendEvent represents a dividend event in chart response.
 type DividendEvent struct {
-	Amount float64 `json:"amount"`
-	Date   int64   `json:"date"`
+	Amount   float64 `json:"amount"`
+	Date     int64   `json:"date"`
+	Currency string  `json:"currency,omitempty"`
 }
 
 // SplitEvent represents a stock split event in chart response.

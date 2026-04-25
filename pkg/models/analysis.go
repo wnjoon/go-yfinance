@@ -40,6 +40,7 @@ type PriceTarget struct {
 type EarningsEstimate struct {
 	Period           string  `json:"period"` // "0q", "+1q", "0y", "+1y"
 	EndDate          string  `json:"endDate"`
+	Currency         string  `json:"currency,omitempty"`
 	NumberOfAnalysts int     `json:"numberOfAnalysts"`
 	Avg              float64 `json:"avg"`
 	Low              float64 `json:"low"`
@@ -52,6 +53,7 @@ type EarningsEstimate struct {
 type RevenueEstimate struct {
 	Period           string  `json:"period"`
 	EndDate          string  `json:"endDate"`
+	Currency         string  `json:"currency,omitempty"`
 	NumberOfAnalysts int     `json:"numberOfAnalysts"`
 	Avg              float64 `json:"avg"`
 	Low              float64 `json:"low"`
@@ -63,6 +65,7 @@ type RevenueEstimate struct {
 // EPSTrend represents EPS trend data for a period.
 type EPSTrend struct {
 	Period     string  `json:"period"`
+	Currency   string  `json:"currency,omitempty"`
 	Current    float64 `json:"current"`
 	SevenDays  float64 `json:"7daysAgo"`
 	ThirtyDays float64 `json:"30daysAgo"`
@@ -73,6 +76,7 @@ type EPSTrend struct {
 // EPSRevision represents EPS revision data for a period.
 type EPSRevision struct {
 	Period         string `json:"period"`
+	Currency       string `json:"currency,omitempty"`
 	UpLast7Days    int    `json:"upLast7days"`
 	UpLast30Days   int    `json:"upLast30days"`
 	DownLast7Days  int    `json:"downLast7days"`

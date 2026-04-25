@@ -167,6 +167,12 @@ const (
 	ScreenerSolidLargeGrowth    PredefinedScreener = "solid_large_growth_funds"
 	ScreenerSolidMidcapGrowth   PredefinedScreener = "solid_midcap_growth_funds"
 	ScreenerTopMutualFunds      PredefinedScreener = "top_mutual_funds"
+
+	// ETF Screeners
+	ScreenerTopETFsUS        PredefinedScreener = "top_etfs_us"
+	ScreenerTopPerformingETF PredefinedScreener = "top_performing_etfs"
+	ScreenerTechnologyETFs   PredefinedScreener = "technology_etfs"
+	ScreenerBondETFs         PredefinedScreener = "bond_etfs"
 )
 
 // AllPredefinedScreeners returns all available predefined screener names.
@@ -187,6 +193,10 @@ func AllPredefinedScreeners() []PredefinedScreener {
 		ScreenerSolidLargeGrowth,
 		ScreenerSolidMidcapGrowth,
 		ScreenerTopMutualFunds,
+		ScreenerTopETFsUS,
+		ScreenerTopPerformingETF,
+		ScreenerTechnologyETFs,
+		ScreenerBondETFs,
 	}
 }
 
@@ -224,7 +234,7 @@ func DefaultScreenerParams() ScreenerParams {
 }
 
 // Screener query operator constants.
-// These are case-insensitive when passed to NewEquityQuery/NewFundQuery (auto-uppercased).
+// These are case-insensitive when passed to NewEquityQuery/NewFundQuery/NewETFQuery (auto-uppercased).
 const (
 	// Comparison operators
 	OpEQ   = "eq"    // Equals
@@ -244,8 +254,8 @@ const (
 type ScreenerResponse struct {
 	Finance struct {
 		Result []struct {
-			Total  int               `json:"total"`
-			Count  int               `json:"count"`
+			Total  int              `json:"total"`
+			Count  int              `json:"count"`
 			Quotes []map[string]any `json:"quotes"`
 		} `json:"result"`
 		Error *struct {

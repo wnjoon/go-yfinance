@@ -4,17 +4,19 @@ import "time"
 
 // Bar represents a single OHLCV bar (candlestick).
 type Bar struct {
-	Date         time.Time `json:"date"`
-	Open         float64   `json:"open"`
-	High         float64   `json:"high"`
-	Low          float64   `json:"low"`
-	Close        float64   `json:"close"`
-	AdjClose     float64   `json:"adjClose"`
-	Volume       int64     `json:"volume"`
-	Dividends    float64   `json:"dividends,omitempty"`
-	Splits       float64   `json:"splits,omitempty"`
-	CapitalGains float64   `json:"capitalGains,omitempty"` // Capital gains distribution (ETF/MutualFund)
-	Repaired     bool      `json:"repaired,omitempty"`     // True if this bar was repaired
+	Date      time.Time `json:"date"`
+	Open      float64   `json:"open"`
+	High      float64   `json:"high"`
+	Low       float64   `json:"low"`
+	Close     float64   `json:"close"`
+	AdjClose  float64   `json:"adjClose"`
+	Volume    int64     `json:"volume"`
+	Dividends float64   `json:"dividends,omitempty"`
+	// DividendCurrency is present when Yahoo returns dividend events in a separate currency.
+	DividendCurrency string  `json:"dividendCurrency,omitempty"`
+	Splits           float64 `json:"splits,omitempty"`
+	CapitalGains     float64 `json:"capitalGains,omitempty"` // Capital gains distribution (ETF/MutualFund)
+	Repaired         bool    `json:"repaired,omitempty"`     // True if this bar was repaired
 }
 
 // History represents historical price data.
@@ -123,8 +125,9 @@ type ChartMeta struct {
 
 // Dividend represents a dividend payment.
 type Dividend struct {
-	Date   time.Time `json:"date"`
-	Amount float64   `json:"amount"`
+	Date     time.Time `json:"date"`
+	Amount   float64   `json:"amount"`
+	Currency string    `json:"currency,omitempty"`
 }
 
 // Split represents a stock split.
@@ -135,10 +138,17 @@ type Split struct {
 	Ratio       string    `json:"ratio"` // e.g., "4:1"
 }
 
+// CapitalGain represents a capital gain distribution.
+type CapitalGain struct {
+	Date   time.Time `json:"date"`
+	Amount float64   `json:"amount"`
+}
+
 // Actions represents dividend and split actions.
 type Actions struct {
-	Dividends []Dividend `json:"dividends,omitempty"`
-	Splits    []Split    `json:"splits,omitempty"`
+	Dividends    []Dividend    `json:"dividends,omitempty"`
+	Splits       []Split       `json:"splits,omitempty"`
+	CapitalGains []CapitalGain `json:"capitalGains,omitempty"`
 }
 
 // ValidPeriods returns all valid period values.

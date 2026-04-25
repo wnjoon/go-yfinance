@@ -31,7 +31,28 @@ import (
 //	    Interval: "1d",
 //	})
 func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
-	// Apply defaults
+	params = normalizeHistoryParams(params)
+
+	result, err := t.fetchChartResult(params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse OHLCV data
+	bars, err := t.parseChartData(result, params.AutoAdjust, params.Actions)
+	if err != nil {
+		return nil, err
+	}
+
+	// Remove NaN rows unless KeepNA is true
+	if !params.KeepNA {
+		bars = filterValidBars(bars)
+	}
+
+	return bars, nil
+}
+
+func normalizeHistoryParams(params models.HistoryParams) models.HistoryParams {
 	if params.Period == "" && params.Start == nil && params.End == nil {
 		params.Period = "1mo"
 	}
@@ -39,7 +60,10 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		params.Interval = "1d"
 	}
 
-	// Build URL parameters
+	return params
+}
+
+func buildHistoryURLParams(params models.HistoryParams) url.Values {
 	urlParams := url.Values{}
 
 	if params.Period != "" && params.Start == nil && params.End == nil {
@@ -70,6 +94,13 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 	urlParams.Set("includePrePost", fmt.Sprintf("%t", params.PrePost))
 	urlParams.Set("events", "div,splits,capitalGains")
 
+	return urlParams
+}
+
+func (t *Ticker) fetchChartResult(params models.HistoryParams) (*models.ChartResult, error) {
+	params = normalizeHistoryParams(params)
+	urlParams := buildHistoryURLParams(params)
+
 	resp, err := t.getWithCrumb(t.chartURL(), urlParams)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch history: %w", err)
@@ -93,18 +124,7 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 	// Cache metadata
 	t.setHistoryMetadata(&result.Meta)
 
-	// Parse OHLCV data
-	bars, err := t.parseChartData(&result, params.AutoAdjust, params.Actions)
-	if err != nil {
-		return nil, err
-	}
-
-	// Remove NaN rows unless KeepNA is true
-	if !params.KeepNA {
-		bars = filterValidBars(bars)
-	}
-
-	return bars, nil
+	return &result, nil
 }
 
 // parseChartData converts chart API response to Bar slice.
@@ -128,6 +148,7 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 
 	// Parse dividends, splits, and capital gains
 	dividends := make(map[int64]float64)
+	dividendCurrencies := make(map[int64]string)
 	splits := make(map[int64]float64)
 	capitalGains := make(map[int64]float64)
 
@@ -135,11 +156,16 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 		if result.Events.Dividends != nil {
 			for _, div := range result.Events.Dividends {
 				dividends[div.Date] = div.Amount
+				if div.Currency != "" {
+					dividendCurrencies[div.Date] = div.Currency
+				}
 			}
 		}
 		if result.Events.Splits != nil {
 			for _, split := range result.Events.Splits {
-				splits[split.Date] = split.Numerator / split.Denominator
+				if split.Denominator != 0 {
+					splits[split.Date] = split.Numerator / split.Denominator
+				}
 			}
 		}
 		if result.Events.CapitalGains != nil {
@@ -183,6 +209,9 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 		// Add actions if available
 		if div, ok := dividends[ts]; ok {
 			bar.Dividends = div
+		}
+		if currency, ok := dividendCurrencies[ts]; ok {
+			bar.DividendCurrency = currency
 		}
 		if split, ok := splits[ts]; ok {
 			bar.Splits = split
@@ -249,7 +278,7 @@ func (t *Ticker) HistoryRange(start, end time.Time, interval string) ([]models.B
 //
 // Returns all historical dividend payments with dates and amounts.
 func (t *Ticker) Dividends() ([]models.Dividend, error) {
-	bars, err := t.History(models.HistoryParams{
+	result, err := t.fetchChartResult(models.HistoryParams{
 		Period:   "max",
 		Interval: "1d",
 		Actions:  true,
@@ -258,24 +287,14 @@ func (t *Ticker) Dividends() ([]models.Dividend, error) {
 		return nil, err
 	}
 
-	var dividends []models.Dividend
-	for _, bar := range bars {
-		if bar.Dividends > 0 {
-			dividends = append(dividends, models.Dividend{
-				Date:   bar.Date,
-				Amount: bar.Dividends,
-			})
-		}
-	}
-
-	return dividends, nil
+	return parseDividendEvents(result), nil
 }
 
 // Splits returns the stock split history for the ticker.
 //
 // Returns all historical stock splits with dates and ratios.
 func (t *Ticker) Splits() ([]models.Split, error) {
-	bars, err := t.History(models.HistoryParams{
+	result, err := t.fetchChartResult(models.HistoryParams{
 		Period:   "max",
 		Interval: "1d",
 		Actions:  true,
@@ -284,32 +303,12 @@ func (t *Ticker) Splits() ([]models.Split, error) {
 		return nil, err
 	}
 
-	var splits []models.Split
-	for _, bar := range bars {
-		if bar.Splits != 0 && bar.Splits != 1 {
-			split := models.Split{
-				Date:        bar.Date,
-				Numerator:   bar.Splits,
-				Denominator: 1,
-			}
-			if bar.Splits > 1 {
-				split.Ratio = fmt.Sprintf("%.0f:1", bar.Splits)
-			} else {
-				split.Ratio = fmt.Sprintf("1:%.0f", 1/bar.Splits)
-			}
-			splits = append(splits, split)
-		}
-	}
-
-	return splits, nil
+	return parseSplitEvents(result), nil
 }
 
-// Actions returns both dividends and splits for the ticker.
-//
-// This is a convenience method that combines [Ticker.Dividends] and [Ticker.Splits]
-// into a single response.
-func (t *Ticker) Actions() (*models.Actions, error) {
-	bars, err := t.History(models.HistoryParams{
+// CapitalGains returns capital gain distributions for the ticker.
+func (t *Ticker) CapitalGains() ([]models.CapitalGain, error) {
+	result, err := t.fetchChartResult(models.HistoryParams{
 		Period:   "max",
 		Interval: "1d",
 		Actions:  true,
@@ -318,37 +317,102 @@ func (t *Ticker) Actions() (*models.Actions, error) {
 		return nil, err
 	}
 
-	actions := &models.Actions{}
+	return parseCapitalGainEvents(result), nil
+}
 
-	for _, bar := range bars {
-		if bar.Dividends > 0 {
-			actions.Dividends = append(actions.Dividends, models.Dividend{
-				Date:   bar.Date,
-				Amount: bar.Dividends,
-			})
-		}
-		if bar.Splits != 0 && bar.Splits != 1 {
-			split := models.Split{
-				Date:        bar.Date,
-				Numerator:   bar.Splits,
-				Denominator: 1,
-			}
-			if bar.Splits > 1 {
-				split.Ratio = fmt.Sprintf("%.0f:1", bar.Splits)
-			} else {
-				split.Ratio = fmt.Sprintf("1:%.0f", 1/bar.Splits)
-			}
-			actions.Splits = append(actions.Splits, split)
-		}
+// Actions returns dividends, splits, and capital gains for the ticker.
+//
+// This is a convenience method that combines the action event series into a
+// single response.
+func (t *Ticker) Actions() (*models.Actions, error) {
+	result, err := t.fetchChartResult(models.HistoryParams{
+		Period:   "max",
+		Interval: "1d",
+		Actions:  true,
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	// Sort by date
-	sort.Slice(actions.Dividends, func(i, j int) bool {
-		return actions.Dividends[i].Date.Before(actions.Dividends[j].Date)
-	})
-	sort.Slice(actions.Splits, func(i, j int) bool {
-		return actions.Splits[i].Date.Before(actions.Splits[j].Date)
+	return &models.Actions{
+		Dividends:    parseDividendEvents(result),
+		Splits:       parseSplitEvents(result),
+		CapitalGains: parseCapitalGainEvents(result),
+	}, nil
+}
+
+func parseDividendEvents(result *models.ChartResult) []models.Dividend {
+	if result == nil || result.Events == nil || result.Events.Dividends == nil {
+		return nil
+	}
+
+	dividends := make([]models.Dividend, 0, len(result.Events.Dividends))
+	for _, div := range result.Events.Dividends {
+		if div.Amount <= 0 {
+			continue
+		}
+		dividends = append(dividends, models.Dividend{
+			Date:     time.Unix(div.Date, 0).UTC(),
+			Amount:   div.Amount,
+			Currency: div.Currency,
+		})
+	}
+
+	sort.Slice(dividends, func(i, j int) bool {
+		return dividends[i].Date.Before(dividends[j].Date)
 	})
 
-	return actions, nil
+	return dividends
+}
+
+func parseSplitEvents(result *models.ChartResult) []models.Split {
+	if result == nil || result.Events == nil || result.Events.Splits == nil {
+		return nil
+	}
+
+	splits := make([]models.Split, 0, len(result.Events.Splits))
+	for _, event := range result.Events.Splits {
+		if event.Numerator == 0 || event.Denominator == 0 {
+			continue
+		}
+		split := models.Split{
+			Date:        time.Unix(event.Date, 0).UTC(),
+			Numerator:   event.Numerator,
+			Denominator: event.Denominator,
+			Ratio:       event.SplitRatio,
+		}
+		if split.Ratio == "" {
+			split.Ratio = fmt.Sprintf("%.0f:%.0f", event.Numerator, event.Denominator)
+		}
+		splits = append(splits, split)
+	}
+
+	sort.Slice(splits, func(i, j int) bool {
+		return splits[i].Date.Before(splits[j].Date)
+	})
+
+	return splits
+}
+
+func parseCapitalGainEvents(result *models.ChartResult) []models.CapitalGain {
+	if result == nil || result.Events == nil || result.Events.CapitalGains == nil {
+		return nil
+	}
+
+	capitalGains := make([]models.CapitalGain, 0, len(result.Events.CapitalGains))
+	for _, event := range result.Events.CapitalGains {
+		if event.Amount <= 0 {
+			continue
+		}
+		capitalGains = append(capitalGains, models.CapitalGain{
+			Date:   time.Unix(event.Date, 0).UTC(),
+			Amount: event.Amount,
+		})
+	}
+
+	sort.Slice(capitalGains, func(i, j int) bool {
+		return capitalGains[i].Date.Before(capitalGains[j].Date)
+	})
+
+	return capitalGains
 }

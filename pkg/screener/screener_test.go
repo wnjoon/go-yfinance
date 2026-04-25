@@ -153,6 +153,25 @@ func TestNewFundQuery(t *testing.T) {
 	}
 }
 
+func TestNewETFQuery(t *testing.T) {
+	q, err := models.NewETFQuery("and", []any{
+		mustETFQuery("gt", []any{"intradayprice", 10}),
+		mustETFQuery("eq", []any{"region", "us"}),
+	})
+	if err != nil {
+		t.Fatalf("Failed to create ETFQuery: %v", err)
+	}
+
+	if q.QuoteType() != "ETF" {
+		t.Errorf("Expected quoteType ETF, got %s", q.QuoteType())
+	}
+
+	dict := q.ToDict()
+	if dict["operator"] != "AND" {
+		t.Errorf("Expected operator AND, got %v", dict["operator"])
+	}
+}
+
 func TestISINExpansion(t *testing.T) {
 	q, err := models.NewEquityQuery("is-in", []any{"exchange", "NMS", "NYQ"})
 	if err != nil {
@@ -245,6 +264,34 @@ func TestFundQueryValidation(t *testing.T) {
 	}
 }
 
+func TestETFQueryValidation(t *testing.T) {
+	tests := []struct {
+		name      string
+		op        string
+		operands  []any
+		expectErr bool
+	}{
+		{"valid region", "eq", []any{"region", "us"}, false},
+		{"valid categoryname", "eq", []any{"categoryname", "Technology"}, false},
+		{"valid fund family", "eq", []any{"fundfamilyname", "Vanguard"}, false},
+		{"valid rating", "is-in", []any{"performanceratingoverall", 4, 5}, false},
+		{"invalid categoryname", "eq", []any{"categoryname", "Not A Category"}, true},
+		{"invalid moat", "eq", []any{"morningstar_economic_moat", "Huge"}, true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := models.NewETFQuery(tc.op, tc.operands)
+			if tc.expectErr && err == nil {
+				t.Error("Expected error but got nil")
+			}
+			if !tc.expectErr && err != nil {
+				t.Errorf("Expected no error but got: %v", err)
+			}
+		})
+	}
+}
+
 func TestQueryOperators(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -309,6 +356,10 @@ func TestPredefinedScreenerQueries(t *testing.T) {
 		"solid_large_growth_funds", "solid_midcap_growth_funds", "top_mutual_funds",
 	}
 
+	expectedETF := []string{
+		"top_etfs_us", "top_performing_etfs", "technology_etfs", "bond_etfs",
+	}
+
 	for _, name := range expectedEquity {
 		pq, ok := PredefinedScreenerQueries[name]
 		if !ok {
@@ -331,9 +382,20 @@ func TestPredefinedScreenerQueries(t *testing.T) {
 		}
 	}
 
+	for _, name := range expectedETF {
+		pq, ok := PredefinedScreenerQueries[name]
+		if !ok {
+			t.Errorf("Expected predefined screener %q not found", name)
+			continue
+		}
+		if pq.Query.QuoteType() != "ETF" {
+			t.Errorf("Screener %q: expected ETF, got %s", name, pq.Query.QuoteType())
+		}
+	}
+
 	// Check total count
-	if len(PredefinedScreenerQueries) != 15 {
-		t.Errorf("Expected 15 predefined screeners, got %d", len(PredefinedScreenerQueries))
+	if len(PredefinedScreenerQueries) != 19 {
+		t.Errorf("Expected 19 predefined screeners, got %d", len(PredefinedScreenerQueries))
 	}
 
 	// Verify day_losers has SortAsc = true
