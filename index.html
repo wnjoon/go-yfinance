@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -636,6 +636,34 @@
   
   
     <li class="md-nav__item">
+      <a href="development/v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="development/v1.2.0-progress/" class="md-nav__link">
         
   
@@ -863,6 +891,7 @@
 <h2 id="features">Features</h2>
 <ul>
 <li><strong>TLS Fingerprint Spoofing</strong>: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint</li>
+<li><strong>Python yfinance v1.3.0 Parity</strong>: ETFQuery screeners, valuation measures, analysis currency fields, dividend currency preservation, and capital gain actions</li>
 <li><strong>Automatic Authentication</strong>: Cookie/Crumb management with CSRF fallback for EU users</li>
 <li><strong>Thread-Safe</strong>: Concurrent-safe client and configuration</li>
 <li><strong>Comprehensive Error Handling</strong>: Typed errors with proper Go error wrapping</li>
@@ -926,7 +955,16 @@
 <a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Sector: %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">.</span><span class="nx">Sector</span><span class="p">)</span>
 <a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Industry: %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">.</span><span class="nx">Industry</span><span class="p">)</span>
 <a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Market Cap: $%d\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">.</span><span class="nx">MarketCap</span><span class="p">)</span>
-<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="p">}</span>
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="w">    </span><span class="c1">// Get valuation measures from the key-statistics page</span>
+<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="w">    </span><span class="nx">valuation</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Valuation</span><span class="p">()</span>
+<a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a><span class="w">        </span><span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">marketCap</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">valuation</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="s">&quot;Market Cap&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Current&quot;</span><span class="p">);</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a><span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Current Market Cap: %s\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">marketCap</span><span class="p">)</span>
+<a id="__codelineno-1-64" name="__codelineno-1-64" href="#__codelineno-1-64"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-65" name="__codelineno-1-65" href="#__codelineno-1-65"></a><span class="p">}</span>
 </code></pre></div>
 <h2 id="rate-limiting">Rate Limiting</h2>
 <blockquote>
