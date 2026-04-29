@@ -4,9 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"math"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"sync"
 	"testing"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -338,5 +343,82 @@ func TestSendSubscribeNilConn(t *testing.T) {
 	err = ws.sendSubscribe([]string{"AAPL"})
 	if err == nil {
 		t.Fatal("expected error when conn is nil, got nil")
+	}
+}
+
+// upgrader is the gorilla upgrader used by the test echo server.
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+// newTestWSServer starts an httptest WebSocket server that accepts and discards
+// all incoming messages. It returns the server and the ws:// URL to connect to.
+func newTestWSServer(t *testing.T) (*httptest.Server, string) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		for {
+			if _, _, err := conn.ReadMessage(); err != nil {
+				return
+			}
+		}
+	}))
+	url := "ws" + strings.TrimPrefix(srv.URL, "http")
+	return srv, url
+}
+
+// TestSendSubscribeConcurrent verifies that concurrent calls to sendSubscribe
+// do not panic with "concurrent write to websocket connection".
+// Without the writeMu fix, the -race detector flags a data race and gorilla
+// panics when two goroutines call conn.WriteMessage simultaneously.
+// Reproduces: rodherz/go-yfinance#2
+func TestSendSubscribeConcurrent(t *testing.T) {
+	srv, url := newTestWSServer(t)
+	defer srv.Close()
+
+	ws, err := New(WithURL(url), WithHeartbeatInterval(100*time.Millisecond))
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	if err := ws.Connect(); err != nil {
+		t.Fatalf("Connect() error: %v", err)
+	}
+	defer ws.Close()
+
+	const goroutines = 5
+	const callsEach = 10
+
+	// Catch panics from any goroutine so the test fails cleanly instead of
+	// crashing the process.
+	panicCh := make(chan any, goroutines)
+
+	var wg sync.WaitGroup
+	for i := range goroutines {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			defer func() {
+				if r := recover(); r != nil {
+					panicCh <- r
+				}
+			}()
+			sym := []string{"AAPL", "MSFT", "GOOGL"}[id%3]
+			for range callsEach {
+				if err := ws.sendSubscribe([]string{sym}); err != nil {
+					// "not connected" during a reconnect window is acceptable.
+					return
+				}
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(panicCh)
+
+	for p := range panicCh {
+		t.Errorf("sendSubscribe panicked: %v", p)
 	}
 }

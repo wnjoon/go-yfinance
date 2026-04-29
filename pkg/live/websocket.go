@@ -73,6 +73,7 @@ type WebSocket struct {
 	reconnectDelay    time.Duration
 
 	mu            sync.RWMutex
+	writeMu       sync.Mutex // serializes all conn.WriteMessage calls
 	done          chan struct{}
 	heartbeatDone chan struct{}
 	isConnected   bool
@@ -198,8 +199,13 @@ func (ws *WebSocket) Unsubscribe(symbols []string) error {
 		return err
 	}
 
+	ws.writeMu.Lock()
+	defer ws.writeMu.Unlock()
 	ws.mu.RLock()
 	defer ws.mu.RUnlock()
+	if ws.conn == nil {
+		return fmt.Errorf("not connected")
+	}
 	return ws.conn.WriteMessage(websocket.TextMessage, data)
 }
 
@@ -327,6 +333,8 @@ func (ws *WebSocket) sendSubscribe(symbols []string) error {
 		return err
 	}
 
+	ws.writeMu.Lock()
+	defer ws.writeMu.Unlock()
 	ws.mu.RLock()
 	defer ws.mu.RUnlock()
 	if ws.conn == nil {
