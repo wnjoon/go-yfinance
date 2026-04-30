@@ -200,6 +200,9 @@ func (ws *WebSocket) Unsubscribe(symbols []string) error {
 
 	ws.mu.RLock()
 	defer ws.mu.RUnlock()
+	if ws.conn == nil {
+		return fmt.Errorf("not connected")
+	}
 	return ws.conn.WriteMessage(websocket.TextMessage, data)
 }
 
@@ -329,6 +332,9 @@ func (ws *WebSocket) sendSubscribe(symbols []string) error {
 
 	ws.mu.RLock()
 	defer ws.mu.RUnlock()
+	if ws.conn == nil {
+		return fmt.Errorf("not connected")
+	}
 	return ws.conn.WriteMessage(websocket.TextMessage, data)
 }
 

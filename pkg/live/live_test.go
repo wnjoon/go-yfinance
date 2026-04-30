@@ -72,6 +72,21 @@ func TestIsConnected(t *testing.T) {
 	}
 }
 
+// TestSendSubscribe_NilConn verifies sendSubscribe returns an error rather
+// than panicking when ws.conn is nil — the state reconnect() leaves the
+// WebSocket in while it sleeps before redialling.
+func TestSendSubscribe_NilConn(t *testing.T) {
+	ws, _ := New()
+
+	err := ws.sendSubscribe([]string{"AAPL"})
+	if err == nil {
+		t.Fatal("Expected error when conn is nil, got nil")
+	}
+	if err.Error() != "not connected" {
+		t.Errorf("Expected 'not connected' error, got %q", err.Error())
+	}
+}
+
 func TestPricingDataTimestamp(t *testing.T) {
 	now := time.Now().Unix()
 	pd := &models.PricingData{
