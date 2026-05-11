@@ -73,7 +73,7 @@ func TestIsConnected(t *testing.T) {
 }
 
 // TestSendSubscribe_NilConn verifies sendSubscribe returns an error rather
-// than panicking when ws.conn is nil — the state reconnect() leaves the
+// than panicking when ws.conn is nil, the state reconnect() leaves the
 // WebSocket in while it sleeps before redialling.
 func TestSendSubscribe_NilConn(t *testing.T) {
 	ws, _ := New()
