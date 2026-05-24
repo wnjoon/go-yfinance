@@ -11,13 +11,13 @@ package utils
 // Example: "XLON" (London Stock Exchange) maps to "L", so AAPL traded on LSE would be "AAPL.L"
 var MICToYahooSuffix = map[string]string{
 	// United States
-	"XCBT": "CBT",  // Chicago Board of Trade
-	"XCME": "CME",  // Chicago Mercantile Exchange
-	"IFUS": "NYB",  // ICE Futures US
-	"CECS": "CMX",  // COMEX (Commodities Exchange)
-	"XNYM": "NYM",  // New York Mercantile Exchange
-	"XNYS": "",     // New York Stock Exchange (no suffix for US)
-	"XNAS": "",     // NASDAQ (no suffix for US)
+	"XCBT": "CBT", // Chicago Board of Trade
+	"XCME": "CME", // Chicago Mercantile Exchange
+	"IFUS": "NYB", // ICE Futures US
+	"CECS": "CMX", // COMEX (Commodities Exchange)
+	"XNYM": "NYM", // New York Mercantile Exchange
+	"XNYS": "",    // New York Stock Exchange (no suffix for US)
+	"XNAS": "",    // NASDAQ (no suffix for US)
 
 	// Argentina
 	"XBUE": "BA", // Buenos Aires Stock Exchange

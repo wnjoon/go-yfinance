@@ -171,99 +171,112 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 	quote := result.Indicators.Quote[0]
 	timestamps := result.Timestamp
 
-	// Get adjusted close if available
-	var adjClose []*float64
-	if len(result.Indicators.AdjClose) > 0 {
-		adjClose = result.Indicators.AdjClose[0].AdjClose
-	}
-
-	// Parse dividends, splits, and capital gains
-	dividends := make(map[int64]float64)
-	dividendCurrencies := make(map[int64]string)
-	splits := make(map[int64]float64)
-	capitalGains := make(map[int64]float64)
-
-	if includeActions && result.Events != nil {
-		if result.Events.Dividends != nil {
-			for _, div := range result.Events.Dividends {
-				dividends[div.Date] = div.Amount
-				if div.Currency != "" {
-					dividendCurrencies[div.Date] = div.Currency
-				}
-			}
-		}
-		if result.Events.Splits != nil {
-			for _, split := range result.Events.Splits {
-				if split.Denominator != 0 {
-					splits[split.Date] = split.Numerator / split.Denominator
-				}
-			}
-		}
-		if result.Events.CapitalGains != nil {
-			for _, cg := range result.Events.CapitalGains {
-				capitalGains[cg.Date] = cg.Amount
-			}
-		}
-	}
+	adjClose := chartAdjClose(result)
+	actions := chartActions(result, includeActions)
 
 	bars := make([]models.Bar, 0, len(timestamps))
 
 	for i, ts := range timestamps {
-		bar := models.Bar{
-			Date: time.Unix(ts, 0).UTC(),
-		}
-
-		// Handle nil values (gaps in data)
-		if i < len(quote.Open) && quote.Open[i] != nil {
-			bar.Open = *quote.Open[i]
-		}
-		if i < len(quote.High) && quote.High[i] != nil {
-			bar.High = *quote.High[i]
-		}
-		if i < len(quote.Low) && quote.Low[i] != nil {
-			bar.Low = *quote.Low[i]
-		}
-		if i < len(quote.Close) && quote.Close[i] != nil {
-			bar.Close = *quote.Close[i]
-		}
-		if i < len(quote.Volume) && quote.Volume[i] != nil {
-			bar.Volume = *quote.Volume[i]
-		}
-
-		// Adjusted close
-		if adjClose != nil && i < len(adjClose) && adjClose[i] != nil {
-			bar.AdjClose = *adjClose[i]
-		} else {
-			bar.AdjClose = bar.Close
-		}
-
-		// Add actions if available
-		if div, ok := dividends[ts]; ok {
-			bar.Dividends = div
-		}
-		if currency, ok := dividendCurrencies[ts]; ok {
-			bar.DividendCurrency = currency
-		}
-		if split, ok := splits[ts]; ok {
-			bar.Splits = split
-		}
-		if cg, ok := capitalGains[ts]; ok {
-			bar.CapitalGains = cg
-		}
-
-		// Auto-adjust OHLC if requested
-		if autoAdjust && bar.Close != 0 && bar.AdjClose != 0 {
-			ratio := bar.AdjClose / bar.Close
-			bar.Open *= ratio
-			bar.High *= ratio
-			bar.Low *= ratio
-			bar.Close = bar.AdjClose
-		}
-
+		bar := chartBarAt(i, ts, quote, adjClose)
+		applyChartActions(&bar, ts, actions)
+		applyAutoAdjust(&bar, autoAdjust)
 		bars = append(bars, bar)
 	}
 
 	return bars, nil
+}
+
+type chartActionMaps struct {
+	dividends          map[int64]float64
+	dividendCurrencies map[int64]string
+	splits             map[int64]float64
+	capitalGains       map[int64]float64
+}
+
+func chartAdjClose(result *models.ChartResult) []*float64 {
+	if len(result.Indicators.AdjClose) == 0 {
+		return nil
+	}
+	return result.Indicators.AdjClose[0].AdjClose
+}
+
+func chartActions(result *models.ChartResult, includeActions bool) chartActionMaps {
+	actions := chartActionMaps{
+		dividends:          make(map[int64]float64),
+		dividendCurrencies: make(map[int64]string),
+		splits:             make(map[int64]float64),
+		capitalGains:       make(map[int64]float64),
+	}
+	if !includeActions || result.Events == nil {
+		return actions
+	}
+
+	for _, div := range result.Events.Dividends {
+		actions.dividends[div.Date] = div.Amount
+		if div.Currency != "" {
+			actions.dividendCurrencies[div.Date] = div.Currency
+		}
+	}
+	for _, split := range result.Events.Splits {
+		if split.Denominator != 0 {
+			actions.splits[split.Date] = split.Numerator / split.Denominator
+		}
+	}
+	for _, cg := range result.Events.CapitalGains {
+		actions.capitalGains[cg.Date] = cg.Amount
+	}
+	return actions
+}
+
+func chartBarAt(i int, ts int64, quote models.ChartQuote, adjClose []*float64) models.Bar {
+	bar := models.Bar{Date: time.Unix(ts, 0).UTC()}
+	if i < len(quote.Open) && quote.Open[i] != nil {
+		bar.Open = *quote.Open[i]
+	}
+	if i < len(quote.High) && quote.High[i] != nil {
+		bar.High = *quote.High[i]
+	}
+	if i < len(quote.Low) && quote.Low[i] != nil {
+		bar.Low = *quote.Low[i]
+	}
+	if i < len(quote.Close) && quote.Close[i] != nil {
+		bar.Close = *quote.Close[i]
+	}
+	if i < len(quote.Volume) && quote.Volume[i] != nil {
+		bar.Volume = *quote.Volume[i]
+	}
+	if adjClose != nil && i < len(adjClose) && adjClose[i] != nil {
+		bar.AdjClose = *adjClose[i]
+	} else {
+		bar.AdjClose = bar.Close
+	}
+	return bar
+}
+
+func applyChartActions(bar *models.Bar, ts int64, actions chartActionMaps) {
+	if div, ok := actions.dividends[ts]; ok {
+		bar.Dividends = div
+	}
+	if currency, ok := actions.dividendCurrencies[ts]; ok {
+		bar.DividendCurrency = currency
+	}
+	if split, ok := actions.splits[ts]; ok {
+		bar.Splits = split
+	}
+	if cg, ok := actions.capitalGains[ts]; ok {
+		bar.CapitalGains = cg
+	}
+}
+
+func applyAutoAdjust(bar *models.Bar, autoAdjust bool) {
+	if !autoAdjust || bar.Close == 0 || bar.AdjClose == 0 {
+		return
+	}
+	ratio := bar.AdjClose / bar.Close
+	bar.Open *= ratio
+	bar.High *= ratio
+	bar.Low *= ratio
+	bar.Close = bar.AdjClose
 }
 
 // filterValidBars removes bars with zero/NaN values.

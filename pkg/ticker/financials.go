@@ -288,44 +288,7 @@ func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.Financial
 				continue
 			}
 
-			items := make([]models.FinancialItem, 0, len(dataPoints))
-			for _, dp := range dataPoints {
-				dpMap, ok := dp.(map[string]interface{})
-				if !ok {
-					continue
-				}
-
-				asOfDate, _ := dpMap["asOfDate"].(string)
-				currencyCode, _ := dpMap["currencyCode"].(string)
-				periodType, _ := dpMap["periodType"].(string)
-
-				reportedValue, _ := dpMap["reportedValue"].(map[string]interface{})
-				var rawValue float64
-				var fmtValue string
-				if reportedValue != nil {
-					rawValue, _ = reportedValue["raw"].(float64)
-					fmtValue, _ = reportedValue["fmt"].(string)
-				}
-
-				// Parse date
-				date, err := time.Parse("2006-01-02", asOfDate)
-				if err != nil {
-					continue
-				}
-
-				allDates[date] = true
-				if stmt.Currency == "" && currencyCode != "" {
-					stmt.Currency = currencyCode
-				}
-
-				items = append(items, models.FinancialItem{
-					AsOfDate:     date,
-					CurrencyCode: currencyCode,
-					PeriodType:   periodType,
-					Value:        rawValue,
-					Formatted:    fmtValue,
-				})
-			}
+			items := parseFinancialItems(dataPoints, stmt, allDates)
 
 			if len(items) > 0 {
 				// Sort items by date ascending
@@ -348,6 +311,56 @@ func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.Financial
 	stmt.Dates = dates
 
 	return stmt, nil
+}
+
+func parseFinancialItems(dataPoints []interface{}, stmt *models.FinancialStatement, allDates map[time.Time]bool) []models.FinancialItem {
+	items := make([]models.FinancialItem, 0, len(dataPoints))
+	for _, dp := range dataPoints {
+		item, ok := parseFinancialItem(dp)
+		if !ok {
+			continue
+		}
+		allDates[item.AsOfDate] = true
+		if stmt.Currency == "" && item.CurrencyCode != "" {
+			stmt.Currency = item.CurrencyCode
+		}
+		items = append(items, item)
+	}
+	return items
+}
+
+func parseFinancialItem(dp interface{}) (models.FinancialItem, bool) {
+	dpMap, ok := dp.(map[string]interface{})
+	if !ok {
+		return models.FinancialItem{}, false
+	}
+
+	asOfDate, _ := dpMap["asOfDate"].(string)
+	date, err := time.Parse("2006-01-02", asOfDate)
+	if err != nil {
+		return models.FinancialItem{}, false
+	}
+
+	currencyCode, _ := dpMap["currencyCode"].(string)
+	periodType, _ := dpMap["periodType"].(string)
+	rawValue, fmtValue := reportedFinancialValue(dpMap)
+	return models.FinancialItem{
+		AsOfDate:     date,
+		CurrencyCode: currencyCode,
+		PeriodType:   periodType,
+		Value:        rawValue,
+		Formatted:    fmtValue,
+	}, true
+}
+
+func reportedFinancialValue(dpMap map[string]interface{}) (float64, string) {
+	reportedValue, _ := dpMap["reportedValue"].(map[string]interface{})
+	if reportedValue == nil {
+		return 0, ""
+	}
+	rawValue, _ := reportedValue["raw"].(float64)
+	fmtValue, _ := reportedValue["fmt"].(string)
+	return rawValue, fmtValue
 }
 
 // FinancialsJSON returns raw JSON for debugging.

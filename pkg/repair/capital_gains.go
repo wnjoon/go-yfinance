@@ -219,11 +219,11 @@ func applyCapitalGainsRepair(bars []models.Bar, cgIndices []int) []models.Bar {
 
 // CapitalGainsRepairStats returns statistics about capital gains repair.
 type CapitalGainsRepairStats struct {
-	TotalEvents        int     // Number of capital gains events
-	DoubleCountEvents  int     // Number detected as double-counted
-	DoubleCountRatio   float64 // Ratio of double-counted events
-	RepairApplied      bool    // Whether repair was applied
-	BarsRepaired       int     // Number of bars that were repaired
+	TotalEvents       int     // Number of capital gains events
+	DoubleCountEvents int     // Number detected as double-counted
+	DoubleCountRatio  float64 // Ratio of double-counted events
+	RepairApplied     bool    // Whether repair was applied
+	BarsRepaired      int     // Number of bars that were repaired
 }
 
 // AnalyzeCapitalGains analyzes bars for capital gains issues without modifying.

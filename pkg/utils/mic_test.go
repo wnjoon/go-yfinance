@@ -9,17 +9,17 @@ func TestGetYahooSuffix(t *testing.T) {
 		mic      string
 		expected string
 	}{
-		{"XLON", "L"},      // London Stock Exchange
-		{"XNYS", ""},       // NYSE (no suffix)
-		{"XNAS", ""},       // NASDAQ (no suffix)
-		{"XTKS", "T"},      // Tokyo Stock Exchange
-		{"XHKG", "HK"},     // Hong Kong
-		{"XASX", "AX"},     // Australia
-		{"XTSE", "TO"},     // Toronto
-		{"XPAR", "PA"},     // Paris
-		{"XETR", "DE"},     // XETRA Germany
-		{"XSAU", "SR"},     // Saudi Arabia
-		{"INVALID", ""},    // Unknown MIC
+		{"XLON", "L"},   // London Stock Exchange
+		{"XNYS", ""},    // NYSE (no suffix)
+		{"XNAS", ""},    // NASDAQ (no suffix)
+		{"XTKS", "T"},   // Tokyo Stock Exchange
+		{"XHKG", "HK"},  // Hong Kong
+		{"XASX", "AX"},  // Australia
+		{"XTSE", "TO"},  // Toronto
+		{"XPAR", "PA"},  // Paris
+		{"XETR", "DE"},  // XETRA Germany
+		{"XSAU", "SR"},  // Saudi Arabia
+		{"INVALID", ""}, // Unknown MIC
 	}
 
 	for _, tt := range tests {
@@ -37,15 +37,15 @@ func TestGetMIC(t *testing.T) {
 		suffix   string
 		expected string
 	}{
-		{"L", "XLON"},   // London
-		{"T", "XTKS"},   // Tokyo
-		{"HK", "XHKG"},  // Hong Kong
-		{"AX", "XASX"},  // Australia
-		{"TO", "XTSE"},  // Toronto
-		{"PA", "XPAR"},  // Paris
-		{"DE", "XETR"},  // Germany
-		{"SR", "XSAU"},  // Saudi Arabia
-		{"ZZ", ""},      // Unknown suffix
+		{"L", "XLON"},  // London
+		{"T", "XTKS"},  // Tokyo
+		{"HK", "XHKG"}, // Hong Kong
+		{"AX", "XASX"}, // Australia
+		{"TO", "XTSE"}, // Toronto
+		{"PA", "XPAR"}, // Paris
+		{"DE", "XETR"}, // Germany
+		{"SR", "XSAU"}, // Saudi Arabia
+		{"ZZ", ""},     // Unknown suffix
 	}
 
 	for _, tt := range tests {
@@ -64,14 +64,14 @@ func TestFormatYahooTicker(t *testing.T) {
 		mic        string
 		expected   string
 	}{
-		{"AAPL", "XNYS", "AAPL"},       // US NYSE - no suffix
-		{"AAPL", "XNAS", "AAPL"},       // US NASDAQ - no suffix
-		{"AAPL", "XLON", "AAPL.L"},     // London
-		{"7203", "XTKS", "7203.T"},     // Toyota on Tokyo
-		{"0700", "XHKG", "0700.HK"},    // Tencent on Hong Kong
-		{"CBA", "XASX", "CBA.AX"},      // Commonwealth Bank on ASX
-		{"TD", "XTSE", "TD.TO"},        // TD Bank on Toronto
-		{"SAP", "XETR", "SAP.DE"},      // SAP on XETRA
+		{"AAPL", "XNYS", "AAPL"},          // US NYSE - no suffix
+		{"AAPL", "XNAS", "AAPL"},          // US NASDAQ - no suffix
+		{"AAPL", "XLON", "AAPL.L"},        // London
+		{"7203", "XTKS", "7203.T"},        // Toyota on Tokyo
+		{"0700", "XHKG", "0700.HK"},       // Tencent on Hong Kong
+		{"CBA", "XASX", "CBA.AX"},         // Commonwealth Bank on ASX
+		{"TD", "XTSE", "TD.TO"},           // TD Bank on Toronto
+		{"SAP", "XETR", "SAP.DE"},         // SAP on XETRA
 		{"UNKNOWN", "INVALID", "UNKNOWN"}, // Invalid MIC - no suffix
 	}
 
@@ -98,11 +98,11 @@ func TestParseYahooTicker(t *testing.T) {
 		{"7203.T", "7203", "T"},
 		{"0700.HK", "0700", "HK"},
 		{"SAP.DE", "SAP", "DE"},
-		{"BRK.A", "BRK", "A"},              // Berkshire class A
-		{"BRK.B", "BRK", "B"},              // Berkshire class B
+		{"BRK.A", "BRK", "A"}, // Berkshire class A
+		{"BRK.B", "BRK", "B"}, // Berkshire class B
 		{"TD.TO", "TD", "TO"},
-		{"NO.DOTS", "NO", "DOTS"},          // Last dot wins
-		{"A.B.C", "A.B", "C"},              // Multiple dots
+		{"NO.DOTS", "NO", "DOTS"}, // Last dot wins
+		{"A.B.C", "A.B", "C"},     // Multiple dots
 	}
 
 	for _, tt := range tests {
@@ -121,14 +121,14 @@ func TestIsUSExchange(t *testing.T) {
 		mic      string
 		expected bool
 	}{
-		{"XNYS", true},   // NYSE
-		{"XNAS", true},   // NASDAQ
-		{"XCBT", true},   // Chicago Board of Trade
-		{"XCME", true},   // Chicago Mercantile Exchange
-		{"XNYM", true},   // NYMEX
-		{"XLON", false},  // London
-		{"XHKG", false},  // Hong Kong
-		{"XTKS", false},  // Tokyo
+		{"XNYS", true},  // NYSE
+		{"XNAS", true},  // NASDAQ
+		{"XCBT", true},  // Chicago Board of Trade
+		{"XCME", true},  // Chicago Mercantile Exchange
+		{"XNYM", true},  // NYMEX
+		{"XLON", false}, // London
+		{"XHKG", false}, // Hong Kong
+		{"XTKS", false}, // Tokyo
 		{"INVALID", false},
 	}
 

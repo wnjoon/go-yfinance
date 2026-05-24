@@ -159,75 +159,77 @@ func repairPartialZeroes(bars []models.Bar) []models.Bar {
 	for i := range result {
 		bar := &result[i]
 
-		// Skip if all zero or all non-zero
-		zeroCount := 0
-		if bar.Open == 0 || math.IsNaN(bar.Open) {
-			zeroCount++
-		}
-		if bar.High == 0 || math.IsNaN(bar.High) {
-			zeroCount++
-		}
-		if bar.Low == 0 || math.IsNaN(bar.Low) {
-			zeroCount++
-		}
-		if bar.Close == 0 || math.IsNaN(bar.Close) {
-			zeroCount++
-		}
-
+		zeroCount := invalidOHLCCount(*bar)
 		if zeroCount == 0 || zeroCount == 4 {
 			continue
 		}
 
-		// Some values are good, use them to fix bad ones
-		goodValues := make([]float64, 0, 4)
-		if bar.Open > 0 && !math.IsNaN(bar.Open) {
-			goodValues = append(goodValues, bar.Open)
-		}
-		if bar.High > 0 && !math.IsNaN(bar.High) {
-			goodValues = append(goodValues, bar.High)
-		}
-		if bar.Low > 0 && !math.IsNaN(bar.Low) {
-			goodValues = append(goodValues, bar.Low)
-		}
-		if bar.Close > 0 && !math.IsNaN(bar.Close) {
-			goodValues = append(goodValues, bar.Close)
-		}
-
+		goodValues := goodOHLCValues(*bar)
 		if len(goodValues) == 0 {
 			continue
 		}
 
 		avg := stats.Mean(goodValues)
-
-		// Fix zero values
-		if bar.Open == 0 || math.IsNaN(bar.Open) {
-			bar.Open = avg
-			bar.Repaired = true
-		}
-		if bar.High == 0 || math.IsNaN(bar.High) {
-			bar.High = avg
-			bar.Repaired = true
-		}
-		if bar.Low == 0 || math.IsNaN(bar.Low) {
-			bar.Low = avg
-			bar.Repaired = true
-		}
-		if bar.Close == 0 || math.IsNaN(bar.Close) {
-			bar.Close = avg
-			bar.Repaired = true
-		}
-
-		// Ensure High >= all prices and Low <= all prices
-		bar.High = math.Max(bar.High, math.Max(bar.Open, bar.Close))
-		bar.Low = math.Min(bar.Low, math.Min(bar.Open, bar.Close))
-
-		// Fix AdjClose if zero
-		if bar.AdjClose == 0 || math.IsNaN(bar.AdjClose) {
-			bar.AdjClose = bar.Close
-		}
+		fillInvalidOHLC(bar, avg)
+		normalizeOHLCBounds(bar)
+		fillInvalidAdjClose(bar)
 	}
 
 	return result
+}
+
+func invalidOHLCCount(bar models.Bar) int {
+	count := 0
+	for _, value := range []float64{bar.Open, bar.High, bar.Low, bar.Close} {
+		if invalidPrice(value) {
+			count++
+		}
+	}
+	return count
+}
+
+func goodOHLCValues(bar models.Bar) []float64 {
+	values := make([]float64, 0, 4)
+	for _, value := range []float64{bar.Open, bar.High, bar.Low, bar.Close} {
+		if value > 0 && !math.IsNaN(value) {
+			values = append(values, value)
+		}
+	}
+	return values
+}
+
+func fillInvalidOHLC(bar *models.Bar, value float64) {
+	if invalidPrice(bar.Open) {
+		bar.Open = value
+		bar.Repaired = true
+	}
+	if invalidPrice(bar.High) {
+		bar.High = value
+		bar.Repaired = true
+	}
+	if invalidPrice(bar.Low) {
+		bar.Low = value
+		bar.Repaired = true
+	}
+	if invalidPrice(bar.Close) {
+		bar.Close = value
+		bar.Repaired = true
+	}
+}
+
+func normalizeOHLCBounds(bar *models.Bar) {
+	bar.High = math.Max(bar.High, math.Max(bar.Open, bar.Close))
+	bar.Low = math.Min(bar.Low, math.Min(bar.Open, bar.Close))
+}
+
+func fillInvalidAdjClose(bar *models.Bar) {
+	if invalidPrice(bar.AdjClose) {
+		bar.AdjClose = bar.Close
+	}
+}
+
+func invalidPrice(value float64) bool {
+	return value == 0 || math.IsNaN(value)
 }
 
 // repairVolumeZeroes fixes bars where volume is zero but price changed.
@@ -285,11 +287,11 @@ func repairVolumeZeroes(bars []models.Bar) []models.Bar {
 
 // ZeroRepairStats contains statistics about zero value repairs.
 type ZeroRepairStats struct {
-	TotalBars         int // Total bars analyzed
-	ZeroBars          int // Bars with zero prices
-	PartialZeroBars   int // Bars with some zero values
-	ZeroVolumeBars    int // Bars with zero volume but price changed
-	BarsRepaired      int // Total bars repaired
+	TotalBars       int // Total bars analyzed
+	ZeroBars        int // Bars with zero prices
+	PartialZeroBars int // Bars with some zero values
+	ZeroVolumeBars  int // Bars with zero volume but price changed
+	BarsRepaired    int // Total bars repaired
 }
 
 // AnalyzeZeroes analyzes bars for zero/missing values without modifying.
