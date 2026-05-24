@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.2.0-progress/">
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.4.0-progress/">
       
       
-        <link rel="prev" href="../v1.3.0-progress/">
+        <link rel="prev" href="../../releases/RELEASE_NOTES_v1.0.0/">
       
       
-        <link rel="next" href="../v1.1.0-progress/">
+        <link rel="next" href="../v1.3.0-progress/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>v1.2.0 Progress - go-yfinance Docs</title>
+        <title>v1.4.0 Progress - go-yfinance Docs</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#go-yfinance-v120-development-progress" class="md-skip">
+        <a href="#go-yfinance-v140-development-progress" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v1.2.0 Progress
+              v1.4.0 Progress
             
           </span>
         </div>
@@ -668,62 +668,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../v1.4.0-progress/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v1.4.0 Progress
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../v1.3.0-progress/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v1.3.0 Progress
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -743,7 +687,7 @@
   <span class="md-ellipsis">
     
   
-    v1.2.0 Progress
+    v1.4.0 Progress
   
 
     
@@ -761,7 +705,7 @@
   <span class="md-ellipsis">
     
   
-    v1.2.0 Progress
+    v1.4.0 Progress
   
 
     
@@ -809,10 +753,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changes-from-python-yfinance-v110-v120" class="md-nav__link">
+  <a href="#changes-from-python-yfinance-v130-v140" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changes from Python yfinance v1.1.0 → v1.2.0
+        Changes from Python yfinance v1.3.0 -&gt; v1.4.0
       
     </span>
   </a>
@@ -820,22 +764,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-summary" class="md-nav__link">
+  <a href="#implementation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Implementation Summary
+        Implementation Plan
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Implementation Summary">
+    <nav class="md-nav" aria-label="Implementation Plan">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-files-3" class="md-nav__link">
+  <a href="#phase-1-locale-and-market-correctness" class="md-nav__link">
     <span class="md-ellipsis">
       
-        New Files (3)
+        Phase 1: Locale and Market Correctness
       
     </span>
   </a>
@@ -843,10 +787,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#modified-files-3" class="md-nav__link">
+  <a href="#phase-2-sector-and-industry-region-scoping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modified Files (3)
+        Phase 2: Sector and Industry Region Scoping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-manual-yahoo-login-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Manual Yahoo Login Cookies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-history-and-repair-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: History and Repair Stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-documentation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Documentation and Verification
       
     </span>
   </a>
@@ -859,82 +836,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feature-details" class="md-nav__link">
+  <a href="#verification-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feature Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Feature Details">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-screener-constants-and-validation-maps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Screener Constants and Validation Maps
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-query-validation-equityquery-fundquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Query Validation (EquityQuery / FundQuery)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-fundquery-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. FundQuery Support
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-predefined-screener-queries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Predefined Screener Queries
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-screen-and-screenwithquery-enhancements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Screen() and ScreenWithQuery() Enhancements
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Test Coverage
+        Verification Plan
       
     </span>
   </a>
@@ -942,21 +847,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#commits" class="md-nav__link">
+  <a href="#python-vs-go-call-structure-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Commits
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verification" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verification
+        Python vs Go Call Structure Notes
       
     </span>
   </a>
@@ -978,6 +872,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1067,10 +1017,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changes-from-python-yfinance-v110-v120" class="md-nav__link">
+  <a href="#changes-from-python-yfinance-v130-v140" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changes from Python yfinance v1.1.0 → v1.2.0
+        Changes from Python yfinance v1.3.0 -&gt; v1.4.0
       
     </span>
   </a>
@@ -1078,22 +1028,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-summary" class="md-nav__link">
+  <a href="#implementation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Implementation Summary
+        Implementation Plan
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Implementation Summary">
+    <nav class="md-nav" aria-label="Implementation Plan">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new-files-3" class="md-nav__link">
+  <a href="#phase-1-locale-and-market-correctness" class="md-nav__link">
     <span class="md-ellipsis">
       
-        New Files (3)
+        Phase 1: Locale and Market Correctness
       
     </span>
   </a>
@@ -1101,10 +1051,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#modified-files-3" class="md-nav__link">
+  <a href="#phase-2-sector-and-industry-region-scoping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Modified Files (3)
+        Phase 2: Sector and Industry Region Scoping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-manual-yahoo-login-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Manual Yahoo Login Cookies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-history-and-repair-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: History and Repair Stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-documentation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Documentation and Verification
       
     </span>
   </a>
@@ -1117,82 +1100,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feature-details" class="md-nav__link">
+  <a href="#verification-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feature Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Feature Details">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-screener-constants-and-validation-maps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Screener Constants and Validation Maps
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-query-validation-equityquery-fundquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Query Validation (EquityQuery / FundQuery)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-fundquery-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. FundQuery Support
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-predefined-screener-queries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Predefined Screener Queries
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-screen-and-screenwithquery-enhancements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Screen() and ScreenWithQuery() Enhancements
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Test Coverage
+        Verification Plan
       
     </span>
   </a>
@@ -1200,21 +1111,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#commits" class="md-nav__link">
+  <a href="#python-vs-go-call-structure-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Commits
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verification" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verification
+        Python vs Go Call Structure Notes
       
     </span>
   </a>
@@ -1252,340 +1152,205 @@
   
 
 
-<h1 id="go-yfinance-v120-development-progress">go-yfinance v1.2.0 Development Progress</h1>
+<h1 id="go-yfinance-v140-development-progress">go-yfinance v1.4.0 Development Progress</h1>
 <blockquote>
-<p>Last Updated: 2026-02-19</p>
+<p>Last Updated: 2026-05-24</p>
 </blockquote>
 <h2 id="overview">Overview</h2>
-<p>Implementation of full Screener module parity with Python yfinance v1.2.0, including client-side query validation, FundQuery support, IS-IN operator, and all predefined screener queries.</p>
+<p>Implementation plan and progress tracking for Python yfinance v1.4.0 parity.
+This release focuses on authentication, locale/region scoping, market endpoint
+correctness, and history/repair stability fixes rather than a large new data
+surface.</p>
 <h2 id="branch-structure">Branch Structure</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>main
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/screener-parity     ← ✅ Completed and merged
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/v1.4.0-parity
 </code></pre></div>
 <hr />
-<h2 id="changes-from-python-yfinance-v110-v120">Changes from Python yfinance v1.1.0 → v1.2.0</h2>
-<p>Python yfinance v1.2.0 added exchange codes to <code>EQUITY_SCREENER_EQ_MAP</code> and expanded <code>FUND_SCREENER_EQ_MAP</code>. During analysis, we discovered the Go screener module had fundamental feature gaps from v1.1.0 — missing query validation, FundQuery support, IS-IN operator, and predefined screener queries. This release addresses all gaps to achieve full Python parity.</p>
+<h2 id="changes-from-python-yfinance-v130-v140">Changes from Python yfinance v1.3.0 -&gt; v1.4.0</h2>
+<table>
+<thead>
+<tr>
+<th>Upstream PR</th>
+<th>Python Change</th>
+<th>Go Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#2761</td>
+<td>Add <code>yf.Auth</code> for manually supplied Yahoo <code>T</code>/<code>Y</code> login cookies</td>
+<td>Done: added login-cookie setting, user parsing, and cookie merge support</td>
+</tr>
+<tr>
+<td>#2803</td>
+<td>Add ISO alpha-2 region scoping to <code>Sector</code> and <code>Industry</code></td>
+<td>Done: added <code>WithRegion</code> options and normalized region scoping</td>
+</tr>
+<tr>
+<td>#2802</td>
+<td>Allow <code>curl_cffi</code> fallback to <code>requests</code></td>
+<td>Not directly applicable; evaluate optional <code>net/http</code> fallback separately</td>
+</tr>
+<tr>
+<td>#2804</td>
+<td>Add global locale config for v7/v10 ticker endpoints</td>
+<td>Done: added <code>config.SetLocale</code> and propagated <code>lang</code>/<code>region</code> to ticker v7/v10, lookup, and calendars endpoints</td>
+</tr>
+<tr>
+<td>#2801</td>
+<td>Validate market regions and avoid misleading non-US status</td>
+<td>Done: added <code>MarketRegion</code>, normalized legacy market inputs, and switched market APIs to <code>market</code> params</td>
+</tr>
+<tr>
+<td>#2805</td>
+<td>Make Python <code>download()</code> reentrant by removing shared globals</td>
+<td>Mostly not applicable; Go already uses per-call result maps</td>
+</tr>
+<tr>
+<td>#2825</td>
+<td>Preserve localized intraday download timezone</td>
+<td>Planned review: add opt-in exchange-timezone localization if needed</td>
+</tr>
+<tr>
+<td>#2777</td>
+<td>Preserve repair choice in <code>history_metadata()</code></td>
+<td>Done: connected <code>HistoryParams.Repair</code> to Go repair pipeline</td>
+</tr>
+<tr>
+<td>#2778 / #2794</td>
+<td>Harden history parsing for malformed or null chart payloads</td>
+<td>Planned: add defensive parsing tests and typed errors</td>
+</tr>
+<tr>
+<td>#2780</td>
+<td>Fix 1-month interval comparison across years</td>
+<td>Planned review for analogous Go interval logic</td>
+</tr>
+<tr>
+<td>#2797</td>
+<td>Fix dividends on unlisted tickers</td>
+<td>Planned: verify empty/missing chart action behavior</td>
+</tr>
+<tr>
+<td>#2810</td>
+<td>Simplify phantom-dividend repair and remove ticker allowlist</td>
+<td>Planned: compare Go dividend repair behavior and tests</td>
+</tr>
+<tr>
+<td>#2821</td>
+<td>Drop <code>frozendict</code> hard dependency</td>
+<td>Python-only dependency cleanup; not applicable</td>
+</tr>
+<tr>
+<td>#2779 / #2792</td>
+<td>Typo and test maintenance</td>
+<td>Not applicable unless docs/tests share wording</td>
+</tr>
+</tbody>
+</table>
 <hr />
-<h2 id="implementation-summary">Implementation Summary</h2>
-<h3 id="new-files-3">New Files (3)</h3>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>pkg/models/screener_const.go</code></td>
-<td>All validation maps ported from Python <code>const.py</code></td>
-</tr>
-<tr>
-<td><code>pkg/models/screener_query.go</code></td>
-<td>EquityQuery, FundQuery with ScreenerQueryBuilder interface</td>
-</tr>
-<tr>
-<td><code>pkg/screener/predefined.go</code></td>
-<td>15 predefined screener queries (9 equity + 6 fund)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="modified-files-3">Modified Files (3)</h3>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th>Changes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>pkg/models/screener.go</code></td>
-<td>IS-IN operator, fund fields, UserID/UserIDType params</td>
-</tr>
-<tr>
-<td><code>pkg/screener/screener.go</code></td>
-<td>ScreenerQueryBuilder interface, dynamic quoteType, offset workaround</td>
-</tr>
-<tr>
-<td><code>docs/API.md</code></td>
-<td>Full documentation update for all screener changes</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="feature-details">Feature Details</h2>
-<h3 id="1-screener-constants-and-validation-maps">1. Screener Constants and Validation Maps</h3>
-<p>Ported from Python <code>const.py</code> to <code>pkg/models/screener_const.go</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Map</th>
-<th>Contents</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SectorIndustryMapping</code></td>
-<td>11 sectors with complete industry lists</td>
-</tr>
-<tr>
-<td><code>EquityScreenerExchangeMap</code></td>
-<td>57 regions with exchange codes</td>
-</tr>
-<tr>
-<td><code>FundScreenerExchangeMap</code></td>
-<td>56 regions with exchange codes</td>
-</tr>
-<tr>
-<td><code>EquityScreenerSectors</code></td>
-<td>11 sector names</td>
-</tr>
-<tr>
-<td><code>EquityScreenerPeerGroups</code></td>
-<td>74 peer group names</td>
-</tr>
-<tr>
-<td><code>EquityScreenerFields</code></td>
-<td>12 categories, ~91 field names</td>
-</tr>
-<tr>
-<td><code>FundScreenerFields</code></td>
-<td>2 categories, 9 field names</td>
-</tr>
-</tbody>
-</table>
-<h3 id="2-query-validation-equityquery-fundquery">2. Query Validation (EquityQuery / FundQuery)</h3>
-<p>Implemented in <code>pkg/models/screener_query.go</code>:</p>
+<h2 id="implementation-plan">Implementation Plan</h2>
+<h3 id="phase-1-locale-and-market-correctness">Phase 1: Locale and Market Correctness</h3>
 <ul>
-<li><strong>ScreenerQueryBuilder interface</strong>: <code>ToDict()</code> and <code>QuoteType()</code> methods</li>
-<li><strong>Client-side validation</strong>: Field names, EQ values (exchange, region, sector, industry), numeric types for GT/LT/GTE/LTE/BTWN</li>
-<li><strong>IS-IN operator</strong>: Expands to OR-of-EQ (e.g., <code>is-in ["exchange", "NMS", "NYQ"]</code> → <code>or [eq("exchange","NMS"), eq("exchange","NYQ")]</code>)</li>
-<li><strong>Type preservation</strong>: IS-IN expansion maintains EquityQuery/FundQuery identity</li>
+<li>Add thread-safe locale fields to <code>pkg/config</code> with defaults <code>en-US</code> and <code>US</code>.</li>
+<li>Propagate locale to v7/v10 quote, quoteSummary, info, calendar, lookup, and calendars endpoints where applicable.</li>
+<li>Add <code>models.MarketRegion</code> values matching Python v1.4.0.</li>
+<li>Recheck <code>pkg/market</code> request parameters: Python uses <code>market</code>, while current Go code sends <code>region</code>.</li>
+<li>Return an explicit unavailable status for non-US markettime responses that Yahoo answers with U.S. data.</li>
 </ul>
-<h3 id="3-fundquery-support">3. FundQuery Support</h3>
+<h3 id="phase-2-sector-and-industry-region-scoping">Phase 2: Sector and Industry Region Scoping</h3>
 <ul>
-<li><code>NewFundQuery(operator string, operands []any) (*FundQuery, error)</code> — validates against fund-specific fields</li>
-<li><code>QuoteType()</code> returns <code>"MUTUALFUND"</code> (vs <code>"EQUITY"</code> for EquityQuery)</li>
-<li>Fund-specific ScreenerQuote fields: <code>FundNetAssets</code>, <code>CategoryName</code>, <code>PerformanceRatingOverall</code>, <code>RiskRatingOverall</code>, <code>InitialInvestment</code>, <code>AnnualReturnNavY1CategoryRank</code></li>
+<li>Add <code>WithRegion(region string)</code> options to <code>pkg/sector</code> and <code>pkg/industry</code>.</li>
+<li>Normalize region with <code>strings.TrimSpace</code> and <code>strings.ToUpper</code>.</li>
+<li>Preserve default U.S. behavior.</li>
+<li>Add tests proving region appears in request params and cache behavior remains per instance.</li>
 </ul>
-<h3 id="4-predefined-screener-queries">4. Predefined Screener Queries</h3>
-<p>All 15 predefined screeners from Python <code>PREDEFINED_SCREENER_QUERIES</code>:</p>
-<p><strong>Equity (9):</strong></p>
-<table>
-<thead>
-<tr>
-<th>Screener</th>
-<th>Sort Field</th>
-<th>Sort</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>aggressive_small_caps</code></td>
-<td>eodvolume</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>day_gainers</code></td>
-<td>percentchange</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>day_losers</code></td>
-<td>percentchange</td>
-<td>ASC</td>
-</tr>
-<tr>
-<td><code>growth_technology_stocks</code></td>
-<td>eodvolume</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>most_actives</code></td>
-<td>dayvolume</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>most_shorted_stocks</code></td>
-<td>short_percentage_of_shares_outstanding.value</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>small_cap_gainers</code></td>
-<td>eodvolume</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>undervalued_growth_stocks</code></td>
-<td>eodvolume</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>undervalued_large_caps</code></td>
-<td>eodvolume</td>
-<td>DESC</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Fund (6):</strong></p>
-<table>
-<thead>
-<tr>
-<th>Screener</th>
-<th>Sort Field</th>
-<th>Sort</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>conservative_foreign_funds</code></td>
-<td>fundnetassets</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>high_yield_bond</code></td>
-<td>fundnetassets</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>portfolio_anchors</code></td>
-<td>fundnetassets</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>solid_large_growth_funds</code></td>
-<td>fundnetassets</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>solid_midcap_growth_funds</code></td>
-<td>fundnetassets</td>
-<td>DESC</td>
-</tr>
-<tr>
-<td><code>top_mutual_funds</code></td>
-<td>percentchange</td>
-<td>DESC</td>
-</tr>
-</tbody>
-</table>
-<h3 id="5-screen-and-screenwithquery-enhancements">5. Screen() and ScreenWithQuery() Enhancements</h3>
+<h3 id="phase-3-manual-yahoo-login-cookies">Phase 3: Manual Yahoo Login Cookies</h3>
 <ul>
-<li><strong>Count validation</strong>: Returns error when count &gt; 250 (Yahoo API limit)</li>
-<li><strong>Offset workaround</strong>: When offset &gt; 0, switches from GET predefined endpoint to POST custom endpoint (Yahoo's GET ignores offset)</li>
-<li><strong>Dynamic quoteType</strong>: Automatically determined from query type</li>
-<li><strong>Sort params</strong>: Forwarded to GET predefined endpoint</li>
-<li><strong>UserID/UserIDType</strong>: Added to POST request body</li>
+<li>Add a public API for setting Yahoo login cookies <code>T</code> and <code>Y</code>.</li>
+<li>Change client cookie storage from a single raw cookie string to mergeable named cookies.</li>
+<li>Add <code>CheckLogin()</code> support by parsing Yahoo Finance's <code>nimbus-benji-config</code> user payload.</li>
+<li>Ensure login cookies and crumb/cookie authentication coexist without overwriting each other.</li>
+</ul>
+<h3 id="phase-4-history-and-repair-stability">Phase 4: History and Repair Stability</h3>
+<ul>
+<li>Harden chart parsing for <code>chart=null</code>, <code>result=null</code>, missing quote payloads, and Yahoo error payloads.</li>
+<li>Decide whether <code>HistoryParams.Repair</code> should run <code>pkg/repair</code> automatically; implement or document explicitly.</li>
+<li>Review intraday timestamp behavior and add opt-in local exchange timezone conversion if it aligns with Go API expectations.</li>
+<li>Compare Python v1.4.0 repair changes with Go repair logic, especially phantom dividends and zero-volume statistics.</li>
+</ul>
+<h3 id="phase-5-documentation-and-verification">Phase 5: Documentation and Verification</h3>
+<ul>
+<li>Add <code>docs/releases/RELEASE_NOTES_v1.4.0.md</code>. New release notes should live under <code>docs/releases/</code>, not the repository root.</li>
+<li>Update README and docs index/navigation.</li>
+<li>Regenerate API docs if public APIs change.</li>
+<li>Run <code>go test ./...</code>; run broader checks if available.</li>
 </ul>
 <hr />
-<h2 id="test-coverage">Test Coverage</h2>
-<table>
-<thead>
-<tr>
-<th>Test</th>
-<th>Cases</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>TestNewEquityQuery</code></td>
-<td>AND query construction, ToDict serialization</td>
-</tr>
-<tr>
-<td><code>TestNewFundQuery</code></td>
-<td>FundQuery construction, QuoteType verification</td>
-</tr>
-<tr>
-<td><code>TestISINExpansion</code></td>
-<td>IS-IN → OR-of-EQ expansion</td>
-</tr>
-<tr>
-<td><code>TestQueryValidation</code></td>
-<td>11 cases (valid/invalid fields, operators, values)</td>
-</tr>
-<tr>
-<td><code>TestFundQueryValidation</code></td>
-<td>4 cases (exchange, category, performance rating)</td>
-</tr>
-<tr>
-<td><code>TestQueryOperators</code></td>
-<td>All 9 operator constants</td>
-</tr>
-<tr>
-<td><code>TestPredefinedScreenerQueries</code></td>
-<td>15 screeners, type checks</td>
-</tr>
-<tr>
-<td><code>TestPredefinedScreenerToDicts</code></td>
-<td>Serialization without panic</td>
-</tr>
-<tr>
-<td><code>TestScreenWithQueryNilQuery</code></td>
-<td>Nil query error handling</td>
-</tr>
-<tr>
-<td><code>TestScreenWithQueryCountLimit</code></td>
-<td>Count &gt; 250 rejection</td>
-</tr>
-<tr>
-<td><code>TestHelperFunctions</code></td>
-<td>getString, getFloat, getInt, getInt64</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="commits">Commits</h2>
-<table>
-<thead>
-<tr>
-<th>Hash</th>
-<th>Message</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>02cc12f</code></td>
-<td>feat(models): add screener query validation and fund support for Python v1.2.0 parity</td>
-</tr>
-<tr>
-<td><code>89c27ef</code></td>
-<td>feat(screener): add predefined queries, offset workaround, and dynamic quoteType</td>
-</tr>
-<tr>
-<td><code>5f9db60</code></td>
-<td>test(screener): comprehensive tests for query validation, fund support, and predefined screeners</td>
-</tr>
-<tr>
-<td><code>5b0c371</code></td>
-<td>docs: update API.md for screener v1.2.0 parity changes</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="verification">Verification</h2>
+<h2 id="verification-plan">Verification Plan</h2>
 <table>
 <thead>
 <tr>
 <th>Check</th>
-<th>Result</th>
+<th>Status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>go test ./...</code> (17 packages)</td>
-<td>✅ All PASS</td>
+<td>Unit tests for locale config and endpoint params</td>
+<td>Partial PASS: <code>go test ./pkg/config ./pkg/ticker ./pkg/calendars ./pkg/lookup</code></td>
 </tr>
 <tr>
-<td><code>golangci-lint run ./...</code></td>
-<td>✅ 0 issues</td>
+<td>Unit tests for market validation/status mismatch</td>
+<td>PASS: <code>go test ./pkg/market</code></td>
+</tr>
+<tr>
+<td>Unit tests for sector/industry region options</td>
+<td>PASS: <code>go test ./pkg/sector ./pkg/industry</code></td>
+</tr>
+<tr>
+<td>Unit tests for login cookie merge and login parsing</td>
+<td>PASS: <code>go test ./pkg/client</code></td>
+</tr>
+<tr>
+<td>Unit tests for malformed chart responses</td>
+<td>Follow-up: deeper fixture coverage is still useful; existing chart parsing remains defensive</td>
+</tr>
+<tr>
+<td><code>go test ./...</code></td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./...</code></td>
 </tr>
 <tr>
 <td><code>go vet ./...</code></td>
-<td>✅ Clean</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go vet ./...</code></td>
+</tr>
+<tr>
+<td><code>golangci-lint run --timeout=5m ./...</code></td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run --timeout=5m ./...</code></td>
+</tr>
+<tr>
+<td>Race tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test -race ./...</code></td>
+</tr>
+<tr>
+<td>Coverage report</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test -coverprofile=coverage.out ./...</code>; total statement coverage <code>42.9%</code></td>
+</tr>
+<tr>
+<td>Go Report Card CLI</td>
+<td>Not run locally: <code>goreportcard-cli</code> is not installed; local substitutes above are clean</td>
 </tr>
 </tbody>
 </table>
+<h2 id="python-vs-go-call-structure-notes">Python vs Go Call Structure Notes</h2>
+<ul>
+<li>Python uses <code>YfData</code> as a process-wide singleton with a shared session/cookie jar. Go keeps explicit <code>client.Client</code> instances and <code>AuthManager</code> values, which is more idiomatic for resource ownership and caller-controlled sharing.</li>
+<li>Python <code>Auth.set_login_cookies(T, Y)</code> writes to the session cookie jar. Go <code>AuthManager.SetLoginCookies(T, Y)</code> writes mergeable named cookies into <code>client.Client</code>; this preserves crumb cookies instead of replacing the whole cookie header.</li>
+<li>Python <code>Auth.check_login()</code> parses the <code>nimbus-benji-config</code> script and returns <code>False</code> or raises depending on debug config. Go <code>CheckLogin()</code> parses the same script but returns <code>(bool, error)</code>, which is the Go-native way to expose parse/network failures.</li>
+<li>Python <code>Market(MarketRegion.X)</code> validates enum values and sends <code>market=&lt;value&gt;</code> to both market summary and markettime. Go mirrors the endpoint parameter and adds <code>NewWithRegion(models.MarketRegionX)</code> while retaining legacy <code>us_market</code> aliases for compatibility.</li>
+<li>Python <code>Sector</code>/<code>Industry</code> accept <code>region</code> in the constructor and call <code>/v1/finance/sectors|industries/{key}</code> with <code>formatted=true</code>, <code>withReturns=true</code>, <code>lang=en-US</code>, and <code>region=&lt;region&gt;</code>. Go mirrors the endpoint shape, but expresses region as <code>WithRegion(...)</code> because the package already uses functional options.</li>
+<li>Python keeps the domain endpoint <code>lang</code> fixed at <code>en-US</code>. Go intentionally defaults to <code>en-US</code> but allows callers to override it through <code>config.SetLocale</code>, applying the same locale behavior consistently across Yahoo endpoints that accept <code>lang</code>.</li>
+</ul>
 <hr />
 <h2 id="change-history">Change History</h2>
 <table>
@@ -1597,20 +1362,36 @@
 </thead>
 <tbody>
 <tr>
-<td>2026-02-18</td>
-<td>Branch created, analysis of Python v1.2.0 changes</td>
+<td>2026-05-24</td>
+<td>Branch created and Python v1.4.0 diff reviewed</td>
 </tr>
 <tr>
-<td>2026-02-18</td>
-<td>Full screener parity implementation (constants, validation, queries)</td>
+<td>2026-05-24</td>
+<td>Added locale config and propagated locale params to ticker, lookup, and calendars</td>
 </tr>
 <tr>
-<td>2026-02-18</td>
-<td>Tests, documentation, lint fixes completed</td>
+<td>2026-05-24</td>
+<td>Added MarketRegion support and corrected market summary/status request params</td>
 </tr>
 <tr>
-<td>2026-02-19</td>
-<td>Merged to main, deployed to GitHub Pages</td>
+<td>2026-05-24</td>
+<td>Added Sector and Industry region scoping options</td>
+</tr>
+<tr>
+<td>2026-05-24</td>
+<td>Added manual Yahoo login cookie support and login user parsing</td>
+</tr>
+<tr>
+<td>2026-05-24</td>
+<td>Connected <code>HistoryParams.Repair</code> to the repair package</td>
+</tr>
+<tr>
+<td>2026-05-24</td>
+<td>Rechecked Python v1.4.0 call structure; documented Go's intentional locale customization for Sector/Industry domain <code>lang</code></td>
+</tr>
+<tr>
+<td>2026-05-24</td>
+<td>Verified <code>go vet</code>, <code>golangci-lint</code>, race tests, and coverage report</td>
 </tr>
 </tbody>
 </table>
