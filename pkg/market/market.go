@@ -65,9 +65,13 @@ func New(market string, opts ...Option) (*Market, error) {
 	if market == "" {
 		return nil, fmt.Errorf("market identifier cannot be empty")
 	}
+	normalizedMarket, err := normalizeMarket(market)
+	if err != nil {
+		return nil, err
+	}
 
 	m := &Market{
-		market:     market,
+		market:     normalizedMarket,
 		ownsClient: true,
 	}
 
@@ -98,6 +102,11 @@ func NewWithPredefined(market models.PredefinedMarket, opts ...Option) (*Market,
 	return New(string(market), opts...)
 }
 
+// NewWithRegion creates a new Market instance using a Yahoo market region.
+func NewWithRegion(region models.MarketRegion, opts ...Option) (*Market, error) {
+	return New(string(region), opts...)
+}
+
 // Close releases resources used by the Market instance.
 func (m *Market) Close() {
 	if m.ownsClient && m.client != nil {
@@ -113,21 +122,18 @@ func (m *Market) Market() string {
 // fetchData fetches both status and summary data from Yahoo Finance.
 func (m *Market) fetchData() error {
 	m.mu.RLock()
-	if m.statusCache != nil && m.summaryCache != nil {
+	if m.summaryCache != nil && !m.lastFetchTime.IsZero() {
 		m.mu.RUnlock()
 		return nil
 	}
 	m.mu.RUnlock()
 
 	// Fetch summary
-	// Extract region from market identifier (e.g., "us_market" -> "US")
-	region := extractRegion(m.market)
-
 	summaryParams := url.Values{}
 	summaryParams.Set("fields", "shortName,regularMarketPrice,regularMarketChange,regularMarketChangePercent")
 	summaryParams.Set("formatted", "false")
 	summaryParams.Set("lang", "en-US")
-	summaryParams.Set("region", region)
+	summaryParams.Set("market", m.market)
 
 	summaryResp, err := m.client.Get(endpoints.MarketSummaryURL, summaryParams)
 	if err != nil {
@@ -143,7 +149,7 @@ func (m *Market) fetchData() error {
 	statusParams.Set("formatted", "true")
 	statusParams.Set("key", "finance")
 	statusParams.Set("lang", "en-US")
-	statusParams.Set("region", region)
+	statusParams.Set("market", m.market)
 
 	statusResp, err := m.client.Get(endpoints.MarketTimeURL, statusParams)
 	if err != nil {
@@ -239,6 +245,9 @@ func (m *Market) parseStatus(raw *models.MarketTimeResponse) (*models.MarketStat
 	}
 
 	mt := marketTimes.MarketTime[0]
+	if m.market != string(models.MarketRegionUS) && strings.EqualFold(mt.ID, "us") {
+		return nil, nil
+	}
 
 	status := &models.MarketStatus{
 		ID:       mt.ID,
@@ -333,6 +342,7 @@ func (m *Market) ClearCache() {
 	defer m.mu.Unlock()
 	m.statusCache = nil
 	m.summaryCache = nil
+	m.lastFetchTime = time.Time{}
 }
 
 // IsOpen returns true if the market is currently open.
@@ -343,7 +353,7 @@ func (m *Market) IsOpen() (bool, error) {
 		return false, err
 	}
 
-	if status.Open == nil || status.Close == nil {
+	if status == nil || status.Open == nil || status.Close == nil {
 		return false, nil
 	}
 
@@ -353,34 +363,41 @@ func (m *Market) IsOpen() (bool, error) {
 	return now.After(*status.Open) && now.Before(*status.Close), nil
 }
 
-// extractRegion extracts the region code from market identifier.
-// e.g., "us_market" -> "US", "gb_market" -> "GB"
-func extractRegion(market string) string {
-	regionMap := map[string]string{
-		"us_market": "US",
-		"gb_market": "GB",
-		"de_market": "DE",
-		"fr_market": "FR",
-		"jp_market": "JP",
-		"hk_market": "HK",
-		"cn_market": "CN",
-		"ca_market": "CA",
-		"au_market": "AU",
-		"in_market": "IN",
-		"kr_market": "KR",
-		"br_market": "BR",
+func normalizeMarket(market string) (string, error) {
+	market = strings.TrimSpace(strings.ToUpper(market))
+	legacyAliases := map[string]string{
+		"US_MARKET": string(models.MarketRegionUS),
+		"GB_MARKET": string(models.MarketRegionGB),
+		"DE_MARKET": string(models.MarketRegionEurope),
+		"FR_MARKET": string(models.MarketRegionEurope),
+		"JP_MARKET": string(models.MarketRegionAsia),
+		"HK_MARKET": string(models.MarketRegionAsia),
+		"CN_MARKET": string(models.MarketRegionAsia),
+		"IN_MARKET": string(models.MarketRegionAsia),
+		"KR_MARKET": string(models.MarketRegionAsia),
+		"CA_MARKET": string(models.MarketRegionUS),
+		"AU_MARKET": string(models.MarketRegionAsia),
+		"BR_MARKET": string(models.MarketRegionUS),
+	}
+	if normalized, ok := legacyAliases[market]; ok {
+		return normalized, nil
 	}
 
-	if region, ok := regionMap[market]; ok {
-		return region
+	valid := map[string]bool{
+		string(models.MarketRegionUS):               true,
+		string(models.MarketRegionGB):               true,
+		string(models.MarketRegionAsia):             true,
+		string(models.MarketRegionEurope):           true,
+		string(models.MarketRegionRates):            true,
+		string(models.MarketRegionCommodities):      true,
+		string(models.MarketRegionCurrencies):       true,
+		string(models.MarketRegionCryptocurrencies): true,
+	}
+	if valid[market] {
+		return market, nil
 	}
 
-	// Fallback: try to extract from pattern "{code}_market"
-	if len(market) >= 3 && market[2] == '_' {
-		return strings.ToUpper(market[:2])
-	}
-
-	return "US" // Default to US
+	return "", fmt.Errorf("unknown market %q", market)
 }
 
 // Helper functions for parsing map values

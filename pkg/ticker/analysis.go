@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
+	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -231,6 +232,9 @@ func (t *Ticker) fetchQuoteSummary(modules []string) (map[string]interface{}, er
 	params.Set("modules", strings.Join(modules, ","))
 	params.Set("corsDomain", "finance.yahoo.com")
 	params.Set("formatted", "false")
+	lang, region := config.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", region)
 
 	params, err := t.auth.AddCrumbToParams(params)
 	if err != nil {

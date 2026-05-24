@@ -48,6 +48,25 @@ func TestClientOptions(t *testing.T) {
 	}
 }
 
+func TestClientCookieMerge(t *testing.T) {
+	c, err := New()
+	if err != nil {
+		t.Fatalf("Failed to create client: %v", err)
+	}
+
+	c.SetCookie("A3=crumb-cookie")
+	c.SetCookies(map[string]string{
+		"T": "cookie-t",
+		"Y": "cookie-y",
+	})
+
+	got := c.GetCookie()
+	want := "A3=crumb-cookie; T=cookie-t; Y=cookie-y"
+	if got != want {
+		t.Errorf("Expected %q, got %q", want, got)
+	}
+}
+
 func TestRandomUserAgent(t *testing.T) {
 	ua := RandomUserAgent()
 	if ua == "" {

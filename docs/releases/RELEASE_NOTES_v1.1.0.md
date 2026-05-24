@@ -134,4 +134,4 @@ Implementation completed in 5 phases:
 4. Dividend repair
 5. MIC code mapping
 
-See [v1.1.0 Progress](docs/development/v1.1.0-progress.md) for detailed development history.
+See [v1.1.0 Progress](../development/v1.1.0-progress.md) for detailed development history.

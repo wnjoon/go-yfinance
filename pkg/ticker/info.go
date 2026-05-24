@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/wnjoon/go-yfinance/pkg/client"
+	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -33,6 +34,9 @@ func (t *Ticker) Info() (*models.Info, error) {
 	params.Set("modules", joinModules(modules))
 	params.Set("corsDomain", "finance.yahoo.com")
 	params.Set("formatted", "false")
+	lang, region := config.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", region)
 
 	resp, err := t.getWithCrumb(t.quoteSummaryURL(), params)
 	if err != nil {

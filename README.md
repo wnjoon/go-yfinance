@@ -11,7 +11,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 ## Features
 
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
-- **Python yfinance v1.3.0 Parity**: ETFQuery screeners, valuation measures, analysis currency fields, dividend currency preservation, and capital gain actions
+- **Python yfinance v1.4.0 Parity**: Locale configuration, regional Sector/Industry data, MarketRegion support, manual Yahoo login cookies, ETFQuery screeners, valuation measures, and price repair
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
 - **Thread-Safe**: Concurrent-safe client and configuration
 - **Comprehensive Error Handling**: Typed errors with proper Go error wrapping

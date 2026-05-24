@@ -9,6 +9,7 @@ import (
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
 	"github.com/wnjoon/go-yfinance/pkg/client"
+	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -111,8 +112,9 @@ func (l *Lookup) fetch(lookupType models.LookupType, count int) (*models.LookupR
 	params.Set("count", strconv.Itoa(count))
 	params.Set("formatted", "false")
 	params.Set("fetchPricingData", "true")
-	params.Set("lang", "en-US")
-	params.Set("region", "US")
+	lang, region := config.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", region)
 
 	resp, err := l.client.Get(endpoints.LookupURL, params)
 	if err != nil {

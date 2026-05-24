@@ -20,6 +20,12 @@ func TestNewDefault(t *testing.T) {
 	if cfg.CacheEnabled {
 		t.Error("Cache should be disabled by default")
 	}
+	if cfg.Lang != DefaultLang {
+		t.Errorf("Lang should be %s, got %s", DefaultLang, cfg.Lang)
+	}
+	if cfg.Region != DefaultRegion {
+		t.Errorf("Region should be %s, got %s", DefaultRegion, cfg.Region)
+	}
 	if cfg.Debug {
 		t.Error("Debug should be disabled by default")
 	}
@@ -53,6 +59,12 @@ func TestConfigSetters(t *testing.T) {
 		t.Errorf("MaxRetries should be 5")
 	}
 
+	cfg.SetLocale("ja-JP", "JP")
+	lang, region := cfg.GetLocale()
+	if lang != "ja-JP" || region != "JP" {
+		t.Errorf("Locale should be ja-JP/JP, got %s/%s", lang, region)
+	}
+
 	cfg.SetDebug(true)
 	if !cfg.IsDebug() {
 		t.Errorf("Debug should be true")
@@ -82,9 +94,10 @@ func TestConfigCache(t *testing.T) {
 
 func TestConfigChaining(t *testing.T) {
 	cfg := NewDefault().
-		SetTimeout(60 * time.Second).
+		SetTimeout(60*time.Second).
 		SetUserAgent("chained-agent").
 		SetMaxRetries(5).
+		SetLocale("zh-Hant-HK", "HK").
 		SetDebug(true)
 
 	if cfg.GetTimeout() != 60*time.Second {
@@ -96,6 +109,10 @@ func TestConfigChaining(t *testing.T) {
 	if cfg.MaxRetries != 5 {
 		t.Error("Chained max retries should work")
 	}
+	lang, region := cfg.GetLocale()
+	if lang != "zh-Hant-HK" || region != "HK" {
+		t.Error("Chained locale should work")
+	}
 	if !cfg.IsDebug() {
 		t.Error("Chained debug should work")
 	}
@@ -104,6 +121,7 @@ func TestConfigChaining(t *testing.T) {
 func TestConfigClone(t *testing.T) {
 	cfg := NewDefault()
 	cfg.SetTimeout(45 * time.Second)
+	cfg.SetLocale("fr-FR", "FR")
 	cfg.SetDebug(true)
 
 	cloned := cfg.Clone()
@@ -114,11 +132,20 @@ func TestConfigClone(t *testing.T) {
 	if !cloned.IsDebug() {
 		t.Error("Cloned config should have same debug setting")
 	}
+	lang, region := cloned.GetLocale()
+	if lang != "fr-FR" || region != "FR" {
+		t.Error("Cloned config should have same locale")
+	}
 
 	// Modify original, cloned should not change
 	cfg.SetTimeout(90 * time.Second)
+	cfg.SetLocale("de-DE", "DE")
 	if cloned.GetTimeout() != 45*time.Second {
 		t.Error("Cloned config should be independent")
+	}
+	lang, region = cloned.GetLocale()
+	if lang != "fr-FR" || region != "FR" {
+		t.Error("Cloned locale should be independent")
 	}
 }
 

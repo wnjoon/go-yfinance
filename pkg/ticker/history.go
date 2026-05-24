@@ -9,6 +9,7 @@ import (
 
 	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/models"
+	"github.com/wnjoon/go-yfinance/pkg/repair"
 )
 
 // History fetches historical OHLCV data for the ticker.
@@ -49,6 +50,14 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		bars = filterValidBars(bars)
 	}
 
+	if params.Repair {
+		repairer := repair.New(repairOptionsFromHistoryParams(t.symbol, params, result.Meta))
+		bars, err = repairer.Repair(bars)
+		if err != nil {
+			return nil, fmt.Errorf("failed to repair history: %w", err)
+		}
+	}
+
 	return bars, nil
 }
 
@@ -61,6 +70,28 @@ func normalizeHistoryParams(params models.HistoryParams) models.HistoryParams {
 	}
 
 	return params
+}
+
+func repairOptionsFromHistoryParams(symbol string, params models.HistoryParams, meta models.ChartMeta) repair.Options {
+	opts := repair.DefaultOptions()
+	opts.Ticker = symbol
+	opts.Interval = params.Interval
+	opts.Timezone = meta.ExchangeTimezoneName
+	if opts.Timezone == "" {
+		opts.Timezone = meta.Timezone
+	}
+	opts.Currency = meta.Currency
+	opts.QuoteType = repair.QuoteType(meta.InstrumentType)
+
+	if params.RepairOptions != nil {
+		opts.FixUnitMixups = params.RepairOptions.FixUnitMixups
+		opts.FixZeroes = params.RepairOptions.FixZeroes
+		opts.FixSplits = params.RepairOptions.FixSplits
+		opts.FixDividends = params.RepairOptions.FixDividends
+		opts.FixCapitalGains = params.RepairOptions.FixCapitalGains
+	}
+
+	return opts
 }
 
 func buildHistoryURLParams(params models.HistoryParams) url.Values {

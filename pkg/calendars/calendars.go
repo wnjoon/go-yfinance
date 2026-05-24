@@ -9,6 +9,7 @@ import (
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
 	"github.com/wnjoon/go-yfinance/pkg/client"
+	yfconfig "github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -207,8 +208,9 @@ func (c *Calendars) fetchCalendar(calType models.CalendarType, q query, opts *mo
 	}
 
 	params := url.Values{}
-	params.Set("lang", "en-US")
-	params.Set("region", "US")
+	lang, region := yfconfig.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", region)
 
 	// Add crumb authentication
 	params, err := c.auth.AddCrumbToParams(params)

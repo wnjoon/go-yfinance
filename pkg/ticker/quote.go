@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/wnjoon/go-yfinance/pkg/client"
+	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -15,6 +16,9 @@ func (t *Ticker) Quote() (*models.Quote, error) {
 	params := url.Values{}
 	params.Set("symbols", t.symbol)
 	params.Set("formatted", "false")
+	lang, region := config.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", region)
 
 	resp, err := t.getWithCrumb(t.quoteURL(), params)
 	if err != nil {

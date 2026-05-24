@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"sort"
+	"strings"
 	"sync"
 
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
@@ -24,7 +26,7 @@ type Client struct {
 	userAgent string
 
 	// Cookie storage for authentication
-	cookie string
+	cookies map[string]string
 }
 
 // Chrome JA3 fingerprint for TLS spoofing
@@ -61,6 +63,7 @@ func New(opts ...ClientOption) (*Client, error) {
 		timeout:   30,
 		ja3:       defaultJA3,
 		userAgent: RandomUserAgent(),
+		cookies:   make(map[string]string),
 	}
 
 	for _, opt := range opts {
@@ -103,8 +106,8 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error) {
 	}
 
 	// Add cookie if available
-	if c.cookie != "" {
-		headers["Cookie"] = c.cookie
+	if cookie := c.cookieHeaderLocked(); cookie != "" {
+		headers["Cookie"] = cookie
 	}
 
 	resp, err := c.cycleTLS.Do(rawURL, cycletls.Options{
@@ -124,18 +127,63 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error) {
 	}, nil
 }
 
-// SetCookie sets the cookie for subsequent requests.
+// SetCookie sets or replaces one cookie for subsequent requests.
 func (c *Client) SetCookie(cookie string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.cookie = cookie
+	if c.cookies == nil {
+		c.cookies = make(map[string]string)
+	}
+	cookie = strings.TrimSpace(cookie)
+	if cookie == "" {
+		c.cookies = make(map[string]string)
+		return
+	}
+	name, value, ok := strings.Cut(cookie, "=")
+	if !ok || strings.TrimSpace(name) == "" {
+		return
+	}
+	c.cookies[strings.TrimSpace(name)] = strings.TrimSpace(value)
+}
+
+// SetCookies sets or replaces named cookies for subsequent requests.
+func (c *Client) SetCookies(cookies map[string]string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.cookies == nil {
+		c.cookies = make(map[string]string)
+	}
+	for name, value := range cookies {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		c.cookies[name] = strings.TrimSpace(value)
+	}
 }
 
 // GetCookie returns the current cookie.
 func (c *Client) GetCookie() string {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	return c.cookie
+	return c.cookieHeaderLocked()
+}
+
+func (c *Client) cookieHeaderLocked() string {
+	if len(c.cookies) == 0 {
+		return ""
+	}
+	names := make([]string, 0, len(c.cookies))
+	for name := range c.cookies {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	parts := make([]string, 0, len(names))
+	for _, name := range names {
+		parts = append(parts, fmt.Sprintf("%s=%s", name, c.cookies[name]))
+	}
+	return strings.Join(parts, "; ")
 }
 
 // GetJSON performs an HTTP GET request and unmarshals the JSON response.
@@ -167,17 +215,24 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 		rawURL = fmt.Sprintf("%s?%s", rawURL, params.Encode())
 	}
 
+	headers := map[string]string{
+		"Accept":          "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Language": "en-US,en;q=0.5",
+		"Content-Type":    "application/x-www-form-urlencoded",
+		"Connection":      "keep-alive",
+	}
+
+	// Add cookie if available
+	if cookie := c.cookieHeaderLocked(); cookie != "" {
+		headers["Cookie"] = cookie
+	}
+
 	resp, err := c.cycleTLS.Do(rawURL, cycletls.Options{
 		Timeout:   c.timeout,
 		Ja3:       c.ja3,
 		UserAgent: c.userAgent,
 		Body:      mapToFormData(body),
-		Headers: map[string]string{
-			"Accept":          "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-			"Accept-Language": "en-US,en;q=0.5",
-			"Content-Type":    "application/x-www-form-urlencoded",
-			"Connection":      "keep-alive",
-		},
+		Headers:   headers,
 	}, "POST")
 	if err != nil {
 		return nil, fmt.Errorf("POST request failed: %w", err)
@@ -209,8 +264,8 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 	}
 
 	// Add cookie if available
-	if c.cookie != "" {
-		headers["Cookie"] = c.cookie
+	if cookie := c.cookieHeaderLocked(); cookie != "" {
+		headers["Cookie"] = cookie
 	}
 
 	resp, err := c.cycleTLS.Do(rawURL, cycletls.Options{
