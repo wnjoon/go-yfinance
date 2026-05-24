@@ -16,7 +16,7 @@ This patch release keeps go-yfinance on the Python yfinance v1.4.0 parity line w
 
 - Applied `gofmt -s` cleanup across the files flagged by Go Report Card.
 - Reduced high cyclomatic complexity warnings in the repair, ticker, and live packages.
-- Fixed the remaining `Interm` spelling warnings in screener constants and regenerated API documentation.
+- Fixed the remaining screener constant spelling warnings and regenerated API documentation.
 
 ## Notes
 
