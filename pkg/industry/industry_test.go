@@ -20,9 +20,36 @@ func TestNew(t *testing.T) {
 	if i.key != "semiconductors" {
 		t.Errorf("Expected key 'semiconductors', got '%s'", i.key)
 	}
+	if i.Region() != "US" {
+		t.Errorf("Expected default region 'US', got '%s'", i.Region())
+	}
 
 	if i.ownsClient != true {
 		t.Error("ownsClient should be true when no custom client is provided")
+	}
+}
+
+func TestNewWithRegion(t *testing.T) {
+	i, err := New("semiconductors", WithRegion(" jp "))
+	if err != nil {
+		t.Fatalf("Failed to create Industry: %v", err)
+	}
+	defer i.Close()
+
+	if i.Region() != "JP" {
+		t.Errorf("Expected normalized region 'JP', got '%s'", i.Region())
+	}
+}
+
+func TestNewWithEmptyRegionUsesDefault(t *testing.T) {
+	i, err := New("semiconductors", WithRegion(" "))
+	if err != nil {
+		t.Fatalf("Failed to create Industry: %v", err)
+	}
+	defer i.Close()
+
+	if i.Region() != "US" {
+		t.Errorf("Expected default region 'US', got '%s'", i.Region())
 	}
 }
 

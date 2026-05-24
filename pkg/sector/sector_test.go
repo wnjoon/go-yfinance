@@ -20,9 +20,36 @@ func TestNew(t *testing.T) {
 	if s.key != "technology" {
 		t.Errorf("Expected key 'technology', got '%s'", s.key)
 	}
+	if s.Region() != "US" {
+		t.Errorf("Expected default region 'US', got '%s'", s.Region())
+	}
 
 	if s.ownsClient != true {
 		t.Error("ownsClient should be true when no custom client is provided")
+	}
+}
+
+func TestNewWithRegion(t *testing.T) {
+	s, err := New("technology", WithRegion(" gb "))
+	if err != nil {
+		t.Fatalf("Failed to create Sector: %v", err)
+	}
+	defer s.Close()
+
+	if s.Region() != "GB" {
+		t.Errorf("Expected normalized region 'GB', got '%s'", s.Region())
+	}
+}
+
+func TestNewWithEmptyRegionUsesDefault(t *testing.T) {
+	s, err := New("technology", WithRegion(" "))
+	if err != nil {
+		t.Fatalf("Failed to create Sector: %v", err)
+	}
+	defer s.Close()
+
+	if s.Region() != "US" {
+		t.Errorf("Expected default region 'US', got '%s'", s.Region())
 	}
 }
 

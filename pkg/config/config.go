@@ -27,6 +27,10 @@ type Config struct {
 	CacheEnabled bool
 	CacheTTL     time.Duration
 
+	// Locale settings for Yahoo v7/v10 endpoints
+	Lang   string
+	Region string
+
 	// Debug settings
 	Debug bool
 }
@@ -38,6 +42,8 @@ const (
 	DefaultRetryDelay    = 1 * time.Second
 	DefaultMaxConcurrent = 10
 	DefaultCacheTTL      = 5 * time.Minute
+	DefaultLang          = "en-US"
+	DefaultRegion        = "US"
 )
 
 // Default JA3 fingerprint (Chrome)
@@ -68,6 +74,8 @@ func NewDefault() *Config {
 		MaxConcurrent: DefaultMaxConcurrent,
 		CacheEnabled:  false,
 		CacheTTL:      DefaultCacheTTL,
+		Lang:          DefaultLang,
+		Region:        DefaultRegion,
 		Debug:         false,
 	}
 }
@@ -145,6 +153,15 @@ func (c *Config) DisableCache() *Config {
 	return c
 }
 
+// SetLocale sets the Yahoo Finance locale for endpoints that support localized fields.
+func (c *Config) SetLocale(lang, region string) *Config {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.Lang = lang
+	c.Region = region
+	return c
+}
+
 // SetDebug enables or disables debug mode.
 func (c *Config) SetDebug(debug bool) *Config {
 	c.mu.Lock()
@@ -181,6 +198,13 @@ func (c *Config) GetProxyURL() string {
 	return c.ProxyURL
 }
 
+// GetLocale returns the configured Yahoo Finance locale.
+func (c *Config) GetLocale() (lang, region string) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.Lang, c.Region
+}
+
 // IsDebug returns whether debug mode is enabled.
 func (c *Config) IsDebug() bool {
 	c.mu.RLock()
@@ -210,6 +234,8 @@ func (c *Config) Clone() *Config {
 		MaxConcurrent: c.MaxConcurrent,
 		CacheEnabled:  c.CacheEnabled,
 		CacheTTL:      c.CacheTTL,
+		Lang:          c.Lang,
+		Region:        c.Region,
 		Debug:         c.Debug,
 	}
 }

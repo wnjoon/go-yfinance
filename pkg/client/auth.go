@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -29,6 +30,7 @@ type AuthManager struct {
 	crumb    string
 	strategy AuthStrategy
 	expiry   time.Time
+	user     map[string]interface{}
 }
 
 // NewAuthManager creates a new AuthManager with the given client.
@@ -37,6 +39,58 @@ func NewAuthManager(client *Client) *AuthManager {
 		client:   client,
 		strategy: StrategyBasic,
 	}
+}
+
+// SetLoginCookies sets manually retrieved Yahoo Finance login cookies.
+func (a *AuthManager) SetLoginCookies(cookieT, cookieY string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.client.SetCookies(map[string]string{
+		"T": cookieT,
+		"Y": cookieY,
+	})
+	a.cookie = "T,Y"
+	a.user = nil
+}
+
+// CheckLogin checks whether the current Yahoo cookies represent a logged-in user.
+func (a *AuthManager) CheckLogin() (bool, error) {
+	a.mu.RLock()
+	if a.user != nil {
+		a.mu.RUnlock()
+		return true, nil
+	}
+	a.mu.RUnlock()
+
+	resp, err := a.client.Get(endpoints.RootURL, nil)
+	if err != nil {
+		return false, err
+	}
+
+	user, ok, err := parseLoginUser(resp.Body)
+	if err != nil || !ok {
+		return ok, err
+	}
+
+	a.mu.Lock()
+	a.user = user
+	a.mu.Unlock()
+	return true, nil
+}
+
+// User returns the cached logged-in Yahoo user payload, if available.
+func (a *AuthManager) User() map[string]interface{} {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	if a.user == nil {
+		return nil
+	}
+	user := make(map[string]interface{}, len(a.user))
+	for k, v := range a.user {
+		user[k] = v
+	}
+	return user
 }
 
 // GetCrumb returns the current crumb, fetching it if necessary.
@@ -239,6 +293,7 @@ func (a *AuthManager) Reset() {
 	a.cookie = ""
 	a.crumb = ""
 	a.expiry = time.Time{}
+	a.user = nil
 }
 
 // SwitchStrategy switches to the alternate authentication strategy.
@@ -256,4 +311,32 @@ func (a *AuthManager) SwitchStrategy() {
 	a.cookie = ""
 	a.crumb = ""
 	a.expiry = time.Time{}
+	a.user = nil
+}
+
+func parseLoginUser(html string) (map[string]interface{}, bool, error) {
+	re := regexp.MustCompile(`(?s)<script[^>]*id=["']nimbus-benji-config["'][^>]*>(.*?)</script>`)
+	matches := re.FindStringSubmatch(html)
+	if len(matches) < 2 {
+		return nil, false, nil
+	}
+
+	var payload map[string]interface{}
+	if err := json.Unmarshal([]byte(matches[1]), &payload); err != nil {
+		return nil, false, err
+	}
+
+	i13n, ok := payload["i13n"].(map[string]interface{})
+	if !ok {
+		return nil, false, nil
+	}
+	user, ok := i13n["user"].(map[string]interface{})
+	if !ok {
+		return nil, false, nil
+	}
+	if guid, ok := user["guid"].(string); !ok || guid == "" {
+		return nil, false, nil
+	}
+
+	return user, true, nil
 }

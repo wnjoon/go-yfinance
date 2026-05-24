@@ -77,3 +77,41 @@ func TestParseCapitalGainEvents(t *testing.T) {
 		t.Errorf("Expected capital gain amount 0.12, got %v", capitalGains[0].Amount)
 	}
 }
+
+func TestRepairOptionsFromHistoryParams(t *testing.T) {
+	params := models.HistoryParams{
+		Interval: "1d",
+		RepairOptions: &models.RepairOptions{
+			FixUnitMixups:   true,
+			FixZeroes:       false,
+			FixSplits:       true,
+			FixDividends:    false,
+			FixCapitalGains: true,
+		},
+	}
+	meta := models.ChartMeta{
+		Currency:             "USD",
+		ExchangeTimezoneName: "America/New_York",
+		InstrumentType:       "ETF",
+	}
+
+	opts := repairOptionsFromHistoryParams("SPY", params, meta)
+	if opts.Ticker != "SPY" {
+		t.Errorf("Expected ticker SPY, got %s", opts.Ticker)
+	}
+	if opts.Interval != "1d" {
+		t.Errorf("Expected interval 1d, got %s", opts.Interval)
+	}
+	if opts.Timezone != "America/New_York" {
+		t.Errorf("Expected timezone America/New_York, got %s", opts.Timezone)
+	}
+	if opts.Currency != "USD" {
+		t.Errorf("Expected currency USD, got %s", opts.Currency)
+	}
+	if opts.QuoteType != "ETF" {
+		t.Errorf("Expected quote type ETF, got %s", opts.QuoteType)
+	}
+	if !opts.FixUnitMixups || opts.FixZeroes || !opts.FixSplits || opts.FixDividends || !opts.FixCapitalGains {
+		t.Errorf("Repair flags not propagated correctly: %+v", opts)
+	}
+}

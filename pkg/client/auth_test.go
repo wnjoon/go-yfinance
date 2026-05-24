@@ -104,6 +104,7 @@ func TestAuthManagerReset(t *testing.T) {
 	// Set some values
 	auth.crumb = "test-crumb"
 	auth.cookie = "test-cookie"
+	auth.user = map[string]interface{}{"guid": "abc"}
 
 	auth.Reset()
 
@@ -112,5 +113,48 @@ func TestAuthManagerReset(t *testing.T) {
 	}
 	if auth.cookie != "" {
 		t.Error("Cookie should be empty after reset")
+	}
+	if auth.user != nil {
+		t.Error("User should be empty after reset")
+	}
+}
+
+func TestAuthManagerSetLoginCookies(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+
+	auth.SetLoginCookies("cookie-t", "cookie-y")
+
+	cookie := client.GetCookie()
+	if cookie != "T=cookie-t; Y=cookie-y" {
+		t.Errorf("Expected login cookies, got %q", cookie)
+	}
+}
+
+func TestParseLoginUser(t *testing.T) {
+	html := `<html><script id="nimbus-benji-config">{"i13n":{"user":{"guid":"abc123","login":"user@example.com"}}}</script></html>`
+
+	user, ok, err := parseLoginUser(html)
+	if err != nil {
+		t.Fatalf("parseLoginUser returned error: %v", err)
+	}
+	if !ok {
+		t.Fatal("Expected login user")
+	}
+	if user["guid"] != "abc123" {
+		t.Errorf("Expected guid abc123, got %v", user["guid"])
+	}
+}
+
+func TestParseLoginUserMissing(t *testing.T) {
+	user, ok, err := parseLoginUser(`<html></html>`)
+	if err != nil {
+		t.Fatalf("parseLoginUser returned error: %v", err)
+	}
+	if ok {
+		t.Fatal("Expected missing login user")
+	}
+	if user != nil {
+		t.Errorf("Expected nil user, got %v", user)
 	}
 }

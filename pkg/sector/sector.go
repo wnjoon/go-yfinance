@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 	"sync"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
 	"github.com/wnjoon/go-yfinance/pkg/client"
+	yfconfig "github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -16,7 +18,8 @@ import (
 // Sector allows retrieving sector-related information such as
 // overview, top companies, industries, top ETFs, and top mutual funds.
 type Sector struct {
-	key string
+	key    string
+	region string
 
 	client     *client.Client
 	auth       *client.AuthManager
@@ -35,6 +38,13 @@ func WithClient(c *client.Client) Option {
 	return func(s *Sector) {
 		s.client = c
 		s.ownsClient = false
+	}
+}
+
+// WithRegion scopes regional lists to a Yahoo region such as "US", "GB", or "JP".
+func WithRegion(region string) Option {
+	return func(s *Sector) {
+		s.region = normalizeRegion(region)
 	}
 }
 
@@ -60,6 +70,7 @@ func New(key string, opts ...Option) (*Sector, error) {
 
 	s := &Sector{
 		key:        key,
+		region:     "US",
 		ownsClient: true,
 	}
 
@@ -104,6 +115,11 @@ func (s *Sector) Key() string {
 	return s.key
 }
 
+// Region returns the Yahoo region used to scope regional lists.
+func (s *Sector) Region() string {
+	return s.region
+}
+
 // fetchData fetches sector data from Yahoo Finance API.
 func (s *Sector) fetchData() error {
 	s.mu.RLock()
@@ -118,8 +134,9 @@ func (s *Sector) fetchData() error {
 	params := url.Values{}
 	params.Set("formatted", "true")
 	params.Set("withReturns", "true")
-	params.Set("lang", "en-US")
-	params.Set("region", "US")
+	lang, _ := yfconfig.Get().GetLocale()
+	params.Set("lang", lang)
+	params.Set("region", s.region)
 
 	// Add crumb authentication
 	params, err := s.auth.AddCrumbToParams(params)
@@ -461,6 +478,14 @@ func getInt64(m map[string]interface{}, key string) int64 {
 		return v
 	}
 	return 0
+}
+
+func normalizeRegion(region string) string {
+	region = strings.TrimSpace(strings.ToUpper(region))
+	if region == "" {
+		return "US"
+	}
+	return region
 }
 
 func getFloat(m map[string]interface{}, key string) float64 {

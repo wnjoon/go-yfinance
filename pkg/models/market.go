@@ -143,7 +143,37 @@ type MarketTimeResponse struct {
 	} `json:"finance"`
 }
 
-// PredefinedMarket represents commonly used market identifiers.
+// MarketRegion represents Yahoo market regions accepted by the market summary endpoint.
+type MarketRegion string
+
+const (
+	// MarketRegionUS represents U.S. markets.
+	MarketRegionUS MarketRegion = "US"
+
+	// MarketRegionGB represents Great Britain markets.
+	MarketRegionGB MarketRegion = "GB"
+
+	// MarketRegionAsia represents Asian markets.
+	MarketRegionAsia MarketRegion = "ASIA"
+
+	// MarketRegionEurope represents European markets.
+	MarketRegionEurope MarketRegion = "EUROPE"
+
+	// MarketRegionRates represents rates markets.
+	MarketRegionRates MarketRegion = "RATES"
+
+	// MarketRegionCommodities represents commodities markets.
+	MarketRegionCommodities MarketRegion = "COMMODITIES"
+
+	// MarketRegionCurrencies represents currencies markets.
+	MarketRegionCurrencies MarketRegion = "CURRENCIES"
+
+	// MarketRegionCryptocurrencies represents cryptocurrency markets.
+	MarketRegionCryptocurrencies MarketRegion = "CRYPTOCURRENCIES"
+)
+
+// PredefinedMarket represents legacy market identifiers.
+// New code can use MarketRegion with market.NewWithRegion for Python v1.4.0 parity.
 type PredefinedMarket string
 
 const (

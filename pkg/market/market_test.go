@@ -17,8 +17,8 @@ func TestNew(t *testing.T) {
 		t.Fatal("Market should not be nil")
 	}
 
-	if m.market != "us_market" {
-		t.Errorf("Expected market 'us_market', got '%s'", m.market)
+	if m.market != string(models.MarketRegionUS) {
+		t.Errorf("Expected market 'US', got '%s'", m.market)
 	}
 
 	if m.ownsClient != true {
@@ -40,8 +40,27 @@ func TestNewWithPredefined(t *testing.T) {
 	}
 	defer m.Close()
 
-	if m.market != "us_market" {
-		t.Errorf("Expected market 'us_market', got '%s'", m.market)
+	if m.market != string(models.MarketRegionUS) {
+		t.Errorf("Expected market 'US', got '%s'", m.market)
+	}
+}
+
+func TestNewWithRegion(t *testing.T) {
+	m, err := NewWithRegion(models.MarketRegionEurope)
+	if err != nil {
+		t.Fatalf("Failed to create Market: %v", err)
+	}
+	defer m.Close()
+
+	if m.market != string(models.MarketRegionEurope) {
+		t.Errorf("Expected market 'EUROPE', got '%s'", m.market)
+	}
+}
+
+func TestNewWithInvalidMarket(t *testing.T) {
+	_, err := New("FR")
+	if err == nil {
+		t.Error("Expected error for unsupported market")
 	}
 }
 
@@ -74,8 +93,8 @@ func TestMarket(t *testing.T) {
 	}
 	defer m.Close()
 
-	if m.Market() != "jp_market" {
-		t.Errorf("Expected market 'jp_market', got '%s'", m.Market())
+	if m.Market() != string(models.MarketRegionAsia) {
+		t.Errorf("Expected market 'ASIA', got '%s'", m.Market())
 	}
 }
 
@@ -84,23 +103,52 @@ func TestPredefinedMarkets(t *testing.T) {
 		market   models.PredefinedMarket
 		expected string
 	}{
-		{models.MarketUS, "us_market"},
-		{models.MarketGB, "gb_market"},
-		{models.MarketDE, "de_market"},
-		{models.MarketFR, "fr_market"},
-		{models.MarketJP, "jp_market"},
-		{models.MarketHK, "hk_market"},
-		{models.MarketCN, "cn_market"},
-		{models.MarketCA, "ca_market"},
-		{models.MarketAU, "au_market"},
-		{models.MarketIN, "in_market"},
-		{models.MarketKR, "kr_market"},
-		{models.MarketBR, "br_market"},
+		{models.MarketUS, "US"},
+		{models.MarketGB, "GB"},
+		{models.MarketDE, "EUROPE"},
+		{models.MarketFR, "EUROPE"},
+		{models.MarketJP, "ASIA"},
+		{models.MarketHK, "ASIA"},
+		{models.MarketCN, "ASIA"},
+		{models.MarketCA, "US"},
+		{models.MarketAU, "ASIA"},
+		{models.MarketIN, "ASIA"},
+		{models.MarketKR, "ASIA"},
+		{models.MarketBR, "US"},
 	}
 
 	for _, tt := range tests {
-		if string(tt.market) != tt.expected {
-			t.Errorf("PredefinedMarket %v: expected '%s', got '%s'", tt.market, tt.expected, string(tt.market))
+		got, err := normalizeMarket(string(tt.market))
+		if err != nil {
+			t.Errorf("PredefinedMarket %v: unexpected error %v", tt.market, err)
+			continue
+		}
+		if got != tt.expected {
+			t.Errorf("PredefinedMarket %v: expected '%s', got '%s'", tt.market, tt.expected, got)
+		}
+	}
+}
+
+func TestMarketRegions(t *testing.T) {
+	tests := []models.MarketRegion{
+		models.MarketRegionUS,
+		models.MarketRegionGB,
+		models.MarketRegionAsia,
+		models.MarketRegionEurope,
+		models.MarketRegionRates,
+		models.MarketRegionCommodities,
+		models.MarketRegionCurrencies,
+		models.MarketRegionCryptocurrencies,
+	}
+
+	for _, region := range tests {
+		got, err := normalizeMarket(string(region))
+		if err != nil {
+			t.Errorf("MarketRegion %s: unexpected error %v", region, err)
+			continue
+		}
+		if got != string(region) {
+			t.Errorf("MarketRegion %s: got %s", region, got)
 		}
 	}
 }
