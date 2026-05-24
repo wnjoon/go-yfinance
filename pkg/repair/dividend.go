@@ -130,39 +130,13 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 	status.Volatility = calculateWindowVolatility(bars, idx)
 
 	// Check if adjustment is missing
-	if prevClose > 0 && bars[idx].Close > 0 {
-		prevAdj := bars[idx-1].AdjClose / prevClose
-		postAdj := bars[idx].AdjClose / bars[idx].Close
-		if math.Abs(prevAdj-postAdj) < 0.001 {
-			status.IsMissingAdj = true
-		}
-	}
+	status.IsMissingAdj = hasMissingDividendAdjustment(bars, idx, prevClose)
 
 	// Check if dividend is too large (100x error)
-	if status.DivPct > 0.035 { // Only check if significant dividend
-		if status.PriceDrop > 0 {
-			diff := math.Abs(status.Dividend - status.PriceDrop)
-			diffFixed := math.Abs((status.Dividend/currencyDivide) - status.PriceDrop)
-			if diffFixed*2 <= diff {
-				status.IsTooLarge = true
-			}
-		} else if status.DivPct > 1.0 {
-			// Dividend > 100% of price, almost certainly wrong
-			status.IsTooLarge = true
-		}
-	}
+	status.IsTooLarge = isDividendTooLarge(status, currencyDivide)
 
 	// Check if dividend is too small (0.01x error)
-	if !math.IsNaN(status.Volatility) && status.Volatility > 0 {
-		dropWoVol := status.PriceDrop - status.Volatility
-		if dropWoVol > 0 {
-			diff := math.Abs(status.Dividend - dropWoVol)
-			diffFixed := math.Abs((status.Dividend*currencyDivide) - dropWoVol)
-			if diffFixed*1 <= diff && status.DivPct < 0.001 {
-				status.IsTooSmall = true
-			}
-		}
-	}
+	status.IsTooSmall = isDividendTooSmall(status, currencyDivide)
 
 	// Check for phantom dividend (duplicate within 7 days)
 	status.IsPhantom = isPhantomDividend(bars, idx)
@@ -174,6 +148,40 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 	status.AdjTooLarge = impliedDivYield > (10 * status.DivPct)
 
 	return status
+}
+
+func hasMissingDividendAdjustment(bars []models.Bar, idx int, prevClose float64) bool {
+	if prevClose <= 0 || bars[idx].Close <= 0 {
+		return false
+	}
+	prevAdj := bars[idx-1].AdjClose / prevClose
+	postAdj := bars[idx].AdjClose / bars[idx].Close
+	return math.Abs(prevAdj-postAdj) < 0.001
+}
+
+func isDividendTooLarge(status dividendStatus, currencyDivide float64) bool {
+	if status.DivPct <= 0.035 {
+		return false
+	}
+	if status.PriceDrop <= 0 {
+		return status.DivPct > 1.0
+	}
+	diff := math.Abs(status.Dividend - status.PriceDrop)
+	diffFixed := math.Abs((status.Dividend / currencyDivide) - status.PriceDrop)
+	return diffFixed*2 <= diff
+}
+
+func isDividendTooSmall(status dividendStatus, currencyDivide float64) bool {
+	if math.IsNaN(status.Volatility) || status.Volatility <= 0 {
+		return false
+	}
+	dropWoVol := status.PriceDrop - status.Volatility
+	if dropWoVol <= 0 {
+		return false
+	}
+	diff := math.Abs(status.Dividend - dropWoVol)
+	diffFixed := math.Abs((status.Dividend * currencyDivide) - dropWoVol)
+	return diffFixed <= diff && status.DivPct < 0.001
 }
 
 // calculateWindowVolatility calculates typical price volatility in a window around idx.
@@ -333,13 +341,13 @@ func removePhantomDiv(bars []models.Bar, divIdx int) []models.Bar {
 
 // DividendRepairStats contains statistics about dividend repairs.
 type DividendRepairStats struct {
-	TotalDividends   int       // Number of dividend events found
-	MissingAdj       int       // Dividends with missing adjustment
-	TooSmall         int       // Dividends 100x too small
-	TooLarge         int       // Dividends 100x too big
-	Phantoms         int       // Phantom (duplicate) dividends
-	BarsRepaired     int       // Total bars modified
-	Dividends        []DividendInfo // Details of each dividend
+	TotalDividends int            // Number of dividend events found
+	MissingAdj     int            // Dividends with missing adjustment
+	TooSmall       int            // Dividends 100x too small
+	TooLarge       int            // Dividends 100x too big
+	Phantoms       int            // Phantom (duplicate) dividends
+	BarsRepaired   int            // Total bars modified
+	Dividends      []DividendInfo // Details of each dividend
 }
 
 // DividendInfo contains information about a single dividend.

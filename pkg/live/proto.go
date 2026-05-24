@@ -34,81 +34,7 @@ func decodeProtobuf(data []byte) (*models.PricingData, error) {
 			return nil, err
 		}
 
-		switch fieldTag {
-		case 1: // id (string)
-			pd.ID, err = reader.readString()
-		case 2: // price (float)
-			pd.Price, err = reader.readFloat()
-		case 3: // time (sint64)
-			pd.Time, err = reader.readSint64()
-		case 4: // currency (string)
-			pd.Currency, err = reader.readString()
-		case 5: // exchange (string)
-			pd.Exchange, err = reader.readString()
-		case 6: // quote_type (int32)
-			v, e := reader.readVarint()
-			pd.QuoteType = int32(v)
-			err = e
-		case 7: // market_hours (int32)
-			v, e := reader.readVarint()
-			pd.MarketHours = int32(v)
-			err = e
-		case 8: // change_percent (float)
-			pd.ChangePercent, err = reader.readFloat()
-		case 9: // day_volume (sint64)
-			pd.DayVolume, err = reader.readSint64()
-		case 10: // day_high (float)
-			pd.DayHigh, err = reader.readFloat()
-		case 11: // day_low (float)
-			pd.DayLow, err = reader.readFloat()
-		case 12: // change (float)
-			pd.Change, err = reader.readFloat()
-		case 13: // short_name (string)
-			pd.ShortName, err = reader.readString()
-		case 14: // expire_date (sint64)
-			pd.ExpireDate, err = reader.readSint64()
-		case 15: // open_price (float)
-			pd.OpenPrice, err = reader.readFloat()
-		case 16: // previous_close (float)
-			pd.PreviousClose, err = reader.readFloat()
-		case 17: // strike_price (float)
-			pd.StrikePrice, err = reader.readFloat()
-		case 18: // underlying_symbol (string)
-			pd.UnderlyingSymbol, err = reader.readString()
-		case 19: // open_interest (sint64)
-			pd.OpenInterest, err = reader.readSint64()
-		case 20: // options_type (sint64)
-			pd.OptionsType, err = reader.readSint64()
-		case 21: // mini_option (sint64)
-			pd.MiniOption, err = reader.readSint64()
-		case 22: // last_size (sint64)
-			pd.LastSize, err = reader.readSint64()
-		case 23: // bid (float)
-			pd.Bid, err = reader.readFloat()
-		case 24: // bid_size (sint64)
-			pd.BidSize, err = reader.readSint64()
-		case 25: // ask (float)
-			pd.Ask, err = reader.readFloat()
-		case 26: // ask_size (sint64)
-			pd.AskSize, err = reader.readSint64()
-		case 27: // price_hint (sint64)
-			pd.PriceHint, err = reader.readSint64()
-		case 28: // vol_24hr (sint64)
-			pd.Vol24Hr, err = reader.readSint64()
-		case 29: // vol_all_currencies (sint64)
-			pd.VolAllCurrencies, err = reader.readSint64()
-		case 30: // from_currency (string)
-			pd.FromCurrency, err = reader.readString()
-		case 31: // last_market (string)
-			pd.LastMarket, err = reader.readString()
-		case 32: // circulating_supply (double)
-			pd.CirculatingSupply, err = reader.readDouble()
-		case 33: // market_cap (double)
-			pd.MarketCap, err = reader.readDouble()
-		default:
-			// Skip unknown field
-			err = reader.skipField(wireType)
-		}
+		err = decodePricingField(pd, reader, fieldTag, wireType)
 
 		if err != nil {
 			return nil, fmt.Errorf("failed to decode field %d: %w", fieldTag, err)
@@ -116,6 +42,117 @@ func decodeProtobuf(data []byte) (*models.PricingData, error) {
 	}
 
 	return pd, nil
+}
+
+var pricingFieldDecoders = map[int]func(*models.PricingData, *protoReader) error{
+	1: func(pd *models.PricingData, r *protoReader) (err error) { pd.ID, err = r.readString(); return err },
+	2: func(pd *models.PricingData, r *protoReader) (err error) { pd.Price, err = r.readFloat(); return err },
+	3: func(pd *models.PricingData, r *protoReader) (err error) { pd.Time, err = r.readSint64(); return err },
+	4: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.Currency, err = r.readString()
+		return err
+	},
+	5: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.Exchange, err = r.readString()
+		return err
+	},
+	6: func(pd *models.PricingData, r *protoReader) error {
+		v, err := r.readVarint()
+		pd.QuoteType = int32(v)
+		return err
+	},
+	7: func(pd *models.PricingData, r *protoReader) error {
+		v, err := r.readVarint()
+		pd.MarketHours = int32(v)
+		return err
+	},
+	8: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.ChangePercent, err = r.readFloat()
+		return err
+	},
+	9: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.DayVolume, err = r.readSint64()
+		return err
+	},
+	10: func(pd *models.PricingData, r *protoReader) (err error) { pd.DayHigh, err = r.readFloat(); return err },
+	11: func(pd *models.PricingData, r *protoReader) (err error) { pd.DayLow, err = r.readFloat(); return err },
+	12: func(pd *models.PricingData, r *protoReader) (err error) { pd.Change, err = r.readFloat(); return err },
+	13: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.ShortName, err = r.readString()
+		return err
+	},
+	14: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.ExpireDate, err = r.readSint64()
+		return err
+	},
+	15: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.OpenPrice, err = r.readFloat()
+		return err
+	},
+	16: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.PreviousClose, err = r.readFloat()
+		return err
+	},
+	17: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.StrikePrice, err = r.readFloat()
+		return err
+	},
+	18: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.UnderlyingSymbol, err = r.readString()
+		return err
+	},
+	19: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.OpenInterest, err = r.readSint64()
+		return err
+	},
+	20: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.OptionsType, err = r.readSint64()
+		return err
+	},
+	21: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.MiniOption, err = r.readSint64()
+		return err
+	},
+	22: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.LastSize, err = r.readSint64()
+		return err
+	},
+	23: func(pd *models.PricingData, r *protoReader) (err error) { pd.Bid, err = r.readFloat(); return err },
+	24: func(pd *models.PricingData, r *protoReader) (err error) { pd.BidSize, err = r.readSint64(); return err },
+	25: func(pd *models.PricingData, r *protoReader) (err error) { pd.Ask, err = r.readFloat(); return err },
+	26: func(pd *models.PricingData, r *protoReader) (err error) { pd.AskSize, err = r.readSint64(); return err },
+	27: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.PriceHint, err = r.readSint64()
+		return err
+	},
+	28: func(pd *models.PricingData, r *protoReader) (err error) { pd.Vol24Hr, err = r.readSint64(); return err },
+	29: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.VolAllCurrencies, err = r.readSint64()
+		return err
+	},
+	30: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.FromCurrency, err = r.readString()
+		return err
+	},
+	31: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.LastMarket, err = r.readString()
+		return err
+	},
+	32: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.CirculatingSupply, err = r.readDouble()
+		return err
+	},
+	33: func(pd *models.PricingData, r *protoReader) (err error) {
+		pd.MarketCap, err = r.readDouble()
+		return err
+	},
+}
+
+func decodePricingField(pd *models.PricingData, reader *protoReader, fieldTag, wireType int) error {
+	if decode, ok := pricingFieldDecoders[fieldTag]; ok {
+		return decode(pd, reader)
+	}
+	return reader.skipField(wireType)
 }
 
 // protoReader is a simple protobuf reader.

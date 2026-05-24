@@ -66,7 +66,7 @@ func TestDetectDoubleCount(t *testing.T) {
 			Date:         time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
 			Close:        99,
 			AdjClose:     99,
-			Dividends:    1.5,  // Includes CG (double-counted)
+			Dividends:    1.5, // Includes CG (double-counted)
 			CapitalGains: 0.5,
 		},
 	}

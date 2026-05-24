@@ -19,10 +19,10 @@ const (
 // Options configures the repair behavior.
 type Options struct {
 	// Data context
-	Ticker   string    // Ticker symbol
-	Interval string    // Data interval (1d, 1wk, 1mo, etc.)
-	Timezone string    // Exchange timezone
-	Currency string    // Price currency
+	Ticker    string    // Ticker symbol
+	Interval  string    // Data interval (1d, 1wk, 1mo, etc.)
+	Timezone  string    // Exchange timezone
+	Currency  string    // Price currency
 	QuoteType QuoteType // Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)
 
 	// Feature flags - which repairs to apply

@@ -70,47 +70,50 @@ func (t *Ticker) parseCalendar(data map[string]interface{}) (*models.Calendar, e
 
 	// Parse earnings data
 	if earnings, ok := events["earnings"].(map[string]interface{}); ok {
-		// Parse earnings dates
-		if earningsDates, ok := earnings["earningsDate"].([]interface{}); ok {
-			for _, dateVal := range earningsDates {
-				// Could be a map with "raw" key or a direct value
-				var timestamp float64
-				switch v := dateVal.(type) {
-				case float64:
-					timestamp = v
-				case map[string]interface{}:
-					if raw, ok := v["raw"].(float64); ok {
-						timestamp = raw
-					}
-				}
-				if timestamp > 0 {
-					calendar.EarningsDate = append(calendar.EarningsDate, time.Unix(int64(timestamp), 0))
-				}
-			}
-		}
-
-		// Parse earnings estimates
-		if high := getNestedFloatPtr(earnings, "earningsHigh"); high != nil {
-			calendar.EarningsHigh = high
-		}
-		if low := getNestedFloatPtr(earnings, "earningsLow"); low != nil {
-			calendar.EarningsLow = low
-		}
-		if avg := getNestedFloatPtr(earnings, "earningsAverage"); avg != nil {
-			calendar.EarningsAverage = avg
-		}
-
-		// Parse revenue estimates
-		if high := getNestedFloatPtr(earnings, "revenueHigh"); high != nil {
-			calendar.RevenueHigh = high
-		}
-		if low := getNestedFloatPtr(earnings, "revenueLow"); low != nil {
-			calendar.RevenueLow = low
-		}
-		if avg := getNestedFloatPtr(earnings, "revenueAverage"); avg != nil {
-			calendar.RevenueAverage = avg
-		}
+		parseEarningsCalendar(calendar, earnings)
 	}
 
 	return calendar, nil
+}
+
+func parseEarningsCalendar(calendar *models.Calendar, earnings map[string]interface{}) {
+	calendar.EarningsDate = parseEarningsDates(earnings["earningsDate"])
+	assignCalendarEstimate(&calendar.EarningsHigh, earnings, "earningsHigh")
+	assignCalendarEstimate(&calendar.EarningsLow, earnings, "earningsLow")
+	assignCalendarEstimate(&calendar.EarningsAverage, earnings, "earningsAverage")
+	assignCalendarEstimate(&calendar.RevenueHigh, earnings, "revenueHigh")
+	assignCalendarEstimate(&calendar.RevenueLow, earnings, "revenueLow")
+	assignCalendarEstimate(&calendar.RevenueAverage, earnings, "revenueAverage")
+}
+
+func parseEarningsDates(value interface{}) []time.Time {
+	earningsDates, ok := value.([]interface{})
+	if !ok {
+		return nil
+	}
+	dates := make([]time.Time, 0, len(earningsDates))
+	for _, dateVal := range earningsDates {
+		if timestamp := calendarTimestamp(dateVal); timestamp > 0 {
+			dates = append(dates, time.Unix(int64(timestamp), 0))
+		}
+	}
+	return dates
+}
+
+func calendarTimestamp(value interface{}) float64 {
+	switch v := value.(type) {
+	case float64:
+		return v
+	case map[string]interface{}:
+		raw, _ := v["raw"].(float64)
+		return raw
+	default:
+		return 0
+	}
+}
+
+func assignCalendarEstimate(target **float64, earnings map[string]interface{}, key string) {
+	if value := getNestedFloatPtr(earnings, key); value != nil {
+		*target = value
+	}
 }

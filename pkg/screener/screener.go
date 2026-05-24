@@ -334,7 +334,7 @@ func (s *Screener) parseResponse(body string, offset int) (*models.ScreenerResul
 			BookValue:                  getFloat(q, "bookValue"),
 			// Fund-specific fields
 			FundNetAssets:                 getFloat(q, "fundNetAssets"),
-			CategoryName:                 getString(q, "categoryName"),
+			CategoryName:                  getString(q, "categoryName"),
 			PerformanceRatingOverall:      getInt(q, "performanceRatingOverall"),
 			RiskRatingOverall:             getInt(q, "riskRatingOverall"),
 			InitialInvestment:             getFloat(q, "initialInvestment"),

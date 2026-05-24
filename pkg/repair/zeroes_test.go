@@ -191,7 +191,7 @@ func TestRepairZeroesTooManyZeroes(t *testing.T) {
 
 func TestRepairPartialZeroes(t *testing.T) {
 	bars := []models.Bar{
-		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 100, High: 0, Low: 98, Close: 102}, // High is zero
+		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 100, High: 0, Low: 98, Close: 102},  // High is zero
 		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 102, High: 107, Low: 0, Close: 105}, // Low is zero
 	}
 
@@ -239,9 +239,9 @@ func TestAnalyzeZeroes(t *testing.T) {
 
 	bars := []models.Bar{
 		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 100, High: 105, Low: 98, Close: 102, Volume: 1000},
-		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 0, High: 0, Low: 0, Close: 0, Volume: 0},       // Zero bar
+		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 0, High: 0, Low: 0, Close: 0, Volume: 0},          // Zero bar
 		{Date: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC), Open: 105, High: 0, Low: 103, Close: 108, Volume: 1200}, // Partial zero (High=0)
-		{Date: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC), Open: 108, High: 112, Low: 106, Close: 120, Volume: 0}, // Price changed >5%, 0 volume
+		{Date: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC), Open: 108, High: 112, Low: 106, Close: 120, Volume: 0},  // Price changed >5%, 0 volume
 	}
 
 	stats := repairer.AnalyzeZeroes(bars)

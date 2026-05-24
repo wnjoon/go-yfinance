@@ -11,11 +11,11 @@ import (
 func TestDetectAndCorrectMixups(t *testing.T) {
 	// Create data with one 100x error
 	data := [][]float64{
-		{10, 9, 8, 10, 10},   // High, Open, Low, Close, AdjClose - normal
-		{11, 10, 9, 11, 11},  // normal
+		{10, 9, 8, 10, 10},            // High, Open, Low, Close, AdjClose - normal
+		{11, 10, 9, 11, 11},           // normal
 		{1100, 1000, 900, 1100, 1100}, // 100x error!
-		{10, 9, 8, 10, 10},   // normal
-		{11, 10, 9, 11, 11},  // normal
+		{10, 9, 8, 10, 10},            // normal
+		{11, 10, 9, 11, 11},           // normal
 	}
 
 	corrections := detectAndCorrectMixups(data)
@@ -223,7 +223,7 @@ func TestRepairRandomUnitMixupsWithZeroes(t *testing.T) {
 	// Create data with zero values
 	bars := []models.Bar{
 		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 100, High: 105, Low: 98, Close: 102, AdjClose: 102},
-		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 0, High: 0, Low: 0, Close: 0, AdjClose: 0}, // Zero row
+		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 0, High: 0, Low: 0, Close: 0, AdjClose: 0},                     // Zero row
 		{Date: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC), Open: 10500, High: 11000, Low: 10300, Close: 10800, AdjClose: 10800}, // 100x!
 		{Date: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC), Open: 108, High: 112, Low: 106, Close: 110, AdjClose: 110},
 		{Date: time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC), Open: 110, High: 115, Low: 108, Close: 112, AdjClose: 112},

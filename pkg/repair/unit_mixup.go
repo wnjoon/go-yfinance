@@ -62,67 +62,22 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 	result := make([]models.Bar, len(bars))
 	copy(result, bars)
 
-	// Extract OHLC data as 2D array
-	// Order: High, Open, Low, Close, AdjClose (important: separate High from Low)
-	data := make([][]float64, len(bars))
-	for i, bar := range bars {
-		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, bar.AdjClose}
-	}
+	data := ohlcMatrix(bars)
 
-	// Check for and exclude zero values
-	hasZeroes := false
-	for i := range data {
-		for j := range data[i] {
-			if data[i][j] == 0 {
-				hasZeroes = true
-				break
-			}
-		}
-		if hasZeroes {
-			break
-		}
-	}
-
-	if hasZeroes {
+	if hasMatrixZeroes(data) {
 		// Filter out rows with zeros for analysis
 		// but keep them in result
-		nonZeroIndices := make([]int, 0)
-		for i := range data {
-			hasZero := false
-			for j := range data[i] {
-				if data[i][j] == 0 {
-					hasZero = true
-					break
-				}
-			}
-			if !hasZero {
-				nonZeroIndices = append(nonZeroIndices, i)
-			}
-		}
-
+		nonZeroIndices := nonZeroMatrixRows(data)
 		if len(nonZeroIndices) < 3 {
 			return bars // Not enough good data
 		}
 
-		// Create filtered dataset
-		filteredData := make([][]float64, len(nonZeroIndices))
-		for i, idx := range nonZeroIndices {
-			filteredData[i] = data[idx]
-		}
-
 		// Process the filtered data
-		corrections := detectAndCorrectMixups(filteredData)
+		corrections := detectAndCorrectMixups(filteredMatrix(data, nonZeroIndices))
 
 		// Apply corrections to result using original indices
 		for i, idx := range nonZeroIndices {
-			if corrections[i] != 1.0 {
-				result[idx].Open *= corrections[i]
-				result[idx].High *= corrections[i]
-				result[idx].Low *= corrections[i]
-				result[idx].Close *= corrections[i]
-				result[idx].AdjClose *= corrections[i]
-				result[idx].Repaired = true
-			}
+			applyUnitCorrection(&result[idx], corrections[i])
 		}
 
 		return result
@@ -132,17 +87,66 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 	corrections := detectAndCorrectMixups(data)
 
 	for i := range result {
-		if corrections[i] != 1.0 {
-			result[i].Open *= corrections[i]
-			result[i].High *= corrections[i]
-			result[i].Low *= corrections[i]
-			result[i].Close *= corrections[i]
-			result[i].AdjClose *= corrections[i]
-			result[i].Repaired = true
-		}
+		applyUnitCorrection(&result[i], corrections[i])
 	}
 
 	return result
+}
+
+func ohlcMatrix(bars []models.Bar) [][]float64 {
+	data := make([][]float64, len(bars))
+	for i, bar := range bars {
+		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, bar.AdjClose}
+	}
+	return data
+}
+
+func hasMatrixZeroes(data [][]float64) bool {
+	for i := range data {
+		if rowHasZero(data[i]) {
+			return true
+		}
+	}
+	return false
+}
+
+func nonZeroMatrixRows(data [][]float64) []int {
+	indices := make([]int, 0)
+	for i := range data {
+		if !rowHasZero(data[i]) {
+			indices = append(indices, i)
+		}
+	}
+	return indices
+}
+
+func rowHasZero(row []float64) bool {
+	for _, value := range row {
+		if value == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func filteredMatrix(data [][]float64, indices []int) [][]float64 {
+	filteredData := make([][]float64, len(indices))
+	for i, idx := range indices {
+		filteredData[i] = data[idx]
+	}
+	return filteredData
+}
+
+func applyUnitCorrection(bar *models.Bar, correction float64) {
+	if correction == 1.0 {
+		return
+	}
+	bar.Open *= correction
+	bar.High *= correction
+	bar.Low *= correction
+	bar.Close *= correction
+	bar.AdjClose *= correction
+	bar.Repaired = true
 }
 
 // detectAndCorrectMixups detects 100x errors using median filtering.
@@ -209,16 +213,7 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 	changeRcp := 1.0 / change
 
 	// Calculate daily percentage changes using median of OHLC
-	pctChanges := make([]float64, len(bars)-1)
-	for i := 1; i < len(bars); i++ {
-		prev := ohlcMedian(bars[i-1])
-		curr := ohlcMedian(bars[i])
-		if prev != 0 {
-			pctChanges[i-1] = curr / prev
-		} else {
-			pctChanges[i-1] = 1.0
-		}
-	}
+	pctChanges := dailyOHLCChanges(bars)
 
 	// Use IQR to estimate normal volatility
 	q1, q3, iqr := stats.IQR(pctChanges)
@@ -230,12 +225,7 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 	lowerBound := q1 - 1.5*iqr
 	upperBound := q3 + 1.5*iqr
 
-	var normalChanges []float64
-	for _, pct := range pctChanges {
-		if pct >= lowerBound && pct <= upperBound {
-			normalChanges = append(normalChanges, pct)
-		}
-	}
+	normalChanges := boundedChanges(pctChanges, lowerBound, upperBound)
 
 	if len(normalChanges) == 0 {
 		return bars
@@ -274,41 +264,64 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 
 		// Check if this looks like a unit switch
 		if dayChange >= threshold || dayChange <= 1.0/threshold {
-			// Determine correction direction
-			var correction float64
-			if dayChange >= threshold {
-				// Price jumped up, earlier prices need to be multiplied
-				correction = change
-			} else {
-				// Price dropped, earlier prices need to be divided
-				correction = changeRcp
-			}
-
-			// Apply correction to all bars before this point
-			for j := 0; j < i; j++ {
-				result[j].Open *= correction
-				result[j].High *= correction
-				result[j].Low *= correction
-				result[j].Close *= correction
-				result[j].AdjClose *= correction
-				result[j].Volume = int64(float64(result[j].Volume) / correction)
-				result[j].Repaired = true
-			}
-
-			// Continue checking rest of data for more switches
+			correction := switchCorrection(dayChange, threshold, change, changeRcp)
+			applyUnitSwitchCorrection(result[:i], correction)
 		}
 	}
 
 	return result
 }
 
+func dailyOHLCChanges(bars []models.Bar) []float64 {
+	pctChanges := make([]float64, len(bars)-1)
+	for i := 1; i < len(bars); i++ {
+		prev := ohlcMedian(bars[i-1])
+		curr := ohlcMedian(bars[i])
+		if prev != 0 {
+			pctChanges[i-1] = curr / prev
+		} else {
+			pctChanges[i-1] = 1.0
+		}
+	}
+	return pctChanges
+}
+
+func boundedChanges(changes []float64, lowerBound, upperBound float64) []float64 {
+	var normalChanges []float64
+	for _, pct := range changes {
+		if pct >= lowerBound && pct <= upperBound {
+			normalChanges = append(normalChanges, pct)
+		}
+	}
+	return normalChanges
+}
+
+func switchCorrection(dayChange, threshold, change, changeRcp float64) float64 {
+	if dayChange >= threshold {
+		return change
+	}
+	return changeRcp
+}
+
+func applyUnitSwitchCorrection(bars []models.Bar, correction float64) {
+	for j := range bars {
+		bars[j].Open *= correction
+		bars[j].High *= correction
+		bars[j].Low *= correction
+		bars[j].Close *= correction
+		bars[j].AdjClose *= correction
+		bars[j].Volume = int64(float64(bars[j].Volume) / correction)
+		bars[j].Repaired = true
+	}
+}
+
 // UnitMixupStats contains statistics about unit mixup repairs.
 type UnitMixupStats struct {
-	TotalBars       int  // Total bars analyzed
-	BarsRepaired    int  // Bars with 100x errors fixed
-	HasUnitSwitch   bool // Whether a permanent unit switch was detected
-	SwitchIndex     int  // Index where unit switch occurred (-1 if none)
-	RandomMixupCount int // Number of random 100x errors found
+	TotalBars        int  // Total bars analyzed
+	BarsRepaired     int  // Bars with 100x errors fixed
+	HasUnitSwitch    bool // Whether a permanent unit switch was detected
+	SwitchIndex      int  // Index where unit switch occurred (-1 if none)
+	RandomMixupCount int  // Number of random 100x errors found
 }
 
 // AnalyzeUnitMixups analyzes bars for 100x errors without modifying.

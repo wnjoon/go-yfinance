@@ -83,16 +83,7 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 	startIdx := splitIdx - windowSize
 
 	// Calculate daily percentage changes using median of OHLC
-	pctChanges := make([]float64, 0, windowSize)
-	for i := startIdx + 1; i <= splitIdx; i++ {
-		prevPrice := ohlcMedian(result[i-1])
-		currPrice := ohlcMedian(result[i])
-		if prevPrice != 0 {
-			pctChange := (currPrice - prevPrice) / prevPrice
-			pctChanges = append(pctChanges, pctChange)
-		}
-	}
-
+	pctChanges := splitWindowChanges(result, startIdx, splitIdx, windowSize)
 	if len(pctChanges) < 3 {
 		return bars
 	}
@@ -107,13 +98,7 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 	lowerBound := q1 - 1.5*iqr
 	upperBound := q3 + 1.5*iqr
 
-	var normalChanges []float64
-	for _, pct := range pctChanges {
-		if pct >= lowerBound && pct <= upperBound {
-			normalChanges = append(normalChanges, math.Abs(pct))
-		}
-	}
-
+	normalChanges := absBoundedChanges(pctChanges, lowerBound, upperBound)
 	if len(normalChanges) == 0 {
 		return bars
 	}
@@ -127,12 +112,7 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 	// Calculate the expected price change from split
 	// For a n:1 split, price should be divided by n (ratio > 1)
 	// For a 1:n reverse split, price should be multiplied by n (ratio < 1)
-	var expectedChange float64
-	if splitRatio > 1 {
-		expectedChange = 1.0 - 1.0/splitRatio // e.g., 4:1 split -> -75%
-	} else {
-		expectedChange = splitRatio - 1.0 // e.g., 1:4 reverse -> -75%
-	}
+	expectedChange := expectedSplitChange(splitRatio)
 
 	// Set threshold: halfway between split change and largest normal change
 	largestNormalChange := 5 * stdDev
@@ -140,14 +120,7 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 
 	// Check if the split appears unadjusted
 	// Look at the price change on the split date
-	splitDateChange := 0.0
-	if splitIdx > 0 {
-		prevPrice := ohlcMedian(result[splitIdx-1])
-		currPrice := ohlcMedian(result[splitIdx])
-		if prevPrice != 0 {
-			splitDateChange = (currPrice - prevPrice) / prevPrice
-		}
-	}
+	splitDateChange := splitDateChange(result, splitIdx)
 
 	// If the change on split date is close to what we'd expect from an unadjusted split,
 	// the data before the split needs to be adjusted
@@ -157,6 +130,47 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 	}
 
 	return result
+}
+
+func splitWindowChanges(bars []models.Bar, startIdx, splitIdx, windowSize int) []float64 {
+	pctChanges := make([]float64, 0, windowSize)
+	for i := startIdx + 1; i <= splitIdx; i++ {
+		prevPrice := ohlcMedian(bars[i-1])
+		currPrice := ohlcMedian(bars[i])
+		if prevPrice != 0 {
+			pctChanges = append(pctChanges, (currPrice-prevPrice)/prevPrice)
+		}
+	}
+	return pctChanges
+}
+
+func absBoundedChanges(changes []float64, lowerBound, upperBound float64) []float64 {
+	var normalChanges []float64
+	for _, pct := range changes {
+		if pct >= lowerBound && pct <= upperBound {
+			normalChanges = append(normalChanges, math.Abs(pct))
+		}
+	}
+	return normalChanges
+}
+
+func expectedSplitChange(splitRatio float64) float64 {
+	if splitRatio > 1 {
+		return 1.0 - 1.0/splitRatio
+	}
+	return splitRatio - 1.0
+}
+
+func splitDateChange(bars []models.Bar, splitIdx int) float64 {
+	if splitIdx == 0 {
+		return 0
+	}
+	prevPrice := ohlcMedian(bars[splitIdx-1])
+	currPrice := ohlcMedian(bars[splitIdx])
+	if prevPrice == 0 {
+		return 0
+	}
+	return (currPrice - prevPrice) / prevPrice
 }
 
 // applySplitCorrection adjusts historical prices for a split.
@@ -209,16 +223,16 @@ func minInt(a, b int) int {
 
 // SplitRepairStats contains statistics about split repair.
 type SplitRepairStats struct {
-	TotalSplits   int       // Number of split events found
-	SplitsRepaired int      // Number of splits that were repaired
-	BarsRepaired  int       // Total bars modified
-	Splits        []SplitInfo // Details of each split
+	TotalSplits    int         // Number of split events found
+	SplitsRepaired int         // Number of splits that were repaired
+	BarsRepaired   int         // Total bars modified
+	Splits         []SplitInfo // Details of each split
 }
 
 // SplitInfo contains information about a single split.
 type SplitInfo struct {
-	Date      time.Time
-	Ratio     float64
+	Date        time.Time
+	Ratio       float64
 	WasRepaired bool
 }
 

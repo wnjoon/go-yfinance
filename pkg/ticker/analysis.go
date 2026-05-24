@@ -571,23 +571,7 @@ func (t *Ticker) parseGrowthEstimates(trendData map[string]interface{}) []models
 	estimateMap := make(map[string]*models.GrowthEstimate)
 
 	// Parse stock growth from earningsTrend
-	for _, item := range trend {
-		itemMap, ok := item.(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		period := getString(itemMap, "period")
-		if period == "" {
-			continue
-		}
-
-		growth := getNestedFloatPtr(itemMap, "growth")
-		estimateMap[period] = &models.GrowthEstimate{
-			Period:      period,
-			StockGrowth: growth,
-		}
-	}
+	parseStockGrowthEstimates(trend, estimateMap)
 
 	// Parse industry/sector/index trends
 	trendTypes := []struct {
@@ -600,47 +584,7 @@ func (t *Ticker) parseGrowthEstimates(trendData map[string]interface{}) []models
 	}
 
 	for _, tt := range trendTypes {
-		trendInfo, ok := trendData[tt.key].(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		estimates, ok := trendInfo["estimates"].([]interface{})
-		if !ok {
-			continue
-		}
-
-		for _, est := range estimates {
-			estMap, ok := est.(map[string]interface{})
-			if !ok {
-				continue
-			}
-
-			period := getString(estMap, "period")
-			if period == "" {
-				continue
-			}
-
-			growth := estMap["growth"]
-
-			ge, exists := estimateMap[period]
-			if !exists {
-				ge = &models.GrowthEstimate{Period: period}
-				estimateMap[period] = ge
-			}
-
-			if growth != nil {
-				growthVal, _ := growth.(float64)
-				switch tt.key {
-				case "industryTrend":
-					ge.IndustryGrowth = &growthVal
-				case "sectorTrend":
-					ge.SectorGrowth = &growthVal
-				case "indexTrend":
-					ge.IndexGrowth = &growthVal
-				}
-			}
-		}
+		parsePeerGrowthEstimates(trendData, tt.key, tt.field, estimateMap)
 	}
 
 	// Convert map to slice
@@ -650,6 +594,65 @@ func (t *Ticker) parseGrowthEstimates(trendData map[string]interface{}) []models
 	}
 
 	return result
+}
+
+func parseStockGrowthEstimates(trend []interface{}, estimateMap map[string]*models.GrowthEstimate) {
+	for _, item := range trend {
+		itemMap, ok := item.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		period := getString(itemMap, "period")
+		if period == "" {
+			continue
+		}
+		estimateMap[period] = &models.GrowthEstimate{
+			Period:      period,
+			StockGrowth: getNestedFloatPtr(itemMap, "growth"),
+		}
+	}
+}
+
+func parsePeerGrowthEstimates(trendData map[string]interface{}, trendKey, field string, estimateMap map[string]*models.GrowthEstimate) {
+	trendInfo, ok := trendData[trendKey].(map[string]interface{})
+	if !ok {
+		return
+	}
+	estimates, ok := trendInfo["estimates"].([]interface{})
+	if !ok {
+		return
+	}
+	for _, est := range estimates {
+		applyPeerGrowthEstimate(est, field, estimateMap)
+	}
+}
+
+func applyPeerGrowthEstimate(est interface{}, field string, estimateMap map[string]*models.GrowthEstimate) {
+	estMap, ok := est.(map[string]interface{})
+	if !ok {
+		return
+	}
+	period := getString(estMap, "period")
+	if period == "" {
+		return
+	}
+	growthVal, ok := estMap["growth"].(float64)
+	if !ok {
+		return
+	}
+	ge, exists := estimateMap[period]
+	if !exists {
+		ge = &models.GrowthEstimate{Period: period}
+		estimateMap[period] = ge
+	}
+	switch field {
+	case "IndustryGrowth":
+		ge.IndustryGrowth = &growthVal
+	case "SectorGrowth":
+		ge.SectorGrowth = &growthVal
+	case "IndexGrowth":
+		ge.IndexGrowth = &growthVal
+	}
 }
 
 // Helper functions for parsing (uses getString/getInt from info.go)
