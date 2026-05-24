@@ -37,6 +37,7 @@ nav:
     - Price Repair: advanced/price-repair.md
     - MIC Codes: advanced/mic-codes.md
   - Releases:
+    - v1.4.1: releases/RELEASE_NOTES_v1.4.1.md
     - v1.4.0: releases/RELEASE_NOTES_v1.4.0.md
     - v1.3.0: releases/RELEASE_NOTES_v1.3.0.md
     - v1.2.0: releases/RELEASE_NOTES_v1.2.0.md
