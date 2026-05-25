@@ -285,7 +285,7 @@ This implementation matches the behavior of Python yfinance's `repair=True` opti
 
 ## See Also
 
-- [HistoryParams](../API.md#HistoryParams) - History parameters including RepairOptions
-- [Statistics Package](../API.md#stats) - Statistical functions for repair algorithms
-- [Repair Package](../API.md#repair) - Price repair implementation details
+- [HistoryParams](../api/models.md#HistoryParams) - History parameters including RepairOptions
+- [Statistics Package](../api/stats.md) - Statistical functions for repair algorithms
+- [Repair Package](../api/repair.md) - Price repair implementation details
 - [MIC Codes](mic-codes.md) - Exchange MIC code mapping

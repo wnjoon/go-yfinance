@@ -1,4 +1,3 @@
-// Package models provides data structures for Yahoo Finance API responses.
 package models
 
 import "time"

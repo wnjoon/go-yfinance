@@ -32,7 +32,25 @@ theme:
 
 nav:
   - Home: index.md
-  - API Reference: API.md
+  - API Reference:
+    - Overview: API.md
+    - ticker: api/ticker.md
+    - multi: api/multi.md
+    - screener: api/screener.md
+    - search: api/search.md
+    - lookup: api/lookup.md
+    - market: api/market.md
+    - sector: api/sector.md
+    - industry: api/industry.md
+    - calendars: api/calendars.md
+    - live: api/live.md
+    - models: api/models.md
+    - client: api/client.md
+    - config: api/config.md
+    - cache: api/cache.md
+    - repair: api/repair.md
+    - stats: api/stats.md
+    - utils: api/utils.md
   - Advanced:
     - Price Repair: advanced/price-repair.md
     - MIC Codes: advanced/mic-codes.md

@@ -1,4 +1,3 @@
-// Package utils provides utility functions for yfinance.
 package utils
 
 // MICToYahooSuffix maps ISO 10383 Market Identifier Codes (MIC) to Yahoo Finance ticker suffixes.

@@ -1,4 +1,4 @@
-.PHONY: build test lint docs docs-serve docs-build clean help
+.PHONY: build test lint docs docs-deps docs-serve docs-build clean help
 
 # Default target
 all: build
@@ -7,6 +7,7 @@ all: build
 VENV := .venv
 PIP := $(VENV)/bin/pip
 MKDOCS := $(VENV)/bin/mkdocs
+GOMARKDOC ?= gomarkdoc
 
 # Build the project
 build:
@@ -28,22 +29,26 @@ lint:
 # Generate API documentation using gomarkdoc
 docs:
 	@echo "Generating API documentation..."
-	@mkdir -p docs
-	gomarkdoc --output docs/API.md ./pkg/...
-	@echo "Documentation generated at docs/API.md"
+	@mkdir -p docs/api
+	$(GOMARKDOC) --output docs/API.generated.md ./pkg/...
+	./scripts/split-api-docs.sh docs/API.generated.md docs/api docs/API.md
+	@rm -f docs/API.generated.md
+	@echo "Documentation generated at docs/API.md and docs/api/"
 
 # Setup MkDocs virtual environment
-$(MKDOCS):
-	python3 -m venv $(VENV)
-	$(PIP) install --upgrade pip
-	$(PIP) install mkdocs-material
+docs-deps:
+	@if [ ! -x "$(MKDOCS)" ] || ! "$(MKDOCS)" --version >/dev/null 2>&1; then \
+		python3 -m venv --clear $(VENV); \
+		$(PIP) install --upgrade pip; \
+		$(PIP) install mkdocs-material; \
+	fi
 
 # Serve documentation locally (http://localhost:8000)
-docs-serve: $(MKDOCS)
+docs-serve: docs-deps
 	$(MKDOCS) serve
 
 # Build documentation site
-docs-build: $(MKDOCS)
+docs-build: docs-deps
 	$(MKDOCS) build
 
 # Clean build artifacts

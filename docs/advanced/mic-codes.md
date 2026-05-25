@@ -240,4 +240,4 @@ for suffix, mic := range utils.YahooSuffixToMIC {
 ## See Also
 
 - [Price Repair](price-repair.md) - Data quality repair for international exchanges
-- [API Reference](../API.md) - Full API documentation
+- [API Reference](../API.md) - Package-level API documentation

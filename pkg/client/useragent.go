@@ -1,4 +1,3 @@
-// Package client provides HTTP client functionality for Yahoo Finance API.
 package client
 
 import "math/rand"

@@ -1,4 +1,3 @@
-// Package utils provides utility functions for go-yfinance.
 package utils
 
 import (

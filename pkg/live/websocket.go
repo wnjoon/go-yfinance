@@ -1,37 +1,3 @@
-// Package live provides real-time WebSocket streaming for Yahoo Finance data.
-//
-// # Overview
-//
-// The live package enables real-time price updates via Yahoo Finance's
-// WebSocket streaming API. Messages are delivered as protobuf-encoded
-// pricing data.
-//
-// # Basic Usage
-//
-//	ws, err := live.New()
-//	if err != nil {
-//	    log.Fatal(err)
-//	}
-//	defer ws.Close()
-//
-//	// Subscribe to symbols
-//	ws.Subscribe([]string{"AAPL", "MSFT", "GOOGL"})
-//
-//	// Listen for updates
-//	ws.Listen(func(data *models.PricingData) {
-//	    fmt.Printf("%s: $%.2f\n", data.ID, data.Price)
-//	})
-//
-// # With Ticker Integration
-//
-//	ticker, _ := ticker.New("AAPL")
-//	ticker.Live(func(data *models.PricingData) {
-//	    fmt.Printf("Price: $%.2f\n", data.Price)
-//	})
-//
-// # Thread Safety
-//
-// All WebSocket methods are safe for concurrent use from multiple goroutines.
 package live
 
 import (

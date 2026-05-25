@@ -1,4 +1,3 @@
-// Package ticker provides the main Ticker interface for accessing Yahoo Finance data.
 package ticker
 
 import (
