@@ -1,0 +1,2514 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/api/repair/">
+      
+      
+        <link rel="prev" href="../cache/">
+      
+      
+        <link rel="next" href="../stats/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>repair - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#repair" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              repair
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ticker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repair-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repair Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capital-gains-repair-v110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capital Gains Repair \(v1.1.0\)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stock-split-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stock Split Repair
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-countrepaired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func CountRepaired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectbaddividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectBadDividends
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectbadsplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectBadSplits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectunitmixups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectUnitMixups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectzeroes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectZeroes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hascapitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasCapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hasdividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasDividends
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hassplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasSplits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-capitalgainsrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type CapitalGainsRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-dividendinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type DividendInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-dividendrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type DividendRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-defaultoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DefaultOptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-quotetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type QuoteType
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-repairer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Repairer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Repairer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzecapitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeCapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzedividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeDividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzesplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeSplits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzeunitmixups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeUnitMixups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzezeroes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeZeroes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) Repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-splitinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type SplitInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-splitrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type SplitRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-unitmixupstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type UnitMixupStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-zerorepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type ZeroRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repair-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repair Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capital-gains-repair-v110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capital Gains Repair \(v1.1.0\)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stock-split-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stock Split Repair
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-countrepaired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func CountRepaired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectbaddividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectBadDividends
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectbadsplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectBadSplits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectunitmixups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectUnitMixups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectzeroes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectZeroes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hascapitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasCapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hasdividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasDividends
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-hassplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func HasSplits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-capitalgainsrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type CapitalGainsRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-dividendinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type DividendInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-dividendrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type DividendRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-defaultoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DefaultOptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-quotetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type QuoteType
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-repairer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Repairer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Repairer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzecapitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeCapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzedividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeDividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzesplits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeSplits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzeunitmixups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeUnitMixups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-analyzezeroes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) AnalyzeZeroes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-repairer-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Repairer) Repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-splitinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type SplitInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-splitrepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type SplitRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-unitmixupstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type UnitMixupStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-zerorepairstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type ZeroRepairStats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!-- Code generated by gomarkdoc. DO NOT EDIT -->
+
+<h1 id="repair">repair</h1>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/repair&quot;</span>
+</code></pre></div>
+<p>Package repair provides price data repair functionality for financial time series.</p>
+<p>This package detects and corrects common data quality issues in Yahoo Finance data, including 100x currency errors, bad stock split adjustments, dividend double-counting, capital gains double-counting, and missing/zero values.</p>
+<h3 id="overview">Overview</h3>
+<p>Yahoo Finance data sometimes contains errors that need to be repaired:</p>
+<ul>
+<li>100x errors: Price appears in cents instead of dollars (or vice versa)</li>
+<li>Bad stock splits: Split adjustments not applied or applied incorrectly</li>
+<li>Bad dividends: Dividend adjustments not applied correctly</li>
+<li>Capital gains double-counting: For ETFs/MutualFunds, capital gains counted twice</li>
+<li>Zero/missing values: Prices showing as 0 or NaN</li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>Create a Repairer and call Repair on your bar data:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>opts := repair.DefaultOptions()
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>opts.Interval = &quot;1d&quot;
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>opts.QuoteType = &quot;ETF&quot;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>repairer := repair.New(opts)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>repairedBars, err := repairer.Repair(bars)
+</code></pre></div>
+<h3 id="repair-options">Repair Options</h3>
+<p>Individual repair functions can be enabled/disabled:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>opts := repair.Options{
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    FixUnitMixups:   true,   // Fix 100x errors
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    FixZeroes:       true,   // Fix zero/missing values
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    FixSplits:       true,   // Fix stock split errors
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    FixDividends:    true,   // Fix dividend adjustment errors
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    FixCapitalGains: true,   // Fix capital gains double-counting
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>}
+</code></pre></div>
+<h3 id="capital-gains-repair-v110">Capital Gains Repair \(v1.1.0\)</h3>
+<p>For ETFs and Mutual Funds, Yahoo Finance sometimes double-counts capital gains in the Adjusted Close calculation. This repair detects and corrects this issue:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>// Only applies to ETF and MUTUALFUND quote types
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>opts.QuoteType = &quot;ETF&quot;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>opts.FixCapitalGains = true
+</code></pre></div>
+<p>The algorithm compares price drops on distribution days against expected drops based on dividend vs dividend+capital_gains to detect double-counting.</p>
+<h3 id="stock-split-repair">Stock Split Repair</h3>
+<p>Detects when Yahoo fails to apply stock split adjustments to historical data:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>opts.FixSplits = true
+</code></pre></div>
+<p>Uses IQR-based outlier detection to identify suspicious price changes that match the split ratio, then applies corrections.</p>
+<p>This package is designed to match the behavior of Python yfinance's price repair functionality.</p>
+<h2 id="index">Index</h2>
+<ul>
+<li><a href="#CountRepaired">func CountRepaired(bars []models.Bar) int</a></li>
+<li><a href="#DetectBadDividends">func DetectBadDividends(bars []models.Bar, currency string) []int</a></li>
+<li><a href="#DetectBadSplits">func DetectBadSplits(bars []models.Bar) []int</a></li>
+<li><a href="#DetectUnitMixups">func DetectUnitMixups(bars []models.Bar) []int</a></li>
+<li><a href="#DetectZeroes">func DetectZeroes(bars []models.Bar) []int</a></li>
+<li><a href="#HasCapitalGains">func HasCapitalGains(bars []models.Bar) bool</a></li>
+<li><a href="#HasDividends">func HasDividends(bars []models.Bar) bool</a></li>
+<li><a href="#HasSplits">func HasSplits(bars []models.Bar) bool</a></li>
+<li><a href="#CapitalGainsRepairStats">type CapitalGainsRepairStats</a></li>
+<li><a href="#DividendInfo">type DividendInfo</a></li>
+<li><a href="#DividendRepairStats">type DividendRepairStats</a></li>
+<li><a href="#Options">type Options</a></li>
+<li><a href="#DefaultOptions">func DefaultOptions() Options</a></li>
+<li><a href="#QuoteType">type QuoteType</a></li>
+<li><a href="#Repairer">type Repairer</a></li>
+<li><a href="#New">func New(opts Options) *Repairer</a></li>
+<li><a href="#Repairer.AnalyzeCapitalGains">func (r *Repairer) AnalyzeCapitalGains(bars []models.Bar) CapitalGainsRepairStats</a></li>
+<li><a href="#Repairer.AnalyzeDividends">func (r *Repairer) AnalyzeDividends(bars []models.Bar) DividendRepairStats</a></li>
+<li><a href="#Repairer.AnalyzeSplits">func (r *Repairer) AnalyzeSplits(bars []models.Bar) SplitRepairStats</a></li>
+<li><a href="#Repairer.AnalyzeUnitMixups">func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats</a></li>
+<li><a href="#Repairer.AnalyzeZeroes">func (r *Repairer) AnalyzeZeroes(bars []models.Bar) ZeroRepairStats</a></li>
+<li><a href="#Repairer.Repair">func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error)</a></li>
+<li><a href="#SplitInfo">type SplitInfo</a></li>
+<li><a href="#SplitRepairStats">type SplitRepairStats</a></li>
+<li><a href="#UnitMixupStats">type UnitMixupStats</a></li>
+<li><a href="#ZeroRepairStats">type ZeroRepairStats</a></li>
+</ul>
+<p><a name="CountRepaired"></a></p>
+<h2 id="func-countrepaired">func CountRepaired</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">CountRepaired</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span>
+</code></pre></div>
+<p>CountRepaired counts how many bars have been repaired.</p>
+<p><a name="DetectBadDividends"></a></p>
+<h2 id="func-detectbaddividends">func DetectBadDividends</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DetectBadDividends</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="nx">currency</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span>
+</code></pre></div>
+<p>DetectBadDividends checks if there are dividend issues in the data. Returns indices of bars with suspected dividend problems.</p>
+<p><a name="DetectBadSplits"></a></p>
+<h2 id="func-detectbadsplits">func DetectBadSplits</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DetectBadSplits</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span>
+</code></pre></div>
+<p>DetectBadSplits checks if there are unadjusted splits in the data.</p>
+<p><a name="DetectUnitMixups"></a></p>
+<h2 id="func-detectunitmixups">func DetectUnitMixups</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DetectUnitMixups</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span>
+</code></pre></div>
+<p>DetectUnitMixups checks if there are 100x errors in the data. Returns indices of bars with suspected 100x errors.</p>
+<p><a name="DetectZeroes"></a></p>
+<h2 id="func-detectzeroes">func DetectZeroes</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DetectZeroes</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span>
+</code></pre></div>
+<p>DetectZeroes checks for bars with zero/missing values. Returns indices of bars that may need repair.</p>
+<p><a name="HasCapitalGains"></a></p>
+<h2 id="func-hascapitalgains">func HasCapitalGains</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">HasCapitalGains</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</code></pre></div>
+<p>HasCapitalGains checks if any bar has capital gains data.</p>
+<p><a name="HasDividends"></a></p>
+<h2 id="func-hasdividends">func HasDividends</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">HasDividends</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</code></pre></div>
+<p>HasDividends checks if any bar has dividend data.</p>
+<p><a name="HasSplits"></a></p>
+<h2 id="func-hassplits">func HasSplits</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">HasSplits</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</code></pre></div>
+<p>HasSplits checks if any bar has split data.</p>
+<p><a name="CapitalGainsRepairStats"></a></p>
+<h2 id="type-capitalgainsrepairstats">type CapitalGainsRepairStats</h2>
+<p>CapitalGainsRepairStats returns statistics about capital gains repair.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">CapitalGainsRepairStats</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="nx">TotalEvents</span><span class="w">       </span><span class="kt">int</span><span class="w">     </span><span class="c1">// Number of capital gains events</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nx">DoubleCountEvents</span><span class="w"> </span><span class="kt">int</span><span class="w">     </span><span class="c1">// Number detected as double-counted</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nx">DoubleCountRatio</span><span class="w">  </span><span class="kt">float64</span><span class="w"> </span><span class="c1">// Ratio of double-counted events</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nx">RepairApplied</span><span class="w">     </span><span class="kt">bool</span><span class="w">    </span><span class="c1">// Whether repair was applied</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="nx">BarsRepaired</span><span class="w">      </span><span class="kt">int</span><span class="w">     </span><span class="c1">// Number of bars that were repaired</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="DividendInfo"></a></p>
+<h2 id="type-dividendinfo">type DividendInfo</h2>
+<p>DividendInfo contains information about a single dividend.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">DividendInfo</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="nx">Date</span><span class="w">         </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nx">Amount</span><span class="w">       </span><span class="kt">float64</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nx">IsMissingAdj</span><span class="w"> </span><span class="kt">bool</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nx">IsTooSmall</span><span class="w">   </span><span class="kt">bool</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nx">IsTooLarge</span><span class="w">   </span><span class="kt">bool</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nx">IsPhantom</span><span class="w">    </span><span class="kt">bool</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="nx">WasRepaired</span><span class="w">  </span><span class="kt">bool</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="DividendRepairStats"></a></p>
+<h2 id="type-dividendrepairstats">type DividendRepairStats</h2>
+<p>DividendRepairStats contains statistics about dividend repairs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">DividendRepairStats</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">    </span><span class="nx">TotalDividends</span><span class="w"> </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Number of dividend events found</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="nx">MissingAdj</span><span class="w">     </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Dividends with missing adjustment</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="nx">TooSmall</span><span class="w">       </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Dividends 100x too small</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="nx">TooLarge</span><span class="w">       </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Dividends 100x too big</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="nx">Phantoms</span><span class="w">       </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Phantom (duplicate) dividends</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="nx">BarsRepaired</span><span class="w">   </span><span class="kt">int</span><span class="w">            </span><span class="c1">// Total bars modified</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="nx">Dividends</span><span class="w">      </span><span class="p">[]</span><span class="nx">DividendInfo</span><span class="w"> </span><span class="c1">// Details of each dividend</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="Options"></a></p>
+<h2 id="type-options">type Options</h2>
+<p>Options configures the repair behavior.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Options</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="c1">// Data context</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="nx">Ticker</span><span class="w">    </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Ticker symbol</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="nx">Interval</span><span class="w">  </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Data interval (1d, 1wk, 1mo, etc.)</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="nx">Timezone</span><span class="w">  </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Exchange timezone</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="nx">Currency</span><span class="w">  </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Price currency</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span><span class="nx">QuoteType</span><span class="w"> </span><span class="nx">QuoteType</span><span class="w"> </span><span class="c1">// Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">    </span><span class="c1">// Feature flags - which repairs to apply</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">    </span><span class="nx">FixUnitMixups</span><span class="w">   </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix 100x currency errors ($/cents, £/pence)</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="nx">FixZeroes</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix missing/zero values</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="nx">FixSplits</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad stock split adjustments</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="nx">FixDividends</span><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad dividend adjustments</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span><span class="nx">FixCapitalGains</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix capital gains double-counting (ETF/MutualFund only)</span>
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="DefaultOptions"></a></p>
+<h3 id="func-defaultoptions">func DefaultOptions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DefaultOptions</span><span class="p">()</span><span class="w"> </span><span class="nx">Options</span>
+</code></pre></div>
+<p>DefaultOptions returns options with all repairs enabled.</p>
+<p><a name="QuoteType"></a></p>
+<h2 id="type-quotetype">type QuoteType</h2>
+<p>QuoteType represents the type of financial instrument.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">QuoteType</span><span class="w"> </span><span class="kt">string</span>
+</code></pre></div>
+<p><a name="QuoteTypeEquity"></a></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="nx">QuoteTypeEquity</span><span class="w">     </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;EQUITY&quot;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nx">QuoteTypeETF</span><span class="w">        </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;ETF&quot;</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nx">QuoteTypeMutualFund</span><span class="w"> </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;MUTUALFUND&quot;</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nx">QuoteTypeIndex</span><span class="w">      </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;INDEX&quot;</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span><span class="nx">QuoteTypeCurrency</span><span class="w">   </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;CURRENCY&quot;</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span><span class="nx">QuoteTypeCrypto</span><span class="w">     </span><span class="nx">QuoteType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;CRYPTOCURRENCY&quot;</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="p">)</span>
+</code></pre></div>
+<p><a name="Repairer"></a></p>
+<h2 id="type-repairer">type Repairer</h2>
+<p>Repairer handles price data repair operations.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Repairer</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="c1">// contains filtered or unexported fields</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="New"></a></p>
+<h3 id="func-new">func New</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">New</span><span class="p">(</span><span class="nx">opts</span><span class="w"> </span><span class="nx">Options</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span>
+</code></pre></div>
+<p>New creates a new Repairer with the given options.</p>
+<p><a name="Repairer.AnalyzeCapitalGains"></a></p>
+<h3 id="func-repairer-analyzecapitalgains">func (*Repairer) AnalyzeCapitalGains</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalyzeCapitalGains</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="nx">CapitalGainsRepairStats</span>
+</code></pre></div>
+<p>AnalyzeCapitalGains analyzes bars for capital gains issues without modifying. Useful for debugging and understanding the data.</p>
+<p><a name="Repairer.AnalyzeDividends"></a></p>
+<h3 id="func-repairer-analyzedividends">func (*Repairer) AnalyzeDividends</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalyzeDividends</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="nx">DividendRepairStats</span>
+</code></pre></div>
+<p>AnalyzeDividends analyzes bars for dividend issues without modifying.</p>
+<p><a name="Repairer.AnalyzeSplits"></a></p>
+<h3 id="func-repairer-analyzesplits">func (*Repairer) AnalyzeSplits</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalyzeSplits</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="nx">SplitRepairStats</span>
+</code></pre></div>
+<p>AnalyzeSplits analyzes bars for split issues without modifying.</p>
+<p><a name="Repairer.AnalyzeUnitMixups"></a></p>
+<h3 id="func-repairer-analyzeunitmixups">func (*Repairer) AnalyzeUnitMixups</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalyzeUnitMixups</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="nx">UnitMixupStats</span>
+</code></pre></div>
+<p>AnalyzeUnitMixups analyzes bars for 100x errors without modifying.</p>
+<p><a name="Repairer.AnalyzeZeroes"></a></p>
+<h3 id="func-repairer-analyzezeroes">func (*Repairer) AnalyzeZeroes</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalyzeZeroes</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="nx">ZeroRepairStats</span>
+</code></pre></div>
+<p>AnalyzeZeroes analyzes bars for zero/missing values without modifying.</p>
+<p><a name="Repairer.Repair"></a></p>
+<h3 id="func-repairer-repair">func (*Repairer) Repair</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">Repair</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Repair applies all enabled repair operations to the bar data. The order of operations matters:</p>
+<ol>
+<li>Fix dividend adjustments (must come before price-level errors)</li>
+<li>Fix 100x unit errors</li>
+<li>Fix stock split errors</li>
+<li>Fix zero/missing values</li>
+<li>Fix capital gains double-counting (last, needs clean adjustment data)</li>
+</ol>
+<p>Returns the repaired bars and any error encountered.</p>
+<p><a name="SplitInfo"></a></p>
+<h2 id="type-splitinfo">type SplitInfo</h2>
+<p>SplitInfo contains information about a single split.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">SplitInfo</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="w">    </span><span class="nx">Date</span><span class="w">        </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="w">    </span><span class="nx">Ratio</span><span class="w">       </span><span class="kt">float64</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">    </span><span class="nx">WasRepaired</span><span class="w"> </span><span class="kt">bool</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="SplitRepairStats"></a></p>
+<h2 id="type-splitrepairstats">type SplitRepairStats</h2>
+<p>SplitRepairStats contains statistics about split repair.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">SplitRepairStats</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="w">    </span><span class="nx">TotalSplits</span><span class="w">    </span><span class="kt">int</span><span class="w">         </span><span class="c1">// Number of split events found</span>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="w">    </span><span class="nx">SplitsRepaired</span><span class="w"> </span><span class="kt">int</span><span class="w">         </span><span class="c1">// Number of splits that were repaired</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="w">    </span><span class="nx">BarsRepaired</span><span class="w">   </span><span class="kt">int</span><span class="w">         </span><span class="c1">// Total bars modified</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="w">    </span><span class="nx">Splits</span><span class="w">         </span><span class="p">[]</span><span class="nx">SplitInfo</span><span class="w"> </span><span class="c1">// Details of each split</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="UnitMixupStats"></a></p>
+<h2 id="type-unitmixupstats">type UnitMixupStats</h2>
+<p>UnitMixupStats contains statistics about unit mixup repairs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">UnitMixupStats</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">    </span><span class="nx">TotalBars</span><span class="w">        </span><span class="kt">int</span><span class="w">  </span><span class="c1">// Total bars analyzed</span>
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">    </span><span class="nx">BarsRepaired</span><span class="w">     </span><span class="kt">int</span><span class="w">  </span><span class="c1">// Bars with 100x errors fixed</span>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="w">    </span><span class="nx">HasUnitSwitch</span><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Whether a permanent unit switch was detected</span>
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">    </span><span class="nx">SwitchIndex</span><span class="w">      </span><span class="kt">int</span><span class="w">  </span><span class="c1">// Index where unit switch occurred (-1 if none)</span>
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="w">    </span><span class="nx">RandomMixupCount</span><span class="w"> </span><span class="kt">int</span><span class="w">  </span><span class="c1">// Number of random 100x errors found</span>
+<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="ZeroRepairStats"></a></p>
+<h2 id="type-zerorepairstats">type ZeroRepairStats</h2>
+<p>ZeroRepairStats contains statistics about zero value repairs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">ZeroRepairStats</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">    </span><span class="nx">TotalBars</span><span class="w">       </span><span class="kt">int</span><span class="w"> </span><span class="c1">// Total bars analyzed</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">    </span><span class="nx">ZeroBars</span><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="c1">// Bars with zero prices</span>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">    </span><span class="nx">PartialZeroBars</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="c1">// Bars with some zero values</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="w">    </span><span class="nx">ZeroVolumeBars</span><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="c1">// Bars with zero volume but price changed</span>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="w">    </span><span class="nx">BarsRepaired</span><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="c1">// Total bars repaired</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

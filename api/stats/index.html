@@ -1,0 +1,2474 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/api/stats/">
+      
+      
+        <link rel="prev" href="../repair/">
+      
+      
+        <link rel="next" href="../utils/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>stats - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#stats" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              stats
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ticker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#percentile-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Percentile Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#z-score-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Z\-Score Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-abs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Abs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func All
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Any
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-clipoutliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ClipOutliers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-counttrue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func CountTrue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectoutliersbyzscore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectOutliersByZScore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-diff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Diff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-filterbymask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func FilterByMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-findblocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func FindBlocks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-iqr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func IQR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-inliermask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func InlierMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Mean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-median" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Median
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianFilter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianfilter2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianFilter2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianofslice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianOfSlice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-ohlcmedian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OHLCMedian
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-outlierbounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OutlierBounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-outliermask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OutlierMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-pctchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func PctChange
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-percentile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Percentile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-removenan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RemoveNaN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-rollingmean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RollingMean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-rollingstd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RollingStd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Std
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-weightedmean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WeightedMean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscoreslice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScoreSlice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscorewithparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScoreWithParams
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#percentile-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Percentile Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#z-score-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Z\-Score Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-abs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Abs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func All
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Any
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-clipoutliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ClipOutliers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-counttrue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func CountTrue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-detectoutliersbyzscore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func DetectOutliersByZScore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-diff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Diff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-filterbymask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func FilterByMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-findblocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func FindBlocks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-iqr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func IQR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-inliermask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func InlierMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Mean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-median" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Median
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianFilter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianfilter2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianFilter2D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-medianofslice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func MedianOfSlice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-ohlcmedian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OHLCMedian
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-outlierbounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OutlierBounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-outliermask" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func OutlierMask
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-pctchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func PctChange
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-percentile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Percentile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-removenan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RemoveNaN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-rollingmean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RollingMean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-rollingstd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func RollingStd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-std" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func Std
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-weightedmean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WeightedMean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscoreslice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScoreSlice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#func-zscorewithparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func ZScoreWithParams
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!-- Code generated by gomarkdoc. DO NOT EDIT -->
+
+<h1 id="stats">stats</h1>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/stats&quot;</span>
+</code></pre></div>
+<p>Package stats provides statistical utility functions for price repair operations.</p>
+<p>This package includes functions for percentile calculations, z-score computations, median filtering, and outlier detection. These utilities are essential for detecting and correcting data quality issues in financial time series.</p>
+<h3 id="percentile-functions">Percentile Functions</h3>
+<p>The package provides percentile calculation using linear interpolation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>p50 := stats.Percentile(data, 50.0)  // Median
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>q1, q3, iqr := stats.IQR(data)       // Interquartile range
+</code></pre></div>
+<h3 id="z-score-functions">Z\-Score Functions</h3>
+<p>Z-score calculations for standardization and outlier detection:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>z := stats.ZScore(value, mean, std)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>zScores := stats.ZScoreSlice(data)
+</code></pre></div>
+<h3 id="filtering-functions">Filtering Functions</h3>
+<p>Median filter and outlier detection for noise reduction:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>filtered := stats.MedianFilter(data, windowSize)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>mask := stats.OutlierMask(data, multiplier)
+</code></pre></div>
+<p>These functions are designed to match the behavior of numpy and scipy functions used in the Python yfinance implementation.</p>
+<h2 id="index">Index</h2>
+<ul>
+<li><a href="#Abs">func Abs(data []float64) []float64</a></li>
+<li><a href="#All">func All(mask []bool) bool</a></li>
+<li><a href="#Any">func Any(mask []bool) bool</a></li>
+<li><a href="#ClipOutliers">func ClipOutliers(data []float64, multiplier float64) []float64</a></li>
+<li><a href="#CountTrue">func CountTrue(mask []bool) int</a></li>
+<li><a href="#DetectOutliersByZScore">func DetectOutliersByZScore(data []float64, threshold float64) []bool</a></li>
+<li><a href="#Diff">func Diff(data []float64) []float64</a></li>
+<li><a href="#FilterByMask">func FilterByMask(data []float64, mask []bool) []float64</a></li>
+<li><a href="#FindBlocks">func FindBlocks(mask []bool) [][2]int</a></li>
+<li><a href="#IQR">func IQR(data []float64) (q1, q3, iqr float64)</a></li>
+<li><a href="#InlierMask">func InlierMask(data []float64, multiplier float64) []bool</a></li>
+<li><a href="#Mean">func Mean(data []float64) float64</a></li>
+<li><a href="#Median">func Median(data []float64) float64</a></li>
+<li><a href="#MedianFilter">func MedianFilter(data []float64, windowSize int) []float64</a></li>
+<li><a href="#MedianFilter2D">func MedianFilter2D(data [][]float64, windowSize int) [][]float64</a></li>
+<li><a href="#MedianOfSlice">func MedianOfSlice(data []float64) float64</a></li>
+<li><a href="#OHLCMedian">func OHLCMedian(open, high, low, close float64) float64</a></li>
+<li><a href="#OutlierBounds">func OutlierBounds(data []float64, multiplier float64) (lower, upper float64)</a></li>
+<li><a href="#OutlierMask">func OutlierMask(data []float64, multiplier float64) []bool</a></li>
+<li><a href="#PctChange">func PctChange(data []float64) []float64</a></li>
+<li><a href="#Percentile">func Percentile(data []float64, p float64) float64</a></li>
+<li><a href="#RemoveNaN">func RemoveNaN(data []float64) []float64</a></li>
+<li><a href="#RollingMean">func RollingMean(data []float64, windowSize int) []float64</a></li>
+<li><a href="#RollingStd">func RollingStd(data []float64, windowSize int) []float64</a></li>
+<li><a href="#Std">func Std(data []float64, ddof int) float64</a></li>
+<li><a href="#WeightedMean">func WeightedMean(data, weights []float64) float64</a></li>
+<li><a href="#ZScore">func ZScore(value, mean, std float64) float64</a></li>
+<li><a href="#ZScoreSlice">func ZScoreSlice(data []float64) []float64</a></li>
+<li><a href="#ZScoreWithParams">func ZScoreWithParams(data []float64, mean, std float64) []float64</a></li>
+</ul>
+<p><a name="Abs"></a></p>
+<h2 id="func-abs">func Abs</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Abs</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>Abs returns absolute values of the data.</p>
+<p><a name="All"></a></p>
+<h2 id="func-all">func All</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">All</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</code></pre></div>
+<p>All returns true if all values in the mask are true.</p>
+<p><a name="Any"></a></p>
+<h2 id="func-any">func Any</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Any</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</code></pre></div>
+<p>Any returns true if any value in the mask is true.</p>
+<p><a name="ClipOutliers"></a></p>
+<h2 id="func-clipoutliers">func ClipOutliers</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">ClipOutliers</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">multiplier</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>ClipOutliers replaces outliers with boundary values.</p>
+<p><a name="CountTrue"></a></p>
+<h2 id="func-counttrue">func CountTrue</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">CountTrue</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span>
+</code></pre></div>
+<p>CountTrue counts the number of true values in a boolean slice.</p>
+<p><a name="DetectOutliersByZScore"></a></p>
+<h2 id="func-detectoutliersbyzscore">func DetectOutliersByZScore</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DetectOutliersByZScore</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">threshold</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span>
+</code></pre></div>
+<p>DetectOutliersByZScore identifies outliers based on z-score threshold. Returns a boolean mask where true indicates an outlier.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: slice of float64 values</li>
+<li>threshold: z-score threshold (typically 2.0 or 3.0)</li>
+</ul>
+<p><a name="Diff"></a></p>
+<h2 id="func-diff">func Diff</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Diff</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>Diff calculates the difference between consecutive elements. Returns slice of length n-1.</p>
+<p><a name="FilterByMask"></a></p>
+<h2 id="func-filterbymask">func FilterByMask</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">FilterByMask</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">mask</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>FilterByMask returns elements where mask is true.</p>
+<p><a name="FindBlocks"></a></p>
+<h2 id="func-findblocks">func FindBlocks</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">FindBlocks</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">[][</span><span class="mi">2</span><span class="p">]</span><span class="kt">int</span>
+</code></pre></div>
+<p>FindBlocks identifies contiguous blocks of True values in a boolean mask. Returns slice of [start, end) pairs.</p>
+<p><a name="IQR"></a></p>
+<h2 id="func-iqr">func IQR</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">IQR</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">q3</span><span class="p">,</span><span class="w"> </span><span class="nx">iqr</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span>
+</code></pre></div>
+<p>IQR calculates the interquartile range (Q3 - Q1). Returns Q1, Q3, and IQR.</p>
+<p>The interquartile range is used for outlier detection:</p>
+<ul>
+<li>Lower bound: Q1 - 1.5 * IQR</li>
+<li>Upper bound: Q3 + 1.5 * IQR</li>
+</ul>
+<p><a name="InlierMask"></a></p>
+<h2 id="func-inliermask">func InlierMask</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">InlierMask</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">multiplier</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span>
+</code></pre></div>
+<p>InlierMask creates a boolean mask for inliers (non-outliers). Returns true for values that are NOT outliers.</p>
+<p><a name="Mean"></a></p>
+<h2 id="func-mean">func Mean</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Mean</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>Mean calculates the arithmetic mean of the data. Returns NaN for empty data.</p>
+<p><a name="Median"></a></p>
+<h2 id="func-median">func Median</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Median</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>Median calculates the median (50th percentile) of the data.</p>
+<p><a name="MedianFilter"></a></p>
+<h2 id="func-medianfilter">func MedianFilter</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">MedianFilter</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">windowSize</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>MedianFilter applies a 1D median filter to the data. This is similar to scipy.ndimage.median_filter for 1D arrays.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: input slice</li>
+<li>windowSize: filter window size (should be odd)</li>
+</ul>
+<p>Returns filtered data with same length as input. Edge values use smaller windows.</p>
+<p><a name="MedianFilter2D"></a></p>
+<h2 id="func-medianfilter2d">func MedianFilter2D</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">MedianFilter2D</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[][]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">windowSize</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">[][]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>MedianFilter2D applies a 2D median filter to the data matrix. This is similar to scipy.ndimage.median_filter for 2D arrays.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: 2D slice [rows][cols]</li>
+<li>windowSize: filter window size for both dimensions</li>
+</ul>
+<p>Returns filtered 2D data.</p>
+<p><a name="MedianOfSlice"></a></p>
+<h2 id="func-medianofslice">func MedianOfSlice</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">MedianOfSlice</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>MedianOfSlice calculates the median without sorting the original slice.</p>
+<p><a name="OHLCMedian"></a></p>
+<h2 id="func-ohlcmedian">func OHLCMedian</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">OHLCMedian</span><span class="p">(</span><span class="nx">open</span><span class="p">,</span><span class="w"> </span><span class="nx">high</span><span class="p">,</span><span class="w"> </span><span class="nx">low</span><span class="p">,</span><span class="w"> </span><span class="nx">close</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>OHLC calculates the median of Open, High, Low, Close values. This provides a robust estimate of the "typical" price.</p>
+<p><a name="OutlierBounds"></a></p>
+<h2 id="func-outlierbounds">func OutlierBounds</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">OutlierBounds</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">multiplier</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">lower</span><span class="p">,</span><span class="w"> </span><span class="nx">upper</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span>
+</code></pre></div>
+<p>OutlierBounds calculates the lower and upper bounds for outlier detection using the IQR method with a configurable multiplier.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: slice of float64 values</li>
+<li>multiplier: IQR multiplier (typically 1.5 for outliers, 3.0 for extreme outliers)</li>
+</ul>
+<p>Returns lower bound, upper bound.</p>
+<p><a name="OutlierMask"></a></p>
+<h2 id="func-outliermask">func OutlierMask</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">OutlierMask</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">multiplier</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">bool</span>
+</code></pre></div>
+<p>OutlierMask creates a boolean mask for outliers using the IQR method. Returns true for values that are outliers.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: slice of float64 values</li>
+<li>multiplier: IQR multiplier (typically 1.5)</li>
+</ul>
+<p><a name="PctChange"></a></p>
+<h2 id="func-pctchange">func PctChange</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">PctChange</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>PctChange calculates the percentage change between consecutive elements. Returns slice of length n-1.</p>
+<p><a name="Percentile"></a></p>
+<h2 id="func-percentile">func Percentile</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Percentile</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>Percentile calculates the p-th percentile of the given data using linear interpolation. This matches numpy.percentile with default interpolation method.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: slice of float64 values</li>
+<li>p: percentile to compute (0-100)</li>
+</ul>
+<p>Returns the percentile value. Returns NaN for empty data.</p>
+<p><a name="RemoveNaN"></a></p>
+<h2 id="func-removenan">func RemoveNaN</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">RemoveNaN</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>RemoveNaN returns a new slice with NaN values removed.</p>
+<p><a name="RollingMean"></a></p>
+<h2 id="func-rollingmean">func RollingMean</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">RollingMean</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">windowSize</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>RollingMean calculates a rolling (moving) mean with the specified window size. Uses center alignment. Returns NaN for positions where window is incomplete.</p>
+<p><a name="RollingStd"></a></p>
+<h2 id="func-rollingstd">func RollingStd</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">RollingStd</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">windowSize</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>RollingStd calculates a rolling (moving) standard deviation. Uses center alignment and sample std (ddof=1).</p>
+<p><a name="Std"></a></p>
+<h2 id="func-std">func Std</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Std</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">ddof</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>Std calculates the standard deviation of the data. Uses n-1 denominator (sample standard deviation) by default.</p>
+<p>Parameters:</p>
+<ul>
+<li>data: slice of float64 values</li>
+<li>ddof: delta degrees of freedom (0 for population, 1 for sample)</li>
+</ul>
+<p><a name="WeightedMean"></a></p>
+<h2 id="func-weightedmean">func WeightedMean</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WeightedMean</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">weights</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>WeightedMean calculates the weighted arithmetic mean. Returns NaN if weights sum to zero or if slices have different lengths.</p>
+<p><a name="ZScore"></a></p>
+<h2 id="func-zscore">func ZScore</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">ZScore</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span><span class="w"> </span><span class="nx">mean</span><span class="p">,</span><span class="w"> </span><span class="nx">std</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="kt">float64</span>
+</code></pre></div>
+<p>ZScore calculates the z-score (standard score) for a single value.</p>
+<p>Z-score = (value - mean) / std</p>
+<p>Returns NaN if std is zero or NaN.</p>
+<p><a name="ZScoreSlice"></a></p>
+<h2 id="func-zscoreslice">func ZScoreSlice</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">ZScoreSlice</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>ZScoreSlice calculates z-scores for all values in the data. Uses sample standard deviation (ddof=1).</p>
+<p><a name="ZScoreWithParams"></a></p>
+<h2 id="func-zscorewithparams">func ZScoreWithParams</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">ZScoreWithParams</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="nx">mean</span><span class="p">,</span><span class="w"> </span><span class="nx">std</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span>
+</code></pre></div>
+<p>ZScoreWithParams calculates z-scores using provided mean and std.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

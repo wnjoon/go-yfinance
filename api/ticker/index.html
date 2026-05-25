@@ -1,0 +1,3280 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/api/ticker/">
+      
+      
+        <link rel="prev" href="../../API/">
+      
+      
+        <link rel="next" href="../multi/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ticker - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ticker" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ticker
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Option
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Option">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithClient
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Ticker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Ticker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-analystpricetargets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) AnalystPriceTargets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-balancesheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) BalanceSheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-capitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) CapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-cashflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) CashFlow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-clearcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) ClearCache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-dividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Dividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-epsrevisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EPSRevisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-epstrend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EPSTrend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningsestimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsEstimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningsestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningshistory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsHistory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-fastinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) FastInfo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-financialsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) FinancialsJSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-gethistorymetadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetHistoryMetadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-getnews" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetNews
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-growthestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GrowthEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-historyperiod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) HistoryPeriod
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-historyrange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) HistoryRange
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-incomestatement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) IncomeStatement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Info
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderpurchases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderPurchases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderroster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderRoster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderrosterholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderRosterHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insidertransactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderTransactions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-institutionalholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InstitutionalHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-majorholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) MajorHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-mutualfundholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) MutualFundHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-news" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) News
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionChain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionchainatexpiry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionChainAtExpiry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionsJSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-pricetarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) PriceTarget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-revenueestimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) RevenueEstimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-revenueestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) RevenueEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-splits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Splits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-strikes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Strikes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-symbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Symbol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-valuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Valuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-valuationmeasures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) ValuationMeasures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Option
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Option">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithClient
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Ticker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Ticker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-analystpricetargets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) AnalystPriceTargets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-balancesheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) BalanceSheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-capitalgains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) CapitalGains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-cashflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) CashFlow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-clearcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) ClearCache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-dividends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Dividends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-epsrevisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EPSRevisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-epstrend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EPSTrend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningsestimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsEstimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningsestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-earningshistory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) EarningsHistory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-fastinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) FastInfo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-financialsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) FinancialsJSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-gethistorymetadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetHistoryMetadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-getnews" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetNews
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-growthestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GrowthEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-historyperiod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) HistoryPeriod
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-historyrange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) HistoryRange
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-incomestatement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) IncomeStatement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Info
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderpurchases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderPurchases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderroster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderRoster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insiderrosterholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderRosterHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-insidertransactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InsiderTransactions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-institutionalholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) InstitutionalHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-majorholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) MajorHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-mutualfundholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) MutualFundHolders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-news" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) News
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionChain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionchainatexpiry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionChainAtExpiry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-optionsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) OptionsJSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-pricetarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) PriceTarget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-revenueestimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) RevenueEstimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-revenueestimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) RevenueEstimates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-splits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Splits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-strikes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Strikes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-symbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Symbol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-valuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) Valuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-ticker-valuationmeasures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) ValuationMeasures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!-- Code generated by gomarkdoc. DO NOT EDIT -->
+
+<h1 id="ticker">ticker</h1>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/ticker&quot;</span>
+</code></pre></div>
+<p>Package ticker provides the main interface for accessing Yahoo Finance data.</p>
+<h3 id="overview">Overview</h3>
+<p>The ticker package is the primary entry point for go-yfinance. It provides a <a href="#Ticker">Ticker</a> type that represents a single stock, ETF, or fund, and offers methods to fetch various types of financial data.</p>
+<h3 id="quick-start">Quick Start</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>import &quot;github.com/wnjoon/go-yfinance/pkg/ticker&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>// Create a ticker
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>t, err := ticker.New(&quot;AAPL&quot;)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>if err != nil {
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    log.Fatal(err)
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>}
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>defer t.Close()
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>// Get current quote
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>quote, err := t.Quote()
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>// Get historical data
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>history, err := t.History(models.HistoryParams{
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    Period:   &quot;1mo&quot;,
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    Interval: &quot;1d&quot;,
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>})
+</code></pre></div>
+<h3 id="available-data">Available Data</h3>
+<p>The Ticker type provides methods for:</p>
+<ul>
+<li><a href="#Ticker.Quote">Ticker.Quote</a>: Real-time quote data</li>
+<li><a href="#Ticker.History">Ticker.History</a>: Historical OHLCV data</li>
+<li><a href="#Ticker.Info">Ticker.Info</a>: Company information and key statistics</li>
+<li><a href="#Ticker.FastInfo">Ticker.FastInfo</a>: Quick-access subset of info data</li>
+<li><a href="#Ticker.Dividends">Ticker.Dividends</a>: Dividend history</li>
+<li><a href="#Ticker.Splits">Ticker.Splits</a>: Stock split history</li>
+<li><a href="#Ticker.Actions">Ticker.Actions</a>: Combined dividends and splits</li>
+<li><a href="#Ticker.Options">Ticker.Options</a>: Available option expiration dates</li>
+<li><a href="#Ticker.OptionChain">Ticker.OptionChain</a>: Full option chain data</li>
+<li><a href="#Ticker.IncomeStatement">Ticker.IncomeStatement</a>: Income statement data</li>
+<li><a href="#Ticker.BalanceSheet">Ticker.BalanceSheet</a>: Balance sheet data</li>
+<li><a href="#Ticker.CashFlow">Ticker.CashFlow</a>: Cash flow statement data</li>
+<li><a href="#Ticker.Recommendations">Ticker.Recommendations</a>: Analyst recommendations</li>
+<li><a href="#Ticker.AnalystPriceTargets">Ticker.AnalystPriceTargets</a>: Analyst price targets</li>
+<li><a href="#Ticker.EarningsEstimate">Ticker.EarningsEstimate</a>: Earnings estimates</li>
+<li><a href="#Ticker.RevenueEstimate">Ticker.RevenueEstimate</a>: Revenue estimates</li>
+<li><a href="#Ticker.EPSTrend">Ticker.EPSTrend</a>: EPS trend data</li>
+<li><a href="#Ticker.EPSRevisions">Ticker.EPSRevisions</a>: EPS revision data</li>
+<li><a href="#Ticker.EarningsHistory">Ticker.EarningsHistory</a>: Historical earnings data</li>
+<li><a href="#Ticker.GrowthEstimates">Ticker.GrowthEstimates</a>: Growth estimates</li>
+<li><a href="#Ticker.MajorHolders">Ticker.MajorHolders</a>: Major shareholders breakdown</li>
+<li><a href="#Ticker.InstitutionalHolders">Ticker.InstitutionalHolders</a>: Institutional holder list</li>
+<li><a href="#Ticker.MutualFundHolders">Ticker.MutualFundHolders</a>: Mutual fund holder list</li>
+<li><a href="#Ticker.InsiderTransactions">Ticker.InsiderTransactions</a>: Insider transaction history</li>
+<li><a href="#Ticker.InsiderRosterHolders">Ticker.InsiderRosterHolders</a>: Company insiders list</li>
+<li><a href="#Ticker.InsiderPurchases">Ticker.InsiderPurchases</a>: Insider purchase activity summary</li>
+<li><a href="#Ticker.Calendar">Ticker.Calendar</a>: Upcoming events (earnings, dividends)</li>
+</ul>
+<h3 id="caching">Caching</h3>
+<p>The Ticker automatically caches API responses to minimize redundant requests. Use <a href="#Ticker.ClearCache">Ticker.ClearCache</a> to force a refresh of cached data.</p>
+<h3 id="thread-safety">Thread Safety</h3>
+<p>All Ticker methods are safe for concurrent use from multiple goroutines.</p>
+<h2 id="index">Index</h2>
+<ul>
+<li><a href="#Option">type Option</a></li>
+<li><a href="#WithClient">func WithClient(c *client.Client) Option</a></li>
+<li><a href="#Ticker">type Ticker</a></li>
+<li><a href="#New">func New(symbol string, opts ...Option) (*Ticker, error)</a></li>
+<li><a href="#Ticker.Actions">func (t *Ticker) Actions() (*models.Actions, error)</a></li>
+<li><a href="#Ticker.AnalystPriceTargets">func (t *Ticker) AnalystPriceTargets() (*models.PriceTarget, error)</a></li>
+<li><a href="#Ticker.BalanceSheet">func (t *Ticker) BalanceSheet(freq string) (*models.FinancialStatement, error)</a></li>
+<li><a href="#Ticker.Calendar">func (t *Ticker) Calendar() (*models.Calendar, error)</a></li>
+<li><a href="#Ticker.CapitalGains">func (t *Ticker) CapitalGains() ([]models.CapitalGain, error)</a></li>
+<li><a href="#Ticker.CashFlow">func (t *Ticker) CashFlow(freq string) (*models.FinancialStatement, error)</a></li>
+<li><a href="#Ticker.ClearCache">func (t *Ticker) ClearCache()</a></li>
+<li><a href="#Ticker.Close">func (t *Ticker) Close()</a></li>
+<li><a href="#Ticker.Dividends">func (t *Ticker) Dividends() ([]models.Dividend, error)</a></li>
+<li><a href="#Ticker.EPSRevisions">func (t *Ticker) EPSRevisions() ([]models.EPSRevision, error)</a></li>
+<li><a href="#Ticker.EPSTrend">func (t *Ticker) EPSTrend() ([]models.EPSTrend, error)</a></li>
+<li><a href="#Ticker.EarningsEstimate">func (t *Ticker) EarningsEstimate() ([]models.EarningsEstimate, error)</a></li>
+<li><a href="#Ticker.EarningsEstimates">func (t *Ticker) EarningsEstimates() ([]models.EarningsEstimate, error)</a></li>
+<li><a href="#Ticker.EarningsHistory">func (t *Ticker) EarningsHistory() (*models.EarningsHistory, error)</a></li>
+<li><a href="#Ticker.FastInfo">func (t *Ticker) FastInfo() (*models.FastInfo, error)</a></li>
+<li><a href="#Ticker.FinancialsJSON">func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)</a></li>
+<li><a href="#Ticker.GetHistoryMetadata">func (t *Ticker) GetHistoryMetadata() *models.ChartMeta</a></li>
+<li><a href="#Ticker.GetNews">func (t *Ticker) GetNews() ([]models.NewsArticle, error)</a></li>
+<li><a href="#Ticker.GrowthEstimates">func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error)</a></li>
+<li><a href="#Ticker.History">func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error)</a></li>
+<li><a href="#Ticker.HistoryPeriod">func (t *Ticker) HistoryPeriod(period string) ([]models.Bar, error)</a></li>
+<li><a href="#Ticker.HistoryRange">func (t *Ticker) HistoryRange(start, end time.Time, interval string) ([]models.Bar, error)</a></li>
+<li><a href="#Ticker.IncomeStatement">func (t *Ticker) IncomeStatement(freq string) (*models.FinancialStatement, error)</a></li>
+<li><a href="#Ticker.Info">func (t *Ticker) Info() (*models.Info, error)</a></li>
+<li><a href="#Ticker.InsiderPurchases">func (t *Ticker) InsiderPurchases() (*models.InsiderPurchases, error)</a></li>
+<li><a href="#Ticker.InsiderRoster">func (t *Ticker) InsiderRoster() ([]models.InsiderHolder, error)</a></li>
+<li><a href="#Ticker.InsiderRosterHolders">func (t *Ticker) InsiderRosterHolders() ([]models.InsiderHolder, error)</a></li>
+<li><a href="#Ticker.InsiderTransactions">func (t *Ticker) InsiderTransactions() ([]models.InsiderTransaction, error)</a></li>
+<li><a href="#Ticker.InstitutionalHolders">func (t *Ticker) InstitutionalHolders() ([]models.Holder, error)</a></li>
+<li><a href="#Ticker.MajorHolders">func (t *Ticker) MajorHolders() (*models.MajorHolders, error)</a></li>
+<li><a href="#Ticker.MutualFundHolders">func (t *Ticker) MutualFundHolders() ([]models.Holder, error)</a></li>
+<li><a href="#Ticker.News">func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error)</a></li>
+<li><a href="#Ticker.OptionChain">func (t *Ticker) OptionChain(date string) (*models.OptionChain, error)</a></li>
+<li><a href="#Ticker.OptionChainAtExpiry">func (t *Ticker) OptionChainAtExpiry(date time.Time) (*models.OptionChain, error)</a></li>
+<li><a href="#Ticker.Options">func (t *Ticker) Options() ([]time.Time, error)</a></li>
+<li><a href="#Ticker.OptionsJSON">func (t *Ticker) OptionsJSON() ([]byte, error)</a></li>
+<li><a href="#Ticker.PriceTarget">func (t *Ticker) PriceTarget() (*models.PriceTarget, error)</a></li>
+<li><a href="#Ticker.Quote">func (t *Ticker) Quote() (*models.Quote, error)</a></li>
+<li><a href="#Ticker.Recommendations">func (t *Ticker) Recommendations() (*models.RecommendationTrend, error)</a></li>
+<li><a href="#Ticker.RevenueEstimate">func (t *Ticker) RevenueEstimate() ([]models.RevenueEstimate, error)</a></li>
+<li><a href="#Ticker.RevenueEstimates">func (t *Ticker) RevenueEstimates() ([]models.RevenueEstimate, error)</a></li>
+<li><a href="#Ticker.Splits">func (t *Ticker) Splits() ([]models.Split, error)</a></li>
+<li><a href="#Ticker.Strikes">func (t *Ticker) Strikes() ([]float64, error)</a></li>
+<li><a href="#Ticker.Symbol">func (t *Ticker) Symbol() string</a></li>
+<li><a href="#Ticker.Valuation">func (t *Ticker) Valuation() (*models.ValuationMeasures, error)</a></li>
+<li><a href="#Ticker.ValuationMeasures">func (t *Ticker) ValuationMeasures() (*models.ValuationMeasures, error)</a></li>
+</ul>
+<p><a name="Option"></a></p>
+<h2 id="type-option">type Option</h2>
+<p>Option is a function that configures a Ticker.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Option</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span>
+</code></pre></div>
+<p><a name="WithClient"></a></p>
+<h3 id="func-withclient">func WithClient</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WithClient</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">client</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span><span class="w"> </span><span class="nx">Option</span>
+</code></pre></div>
+<p>WithClient sets a custom client for the Ticker.</p>
+<p><a name="Ticker"></a></p>
+<h2 id="type-ticker">type Ticker</h2>
+<p>Ticker represents a single stock/ETF/fund ticker.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Ticker</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="c1">// contains filtered or unexported fields</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="New"></a></p>
+<h3 id="func-new">func New</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">New</span><span class="p">(</span><span class="nx">symbol</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="w"> </span><span class="o">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Ticker</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>New creates a new Ticker for the given symbol.</p>
+<p><a name="Ticker.Actions"></a></p>
+<h3 id="func-ticker-actions">func (*Ticker) Actions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Actions</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Actions</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Actions returns dividends, splits, and capital gains for the ticker.</p>
+<p>This is a convenience method that combines the action event series into a single response.</p>
+<p><a name="Ticker.AnalystPriceTargets"></a></p>
+<h3 id="func-ticker-analystpricetargets">func (*Ticker) AnalystPriceTargets</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">AnalystPriceTargets</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">PriceTarget</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>AnalystPriceTargets returns analyst price targets. This method name matches Python yfinance's ticker.analyst_price_targets property.</p>
+<p><a name="Ticker.BalanceSheet"></a></p>
+<h3 id="func-ticker-balancesheet">func (*Ticker) BalanceSheet</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">BalanceSheet</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FinancialStatement</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>BalanceSheet returns the balance sheet data.</p>
+<p>Parameters:</p>
+<ul>
+<li>freq: "annual", "yearly", or "quarterly" (default: "annual")</li>
+</ul>
+<p>Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.</p>
+<p>The returned [models.FinancialStatement] contains fields like TotalAssets, TotalLiabilities, TotalEquity, CashAndCashEquivalents, TotalDebt, and WorkingCapital.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>balance, err := ticker.BalanceSheet(&quot;quarterly&quot;)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>if assets, ok := balance.GetLatest(&quot;TotalAssets&quot;); ok {
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    fmt.Printf(&quot;Total Assets: %.2f\n&quot;, assets)
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>}
+</code></pre></div>
+<p><a name="Ticker.Calendar"></a></p>
+<h3 id="func-ticker-calendar">func (*Ticker) Calendar</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Calendar</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Calendar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Calendar returns upcoming calendar events for the ticker.</p>
+<p>This includes dividend dates, earnings dates, and earnings estimates.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>calendar, err := ticker.Calendar()
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>if err != nil {
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    log.Fatal(err)
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>}
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>if calendar.ExDividendDate != nil {
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    fmt.Printf(&quot;Ex-Dividend: %s\n&quot;, calendar.ExDividendDate.Format(&quot;2006-01-02&quot;))
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>}
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>for _, date := range calendar.EarningsDate {
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    fmt.Printf(&quot;Earnings: %s\n&quot;, date.Format(&quot;2006-01-02&quot;))
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>}
+</code></pre></div>
+<p><a name="Ticker.CapitalGains"></a></p>
+<h3 id="func-ticker-capitalgains">func (*Ticker) CapitalGains</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">CapitalGains</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">CapitalGain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>CapitalGains returns capital gain distributions for the ticker.</p>
+<p><a name="Ticker.CashFlow"></a></p>
+<h3 id="func-ticker-cashflow">func (*Ticker) CashFlow</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">CashFlow</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FinancialStatement</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>CashFlow returns the cash flow statement data.</p>
+<p>Parameters:</p>
+<ul>
+<li>freq: "annual", "yearly", or "quarterly" (default: "annual")</li>
+</ul>
+<p>Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.</p>
+<p>The returned [models.FinancialStatement] contains fields like OperatingCashFlow, InvestingCashFlow, FinancingCashFlow, FreeCashFlow, and CapitalExpenditure.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>cashFlow, err := ticker.CashFlow(&quot;annual&quot;)
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>if fcf, ok := cashFlow.GetLatest(&quot;FreeCashFlow&quot;); ok {
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    fmt.Printf(&quot;Free Cash Flow: %.2f\n&quot;, fcf)
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>}
+</code></pre></div>
+<p><a name="Ticker.ClearCache"></a></p>
+<h3 id="func-ticker-clearcache">func (*Ticker) ClearCache</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">ClearCache</span><span class="p">()</span>
+</code></pre></div>
+<p>ClearCache clears all cached data.</p>
+<p><a name="Ticker.Close"></a></p>
+<h3 id="func-ticker-close">func (*Ticker) Close</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Close</span><span class="p">()</span>
+</code></pre></div>
+<p>Close releases resources used by the Ticker. If the client was created by the Ticker, it will be closed.</p>
+<p><a name="Ticker.Dividends"></a></p>
+<h3 id="func-ticker-dividends">func (*Ticker) Dividends</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Dividends</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Dividend</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Dividends returns the dividend history for the ticker.</p>
+<p>Returns all historical dividend payments with dates and amounts.</p>
+<p><a name="Ticker.EPSRevisions"></a></p>
+<h3 id="func-ticker-epsrevisions">func (*Ticker) EPSRevisions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">EPSRevisions</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">EPSRevision</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>EPSRevisions returns EPS revision data.</p>
+<p><a name="Ticker.EPSTrend"></a></p>
+<h3 id="func-ticker-epstrend">func (*Ticker) EPSTrend</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">EPSTrend</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">EPSTrend</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>EPSTrend returns EPS trend data.</p>
+<p><a name="Ticker.EarningsEstimate"></a></p>
+<h3 id="func-ticker-earningsestimate">func (*Ticker) EarningsEstimate</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">EarningsEstimate</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">EarningsEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>EarningsEstimate returns earnings estimates for upcoming periods. This method name matches Python yfinance's ticker.earnings_estimate property.</p>
+<p><a name="Ticker.EarningsEstimates"></a></p>
+<h3 id="func-ticker-earningsestimates">func (*Ticker) EarningsEstimates</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">EarningsEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">EarningsEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>EarningsEstimates is a deprecated alias for EarningsEstimate. Deprecated: Use EarningsEstimate() instead for Python yfinance compatibility.</p>
+<p><a name="Ticker.EarningsHistory"></a></p>
+<h3 id="func-ticker-earningshistory">func (*Ticker) EarningsHistory</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">EarningsHistory</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">EarningsHistory</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>EarningsHistory returns historical earnings data.</p>
+<p><a name="Ticker.FastInfo"></a></p>
+<h3 id="func-ticker-fastinfo">func (*Ticker) FastInfo</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">FastInfo</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FastInfo</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>FastInfo returns a FastInfo struct with commonly used data. This fetches data from the history endpoint which can be faster for some fields.</p>
+<p><a name="Ticker.FinancialsJSON"></a></p>
+<h3 id="func-ticker-financialsjson">func (*Ticker) FinancialsJSON</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">FinancialsJSON</span><span class="p">(</span><span class="nx">statementType</span><span class="p">,</span><span class="w"> </span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>FinancialsJSON returns raw JSON for debugging.</p>
+<p><a name="Ticker.GetHistoryMetadata"></a></p>
+<h3 id="func-ticker-gethistorymetadata">func (*Ticker) GetHistoryMetadata</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GetHistoryMetadata</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ChartMeta</span>
+</code></pre></div>
+<p>GetHistoryMetadata returns the cached history metadata.</p>
+<p><a name="Ticker.GetNews"></a></p>
+<h3 id="func-ticker-getnews">func (*Ticker) GetNews</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GetNews</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsArticle</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>GetNews is an alias for News with default parameters. It fetches 10 news articles of type "news".</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>news, err := ticker.GetNews()
+</code></pre></div>
+<p><a name="Ticker.GrowthEstimates"></a></p>
+<h3 id="func-ticker-growthestimates">func (*Ticker) GrowthEstimates</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GrowthEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">GrowthEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>GrowthEstimates returns growth estimates comparing stock to industry/sector/index.</p>
+<p><a name="Ticker.History"></a></p>
+<h3 id="func-ticker-history">func (*Ticker) History</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">History</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>History fetches historical OHLCV data for the ticker.</p>
+<p>The method returns a slice of [models.Bar] containing Open, High, Low, Close, Adjusted Close, and Volume data for each period.</p>
+<p>Parameters can be configured via [models.HistoryParams]:</p>
+<ul>
+<li>Period: Time range (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)</li>
+<li>Interval: Data granularity (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)</li>
+<li>Start/End: Specific date range (overrides Period)</li>
+<li>PrePost: Include pre/post market data</li>
+<li>AutoAdjust: Adjust prices for splits/dividends</li>
+<li>Actions: Include dividend and split data in bars</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>bars, err := ticker.History(models.HistoryParams{
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>    Period:   &quot;1mo&quot;,
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>    Interval: &quot;1d&quot;,
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>})
+</code></pre></div>
+<p><a name="Ticker.HistoryPeriod"></a></p>
+<h3 id="func-ticker-historyperiod">func (*Ticker) HistoryPeriod</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryPeriod</span><span class="p">(</span><span class="nx">period</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>HistoryPeriod is a convenience method to fetch history with just a period string.</p>
+<p>Valid periods: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max</p>
+<p>Uses daily interval with auto-adjustment enabled.</p>
+<p><a name="Ticker.HistoryRange"></a></p>
+<h3 id="func-ticker-historyrange">func (*Ticker) HistoryRange</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryRange</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span><span class="w"> </span><span class="nx">end</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="nx">interval</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>HistoryRange fetches history for a specific date range.</p>
+<p>Parameters:</p>
+<ul>
+<li>start: Start date (inclusive)</li>
+<li>end: End date (exclusive)</li>
+<li>interval: Data granularity (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)</li>
+</ul>
+<p>Uses auto-adjustment enabled by default.</p>
+<p><a name="Ticker.IncomeStatement"></a></p>
+<h3 id="func-ticker-incomestatement">func (*Ticker) IncomeStatement</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">IncomeStatement</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FinancialStatement</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>IncomeStatement returns the income statement data.</p>
+<p>Parameters:</p>
+<ul>
+<li>freq: "annual", "yearly", or "quarterly" (default: "annual")</li>
+</ul>
+<p>Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.</p>
+<p>The returned [models.FinancialStatement] contains fields like TotalRevenue, GrossProfit, OperatingIncome, NetIncome, EBITDA, BasicEPS, and DilutedEPS.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>income, err := ticker.IncomeStatement(&quot;annual&quot;)
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>if revenue, ok := income.GetLatest(&quot;TotalRevenue&quot;); ok {
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>    fmt.Printf(&quot;Revenue: %.2f\n&quot;, revenue)
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>}
+</code></pre></div>
+<p><a name="Ticker.Info"></a></p>
+<h3 id="func-ticker-info">func (*Ticker) Info</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Info</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Info</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Info fetches comprehensive company information for the ticker.</p>
+<p><a name="Ticker.InsiderPurchases"></a></p>
+<h3 id="func-ticker-insiderpurchases">func (*Ticker) InsiderPurchases</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderPurchases</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderPurchases</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>InsiderPurchases returns insider purchase activity summary.</p>
+<p>This summarizes net share purchases/sales by insiders over a period.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>purchases, err := ticker.InsiderPurchases()
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>if err != nil {
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>    log.Fatal(err)
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>}
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>fmt.Printf(&quot;Net shares: %d (%s)\n&quot;, purchases.Net.Shares, purchases.Period)
+</code></pre></div>
+<p><a name="Ticker.InsiderRoster"></a></p>
+<h3 id="func-ticker-insiderroster">func (*Ticker) InsiderRoster</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRoster</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>InsiderRoster returns the list of company insiders.</p>
+<p>Deprecated: Use InsiderRosterHolders instead.</p>
+<p><a name="Ticker.InsiderRosterHolders"></a></p>
+<h3 id="func-ticker-insiderrosterholders">func (*Ticker) InsiderRosterHolders</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRosterHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>InsiderRosterHolders returns the list of company insiders.</p>
+<p>This includes insider names, positions, and their holdings.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>roster, err := ticker.InsiderRosterHolders()
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>if err != nil {
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>    log.Fatal(err)
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>}
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>for _, insider := range roster {
+<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>    fmt.Printf(&quot;%s (%s): %d shares\n&quot;,
+<a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a>        insider.Name, insider.Position, insider.TotalShares())
+<a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a>}
+</code></pre></div>
+<p><a name="Ticker.InsiderTransactions"></a></p>
+<h3 id="func-ticker-insidertransactions">func (*Ticker) InsiderTransactions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderTransactions</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderTransaction</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>InsiderTransactions returns the list of insider transactions.</p>
+<p>This includes purchases, sales, and other transactions by company insiders.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>transactions, err := ticker.InsiderTransactions()
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>if err != nil {
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>    log.Fatal(err)
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>}
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>for _, tx := range transactions {
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>    fmt.Printf(&quot;%s: %s %d shares on %s\n&quot;,
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>        tx.Insider, tx.Transaction, tx.Shares, tx.StartDate.Format(&quot;2006-01-02&quot;))
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>}
+</code></pre></div>
+<p><a name="Ticker.InstitutionalHolders"></a></p>
+<h3 id="func-ticker-institutionalholders">func (*Ticker) InstitutionalHolders</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InstitutionalHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>InstitutionalHolders returns the list of institutional holders.</p>
+<p>Each holder includes the institution name, shares held, value, and percentage.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>holders, err := ticker.InstitutionalHolders()
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>if err != nil {
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>    log.Fatal(err)
+<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>}
+<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>for _, h := range holders {
+<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>    fmt.Printf(&quot;%s: %d shares (%.2f%%)\n&quot;, h.Holder, h.Shares, h.PctHeld*100)
+<a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>}
+</code></pre></div>
+<p><a name="Ticker.MajorHolders"></a></p>
+<h3 id="func-ticker-majorholders">func (*Ticker) MajorHolders</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MajorHolders</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MajorHolders</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>MajorHolders returns the major holders breakdown.</p>
+<p>This includes percentages held by insiders, institutions, and institutional count.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>holders, err := ticker.MajorHolders()
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>if err != nil {
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>    log.Fatal(err)
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>}
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>fmt.Printf(&quot;Insiders: %.2f%%\n&quot;, holders.InsidersPercentHeld*100)
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>fmt.Printf(&quot;Institutions: %.2f%%\n&quot;, holders.InstitutionsPercentHeld*100)
+</code></pre></div>
+<p><a name="Ticker.MutualFundHolders"></a></p>
+<h3 id="func-ticker-mutualfundholders">func (*Ticker) MutualFundHolders</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MutualFundHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>MutualFundHolders returns the list of mutual fund holders.</p>
+<p>Each holder includes the fund name, shares held, value, and percentage.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>holders, err := ticker.MutualFundHolders()
+<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>if err != nil {
+<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>    log.Fatal(err)
+<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>}
+<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>for _, h := range holders {
+<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>    fmt.Printf(&quot;%s: %d shares\n&quot;, h.Holder, h.Shares)
+<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a>}
+</code></pre></div>
+<p><a name="Ticker.News"></a></p>
+<h3 id="func-ticker-news">func (*Ticker) News</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">News</span><span class="p">(</span><span class="nx">count</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="nx">tab</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsTab</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsArticle</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>News fetches news articles for the ticker.</p>
+<p>Parameters:</p>
+<ul>
+<li>count: Number of articles to fetch (default: 10)</li>
+<li>tab: Type of news to fetch (default: NewsTabNews)</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>news, err := ticker.News(10, models.NewsTabNews)
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>if err != nil {
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a>    log.Fatal(err)
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a>}
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>for _, article := range news {
+<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a>    fmt.Printf(&quot;%s: %s\n&quot;, article.Publisher, article.Title)
+<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a>}
+</code></pre></div>
+<p><a name="Ticker.OptionChain"></a></p>
+<h3 id="func-ticker-optionchain">func (*Ticker) OptionChain</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChain</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>OptionChain returns the option chain for a specific expiration date. If date is empty, returns the nearest expiration.</p>
+<p><a name="Ticker.OptionChainAtExpiry"></a></p>
+<h3 id="func-ticker-optionchainatexpiry">func (*Ticker) OptionChainAtExpiry</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChainAtExpiry</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>OptionChainAtExpiry is an alias for OptionChain with a specific date.</p>
+<p><a name="Ticker.Options"></a></p>
+<h3 id="func-ticker-options">func (*Ticker) Options</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Options</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Options returns all available expiration dates for options.</p>
+<p><a name="Ticker.OptionsJSON"></a></p>
+<h3 id="func-ticker-optionsjson">func (*Ticker) OptionsJSON</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionsJSON</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>OptionsJSON returns raw JSON response for debugging.</p>
+<p><a name="Ticker.PriceTarget"></a></p>
+<h3 id="func-ticker-pricetarget">func (*Ticker) PriceTarget</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">PriceTarget</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">PriceTarget</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>PriceTarget is a deprecated alias for AnalystPriceTargets. Deprecated: Use AnalystPriceTargets() instead for Python yfinance compatibility.</p>
+<p><a name="Ticker.Quote"></a></p>
+<h3 id="func-ticker-quote">func (*Ticker) Quote</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Quote</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Quote</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Quote fetches the current quote for the ticker.</p>
+<p><a name="Ticker.Recommendations"></a></p>
+<h3 id="func-ticker-recommendations">func (*Ticker) Recommendations</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Recommendations</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">RecommendationTrend</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Recommendations returns analyst recommendation trends.</p>
+<p><a name="Ticker.RevenueEstimate"></a></p>
+<h3 id="func-ticker-revenueestimate">func (*Ticker) RevenueEstimate</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimate</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>RevenueEstimate returns revenue estimates for upcoming periods. This method name matches Python yfinance's ticker.revenue_estimate property.</p>
+<p><a name="Ticker.RevenueEstimates"></a></p>
+<h3 id="func-ticker-revenueestimates">func (*Ticker) RevenueEstimates</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>RevenueEstimates is a deprecated alias for RevenueEstimate. Deprecated: Use RevenueEstimate() instead for Python yfinance compatibility.</p>
+<p><a name="Ticker.Splits"></a></p>
+<h3 id="func-ticker-splits">func (*Ticker) Splits</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Splits</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Split</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Splits returns the stock split history for the ticker.</p>
+<p>Returns all historical stock splits with dates and ratios.</p>
+<p><a name="Ticker.Strikes"></a></p>
+<h3 id="func-ticker-strikes">func (*Ticker) Strikes</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Strikes</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Strikes returns available strike prices for options.</p>
+<p><a name="Ticker.Symbol"></a></p>
+<h3 id="func-ticker-symbol">func (*Ticker) Symbol</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Symbol</span><span class="p">()</span><span class="w"> </span><span class="kt">string</span>
+</code></pre></div>
+<p>Symbol returns the ticker symbol.</p>
+<p><a name="Ticker.Valuation"></a></p>
+<h3 id="func-ticker-valuation">func (*Ticker) Valuation</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Valuation</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Valuation returns the key-statistics valuation measures table.</p>
+<p>This mirrors Python yfinance's ticker.valuation property added in v1.3.0.</p>
+<p><a name="Ticker.ValuationMeasures"></a></p>
+<h3 id="func-ticker-valuationmeasures">func (*Ticker) ValuationMeasures</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">ValuationMeasures</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>ValuationMeasures is an alias for Valuation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

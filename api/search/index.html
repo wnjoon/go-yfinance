@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/releases/RELEASE_NOTES_v1.4.1/">
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/api/search/">
       
       
-        <link rel="prev" href="../../advanced/mic-codes/">
+        <link rel="prev" href="../screener/">
       
       
-        <link rel="next" href="../RELEASE_NOTES_v1.4.0/">
+        <link rel="next" href="../lookup/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>v1.4.1 - go-yfinance Docs</title>
+        <title>search - go-yfinance Docs</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#go-yfinance-v141" class="md-skip">
+        <a href="#search" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v1.4.1
+              search
             
           </span>
         </div>
@@ -284,20 +284,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -318,7 +318,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -364,7 +364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/ticker/" class="md-nav__link">
+      <a href="../ticker/" class="md-nav__link">
         
   
   
@@ -392,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/multi/" class="md-nav__link">
+      <a href="../multi/" class="md-nav__link">
         
   
   
@@ -420,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/screener/" class="md-nav__link">
+      <a href="../screener/" class="md-nav__link">
         
   
   
@@ -445,10 +445,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../api/search/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -464,6 +491,203 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Methods
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Option
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Option">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithClient
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Search
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) Close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-news" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) News
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-searchwithparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) SearchWithParams
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -476,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/lookup/" class="md-nav__link">
+      <a href="../lookup/" class="md-nav__link">
         
   
   
@@ -504,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/market/" class="md-nav__link">
+      <a href="../market/" class="md-nav__link">
         
   
   
@@ -532,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/sector/" class="md-nav__link">
+      <a href="../sector/" class="md-nav__link">
         
   
   
@@ -560,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/industry/" class="md-nav__link">
+      <a href="../industry/" class="md-nav__link">
         
   
   
@@ -588,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/calendars/" class="md-nav__link">
+      <a href="../calendars/" class="md-nav__link">
         
   
   
@@ -616,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/live/" class="md-nav__link">
+      <a href="../live/" class="md-nav__link">
         
   
   
@@ -644,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/models/" class="md-nav__link">
+      <a href="../models/" class="md-nav__link">
         
   
   
@@ -672,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/client/" class="md-nav__link">
+      <a href="../client/" class="md-nav__link">
         
   
   
@@ -700,7 +924,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/config/" class="md-nav__link">
+      <a href="../config/" class="md-nav__link">
         
   
   
@@ -728,7 +952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/cache/" class="md-nav__link">
+      <a href="../cache/" class="md-nav__link">
         
   
   
@@ -756,7 +980,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/repair/" class="md-nav__link">
+      <a href="../repair/" class="md-nav__link">
         
   
   
@@ -784,7 +1008,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/stats/" class="md-nav__link">
+      <a href="../stats/" class="md-nav__link">
         
   
   
@@ -812,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/utils/" class="md-nav__link">
+      <a href="../utils/" class="md-nav__link">
         
   
   
@@ -956,20 +1180,20 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -990,7 +1214,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1005,37 +1229,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v1.4.1
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
         
   
   
@@ -1051,98 +1248,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fixes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Fixes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#live-websocket-stability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Live WebSocket Stability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#go-report-card-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Go Report Card Cleanup
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Notes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1155,7 +1260,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
         
   
   
@@ -1183,7 +1288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
         
   
   
@@ -1211,7 +1316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
         
   
   
@@ -1239,7 +1344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
         
   
   
@@ -1267,7 +1372,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
         
   
   
@@ -1490,33 +1595,88 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#fixes" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fixes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Fixes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#live-websocket-stability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Live WebSocket Stability
+        Overview
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#go-report-card-cleanup" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Go Report Card Cleanup
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Methods
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread Safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type Option
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Option">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithClient
       
     </span>
   </a>
@@ -1529,35 +1689,85 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
+  <a href="#type-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes
+        type Search
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func New
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#func-search-close" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation
+        func (*Search) Close
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#func-search-news" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation
+        func (*Search) News
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-search-searchwithparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Search) SearchWithParams
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1581,36 +1791,146 @@
   
 
 
-<h1 id="go-yfinance-v141">go-yfinance v1.4.1</h1>
-<p><strong>Go Stability and Quality Patch Release</strong></p>
-<p>This patch release keeps go-yfinance on the Python yfinance v1.4.0 parity line while publishing Go-specific stability fixes and quality cleanup that landed after the v1.4.0 tag.</p>
-<h2 id="fixes">Fixes</h2>
-<h3 id="live-websocket-stability">Live WebSocket Stability</h3>
-<ul>
-<li>Prevented a nil-pointer panic when subscription refreshes run while a reconnect has temporarily cleared the WebSocket connection.</li>
-<li>Serialized WebSocket writes to avoid gorilla/websocket concurrent write panics when heartbeat, reconnect resubscribe, or unsubscribe operations overlap.</li>
-<li>Added focused tests for the nil-connection and concurrent-write cases.</li>
-</ul>
-<h3 id="go-report-card-cleanup">Go Report Card Cleanup</h3>
-<ul>
-<li>Applied <code>gofmt -s</code> cleanup across the files flagged by Go Report Card.</li>
-<li>Reduced high cyclomatic complexity warnings in the repair, ticker, and live packages.</li>
-<li>Fixed the remaining screener constant spelling warnings and regenerated API documentation.</li>
-</ul>
-<h2 id="notes">Notes</h2>
-<ul>
-<li>The v1.4.0 tag remains unchanged because published Go module tags should not be moved.</li>
-<li>Go Report Card may continue to show v1.4.0 findings until it analyzes this v1.4.1 tag.</li>
-<li>Future releases should run Go Report Card refresh before tagging, in addition to local formatting, test, and lint checks.</li>
-</ul>
-<h2 id="installation">Installation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>go<span class="w"> </span>get<span class="w"> </span>github.com/wnjoon/go-yfinance@v1.4.1
+<!-- Code generated by gomarkdoc. DO NOT EDIT -->
+
+<h1 id="search">search</h1>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/wnjoon/go-yfinance/pkg/search&quot;</span>
 </code></pre></div>
-<h2 id="documentation">Documentation</h2>
+<p>Package search provides Yahoo Finance search functionality.</p>
+<h3 id="overview">Overview</h3>
+<p>The search package allows you to search for stock symbols, company names, and other financial assets on Yahoo Finance. It also retrieves related news articles, lists, and research reports.</p>
+<h3 id="basic-usage">Basic Usage</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>s, err := search.New()
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>if err != nil {
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    log.Fatal(err)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>}
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>defer s.Close()
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>result, err := s.Search(&quot;AAPL&quot;)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>if err != nil {
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    log.Fatal(err)
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>}
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>for _, quote := range result.Quotes {
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    fmt.Printf(&quot;%s: %s (%s)\n&quot;, quote.Symbol, quote.ShortName, quote.Exchange)
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>}
+</code></pre></div>
+<h3 id="search-methods">Search Methods</h3>
+<p>The Search struct provides the following methods:</p>
 <ul>
-<li><a href="https://wnjoon.github.io/go-yfinance/API/">API Reference</a></li>
-<li><a href="https://wnjoon.github.io/go-yfinance/development/v1.4.0-progress/">v1.4.0 Progress</a></li>
+<li><a href="#Search.Search">Search.Search</a>: Simple search with default parameters</li>
+<li><a href="#Search.SearchWithParams">Search.SearchWithParams</a>: Search with custom parameters</li>
+<li><a href="#Search.Quotes">Search.Quotes</a>: Get only quote results</li>
+<li><a href="#Search.News">Search.News</a>: Get only news results</li>
 </ul>
+<h3 id="search-parameters">Search Parameters</h3>
+<p>Use [models.SearchParams] to customize your search:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>params := models.SearchParams{
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    Query:            &quot;Apple&quot;,
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    MaxResults:       10,
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    NewsCount:        5,
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    EnableFuzzyQuery: true,
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>}
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>result, err := s.SearchWithParams(params)
+</code></pre></div>
+<h3 id="thread-safety">Thread Safety</h3>
+<p>All Search methods are safe for concurrent use from multiple goroutines.</p>
+<h2 id="index">Index</h2>
+<ul>
+<li><a href="#Option">type Option</a></li>
+<li><a href="#WithClient">func WithClient(c *client.Client) Option</a></li>
+<li><a href="#Search">type Search</a></li>
+<li><a href="#New">func New(opts ...Option) (*Search, error)</a></li>
+<li><a href="#Search.Close">func (s *Search) Close()</a></li>
+<li><a href="#Search.News">func (s *Search) News(query string, newsCount int) ([]models.SearchNews, error)</a></li>
+<li><a href="#Search.Quotes">func (s *Search) Quotes(query string, maxResults int) ([]models.SearchQuote, error)</a></li>
+<li><a href="#Search.Search">func (s *Search) Search(query string) (*models.SearchResult, error)</a></li>
+<li><a href="#Search.SearchWithParams">func (s *Search) SearchWithParams(params models.SearchParams) (*models.SearchResult, error)</a></li>
+</ul>
+<p><a name="Option"></a></p>
+<h2 id="type-option">type Option</h2>
+<p>Option is a function that configures a Search instance.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Option</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span>
+</code></pre></div>
+<p><a name="WithClient"></a></p>
+<h3 id="func-withclient">func WithClient</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WithClient</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">client</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span><span class="w"> </span><span class="nx">Option</span>
+</code></pre></div>
+<p>WithClient sets a custom HTTP client.</p>
+<p><a name="Search"></a></p>
+<h2 id="type-search">type Search</h2>
+<p>Search provides Yahoo Finance search functionality.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Search</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="c1">// contains filtered or unexported fields</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">}</span>
+</code></pre></div>
+<p><a name="New"></a></p>
+<h3 id="func-new">func New</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">New</span><span class="p">(</span><span class="nx">opts</span><span class="w"> </span><span class="o">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Search</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>New creates a new Search instance.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>s, err := search.New()
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>if err != nil {
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    log.Fatal(err)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>}
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>defer s.Close()
+</code></pre></div>
+<p><a name="Search.Close"></a></p>
+<h3 id="func-search-close">func (*Search) Close</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span><span class="w"> </span><span class="nx">Close</span><span class="p">()</span>
+</code></pre></div>
+<p>Close releases resources used by the Search instance.</p>
+<p><a name="Search.News"></a></p>
+<h3 id="func-search-news">func (*Search) News</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span><span class="w"> </span><span class="nx">News</span><span class="p">(</span><span class="nx">query</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">newsCount</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">SearchNews</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>News returns only the news results for a search query.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>news, err := s.News(&quot;Apple&quot;, 10)
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>for _, n := range news {
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    fmt.Printf(&quot;%s: %s\n&quot;, n.Publisher, n.Title)
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>}
+</code></pre></div>
+<p><a name="Search.Quotes"></a></p>
+<h3 id="func-search-quotes">func (*Search) Quotes</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span><span class="w"> </span><span class="nx">Quotes</span><span class="p">(</span><span class="nx">query</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">maxResults</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">SearchQuote</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Quotes returns only the quote results for a search query.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>quotes, err := s.Quotes(&quot;Apple&quot;, 10)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>for _, q := range quotes {
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    fmt.Printf(&quot;%s: %s\n&quot;, q.Symbol, q.ShortName)
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>}
+</code></pre></div>
+<p><a name="Search.Search"></a></p>
+<h3 id="func-search-search">func (*Search) Search</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span><span class="w"> </span><span class="nx">Search</span><span class="p">(</span><span class="nx">query</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">SearchResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Search searches for symbols and returns matching quotes.</p>
+<p>This is a convenience method that uses default parameters.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>result, err := s.Search(&quot;AAPL&quot;)
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>if err != nil {
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    log.Fatal(err)
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>}
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>for _, quote := range result.Quotes {
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    fmt.Printf(&quot;%s: %s\n&quot;, quote.Symbol, quote.ShortName)
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>}
+</code></pre></div>
+<p><a name="Search.SearchWithParams"></a></p>
+<h3 id="func-search-searchwithparams">func (*Search) SearchWithParams</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Search</span><span class="p">)</span><span class="w"> </span><span class="nx">SearchWithParams</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">SearchParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">SearchResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>SearchWithParams searches with custom parameters.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>params := models.SearchParams{
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>    Query:            &quot;Apple&quot;,
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    MaxResults:       10,
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    NewsCount:        5,
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    EnableFuzzyQuery: true,
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>}
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>result, err := s.SearchWithParams(params)
+</code></pre></div>
 
 
 
