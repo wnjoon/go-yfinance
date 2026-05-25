@@ -122,7 +122,7 @@ const (
 ```
 
 <a name="ErrorHandler"></a>
-## type [ErrorHandler](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L29>)
+## type ErrorHandler
 
 ErrorHandler is a callback function for handling errors.
 
@@ -131,7 +131,7 @@ type ErrorHandler func(error)
 ```
 
 <a name="MessageHandler"></a>
-## type [MessageHandler](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L26>)
+## type MessageHandler
 
 MessageHandler is a callback function for handling pricing data.
 
@@ -140,7 +140,7 @@ type MessageHandler func(*models.PricingData)
 ```
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L50>)
+## type Option
 
 Option is a function that configures a WebSocket.
 
@@ -149,7 +149,7 @@ type Option func(*WebSocket)
 ```
 
 <a name="WithErrorHandler"></a>
-### func [WithErrorHandler](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L74>)
+### func WithErrorHandler
 
 ```go
 func WithErrorHandler(handler ErrorHandler) Option
@@ -158,7 +158,7 @@ func WithErrorHandler(handler ErrorHandler) Option
 WithErrorHandler sets the error handler callback.
 
 <a name="WithHeartbeatInterval"></a>
-### func [WithHeartbeatInterval](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L60>)
+### func WithHeartbeatInterval
 
 ```go
 func WithHeartbeatInterval(d time.Duration) Option
@@ -167,7 +167,7 @@ func WithHeartbeatInterval(d time.Duration) Option
 WithHeartbeatInterval sets the heartbeat interval.
 
 <a name="WithReconnectDelay"></a>
-### func [WithReconnectDelay](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L67>)
+### func WithReconnectDelay
 
 ```go
 func WithReconnectDelay(d time.Duration) Option
@@ -176,7 +176,7 @@ func WithReconnectDelay(d time.Duration) Option
 WithReconnectDelay sets the reconnection delay.
 
 <a name="WithURL"></a>
-### func [WithURL](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L53>)
+### func WithURL
 
 ```go
 func WithURL(url string) Option
@@ -185,7 +185,7 @@ func WithURL(url string) Option
 WithURL sets a custom WebSocket URL.
 
 <a name="WebSocket"></a>
-## type [WebSocket](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L32-L47>)
+## type WebSocket
 
 WebSocket represents a WebSocket client for Yahoo Finance streaming.
 
@@ -196,7 +196,7 @@ type WebSocket struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L89>)
+### func New
 
 ```go
 func New(opts ...Option) (*WebSocket, error)
@@ -215,7 +215,7 @@ defer ws.Close()
 ```
 
 <a name="WebSocket.Close"></a>
-### func \(\*WebSocket\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L242>)
+### func \(\*WebSocket\) Close
 
 ```go
 func (ws *WebSocket) Close() error
@@ -224,7 +224,7 @@ func (ws *WebSocket) Close() error
 Close closes the WebSocket connection.
 
 <a name="WebSocket.Connect"></a>
-### func \(\*WebSocket\) [Connect](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L106>)
+### func \(\*WebSocket\) Connect
 
 ```go
 func (ws *WebSocket) Connect() error
@@ -233,7 +233,7 @@ func (ws *WebSocket) Connect() error
 Connect establishes the WebSocket connection.
 
 <a name="WebSocket.IsConnected"></a>
-### func \(\*WebSocket\) [IsConnected](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L266>)
+### func \(\*WebSocket\) IsConnected
 
 ```go
 func (ws *WebSocket) IsConnected() bool
@@ -242,7 +242,7 @@ func (ws *WebSocket) IsConnected() bool
 IsConnected returns true if the WebSocket is connected.
 
 <a name="WebSocket.Listen"></a>
-### func \(\*WebSocket\) [Listen](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L186>)
+### func \(\*WebSocket\) Listen
 
 ```go
 func (ws *WebSocket) Listen(handler MessageHandler) error
@@ -259,7 +259,7 @@ ws.Listen(func(data *models.PricingData) {
 ```
 
 <a name="WebSocket.ListenAsync"></a>
-### func \(\*WebSocket\) [ListenAsync](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L234>)
+### func \(\*WebSocket\) ListenAsync
 
 ```go
 func (ws *WebSocket) ListenAsync(handler MessageHandler) error
@@ -278,7 +278,7 @@ ws.Close()
 ```
 
 <a name="WebSocket.Subscribe"></a>
-### func \(\*WebSocket\) [Subscribe](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L129>)
+### func \(\*WebSocket\) Subscribe
 
 ```go
 func (ws *WebSocket) Subscribe(symbols []string) error
@@ -293,7 +293,7 @@ ws.Subscribe([]string{"AAPL", "MSFT"})
 ```
 
 <a name="WebSocket.Subscriptions"></a>
-### func \(\*WebSocket\) [Subscriptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L273>)
+### func \(\*WebSocket\) Subscriptions
 
 ```go
 func (ws *WebSocket) Subscriptions() []string
@@ -302,7 +302,7 @@ func (ws *WebSocket) Subscriptions() []string
 Subscriptions returns the current list of subscribed symbols.
 
 <a name="WebSocket.Unsubscribe"></a>
-### func \(\*WebSocket\) [Unsubscribe](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/live/websocket.go#L149>)
+### func \(\*WebSocket\) Unsubscribe
 
 ```go
 func (ws *WebSocket) Unsubscribe(symbols []string) error
