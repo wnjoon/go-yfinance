@@ -4,6 +4,12 @@
 
 This patch release keeps go-yfinance on the Python yfinance v1.4.0 parity line while publishing Go-specific stability fixes and quality cleanup that landed after the v1.4.0 tag.
 
+## Python yfinance v1.4.1 Parity Review
+
+Python yfinance v1.4.1 was reviewed after this Go tag was published. The upstream patch preserves the `Date`/`Datetime` pandas index name in `yf.download()` output by changing DataFrame reindexing behavior.
+
+No Go code changes are required for that patch. go-yfinance returns multi-ticker history as `map[string][]models.Bar`, with timestamps stored directly in `models.Bar.Date`, and does not expose pandas-style index metadata or `MultiIndex` column operations.
+
 ## Fixes
 
 ### Live WebSocket Stability
