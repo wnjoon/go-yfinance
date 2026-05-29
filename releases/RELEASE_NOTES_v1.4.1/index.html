@@ -1068,6 +1068,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#python-yfinance-v141-parity-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python yfinance v1.4.1 Parity Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1490,6 +1501,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#python-yfinance-v141-parity-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python yfinance v1.4.1 Parity Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1584,6 +1606,9 @@
 <h1 id="go-yfinance-v141">go-yfinance v1.4.1</h1>
 <p><strong>Go Stability and Quality Patch Release</strong></p>
 <p>This patch release keeps go-yfinance on the Python yfinance v1.4.0 parity line while publishing Go-specific stability fixes and quality cleanup that landed after the v1.4.0 tag.</p>
+<h2 id="python-yfinance-v141-parity-review">Python yfinance v1.4.1 Parity Review</h2>
+<p>Python yfinance v1.4.1 was reviewed after this Go tag was published. The upstream patch preserves the <code>Date</code>/<code>Datetime</code> pandas index name in <code>yf.download()</code> output by changing DataFrame reindexing behavior.</p>
+<p>No Go code changes are required for that patch. go-yfinance returns multi-ticker history as <code>map[string][]models.Bar</code>, with timestamps stored directly in <code>models.Bar.Date</code>, and does not expose pandas-style index metadata or <code>MultiIndex</code> column operations.</p>
 <h2 id="fixes">Fixes</h2>
 <h3 id="live-websocket-stability">Live WebSocket Stability</h3>
 <ul>

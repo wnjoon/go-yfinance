@@ -1325,6 +1325,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python-yfinance-v141-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python yfinance v1.4.1 Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#implementation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1589,6 +1600,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python-yfinance-v141-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python yfinance v1.4.1 Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#implementation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1806,6 +1828,23 @@ surface.</p>
 <td>#2779 / #2792</td>
 <td>Typo and test maintenance</td>
 <td>Not applicable unless docs/tests share wording</td>
+</tr>
+</tbody>
+</table>
+<h2 id="python-yfinance-v141-review">Python yfinance v1.4.1 Review</h2>
+<table>
+<thead>
+<tr>
+<th>Upstream PR</th>
+<th>Python Change</th>
+<th>Go Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#2832</td>
+<td>Preserve <code>Date</code>/<code>Datetime</code> pandas index name in <code>yf.download()</code> output</td>
+<td>Not applicable: Go returns <code>map[string][]models.Bar</code> and stores timestamps in <code>models.Bar.Date</code>, with no pandas index metadata</td>
 </tr>
 </tbody>
 </table>
