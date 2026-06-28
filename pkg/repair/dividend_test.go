@@ -87,6 +87,29 @@ func TestAnalyzeDividendTooLarge(t *testing.T) {
 	}
 }
 
+func TestAnalyzeDividendPrePostIntradayAvoidsTooSmallFalsePositive(t *testing.T) {
+	bars := []models.Bar{
+		{Date: time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 10, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 11, 30, 0, 0, time.UTC), Close: 99.5, Low: 90, AdjClose: 99.5, Dividends: 0.01},
+		{Date: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 12, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 13, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+	}
+
+	withoutPrePost := analyzeDividendWithOptions(bars, 4, 100.0, Options{Interval: "1h"})
+	if !withoutPrePost.IsTooSmall {
+		t.Fatal("Expected tiny dividend with large low-price drop to be a too-small candidate without pre/post guard")
+	}
+
+	withPrePost := analyzeDividendWithOptions(bars, 4, 100.0, Options{Interval: "1h", PrePost: true})
+	if withPrePost.IsTooSmall {
+		t.Fatal("Expected intraday pre/post recovery to suppress too-small false positive")
+	}
+}
+
 func TestFixMissingDivAdj(t *testing.T) {
 	// Simulate missing dividend adjustment
 	bars := []models.Bar{

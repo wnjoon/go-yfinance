@@ -24,6 +24,7 @@ type Options struct {
 	Timezone  string    // Exchange timezone
 	Currency  string    // Price currency
 	QuoteType QuoteType // Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)
+	PrePost   bool      // Whether pre/post market data is included
 
 	// Feature flags - which repairs to apply
 	FixUnitMixups   bool // Fix 100x currency errors ($/cents, £/pence)

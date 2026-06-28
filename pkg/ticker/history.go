@@ -83,6 +83,7 @@ func repairOptionsFromHistoryParams(symbol string, params models.HistoryParams, 
 	}
 	opts.Currency = meta.Currency
 	opts.QuoteType = repair.QuoteType(meta.InstrumentType)
+	opts.PrePost = params.PrePost
 
 	if params.RepairOptions != nil {
 		opts.FixUnitMixups = params.RepairOptions.FixUnitMixups

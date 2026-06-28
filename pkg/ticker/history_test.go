@@ -104,6 +104,7 @@ func TestApplyAutoAdjustSkipsInfiniteRatio(t *testing.T) {
 func TestRepairOptionsFromHistoryParams(t *testing.T) {
 	params := models.HistoryParams{
 		Interval: "1d",
+		PrePost:  true,
 		RepairOptions: &models.RepairOptions{
 			FixUnitMixups:   true,
 			FixZeroes:       false,
@@ -124,6 +125,9 @@ func TestRepairOptionsFromHistoryParams(t *testing.T) {
 	}
 	if opts.Interval != "1d" {
 		t.Errorf("Expected interval 1d, got %s", opts.Interval)
+	}
+	if !opts.PrePost {
+		t.Error("Expected pre/post flag to be propagated")
 	}
 	if opts.Timezone != "America/New_York" {
 		t.Errorf("Expected timezone America/New_York, got %s", opts.Timezone)

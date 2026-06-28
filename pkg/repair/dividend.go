@@ -59,7 +59,7 @@ func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
 			continue
 		}
 
-		status := analyzeDividend(result, idx, currencyDivide)
+		status := analyzeDividendWithOptions(result, idx, currencyDivide, r.opts)
 
 		// Apply repairs based on analysis
 		if status.IsMissingAdj {
@@ -105,6 +105,10 @@ func findDividendIndices(bars []models.Bar) []int {
 
 // analyzeDividend analyzes a single dividend event.
 func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividendStatus {
+	return analyzeDividendWithOptions(bars, idx, currencyDivide, Options{})
+}
+
+func analyzeDividendWithOptions(bars []models.Bar, idx int, currencyDivide float64, opts Options) dividendStatus {
 	status := dividendStatus{
 		Index:    idx,
 		Date:     bars[idx].Date,
@@ -125,6 +129,7 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 
 	// Calculate price drop (close to low)
 	status.PriceDrop = prevClose - bars[idx].Low
+	dayMove := prevClose - bars[idx].Close
 
 	// Calculate typical volatility in surrounding window
 	status.Volatility = calculateWindowVolatility(bars, idx)
@@ -136,7 +141,7 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 	status.IsTooLarge = isDividendTooLarge(status, currencyDivide)
 
 	// Check if dividend is too small (0.01x error)
-	status.IsTooSmall = isDividendTooSmall(status, currencyDivide)
+	status.IsTooSmall = isDividendTooSmall(status, currencyDivide, opts, dayMove)
 
 	// Check for phantom dividend (duplicate within 7 days)
 	status.IsPhantom = isPhantomDividend(bars, idx)
@@ -176,7 +181,7 @@ func isDividendTooLarge(status dividendStatus, currencyDivide float64) bool {
 	return diffFixed*2 <= diff
 }
 
-func isDividendTooSmall(status dividendStatus, currencyDivide float64) bool {
+func isDividendTooSmall(status dividendStatus, currencyDivide float64, opts Options, dayMove float64) bool {
 	if math.IsNaN(status.Volatility) || status.Volatility <= 0 {
 		return false
 	}
@@ -184,9 +189,21 @@ func isDividendTooSmall(status dividendStatus, currencyDivide float64) bool {
 	if dropWoVol <= 0 {
 		return false
 	}
+	if opts.PrePost && isIntradayInterval(opts.Interval) && dayMove < 0.2*dropWoVol {
+		return false
+	}
 	diff := math.Abs(status.Dividend - dropWoVol)
 	diffFixed := math.Abs((status.Dividend * currencyDivide) - dropWoVol)
 	return diffFixed <= diff && status.DivPct < 0.001
+}
+
+func isIntradayInterval(interval string) bool {
+	switch interval {
+	case "1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h":
+		return true
+	default:
+		return false
+	}
 }
 
 // calculateWindowVolatility calculates typical price volatility in a window around idx.
