@@ -116,7 +116,7 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 	}
 
 	prevClose := bars[idx-1].Close
-	if prevClose == 0 {
+	if !validPrice(prevClose) || !validPrice(bars[idx].Low) || !validPrice(status.Dividend) {
 		return status
 	}
 
@@ -142,16 +142,21 @@ func analyzeDividend(bars []models.Bar, idx int, currencyDivide float64) dividen
 	status.IsPhantom = isPhantomDividend(bars, idx)
 
 	// Check if present adjustment is too small/large
-	presentAdj := (bars[idx-1].AdjClose / prevClose) / (bars[idx].AdjClose / bars[idx].Close)
-	impliedDivYield := 1.0 - presentAdj
-	status.AdjTooSmall = impliedDivYield < (0.1 * status.DivPct)
-	status.AdjTooLarge = impliedDivYield > (10 * status.DivPct)
+	if validPrice(bars[idx-1].AdjClose) && validPrice(bars[idx].AdjClose) && validPrice(bars[idx].Close) {
+		presentAdj := (bars[idx-1].AdjClose / prevClose) / (bars[idx].AdjClose / bars[idx].Close)
+		if !math.IsNaN(presentAdj) && !math.IsInf(presentAdj, 0) {
+			impliedDivYield := 1.0 - presentAdj
+			status.AdjTooSmall = impliedDivYield < (0.1 * status.DivPct)
+			status.AdjTooLarge = impliedDivYield > (10 * status.DivPct)
+		}
+	}
 
 	return status
 }
 
 func hasMissingDividendAdjustment(bars []models.Bar, idx int, prevClose float64) bool {
-	if prevClose <= 0 || bars[idx].Close <= 0 {
+	if !validPrice(prevClose) || !validPrice(bars[idx].Close) ||
+		!validPrice(bars[idx-1].AdjClose) || !validPrice(bars[idx].AdjClose) {
 		return false
 	}
 	prevAdj := bars[idx-1].AdjClose / prevClose

@@ -60,6 +60,19 @@ func TestAnalyzeDividendMissingAdj(t *testing.T) {
 	}
 }
 
+func TestAnalyzeDividendSkipsInfiniteAdjClose(t *testing.T) {
+	bars := []models.Bar{
+		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Close: 100, Low: 98, High: 102, AdjClose: math.Inf(1)},
+		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Close: 98, Low: 97, High: 100, AdjClose: 98, Dividends: 1.5},
+	}
+
+	status := analyzeDividend(bars, 1, 100.0)
+
+	if status.IsMissingAdj || status.AdjTooSmall || status.AdjTooLarge {
+		t.Fatalf("Expected infinite AdjClose to avoid dividend adjustment flags, got %+v", status)
+	}
+}
+
 func TestAnalyzeDividendTooLarge(t *testing.T) {
 	// Dividend that's 100x too big
 	bars := []models.Bar{

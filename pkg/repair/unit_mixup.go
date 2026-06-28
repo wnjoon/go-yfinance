@@ -138,7 +138,7 @@ func filteredMatrix(data [][]float64, indices []int) [][]float64 {
 }
 
 func applyUnitCorrection(bar *models.Bar, correction float64) {
-	if correction == 1.0 {
+	if correction == 1.0 || !validPrice(correction) {
 		return
 	}
 	bar.Open *= correction
@@ -304,6 +304,9 @@ func switchCorrection(dayChange, threshold, change, changeRcp float64) float64 {
 }
 
 func applyUnitSwitchCorrection(bars []models.Bar, correction float64) {
+	if !validPrice(correction) {
+		return
+	}
 	for j := range bars {
 		bars[j].Open *= correction
 		bars[j].High *= correction

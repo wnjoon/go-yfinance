@@ -1,6 +1,7 @@
 package ticker
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -75,6 +76,28 @@ func TestParseCapitalGainEvents(t *testing.T) {
 	}
 	if capitalGains[0].Amount != 0.12 {
 		t.Errorf("Expected capital gain amount 0.12, got %v", capitalGains[0].Amount)
+	}
+}
+
+func TestChartBarAtReplacesInfiniteAdjClose(t *testing.T) {
+	close := 100.0
+	adjClose := math.Inf(1)
+	quote := models.ChartQuote{Close: []*float64{&close}}
+
+	bar := chartBarAt(0, 1704067200, quote, []*float64{&adjClose})
+
+	if bar.AdjClose != close {
+		t.Fatalf("Expected infinite AdjClose to fall back to Close %.2f, got %v", close, bar.AdjClose)
+	}
+}
+
+func TestApplyAutoAdjustSkipsInfiniteRatio(t *testing.T) {
+	bar := models.Bar{Open: 100, High: 110, Low: 95, Close: 100, AdjClose: math.Inf(1)}
+
+	applyAutoAdjust(&bar, true)
+
+	if bar.Open != 100 || bar.High != 110 || bar.Low != 95 || bar.Close != 100 {
+		t.Fatalf("Expected auto-adjust to skip infinite ratio, got %+v", bar)
 	}
 }
 

@@ -98,6 +98,19 @@ func TestRepairRandomUnitMixupsWithError(t *testing.T) {
 	}
 }
 
+func TestApplyUnitCorrectionSkipsInvalidCorrection(t *testing.T) {
+	bar := models.Bar{Open: 100, High: 110, Low: 95, Close: 105, AdjClose: 105}
+
+	applyUnitCorrection(&bar, math.Inf(1))
+
+	if bar.Repaired {
+		t.Fatal("Expected invalid correction to leave bar unrepaired")
+	}
+	if bar.Close != 105 {
+		t.Fatalf("Expected close to remain unchanged, got %v", bar.Close)
+	}
+}
+
 func TestAnalyzeUnitMixups(t *testing.T) {
 	repairer := New(DefaultOptions())
 

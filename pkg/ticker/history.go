@@ -3,6 +3,7 @@ package ticker
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/url"
 	"sort"
 	"time"
@@ -245,9 +246,9 @@ func chartBarAt(i int, ts int64, quote models.ChartQuote, adjClose []*float64) m
 	if i < len(quote.Volume) && quote.Volume[i] != nil {
 		bar.Volume = *quote.Volume[i]
 	}
-	if adjClose != nil && i < len(adjClose) && adjClose[i] != nil {
+	if adjClose != nil && i < len(adjClose) && adjClose[i] != nil && isFinitePositive(*adjClose[i]) {
 		bar.AdjClose = *adjClose[i]
-	} else {
+	} else if isFinitePositive(bar.Close) {
 		bar.AdjClose = bar.Close
 	}
 	return bar
@@ -273,10 +274,17 @@ func applyAutoAdjust(bar *models.Bar, autoAdjust bool) {
 		return
 	}
 	ratio := bar.AdjClose / bar.Close
+	if !isFinitePositive(ratio) {
+		return
+	}
 	bar.Open *= ratio
 	bar.High *= ratio
 	bar.Low *= ratio
 	bar.Close = bar.AdjClose
+}
+
+func isFinitePositive(value float64) bool {
+	return value > 0 && !math.IsNaN(value) && !math.IsInf(value, 0)
 }
 
 // filterValidBars removes bars with zero/NaN values.
