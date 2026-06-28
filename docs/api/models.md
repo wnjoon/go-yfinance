@@ -620,7 +620,7 @@ var EquityScreenerFields = map[string][]string{
         "netincome1yrgrowth.lasttwelvemonths", "grossprofitmargin.lasttwelvemonths",
         "ebitdamargin.lasttwelvemonths", "ebit.lasttwelvemonths",
         "basicepscontinuingoperations.lasttwelvemonths",
-        "netepsbasic.lasttwelvemonthsnetepsdiluted.lasttwelvemonths",
+        "netepsbasic.lasttwelvemonths", "netepsdiluted.lasttwelvemonths",
     },
     "balance_sheet": {
         "totalassets.lasttwelvemonths", "totalcommonsharesoutstanding.lasttwelvemonths",
@@ -4865,4 +4865,3 @@ func (v *ValuationMeasures) Value(rowName, columnName string) (string, bool)
 ```
 
 Value returns a value by row name and column name.
-
