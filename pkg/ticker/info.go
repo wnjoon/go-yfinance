@@ -43,8 +43,22 @@ func (t *Ticker) Info() (*models.Info, error) {
 		return nil, fmt.Errorf("failed to fetch info: %w", err)
 	}
 
+	info, err := t.parseInfoResponse(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the info
+	t.mu.Lock()
+	t.infoCache = info
+	t.mu.Unlock()
+
+	return info, nil
+}
+
+func (t *Ticker) parseInfoResponse(body string) (*models.Info, error) {
 	var summaryResp models.QuoteSummaryResponse
-	if err := json.Unmarshal([]byte(resp.Body), &summaryResp); err != nil {
+	if err := json.Unmarshal([]byte(body), &summaryResp); err != nil {
 		return nil, client.WrapInvalidResponseError(err)
 	}
 
@@ -57,14 +71,7 @@ func (t *Ticker) Info() (*models.Info, error) {
 	}
 
 	result := summaryResp.QuoteSummary.Result[0]
-	info := t.parseInfo(&result)
-
-	// Cache the info
-	t.mu.Lock()
-	t.infoCache = info
-	t.mu.Unlock()
-
-	return info, nil
+	return t.parseInfo(&result), nil
 }
 
 // parseInfo converts the raw quoteSummary response to Info struct.
