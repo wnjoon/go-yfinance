@@ -27,7 +27,7 @@ type Ticker struct {
 	optionsCache    *optionsCache
 	financialsCache *financialsCache
 	analysisCache   *analysisCache
-	valuationCache  *models.ValuationMeasures
+	valuationCache  map[string]*models.ValuationMeasures
 	holdersCache    *holdersCache
 	calendarCache   *models.Calendar
 	newsCache       []models.NewsArticle
