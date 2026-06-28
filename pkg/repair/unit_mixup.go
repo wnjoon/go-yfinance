@@ -266,6 +266,7 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 		if dayChange >= threshold || dayChange <= 1.0/threshold {
 			correction := switchCorrection(dayChange, threshold, change, changeRcp)
 			applyUnitSwitchCorrection(result[:i], correction)
+			break
 		}
 	}
 
