@@ -1,7 +1,9 @@
 package client
 
 import (
+	"net/url"
 	"testing"
+	"time"
 )
 
 func TestExtractInputValue(t *testing.T) {
@@ -122,12 +124,158 @@ func TestAuthManagerReset(t *testing.T) {
 func TestAuthManagerSetLoginCookies(t *testing.T) {
 	client, _ := New()
 	auth := NewAuthManager(client)
+	auth.crumb = "anonymous-crumb"
+	auth.expiry = time.Now().Add(time.Hour)
 
 	auth.SetLoginCookies("cookie-t", "cookie-y")
 
 	cookie := client.GetCookie()
 	if cookie != "T=cookie-t; Y=cookie-y" {
 		t.Errorf("Expected login cookies, got %q", cookie)
+	}
+	if auth.crumb != "" {
+		t.Error("Expected login cookies to invalidate cached crumb")
+	}
+	if !auth.expiry.IsZero() {
+		t.Error("Expected login cookies to clear crumb expiry")
+	}
+}
+
+func TestAuthManagerSetLoginCookiesPreservesExistingCookies(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+	client.SetCookie("A3=crumb-cookie")
+
+	auth.SetLoginCookies("cookie-t", "cookie-y")
+
+	cookie := client.GetCookie()
+	expected := "A3=crumb-cookie; T=cookie-t; Y=cookie-y"
+	if cookie != expected {
+		t.Errorf("Expected merged login cookies, got %q", cookie)
+	}
+}
+
+func TestAuthManagerCheckLoginSubscriptions(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+
+	loggedIn, err := auth.checkLoginWithGetter(func(rawURL string, params url.Values) (*Response, error) {
+		if rawURL != "https://query1.finance.yahoo.com/ws/obi-integration/v1/subscriptions" {
+			t.Fatalf("Unexpected subscriptions URL %q", rawURL)
+		}
+		if params != nil {
+			t.Fatalf("Expected nil params, got %v", params)
+		}
+		return &Response{StatusCode: 200, Body: `{"result":{"guid":"abc123","subscriptionView":[]}}`}, nil
+	})
+	if err != nil {
+		t.Fatalf("CheckLogin returned error: %v", err)
+	}
+	if !loggedIn {
+		t.Fatal("Expected subscriptions result with guid to be logged in")
+	}
+	user := auth.User()
+	if user["guid"] != "abc123" {
+		t.Errorf("Expected cached guid abc123, got %v", user["guid"])
+	}
+}
+
+func TestAuthManagerCheckLoginSubscriptionsLoggedOut(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+	auth.user = map[string]interface{}{"guid": "stale"}
+
+	cases := []struct {
+		name       string
+		statusCode int
+		body       string
+	}{
+		{name: "unauthorized", statusCode: 401, body: `{}`},
+		{name: "forbidden", statusCode: 403, body: `{}`},
+		{name: "missing guid", statusCode: 200, body: `{"result":{"subscriptionView":[]}}`},
+		{name: "missing result", statusCode: 200, body: `{}`},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			loggedIn, err := auth.checkLoginWithGetter(func(_ string, _ url.Values) (*Response, error) {
+				return &Response{StatusCode: tc.statusCode, Body: tc.body}, nil
+			})
+			if err != nil {
+				t.Fatalf("CheckLogin returned error: %v", err)
+			}
+			if loggedIn {
+				t.Fatal("Expected logged out state")
+			}
+			if user := auth.User(); user != nil {
+				t.Fatalf("Expected stale user cache to be cleared, got %v", user)
+			}
+		})
+	}
+}
+
+func TestAuthManagerSubscriptionTier(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+		want string
+	}{
+		{
+			name: "gold",
+			body: `{"result":{"guid":"abc123","subscriptionView":[{"action":"ACTIVE","tier":6}]}}`,
+			want: "gold",
+		},
+		{
+			name: "silver",
+			body: `{"result":{"guid":"abc123","subscriptionView":[{"action":"ACTIVE","tier":5}]}}`,
+			want: "silver",
+		},
+		{
+			name: "bronze",
+			body: `{"result":{"guid":"abc123","subscriptionView":[{"action":"ACTIVE","tier":3}]}}`,
+			want: "bronze",
+		},
+		{
+			name: "premium unknown active tier",
+			body: `{"result":{"guid":"abc123","subscriptionView":[{"action":"ACTIVE","tier":4}]}}`,
+			want: "premium",
+		},
+		{
+			name: "free with no active subscription",
+			body: `{"result":{"guid":"abc123","subscriptionView":[{"action":"EXPIRED","tier":6}]}}`,
+			want: "free",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client, _ := New()
+			auth := NewAuthManager(client)
+			got, err := auth.subscriptionTierWithGetter(func(_ string, _ url.Values) (*Response, error) {
+				return &Response{StatusCode: 200, Body: tt.body}, nil
+			})
+			if err != nil {
+				t.Fatalf("SubscriptionTier returned error: %v", err)
+			}
+			if got != tt.want {
+				t.Fatalf("Expected tier %q, got %q", tt.want, got)
+			}
+		})
+	}
+}
+
+func TestAuthManagerSubscriptionTierLoggedOut(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+
+	got, err := auth.subscriptionTierWithGetter(func(_ string, _ url.Values) (*Response, error) {
+		return &Response{StatusCode: 401, Body: `{}`}, nil
+	})
+	if err != nil {
+		t.Fatalf("SubscriptionTier returned error: %v", err)
+	}
+	if got != "" {
+		t.Fatalf("Expected empty tier when logged out, got %q", got)
 	}
 }
 

@@ -33,6 +33,14 @@ type AuthManager struct {
 	user     map[string]interface{}
 }
 
+type authResponseGetter func(rawURL string, params url.Values) (*Response, error)
+
+var subscriptionTierNames = map[int]string{
+	6: "gold",
+	5: "silver",
+	3: "bronze",
+}
+
 // NewAuthManager creates a new AuthManager with the given client.
 func NewAuthManager(client *Client) *AuthManager {
 	return &AuthManager{
@@ -51,32 +59,145 @@ func (a *AuthManager) SetLoginCookies(cookieT, cookieY string) {
 		"Y": cookieY,
 	})
 	a.cookie = "T,Y"
+	a.crumb = ""
+	a.expiry = time.Time{}
 	a.user = nil
+}
+
+// SetLoginCookiesAndCheck sets Yahoo Finance login cookies and verifies them.
+func (a *AuthManager) SetLoginCookiesAndCheck(cookieT, cookieY string) (bool, error) {
+	a.SetLoginCookies(cookieT, cookieY)
+	return a.CheckLogin()
 }
 
 // CheckLogin checks whether the current Yahoo cookies represent a logged-in user.
 func (a *AuthManager) CheckLogin() (bool, error) {
-	a.mu.RLock()
-	if a.user != nil {
-		a.mu.RUnlock()
-		return true, nil
-	}
-	a.mu.RUnlock()
+	return a.checkLoginWithGetter(a.client.Get)
+}
 
-	resp, err := a.client.Get(endpoints.RootURL, nil)
+func (a *AuthManager) checkLoginWithGetter(getter authResponseGetter) (bool, error) {
+	entitlement, loggedIn, err := a.fetchEntitlementWithGetter(getter)
 	if err != nil {
 		return false, err
 	}
 
-	user, ok, err := parseLoginUser(resp.Body)
-	if err != nil || !ok {
-		return ok, err
+	a.mu.Lock()
+	if loggedIn {
+		a.user = userFromEntitlement(entitlement)
+	} else {
+		a.user = nil
+	}
+	a.mu.Unlock()
+	return loggedIn, nil
+}
+
+// SubscriptionTier returns the active Yahoo Finance subscription tier.
+func (a *AuthManager) SubscriptionTier() (string, error) {
+	return a.subscriptionTierWithGetter(a.client.Get)
+}
+
+func (a *AuthManager) subscriptionTierWithGetter(getter authResponseGetter) (string, error) {
+	entitlement, loggedIn, err := a.fetchEntitlementWithGetter(getter)
+	if err != nil || !loggedIn {
+		return "", err
+	}
+	return subscriptionTier(entitlement), nil
+}
+
+func (a *AuthManager) fetchEntitlementWithGetter(getter authResponseGetter) (map[string]interface{}, bool, error) {
+	resp, err := getter(endpoints.SubscriptionsURL, nil)
+	if err != nil {
+		return nil, false, err
+	}
+	if resp.StatusCode == 401 || resp.StatusCode == 403 {
+		return nil, false, nil
+	}
+	if resp.StatusCode >= 400 {
+		return nil, false, fmt.Errorf("subscriptions API error: status %d", resp.StatusCode)
 	}
 
-	a.mu.Lock()
-	a.user = user
-	a.mu.Unlock()
-	return true, nil
+	result, err := parseSubscriptionResult(resp.Body)
+	if err != nil {
+		return nil, false, err
+	}
+	if result == nil {
+		return nil, false, nil
+	}
+	if guid, ok := result["guid"].(string); !ok || guid == "" {
+		return nil, false, nil
+	}
+	return result, true, nil
+}
+
+func parseSubscriptionResult(body string) (map[string]interface{}, error) {
+	var payload map[string]interface{}
+	if err := json.Unmarshal([]byte(body), &payload); err != nil {
+		return nil, fmt.Errorf("failed to parse subscriptions response: %w", err)
+	}
+	result, ok := payload["result"].(map[string]interface{})
+	if !ok {
+		return nil, nil
+	}
+	return result, nil
+}
+
+func userFromEntitlement(entitlement map[string]interface{}) map[string]interface{} {
+	if entitlement == nil {
+		return nil
+	}
+	user := make(map[string]interface{}, 1)
+	if guid, ok := entitlement["guid"].(string); ok && guid != "" {
+		user["guid"] = guid
+	}
+	if len(user) == 0 {
+		return nil
+	}
+	return user
+}
+
+func subscriptionTier(entitlement map[string]interface{}) string {
+	active := activeSubscription(entitlement)
+	if active == nil {
+		return "free"
+	}
+	if name, ok := subscriptionTierNames[tierInt(active["tier"])]; ok {
+		return name
+	}
+	return "premium"
+}
+
+func activeSubscription(entitlement map[string]interface{}) map[string]interface{} {
+	views, ok := entitlement["subscriptionView"].([]interface{})
+	if !ok {
+		return nil
+	}
+	for _, view := range views {
+		subscription, ok := view.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if action, ok := subscription["action"].(string); ok && action == "ACTIVE" {
+			return subscription
+		}
+	}
+	return nil
+}
+
+func tierInt(value interface{}) int {
+	switch v := value.(type) {
+	case int:
+		return v
+	case int64:
+		return int(v)
+	case float64:
+		return int(v)
+	case string:
+		var tier int
+		if _, err := fmt.Sscanf(v, "%d", &tier); err == nil {
+			return tier
+		}
+	}
+	return 0
 }
 
 // User returns the cached logged-in Yahoo user payload, if available.
