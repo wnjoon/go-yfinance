@@ -22,6 +22,10 @@ type financialsCache struct {
 	cashFlowQuarterly *models.FinancialStatement
 }
 
+const financialsChunkKeys = 60
+
+type financialsPayloadGetter func(apiURL string, params url.Values) (string, error)
+
 // IncomeStatement returns the income statement data.
 //
 // Parameters:
@@ -179,7 +183,50 @@ func normalizeFrequency(freq string) string {
 
 // fetchFinancials fetches financial data from the timeseries API.
 func (t *Ticker) fetchFinancials(statementType, freq string) (*models.FinancialStatement, error) {
-	// Get the appropriate keys
+	return t.fetchFinancialsWithGetter(statementType, freq, t.fetchFinancialsBody)
+}
+
+func (t *Ticker) fetchFinancialsWithGetter(statementType, freq string, getter financialsPayloadGetter) (*models.FinancialStatement, error) {
+	keys, prefix, err := financialKeysAndPrefix(statementType, freq)
+	if err != nil {
+		return nil, err
+	}
+
+	apiURL := fmt.Sprintf("%s/%s", endpoints.FundamentalsURL, t.symbol)
+	baseParams, err := t.financialsBaseParams()
+	if err != nil {
+		return nil, err
+	}
+	return t.fetchFinancialsWithParams(apiURL, baseParams, prefix, keys, getter)
+}
+
+func (t *Ticker) fetchFinancialsWithParams(apiURL string, baseParams url.Values, prefix string, keys []string, getter financialsPayloadGetter) (*models.FinancialStatement, error) {
+	var result []interface{}
+	var err error
+	if t.financialsChunkedEnabled() {
+		result, err = t.fetchFinancialsChunked(apiURL, baseParams, prefix, keys, getter)
+		if err != nil {
+			t.setFinancialsChunked(false)
+			return nil, err
+		}
+		return t.parseFinancialsResult(result, prefix), nil
+	}
+
+	result, err = t.fetchFinancialsSingle(apiURL, baseParams, prefix, keys, getter)
+	if err == nil {
+		return t.parseFinancialsResult(result, prefix), nil
+	}
+
+	t.setFinancialsChunked(true)
+	result, chunkErr := t.fetchFinancialsChunked(apiURL, baseParams, prefix, keys, getter)
+	if chunkErr != nil {
+		t.setFinancialsChunked(false)
+		return nil, chunkErr
+	}
+	return t.parseFinancialsResult(result, prefix), nil
+}
+
+func financialKeysAndPrefix(statementType, freq string) ([]string, string, error) {
 	var keys []string
 	switch statementType {
 	case "income":
@@ -189,10 +236,9 @@ func (t *Ticker) fetchFinancials(statementType, freq string) (*models.FinancialS
 	case "cash-flow":
 		keys = endpoints.CashFlowKeys
 	default:
-		return nil, fmt.Errorf("invalid statement type: %s", statementType)
+		return nil, "", fmt.Errorf("invalid statement type: %s", statementType)
 	}
 
-	// Convert frequency to API prefix
 	var prefix string
 	switch freq {
 	case "annual":
@@ -202,20 +248,14 @@ func (t *Ticker) fetchFinancials(statementType, freq string) (*models.FinancialS
 	case "trailing":
 		prefix = "trailing"
 	default:
-		return nil, fmt.Errorf("invalid frequency: %s", freq)
+		return nil, "", fmt.Errorf("invalid frequency: %s", freq)
 	}
+	return keys, prefix, nil
+}
 
-	// Build type parameter with prefix
-	typeParams := make([]string, len(keys))
-	for i, key := range keys {
-		typeParams[i] = prefix + key
-	}
-
-	apiURL := fmt.Sprintf("%s/%s", endpoints.FundamentalsURL, t.symbol)
-
+func (t *Ticker) financialsBaseParams() (url.Values, error) {
 	params := url.Values{}
 	params.Set("symbol", t.symbol)
-	params.Set("type", strings.Join(typeParams, ","))
 
 	// Set time range (from 2016 to now, same as Python yfinance)
 	start := time.Date(2016, 12, 31, 0, 0, 0, 0, time.UTC)
@@ -228,21 +268,73 @@ func (t *Ticker) fetchFinancials(statementType, freq string) (*models.FinancialS
 	if err != nil {
 		return nil, fmt.Errorf("failed to add crumb: %w", err)
 	}
+	return params, nil
+}
 
+func (t *Ticker) fetchFinancialsSingle(apiURL string, baseParams url.Values, prefix string, keys []string, getter financialsPayloadGetter) ([]interface{}, error) {
+	params := cloneURLValues(baseParams)
+	params.Set("type", strings.Join(prefixedFinancialKeys(prefix, keys), ","))
+
+	body, err := getter(apiURL, params)
+	if err != nil {
+		return nil, err
+	}
+	return financialsResultItems(body)
+}
+
+func (t *Ticker) fetchFinancialsChunked(apiURL string, baseParams url.Values, prefix string, keys []string, getter financialsPayloadGetter) ([]interface{}, error) {
+	result := make([]interface{}, 0, len(keys))
+	for i := 0; i < len(keys); i += financialsChunkKeys {
+		end := i + financialsChunkKeys
+		if end > len(keys) {
+			end = len(keys)
+		}
+
+		params := cloneURLValues(baseParams)
+		params.Set("type", strings.Join(prefixedFinancialKeys(prefix, keys[i:end]), ","))
+		body, err := getter(apiURL, params)
+		if err != nil {
+			return nil, err
+		}
+		chunkResult, err := financialsResultItems(body)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, chunkResult...)
+	}
+	return result, nil
+}
+
+func (t *Ticker) fetchFinancialsBody(apiURL string, params url.Values) (string, error) {
 	resp, err := t.client.Get(apiURL, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch financials: %w", err)
+		return "", fmt.Errorf("failed to fetch financials: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("API error: status %d", resp.StatusCode)
+		return "", fmt.Errorf("API error: status %d", resp.StatusCode)
 	}
 
-	return t.parseFinancialsResponse(resp.Body, prefix)
+	return resp.Body, nil
 }
 
-// parseFinancialsResponse parses the timeseries API response into a FinancialStatement.
-func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.FinancialStatement, error) {
+func prefixedFinancialKeys(prefix string, keys []string) []string {
+	typeParams := make([]string, len(keys))
+	for i, key := range keys {
+		typeParams[i] = prefix + key
+	}
+	return typeParams
+}
+
+func cloneURLValues(values url.Values) url.Values {
+	cloned := make(url.Values, len(values))
+	for key, vals := range values {
+		cloned[key] = append([]string{}, vals...)
+	}
+	return cloned
+}
+
+func financialsResultItems(body string) ([]interface{}, error) {
 	var rawResp map[string]interface{}
 	if err := json.Unmarshal([]byte(body), &rawResp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
@@ -258,10 +350,23 @@ func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.Financial
 	}
 
 	result, ok := timeseries["result"].([]interface{})
-	if !ok {
+	if !ok || len(result) == 0 {
 		return nil, fmt.Errorf("invalid response: missing result")
 	}
 
+	return result, nil
+}
+
+// parseFinancialsResponse parses the timeseries API response into a FinancialStatement.
+func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.FinancialStatement, error) {
+	result, err := financialsResultItems(body)
+	if err != nil {
+		return nil, err
+	}
+	return t.parseFinancialsResult(result, prefix), nil
+}
+
+func (t *Ticker) parseFinancialsResult(result []interface{}, prefix string) *models.FinancialStatement {
 	stmt := models.NewFinancialStatement()
 	allDates := make(map[time.Time]bool)
 
@@ -310,7 +415,19 @@ func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.Financial
 	})
 	stmt.Dates = dates
 
-	return stmt, nil
+	return stmt
+}
+
+func (t *Ticker) financialsChunkedEnabled() bool {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+	return t.financialsChunked
+}
+
+func (t *Ticker) setFinancialsChunked(enabled bool) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	t.financialsChunked = enabled
 }
 
 func parseFinancialItems(dataPoints []interface{}, stmt *models.FinancialStatement, allDates map[time.Time]bool) []models.FinancialItem {
