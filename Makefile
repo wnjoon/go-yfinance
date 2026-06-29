@@ -24,7 +24,7 @@ test-cover:
 
 # Run linter
 lint:
-	golangci-lint run --timeout=5m
+	golangci-lint run ./...
 
 # Generate API documentation using gomarkdoc
 docs:

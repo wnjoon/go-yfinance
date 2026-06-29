@@ -10,27 +10,11 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 
 ## Features
 
-- **Full Python yfinance Compatibility**: Complete Go implementation matching Python yfinance v1.4.0 feature parity
-- **Price Repair System**: Fix common Yahoo Finance data issues (100x errors, bad splits, capital gains double-counting)
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
+- **Python yfinance v1.5.1 Parity**: Fundamentals-timeseries valuation measures, subscriptions-based login checks, chunked fundamentals fallback, ETFQuery screeners, and hardened price repair
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
 - **Thread-Safe**: Concurrent-safe client and configuration
 - **Comprehensive Error Handling**: Typed errors with proper Go error wrapping
-
-## Supported Modules
-
-| Module | Description |
-|--------|-------------|
-| **ticker** | Single ticker data (quotes, history, financials, options, etc.) |
-| **multi** | Multi-ticker downloads and batch operations |
-| **search** | Search for tickers by keywords |
-| **screener** | Stock, fund, and ETF screener with predefined/custom queries |
-| **lookup** | Lookup ticker symbols by type (Stock, ETF, Crypto, etc.) |
-| **market** | Market status and summary for global markets |
-| **sector** | Sector data and top companies |
-| **industry** | Industry data and performance metrics |
-| **calendars** | Earnings, IPO, Economic Events, Splits calendars |
-| **live** | Real-time WebSocket streaming |
 
 ## Installation
 
@@ -96,6 +80,15 @@ func main() {
     fmt.Printf("Sector: %s\n", info.Sector)
     fmt.Printf("Industry: %s\n", info.Industry)
     fmt.Printf("Market Cap: $%d\n", info.MarketCap)
+
+    // Get valuation measures from the fundamentals-timeseries API
+    valuation, err := t.Valuation()
+    if err != nil {
+        log.Fatal(err)
+    }
+    if marketCap, ok := valuation.FloatValue("Market Cap", "Current"); ok {
+        fmt.Printf("Current Market Cap: %.0f\n", marketCap)
+    }
 }
 ```
 

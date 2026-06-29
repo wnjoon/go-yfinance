@@ -358,7 +358,7 @@ func (t *Ticker) FastInfo() (*models.FastInfo, error)
 FastInfo returns a FastInfo struct with commonly used data. This fetches data from the history endpoint which can be faster for some fields.
 
 <a name="Ticker.FinancialsJSON"></a>
-### func \(\*Ticker\) [FinancialsJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L484>)
+### func \(\*Ticker\) [FinancialsJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L475>)
 
 ```go
 func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)
@@ -496,7 +496,7 @@ if revenue, ok := income.GetLatest("TotalRevenue"); ok {
 ```
 
 <a name="Ticker.Info"></a>
-### func \(\*Ticker\) [Info](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/info.go#L14>)
+### func \(\*Ticker\) [Info](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/info.go#L16>)
 
 ```go
 func (t *Ticker) Info() (*models.Info, error)
