@@ -36,6 +36,7 @@ tier, err := auth.SubscriptionTier()
 - Financial statements retry fundamentals-timeseries requests in 60-key chunks when the single long request fails or returns an invalid/empty result.
 - Screener EPS fields now correctly split `netepsbasic.lasttwelvemonths` and `netepsdiluted.lasttwelvemonths`.
 - Info parsing handles empty, missing, and null Yahoo quoteSummary result payloads defensively.
+- `Info().TrailingPegRatio` is populated from Yahoo's fundamentals-timeseries endpoint and tolerates sparse complementary-info payloads.
 - Configured proxy strings are trimmed and passed through to CycleTLS request options.
 - Manual login cookies are merged into the existing cookie jar and invalidate stale crumbs.
 

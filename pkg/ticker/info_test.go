@@ -92,3 +92,66 @@ func TestParseInfoResponsePartialResult(t *testing.T) {
 		t.Errorf("Expected quote type EQUITY, got %q", info.QuoteType)
 	}
 }
+
+func TestParseTrailingPegRatioTimeseriesSparsePayloads(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+	}{
+		{
+			name: "empty result",
+			body: `{"timeseries":{"result":[]}}`,
+		},
+		{
+			name: "missing result",
+			body: `{"timeseries":{}}`,
+		},
+		{
+			name: "missing key",
+			body: `{"timeseries":{"result":[{}]}}`,
+		},
+		{
+			name: "empty key list",
+			body: `{"timeseries":{"result":[{"trailingPegRatio":[]}]}}`,
+		},
+		{
+			name: "missing reported value",
+			body: `{"timeseries":{"result":[{"trailingPegRatio":[{}]}]}}`,
+		},
+		{
+			name: "missing raw value",
+			body: `{"timeseries":{"result":[{"trailingPegRatio":[{"reportedValue":{}}]}]}}`,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			value, err := parseTrailingPegRatioTimeseries(tc.body)
+			if err != nil {
+				t.Fatalf("parseTrailingPegRatioTimeseries returned error: %v", err)
+			}
+			if value != nil {
+				t.Fatalf("Expected nil value, got %v", *value)
+			}
+		})
+	}
+}
+
+func TestParseTrailingPegRatioTimeseriesLatestValue(t *testing.T) {
+	value, err := parseTrailingPegRatioTimeseries(`{
+		"timeseries": {
+			"result": [{
+				"trailingPegRatio": [
+					{"asOfDate": "2026-01-01", "reportedValue": {"raw": 1.25}},
+					{"asOfDate": "2026-02-01", "reportedValue": {"raw": 1.5}}
+				]
+			}]
+		}
+	}`)
+	if err != nil {
+		t.Fatalf("parseTrailingPegRatioTimeseries returned error: %v", err)
+	}
+	if value == nil || *value != 1.5 {
+		t.Fatalf("Expected latest trailing PEG 1.5, got %v", value)
+	}
+}
