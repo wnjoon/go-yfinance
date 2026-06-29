@@ -60,6 +60,19 @@ func TestAnalyzeDividendMissingAdj(t *testing.T) {
 	}
 }
 
+func TestAnalyzeDividendSkipsInfiniteAdjClose(t *testing.T) {
+	bars := []models.Bar{
+		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Close: 100, Low: 98, High: 102, AdjClose: math.Inf(1)},
+		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Close: 98, Low: 97, High: 100, AdjClose: 98, Dividends: 1.5},
+	}
+
+	status := analyzeDividend(bars, 1, 100.0)
+
+	if status.IsMissingAdj || status.AdjTooSmall || status.AdjTooLarge {
+		t.Fatalf("Expected infinite AdjClose to avoid dividend adjustment flags, got %+v", status)
+	}
+}
+
 func TestAnalyzeDividendTooLarge(t *testing.T) {
 	// Dividend that's 100x too big
 	bars := []models.Bar{
@@ -71,6 +84,29 @@ func TestAnalyzeDividendTooLarge(t *testing.T) {
 
 	if !status.IsTooLarge {
 		t.Error("Should flag dividend > 100% as too large")
+	}
+}
+
+func TestAnalyzeDividendPrePostIntradayAvoidsTooSmallFalsePositive(t *testing.T) {
+	bars := []models.Bar{
+		{Date: time.Date(2024, 1, 1, 9, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 10, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 11, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 11, 30, 0, 0, time.UTC), Close: 99.5, Low: 90, AdjClose: 99.5, Dividends: 0.01},
+		{Date: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 12, 30, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+		{Date: time.Date(2024, 1, 1, 13, 0, 0, 0, time.UTC), Close: 100, Low: 99, AdjClose: 100},
+	}
+
+	withoutPrePost := analyzeDividendWithOptions(bars, 4, 100.0, Options{Interval: "1h"})
+	if !withoutPrePost.IsTooSmall {
+		t.Fatal("Expected tiny dividend with large low-price drop to be a too-small candidate without pre/post guard")
+	}
+
+	withPrePost := analyzeDividendWithOptions(bars, 4, 100.0, Options{Interval: "1h", PrePost: true})
+	if withPrePost.IsTooSmall {
+		t.Fatal("Expected intraday pre/post recovery to suppress too-small false positive")
 	}
 }
 

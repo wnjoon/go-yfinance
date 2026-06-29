@@ -1,6 +1,9 @@
 package ticker
 
 import (
+	"fmt"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -148,6 +151,173 @@ func TestNormalizeFrequency(t *testing.T) {
 			t.Errorf("normalizeFrequency(%q) = %q, expected %q", tc.input, result, tc.expected)
 		}
 	}
+}
+
+func TestFinancialsChunkedFallbackOnSingleFailure(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	callCount := 0
+	getter := func(_ string, params url.Values) (string, error) {
+		callCount++
+		if callCount == 1 {
+			return "", fmt.Errorf("timeout")
+		}
+		return financialsPayloadForTypes(params.Get("type")), nil
+	}
+
+	stmt, err := tkr.fetchFinancialsWithParams("https://example.test/timeseries/MSFT", financialsTestParams(), "annual", []string{"TotalAssets", "TotalDebt"}, getter)
+	if err != nil {
+		t.Fatalf("Expected chunk fallback to recover, got %v", err)
+	}
+	if callCount != 2 {
+		t.Fatalf("Expected single request then chunk fallback, got %d calls", callCount)
+	}
+	if !tkr.financialsChunkedEnabled() {
+		t.Fatal("Expected chunked mode to remain sticky after fallback success")
+	}
+	if value, ok := stmt.GetLatest("TotalAssets"); !ok || value != 1000 {
+		t.Fatalf("Expected TotalAssets from fallback payload, got %v (ok=%v)", value, ok)
+	}
+}
+
+func TestFinancialsChunkedFallbackOnInvalidSingleResponse(t *testing.T) {
+	cases := []struct {
+		name string
+		body string
+	}{
+		{name: "missing result", body: `{"timeseries":{}}`},
+		{name: "empty result", body: `{"timeseries":{"result":[]}}`},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tkr, err := New("MSFT")
+			if err != nil {
+				t.Fatalf("Failed to create ticker: %v", err)
+			}
+
+			callCount := 0
+			getter := func(_ string, params url.Values) (string, error) {
+				callCount++
+				if callCount == 1 {
+					return tc.body, nil
+				}
+				return financialsPayloadForTypes(params.Get("type")), nil
+			}
+
+			stmt, err := tkr.fetchFinancialsWithParams("https://example.test/timeseries/MSFT", financialsTestParams(), "annual", []string{"TotalAssets", "TotalDebt"}, getter)
+			if err != nil {
+				t.Fatalf("Expected chunk fallback to recover from invalid response, got %v", err)
+			}
+			if callCount != 2 {
+				t.Fatalf("Expected single request then chunk fallback, got %d calls", callCount)
+			}
+			if !tkr.financialsChunkedEnabled() {
+				t.Fatal("Expected chunked mode to remain sticky after fallback success")
+			}
+			if value, ok := stmt.GetLatest("TotalDebt"); !ok || value != 1000 {
+				t.Fatalf("Expected TotalDebt from fallback payload, got %v (ok=%v)", value, ok)
+			}
+		})
+	}
+}
+
+func TestFinancialsChunkedStickySkipsSingleRequest(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+	tkr.setFinancialsChunked(true)
+
+	callCount := 0
+	getter := func(_ string, params url.Values) (string, error) {
+		callCount++
+		return financialsPayloadForTypes(params.Get("type")), nil
+	}
+
+	_, err = tkr.fetchFinancialsWithParams("https://example.test/timeseries/MSFT", financialsTestParams(), "annual", []string{"TotalAssets", "TotalDebt"}, getter)
+	if err != nil {
+		t.Fatalf("Expected sticky chunked request to succeed, got %v", err)
+	}
+	if callCount != 1 {
+		t.Fatalf("Expected sticky chunked mode to skip fast path, got %d calls", callCount)
+	}
+	if !tkr.financialsChunkedEnabled() {
+		t.Fatal("Expected chunked mode to stay enabled")
+	}
+}
+
+func TestFinancialsChunkedFallbackRollbackOnChunkFailure(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	getter := func(_ string, _ url.Values) (string, error) {
+		return "", fmt.Errorf("timeout")
+	}
+
+	_, err = tkr.fetchFinancialsWithParams("https://example.test/timeseries/MSFT", financialsTestParams(), "annual", []string{"TotalAssets", "TotalDebt"}, getter)
+	if err == nil {
+		t.Fatal("Expected error when chunk fallback also fails")
+	}
+	if tkr.financialsChunkedEnabled() {
+		t.Fatal("Expected chunked mode to roll back after chunk failure")
+	}
+}
+
+func TestFinancialsChunkSize(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	keys := make([]string, 125)
+	for i := range keys {
+		keys[i] = fmt.Sprintf("Key%d", i)
+	}
+
+	var chunkSizes []int
+	getter := func(_ string, params url.Values) (string, error) {
+		chunkSizes = append(chunkSizes, len(strings.Split(params.Get("type"), ",")))
+		return financialsPayloadForTypes(params.Get("type")), nil
+	}
+
+	_, err = tkr.fetchFinancialsChunked("https://example.test/timeseries/MSFT", financialsTestParams(), "annual", keys, getter)
+	if err != nil {
+		t.Fatalf("Expected chunked fetch to succeed, got %v", err)
+	}
+	expected := []int{60, 60, 5}
+	if fmt.Sprint(chunkSizes) != fmt.Sprint(expected) {
+		t.Fatalf("Expected chunk sizes %v, got %v", expected, chunkSizes)
+	}
+}
+
+func financialsTestParams() url.Values {
+	params := url.Values{}
+	params.Set("symbol", "MSFT")
+	params.Set("period1", "1719792000")
+	params.Set("period2", "1751328000")
+	return params
+}
+
+func financialsPayloadForTypes(typeParam string) string {
+	types := strings.Split(typeParam, ",")
+	parts := make([]string, 0, len(types))
+	for _, typeName := range types {
+		if typeName == "" {
+			continue
+		}
+		parts = append(parts, fmt.Sprintf(`{
+			"meta":{"symbol":["MSFT"],"type":["%[1]s"]},
+			"timestamp":[1751241600],
+			"%[1]s":[{"asOfDate":"2025-06-30","periodType":"12M","currencyCode":"USD","reportedValue":{"raw":1000,"fmt":"1,000"}}]
+		}`, typeName))
+	}
+	return fmt.Sprintf(`{"timeseries":{"result":[%s]}}`, strings.Join(parts, ","))
 }
 
 // Integration test - commented out for CI, run manually

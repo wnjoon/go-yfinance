@@ -9,6 +9,8 @@ import (
 	"sync"
 
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
+
+	"github.com/wnjoon/go-yfinance/pkg/config"
 )
 
 // Client is the HTTP client for Yahoo Finance API with TLS fingerprint spoofing.
@@ -23,6 +25,7 @@ type Client struct {
 	timeout   int
 	ja3       string
 	userAgent string
+	proxy     string
 
 	// Cookie storage for authentication
 	cookies map[string]string
@@ -55,13 +58,35 @@ func WithUserAgent(userAgent string) ClientOption {
 	}
 }
 
+// WithProxy sets a proxy URL for requests.
+func WithProxy(proxy string) ClientOption {
+	return func(c *Client) {
+		c.proxy = strings.TrimSpace(proxy)
+	}
+}
+
 // New creates a new Client with optional configuration.
 // The underlying CycleTLS client is lazily initialized on first request.
 func New(opts ...ClientOption) (*Client, error) {
+	cfg := config.Get()
+	timeout := int(cfg.GetTimeout().Seconds())
+	if timeout <= 0 {
+		timeout = 30
+	}
+	ja3 := cfg.GetJA3()
+	if ja3 == "" {
+		ja3 = defaultJA3
+	}
+	userAgent := cfg.GetUserAgent()
+	if userAgent == "" {
+		userAgent = RandomUserAgent()
+	}
+
 	c := &Client{
-		timeout:   30,
-		ja3:       defaultJA3,
-		userAgent: RandomUserAgent(),
+		timeout:   timeout,
+		ja3:       ja3,
+		userAgent: userAgent,
+		proxy:     strings.TrimSpace(cfg.GetProxyURL()),
 		cookies:   make(map[string]string),
 	}
 
@@ -113,6 +138,7 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error) {
 		Timeout:   c.timeout,
 		Ja3:       c.ja3,
 		UserAgent: c.userAgent,
+		Proxy:     c.proxy,
 		Headers:   headers,
 	}, "GET")
 	if err != nil {
@@ -230,6 +256,7 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 		Timeout:   c.timeout,
 		Ja3:       c.ja3,
 		UserAgent: c.userAgent,
+		Proxy:     c.proxy,
 		Body:      mapToFormData(body),
 		Headers:   headers,
 	}, "POST")
@@ -271,6 +298,7 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 		Timeout:   c.timeout,
 		Ja3:       c.ja3,
 		UserAgent: c.userAgent,
+		Proxy:     c.proxy,
 		Body:      string(body),
 		Headers:   headers,
 	}, "POST")

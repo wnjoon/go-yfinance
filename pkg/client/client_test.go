@@ -2,9 +2,15 @@ package client
 
 import (
 	"testing"
+	"time"
+
+	"github.com/wnjoon/go-yfinance/pkg/config"
 )
 
 func TestNewClient(t *testing.T) {
+	config.Reset()
+	t.Cleanup(config.Reset)
+
 	c, err := New()
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
@@ -25,13 +31,18 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClientOptions(t *testing.T) {
+	config.Reset()
+	t.Cleanup(config.Reset)
+
 	customJA3 := "custom-ja3"
 	customUA := "custom-user-agent"
+	customProxy := "http://proxy.example:8080"
 
 	c, err := New(
 		WithTimeout(60),
 		WithJA3(customJA3),
 		WithUserAgent(customUA),
+		WithProxy(customProxy),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
@@ -46,9 +57,44 @@ func TestClientOptions(t *testing.T) {
 	if c.userAgent != customUA {
 		t.Errorf("User-Agent should be %s, got %s", customUA, c.userAgent)
 	}
+	if c.proxy != customProxy {
+		t.Errorf("Proxy should be %s, got %s", customProxy, c.proxy)
+	}
+}
+
+func TestNewClientUsesGlobalConfig(t *testing.T) {
+	config.Reset()
+	t.Cleanup(config.Reset)
+
+	config.Get().
+		SetTimeout(45 * time.Second).
+		SetJA3("configured-ja3").
+		SetUserAgent("configured-user-agent").
+		SetProxy(" http://configured-proxy.example:8080 ")
+
+	c, err := New()
+	if err != nil {
+		t.Fatalf("Failed to create client: %v", err)
+	}
+
+	if c.timeout != 45 {
+		t.Errorf("Timeout should be 45, got %d", c.timeout)
+	}
+	if c.ja3 != "configured-ja3" {
+		t.Errorf("JA3 should come from config, got %s", c.ja3)
+	}
+	if c.userAgent != "configured-user-agent" {
+		t.Errorf("User-Agent should come from config, got %s", c.userAgent)
+	}
+	if c.proxy != "http://configured-proxy.example:8080" {
+		t.Errorf("Proxy should be trimmed from config, got %q", c.proxy)
+	}
 }
 
 func TestClientCookieMerge(t *testing.T) {
+	config.Reset()
+	t.Cleanup(config.Reset)
+
 	c, err := New()
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)

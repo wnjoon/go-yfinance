@@ -8,8 +8,9 @@ const (
 	RootURL   = "https://finance.yahoo.com"
 
 	// Authentication
-	CookieURL = "https://fc.yahoo.com"
-	CrumbURL  = BaseURL + "/v1/test/getcrumb"
+	CookieURL        = "https://fc.yahoo.com"
+	CrumbURL         = BaseURL + "/v1/test/getcrumb"
+	SubscriptionsURL = Query1URL + "/ws/obi-integration/v1/subscriptions"
 
 	// CSRF Consent (fallback authentication)
 	ConsentURL        = "https://guce.yahoo.com/consent"

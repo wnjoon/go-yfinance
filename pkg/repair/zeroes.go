@@ -60,8 +60,7 @@ func findZeroIndices(bars []models.Bar) []int {
 
 // isZeroBar checks if a bar has zero or invalid price data.
 func isZeroBar(bar models.Bar) bool {
-	return bar.Open == 0 || bar.High == 0 || bar.Low == 0 || bar.Close == 0 ||
-		math.IsNaN(bar.Open) || math.IsNaN(bar.High) || math.IsNaN(bar.Low) || math.IsNaN(bar.Close)
+	return invalidPrice(bar.Open) || invalidPrice(bar.High) || invalidPrice(bar.Low) || invalidPrice(bar.Close)
 }
 
 // shouldRepairZero determines if a zero bar should be repaired.
@@ -191,7 +190,7 @@ func invalidOHLCCount(bar models.Bar) int {
 func goodOHLCValues(bar models.Bar) []float64 {
 	values := make([]float64, 0, 4)
 	for _, value := range []float64{bar.Open, bar.High, bar.Low, bar.Close} {
-		if value > 0 && !math.IsNaN(value) {
+		if validPrice(value) {
 			values = append(values, value)
 		}
 	}
@@ -229,7 +228,11 @@ func fillInvalidAdjClose(bar *models.Bar) {
 }
 
 func invalidPrice(value float64) bool {
-	return value == 0 || math.IsNaN(value)
+	return !validPrice(value)
+}
+
+func validPrice(value float64) bool {
+	return value > 0 && !math.IsNaN(value) && !math.IsInf(value, 0)
 }
 
 // repairVolumeZeroes fixes bars where volume is zero but price changed.

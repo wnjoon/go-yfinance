@@ -98,6 +98,19 @@ func TestRepairRandomUnitMixupsWithError(t *testing.T) {
 	}
 }
 
+func TestApplyUnitCorrectionSkipsInvalidCorrection(t *testing.T) {
+	bar := models.Bar{Open: 100, High: 110, Low: 95, Close: 105, AdjClose: 105}
+
+	applyUnitCorrection(&bar, math.Inf(1))
+
+	if bar.Repaired {
+		t.Fatal("Expected invalid correction to leave bar unrepaired")
+	}
+	if bar.Close != 105 {
+		t.Fatalf("Expected close to remain unchanged, got %v", bar.Close)
+	}
+}
+
 func TestAnalyzeUnitMixups(t *testing.T) {
 	repairer := New(DefaultOptions())
 
@@ -176,6 +189,26 @@ func TestFixPricesSuddenChange(t *testing.T) {
 	// Prices should be scaled
 	if math.Abs(result[0].Close-102) > 1 {
 		t.Errorf("Expected Close ~102, got %.2f", result[0].Close)
+	}
+}
+
+func TestFixPricesSuddenChangeStopsAfterFirstUnitSwitch(t *testing.T) {
+	repairer := New(DefaultOptions())
+	bars := []models.Bar{
+		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
+		{Date: time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
+		{Date: time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC), Open: 100, High: 105, Low: 98, Close: 100, AdjClose: 100, Volume: 10},
+		{Date: time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
+		{Date: time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
+	}
+
+	result := repairer.fixPricesSuddenChange(bars, 100.0)
+
+	if math.Abs(result[0].Close-100) > 0.001 || math.Abs(result[1].Close-100) > 0.001 {
+		t.Fatalf("Expected first switch correction to remain applied once, got closes %.2f %.2f", result[0].Close, result[1].Close)
+	}
+	if math.Abs(result[2].Close-100) > 0.001 {
+		t.Fatalf("Expected bars at and after switch to remain unchanged by unit-switch correction, got %.2f", result[2].Close)
 	}
 }
 

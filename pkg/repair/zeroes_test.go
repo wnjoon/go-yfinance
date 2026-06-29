@@ -57,6 +57,11 @@ func TestIsZeroBar(t *testing.T) {
 			bar:      models.Bar{Open: math.NaN(), High: 105, Low: 98, Close: 102},
 			expected: true,
 		},
+		{
+			name:     "Inf Adjacent Price",
+			bar:      models.Bar{Open: 100, High: math.Inf(1), Low: 98, Close: 102},
+			expected: true,
+		},
 	}
 
 	for _, tt := range tests {

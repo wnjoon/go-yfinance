@@ -258,7 +258,7 @@ var YahooSuffixToMIC map[string]string
 ```
 
 <a name="AllMICs"></a>
-## func AllMICs
+## func [AllMICs](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L282>)
 
 ```go
 func AllMICs() []string
@@ -267,7 +267,7 @@ func AllMICs() []string
 AllMICs returns all supported MIC codes.
 
 <a name="AllYahooSuffixes"></a>
-## func AllYahooSuffixes
+## func [AllYahooSuffixes](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L291>)
 
 ```go
 func AllYahooSuffixes() []string
@@ -276,7 +276,7 @@ func AllYahooSuffixes() []string
 AllYahooSuffixes returns all supported Yahoo Finance suffixes \(excluding empty for US\).
 
 <a name="CacheTimezone"></a>
-## func CacheTimezone
+## func [CacheTimezone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L100>)
 
 ```go
 func CacheTimezone(exchange, timezone string)
@@ -285,7 +285,7 @@ func CacheTimezone(exchange, timezone string)
 CacheTimezone stores a timezone for an exchange in the cache.
 
 <a name="ConvertToTimezone"></a>
-## func ConvertToTimezone
+## func [ConvertToTimezone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L121>)
 
 ```go
 func ConvertToTimezone(t time.Time, timezone string) time.Time
@@ -294,7 +294,7 @@ func ConvertToTimezone(t time.Time, timezone string) time.Time
 ConvertToTimezone converts a UTC time to the specified timezone.
 
 <a name="FormatYahooTicker"></a>
-## func FormatYahooTicker
+## func [FormatYahooTicker](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L248>)
 
 ```go
 func FormatYahooTicker(baseTicker, mic string) string
@@ -310,7 +310,7 @@ FormatYahooTicker("AAPL", "XNYS") returns "AAPL" (no suffix for US)
 ```
 
 <a name="GetMIC"></a>
-## func GetMIC
+## func [GetMIC](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L234>)
 
 ```go
 func GetMIC(suffix string) string
@@ -319,7 +319,7 @@ func GetMIC(suffix string) string
 GetMIC returns the MIC code for a given Yahoo Finance ticker suffix. Returns an empty string if the suffix is not found.
 
 <a name="GetTimezone"></a>
-## func GetTimezone
+## func [GetTimezone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L82>)
 
 ```go
 func GetTimezone(exchange string) string
@@ -328,7 +328,7 @@ func GetTimezone(exchange string) string
 GetTimezone returns the timezone for a given exchange code. It first checks the cache, then falls back to the known exchange timezones. Returns "America/New\_York" as default if exchange is unknown.
 
 <a name="GetYahooSuffix"></a>
-## func GetYahooSuffix
+## func [GetYahooSuffix](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L225>)
 
 ```go
 func GetYahooSuffix(mic string) string
@@ -337,7 +337,7 @@ func GetYahooSuffix(mic string) string
 GetYahooSuffix returns the Yahoo Finance ticker suffix for a given MIC code. Returns an empty string if the MIC code is not found or maps to a US exchange.
 
 <a name="IsUSExchange"></a>
-## func IsUSExchange
+## func [IsUSExchange](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L272>)
 
 ```go
 func IsUSExchange(mic string) bool
@@ -346,7 +346,7 @@ func IsUSExchange(mic string) bool
 IsUSExchange returns true if the MIC code represents a US exchange.
 
 <a name="IsValidTimezone"></a>
-## func IsValidTimezone
+## func [IsValidTimezone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L115>)
 
 ```go
 func IsValidTimezone(name string) bool
@@ -355,7 +355,7 @@ func IsValidTimezone(name string) bool
 IsValidTimezone checks if a timezone name is valid.
 
 <a name="LoadLocation"></a>
-## func LoadLocation
+## func [LoadLocation](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L106>)
 
 ```go
 func LoadLocation(name string) *time.Location
@@ -364,7 +364,7 @@ func LoadLocation(name string) *time.Location
 LoadLocation loads a timezone location by name. Returns nil if the timezone is invalid.
 
 <a name="MarketIsOpen"></a>
-## func MarketIsOpen
+## func [MarketIsOpen](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L137>)
 
 ```go
 func MarketIsOpen(exchange string) bool
@@ -373,7 +373,7 @@ func MarketIsOpen(exchange string) bool
 MarketIsOpen checks if a market is currently open based on typical trading hours. This is a simplified check and doesn't account for holidays.
 
 <a name="ParseTimestamp"></a>
-## func ParseTimestamp
+## func [ParseTimestamp](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/timezone.go#L130>)
 
 ```go
 func ParseTimestamp(timestamp int64, timezone string) time.Time
@@ -382,7 +382,7 @@ func ParseTimestamp(timestamp int64, timezone string) time.Time
 ParseTimestamp parses a Unix timestamp and converts to the specified timezone.
 
 <a name="ParseYahooTicker"></a>
-## func ParseYahooTicker
+## func [ParseYahooTicker](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/utils/mic.go#L262>)
 
 ```go
 func ParseYahooTicker(ticker string) (baseTicker, suffix string)

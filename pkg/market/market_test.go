@@ -11,11 +11,11 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create Market: %v", err)
 	}
-	defer m.Close()
-
 	if m == nil {
 		t.Fatal("Market should not be nil")
+		return
 	}
+	defer m.Close()
 
 	if m.market != string(models.MarketRegionUS) {
 		t.Errorf("Expected market 'US', got '%s'", m.market)
@@ -325,6 +325,7 @@ func TestStatusIntegration(t *testing.T) {
 
 	if status == nil {
 		t.Fatal("Status should not be nil")
+		return
 	}
 
 	t.Logf("Market ID: %s", status.ID)

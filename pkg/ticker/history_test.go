@@ -1,6 +1,7 @@
 package ticker
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -78,9 +79,32 @@ func TestParseCapitalGainEvents(t *testing.T) {
 	}
 }
 
+func TestChartBarAtReplacesInfiniteAdjClose(t *testing.T) {
+	close := 100.0
+	adjClose := math.Inf(1)
+	quote := models.ChartQuote{Close: []*float64{&close}}
+
+	bar := chartBarAt(0, 1704067200, quote, []*float64{&adjClose})
+
+	if bar.AdjClose != close {
+		t.Fatalf("Expected infinite AdjClose to fall back to Close %.2f, got %v", close, bar.AdjClose)
+	}
+}
+
+func TestApplyAutoAdjustSkipsInfiniteRatio(t *testing.T) {
+	bar := models.Bar{Open: 100, High: 110, Low: 95, Close: 100, AdjClose: math.Inf(1)}
+
+	applyAutoAdjust(&bar, true)
+
+	if bar.Open != 100 || bar.High != 110 || bar.Low != 95 || bar.Close != 100 {
+		t.Fatalf("Expected auto-adjust to skip infinite ratio, got %+v", bar)
+	}
+}
+
 func TestRepairOptionsFromHistoryParams(t *testing.T) {
 	params := models.HistoryParams{
 		Interval: "1d",
+		PrePost:  true,
 		RepairOptions: &models.RepairOptions{
 			FixUnitMixups:   true,
 			FixZeroes:       false,
@@ -101,6 +125,9 @@ func TestRepairOptionsFromHistoryParams(t *testing.T) {
 	}
 	if opts.Interval != "1d" {
 		t.Errorf("Expected interval 1d, got %s", opts.Interval)
+	}
+	if !opts.PrePost {
+		t.Error("Expected pre/post flag to be propagated")
 	}
 	if opts.Timezone != "America/New_York" {
 		t.Errorf("Expected timezone America/New_York, got %s", opts.Timezone)

@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"time"
 
+	"github.com/wnjoon/go-yfinance/internal/endpoints"
 	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
@@ -43,8 +45,25 @@ func (t *Ticker) Info() (*models.Info, error) {
 		return nil, fmt.Errorf("failed to fetch info: %w", err)
 	}
 
+	info, err := t.parseInfoResponse(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if trailingPegRatio, err := t.fetchTrailingPegRatio(); err == nil && trailingPegRatio != nil {
+		info.TrailingPegRatio = *trailingPegRatio
+	}
+
+	// Cache the info
+	t.mu.Lock()
+	t.infoCache = info
+	t.mu.Unlock()
+
+	return info, nil
+}
+
+func (t *Ticker) parseInfoResponse(body string) (*models.Info, error) {
 	var summaryResp models.QuoteSummaryResponse
-	if err := json.Unmarshal([]byte(resp.Body), &summaryResp); err != nil {
+	if err := json.Unmarshal([]byte(body), &summaryResp); err != nil {
 		return nil, client.WrapInvalidResponseError(err)
 	}
 
@@ -57,14 +76,54 @@ func (t *Ticker) Info() (*models.Info, error) {
 	}
 
 	result := summaryResp.QuoteSummary.Result[0]
-	info := t.parseInfo(&result)
+	return t.parseInfo(&result), nil
+}
 
-	// Cache the info
-	t.mu.Lock()
-	t.infoCache = info
-	t.mu.Unlock()
+func (t *Ticker) fetchTrailingPegRatio() (*float64, error) {
+	params := url.Values{}
+	params.Set("symbol", t.symbol)
+	params.Set("type", "trailingPegRatio")
+	params.Set("period1", fmt.Sprintf("%d", time.Now().UTC().Truncate(24*time.Hour).AddDate(0, -6, 0).Unix()))
+	params.Set("period2", fmt.Sprintf("%d", time.Now().UTC().Truncate(24*time.Hour).Add(24*time.Hour).Unix()))
 
-	return info, nil
+	apiURL := fmt.Sprintf("%s/ws/fundamentals-timeseries/v1/finance/timeseries/%s", endpoints.Query1URL, url.PathEscape(t.symbol))
+	resp, err := t.getWithCrumb(apiURL, params)
+	if err != nil {
+		return nil, err
+	}
+	return parseTrailingPegRatioTimeseries(resp.Body)
+}
+
+func parseTrailingPegRatioTimeseries(body string) (*float64, error) {
+	var rawResp map[string]interface{}
+	if err := json.Unmarshal([]byte(body), &rawResp); err != nil {
+		return nil, client.WrapInvalidResponseError(err)
+	}
+
+	jsonResult, _ := rawResp["timeseries"].(map[string]interface{})
+	if jsonResult == nil {
+		jsonResult, _ = rawResp["finance"].(map[string]interface{})
+	}
+	if errObj, ok := jsonResult["error"]; ok && errObj != nil {
+		return nil, fmt.Errorf("API error: %v", errObj)
+	}
+
+	result, _ := jsonResult["result"].([]interface{})
+	if len(result) == 0 {
+		return nil, nil
+	}
+	keydict, _ := result[0].(map[string]interface{})
+	points, _ := keydict["trailingPegRatio"].([]interface{})
+	if len(points) == 0 {
+		return nil, nil
+	}
+	last, _ := points[len(points)-1].(map[string]interface{})
+	reported, _ := last["reportedValue"].(map[string]interface{})
+	raw, ok := reported["raw"].(float64)
+	if !ok {
+		return nil, nil
+	}
+	return &raw, nil
 }
 
 // parseInfo converts the raw quoteSummary response to Info struct.

@@ -14,6 +14,7 @@ func TestNew(t *testing.T) {
 
 	if s == nil {
 		t.Fatal("Screener should not be nil")
+		return
 	}
 
 	if s.ownsClient != true {
@@ -117,6 +118,7 @@ func TestNewEquityQuery(t *testing.T) {
 
 	if query == nil {
 		t.Fatal("Query should not be nil")
+		return
 	}
 
 	if query.QuoteType() != "EQUITY" {
@@ -235,6 +237,24 @@ func TestQueryValidation(t *testing.T) {
 				t.Errorf("Expected no error but got: %v", err)
 			}
 		})
+	}
+}
+
+func TestEquityScreenerEPSFields(t *testing.T) {
+	validEPSFields := []string{
+		"netepsbasic.lasttwelvemonths",
+		"netepsdiluted.lasttwelvemonths",
+	}
+
+	for _, field := range validEPSFields {
+		if _, err := models.NewEquityQuery("eq", []any{field, 0}); err != nil {
+			t.Fatalf("Expected %q to be a valid equity screener field: %v", field, err)
+		}
+	}
+
+	concatenated := "netepsbasic.lasttwelvemonthsnetepsdiluted.lasttwelvemonths"
+	if _, err := models.NewEquityQuery("eq", []any{concatenated, 0}); err == nil {
+		t.Fatalf("Expected concatenated EPS field %q to be invalid", concatenated)
 	}
 }
 

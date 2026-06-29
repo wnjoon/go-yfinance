@@ -7,11 +7,11 @@ import (
 
 func TestNew(t *testing.T) {
 	c := New()
-	defer c.Close()
-
 	if c == nil {
 		t.Fatal("Expected non-nil cache")
+		return
 	}
+	defer c.Close()
 
 	if c.ttl != DefaultTTL {
 		t.Errorf("Expected TTL %v, got %v", DefaultTTL, c.ttl)

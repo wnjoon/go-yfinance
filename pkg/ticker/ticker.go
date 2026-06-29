@@ -20,17 +20,18 @@ type Ticker struct {
 	auth   *client.AuthManager
 
 	// Cached data
-	mu              sync.RWMutex
-	infoCache       *models.Info
-	quoteCache      *models.Quote
-	historyMeta     *models.ChartMeta
-	optionsCache    *optionsCache
-	financialsCache *financialsCache
-	analysisCache   *analysisCache
-	valuationCache  *models.ValuationMeasures
-	holdersCache    *holdersCache
-	calendarCache   *models.Calendar
-	newsCache       []models.NewsArticle
+	mu                sync.RWMutex
+	infoCache         *models.Info
+	quoteCache        *models.Quote
+	historyMeta       *models.ChartMeta
+	optionsCache      *optionsCache
+	financialsCache   *financialsCache
+	financialsChunked bool
+	analysisCache     *analysisCache
+	valuationCache    map[string]*models.ValuationMeasures
+	holdersCache      *holdersCache
+	calendarCache     *models.Calendar
+	newsCache         []models.NewsArticle
 
 	// Ownership tracking for cleanup
 	ownsClient bool

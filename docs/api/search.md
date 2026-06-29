@@ -71,7 +71,7 @@ All Search methods are safe for concurrent use from multiple goroutines.
 
 
 <a name="Option"></a>
-## type Option
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L21>)
 
 Option is a function that configures a Search instance.
 
@@ -80,7 +80,7 @@ type Option func(*Search)
 ```
 
 <a name="WithClient"></a>
-### func WithClient
+### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L24>)
 
 ```go
 func WithClient(c *client.Client) Option
@@ -89,7 +89,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client.
 
 <a name="Search"></a>
-## type Search
+## type [Search](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L15-L18>)
 
 Search provides Yahoo Finance search functionality.
 
@@ -100,7 +100,7 @@ type Search struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L40>)
 
 ```go
 func New(opts ...Option) (*Search, error)
@@ -119,7 +119,7 @@ defer s.Close()
 ```
 
 <a name="Search.Close"></a>
-### func \(\*Search\) Close
+### func \(\*Search\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L61>)
 
 ```go
 func (s *Search) Close()
@@ -128,7 +128,7 @@ func (s *Search) Close()
 Close releases resources used by the Search instance.
 
 <a name="Search.News"></a>
-### func \(\*Search\) News
+### func \(\*Search\) [News](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L164>)
 
 ```go
 func (s *Search) News(query string, newsCount int) ([]models.SearchNews, error)
@@ -146,7 +146,7 @@ for _, n := range news {
 ```
 
 <a name="Search.Quotes"></a>
-### func \(\*Search\) Quotes
+### func \(\*Search\) [Quotes](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L142>)
 
 ```go
 func (s *Search) Quotes(query string, maxResults int) ([]models.SearchQuote, error)
@@ -164,7 +164,7 @@ for _, q := range quotes {
 ```
 
 <a name="Search.Search"></a>
-### func \(\*Search\) Search
+### func \(\*Search\) [Search](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L80>)
 
 ```go
 func (s *Search) Search(query string) (*models.SearchResult, error)
@@ -187,7 +187,7 @@ for _, quote := range result.Quotes {
 ```
 
 <a name="Search.SearchWithParams"></a>
-### func \(\*Search\) SearchWithParams
+### func \(\*Search\) [SearchWithParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/search/search.go#L97>)
 
 ```go
 func (s *Search) SearchWithParams(params models.SearchParams) (*models.SearchResult, error)

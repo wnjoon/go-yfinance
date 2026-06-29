@@ -11,11 +11,11 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create Sector: %v", err)
 	}
-	defer s.Close()
-
 	if s == nil {
 		t.Fatal("Sector should not be nil")
+		return
 	}
+	defer s.Close()
 
 	if s.key != "technology" {
 		t.Errorf("Expected key 'technology', got '%s'", s.key)
@@ -249,6 +249,7 @@ func TestDataIntegration(t *testing.T) {
 
 	if data == nil {
 		t.Fatal("Data should not be nil")
+		return
 	}
 
 	t.Logf("Sector Key: %s", data.Key)
