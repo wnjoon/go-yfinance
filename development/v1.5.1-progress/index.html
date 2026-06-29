@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.4.0-progress/">
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.5.1-progress/">
       
       
-        <link rel="prev" href="../v1.5.1-progress/">
+        <link rel="prev" href="../release-readiness-checklist/">
       
       
-        <link rel="next" href="../v1.3.0-progress/">
+        <link rel="next" href="../v1.4.0-progress/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>v1.4.0 Progress - go-yfinance Docs</title>
+        <title>v1.5.1 Progress - go-yfinance Docs</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#go-yfinance-v140-development-progress" class="md-skip">
+        <a href="#go-yfinance-v151-development-progress" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v1.4.0 Progress
+              v1.5.1 Progress
             
           </span>
         </div>
@@ -1285,34 +1285,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../v1.5.1-progress/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v1.5.1 Progress
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -1332,7 +1304,7 @@
   <span class="md-ellipsis">
     
   
-    v1.4.0 Progress
+    v1.5.1 Progress
   
 
     
@@ -1350,7 +1322,7 @@
   <span class="md-ellipsis">
     
   
-    v1.4.0 Progress
+    v1.5.1 Progress
   
 
     
@@ -1398,21 +1370,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changes-from-python-yfinance-v130-v140" class="md-nav__link">
+  <a href="#upstream-release-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changes from Python yfinance v1.3.0 -&gt; v1.4.0
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#python-yfinance-v141-review" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Python yfinance v1.4.1 Review
+        Upstream Release Scope
       
     </span>
   </a>
@@ -1432,10 +1393,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#phase-1-locale-and-market-correctness" class="md-nav__link">
+  <a href="#phase-0-audit-and-regression-scaffold" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 1: Locale and Market Correctness
+        Phase 0: Audit and Regression Scaffold
       
     </span>
   </a>
@@ -1443,10 +1404,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-2-sector-and-industry-region-scoping" class="md-nav__link">
+  <a href="#phase-1-low-risk-correctness-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 2: Sector and Industry Region Scoping
+        Phase 1: Low-Risk Correctness Fixes
       
     </span>
   </a>
@@ -1454,10 +1415,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-3-manual-yahoo-login-cookies" class="md-nav__link">
+  <a href="#phase-2-valuation-measures-api-migration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 3: Manual Yahoo Login Cookies
+        Phase 2: Valuation Measures API Migration
       
     </span>
   </a>
@@ -1465,10 +1426,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-4-history-and-repair-stability" class="md-nav__link">
+  <a href="#phase-3-fundamentals-chunked-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 4: History and Repair Stability
+        Phase 3: Fundamentals Chunked Fallback
       
     </span>
   </a>
@@ -1476,10 +1437,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-5-documentation-and-verification" class="md-nav__link">
+  <a href="#phase-4-authentication-parity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 5: Documentation and Verification
+        Phase 4: Authentication Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-price-repair-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Price Repair Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-documentation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Documentation and Verification
       
     </span>
   </a>
@@ -1528,6 +1511,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1673,21 +1684,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changes-from-python-yfinance-v130-v140" class="md-nav__link">
+  <a href="#upstream-release-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changes from Python yfinance v1.3.0 -&gt; v1.4.0
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#python-yfinance-v141-review" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Python yfinance v1.4.1 Review
+        Upstream Release Scope
       
     </span>
   </a>
@@ -1707,10 +1707,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#phase-1-locale-and-market-correctness" class="md-nav__link">
+  <a href="#phase-0-audit-and-regression-scaffold" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 1: Locale and Market Correctness
+        Phase 0: Audit and Regression Scaffold
       
     </span>
   </a>
@@ -1718,10 +1718,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-2-sector-and-industry-region-scoping" class="md-nav__link">
+  <a href="#phase-1-low-risk-correctness-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 2: Sector and Industry Region Scoping
+        Phase 1: Low-Risk Correctness Fixes
       
     </span>
   </a>
@@ -1729,10 +1729,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-3-manual-yahoo-login-cookies" class="md-nav__link">
+  <a href="#phase-2-valuation-measures-api-migration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 3: Manual Yahoo Login Cookies
+        Phase 2: Valuation Measures API Migration
       
     </span>
   </a>
@@ -1740,10 +1740,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-4-history-and-repair-stability" class="md-nav__link">
+  <a href="#phase-3-fundamentals-chunked-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 4: History and Repair Stability
+        Phase 3: Fundamentals Chunked Fallback
       
     </span>
   </a>
@@ -1751,10 +1751,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-5-documentation-and-verification" class="md-nav__link">
+  <a href="#phase-4-authentication-parity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 5: Documentation and Verification
+        Phase 4: Authentication Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-price-repair-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Price Repair Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-documentation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Documentation and Verification
       
     </span>
   </a>
@@ -1819,156 +1841,220 @@
   
 
 
-<h1 id="go-yfinance-v140-development-progress">go-yfinance v1.4.0 Development Progress</h1>
+<h1 id="go-yfinance-v151-development-progress">go-yfinance v1.5.1 Development Progress</h1>
 <blockquote>
-<p>Last Updated: 2026-05-24</p>
+<p>Last Updated: 2026-06-29</p>
 </blockquote>
 <h2 id="overview">Overview</h2>
-<p>Implementation plan and progress tracking for Python yfinance v1.4.0 parity.
-This release focuses on authentication, locale/region scoping, market endpoint
-correctness, and history/repair stability fixes rather than a large new data
-surface.</p>
+<p>Implementation plan and progress tracking for Python yfinance v1.5.1 parity.
+Python yfinance v1.5.0 was retracted, so this work targets the corrected
+v1.5.1 release line. The release combines two user-visible data-path changes
+with several defensive fixes around Yahoo response shape, authentication, and
+price repair edge cases.</p>
+<p>This document records the implementation plan before code changes so that each
+upstream item can be tracked as implemented, intentionally skipped, or verified
+as not applicable to Go.</p>
 <h2 id="branch-structure">Branch Structure</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>main
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/v1.4.0-parity
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/v1.5.1-parity
 </code></pre></div>
 <hr />
-<h2 id="changes-from-python-yfinance-v130-v140">Changes from Python yfinance v1.3.0 -&gt; v1.4.0</h2>
+<h2 id="upstream-release-scope">Upstream Release Scope</h2>
 <table>
 <thead>
 <tr>
-<th>Upstream PR</th>
+<th>Upstream Item</th>
 <th>Python Change</th>
-<th>Go Status</th>
+<th>Initial Go Assessment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>#2761</td>
-<td>Add <code>yf.Auth</code> for manually supplied Yahoo <code>T</code>/<code>Y</code> login cookies</td>
-<td>Done: added login-cookie setting, user parsing, and cookie merge support</td>
+<td>Release 1.5.0</td>
+<td>Retracted release</td>
+<td>Do not target directly; use v1.5.1 as the parity baseline</td>
 </tr>
 <tr>
-<td>#2803</td>
-<td>Add ISO alpha-2 region scoping to <code>Sector</code> and <code>Industry</code></td>
-<td>Done: added <code>WithRegion</code> options and normalized region scoping</td>
+<td>Release 1.5.1</td>
+<td>Re-published 1.5.x changes after merging dev branch</td>
+<td>Target release for this branch</td>
 </tr>
 <tr>
-<td>#2802</td>
-<td>Allow <code>curl_cffi</code> fallback to <code>requests</code></td>
-<td>Not directly applicable; evaluate optional <code>net/http</code> fallback separately</td>
+<td>#2811</td>
+<td>Fall back to chunked requests when single-URL fundamentals fetch fails or times out</td>
+<td>Done: Go financials retries failed/empty/malformed single requests with 60-key chunks and keeps sticky chunked mode on success</td>
 </tr>
 <tr>
-<td>#2804</td>
-<td>Add global locale config for v7/v10 ticker endpoints</td>
-<td>Done: added <code>config.SetLocale</code> and propagated <code>lang</code>/<code>region</code> to ticker v7/v10, lookup, and calendars endpoints</td>
+<td>#2845</td>
+<td>Determine login state and subscription tier from Yahoo subscriptions API</td>
+<td>Done: <code>CheckLogin()</code> now uses the subscriptions API and <code>SubscriptionTier()</code> exposes Yahoo tier names</td>
 </tr>
 <tr>
-<td>#2801</td>
-<td>Validate market regions and avoid misleading non-US status</td>
-<td>Done: added <code>MarketRegion</code>, normalized legacy market inputs, and switched market APIs to <code>market</code> params</td>
+<td>#2850</td>
+<td>Preserve login cookies across cookie-strategy switches</td>
+<td>Done: Go merges named cookies, preserves existing jar entries when login cookies are set, and invalidates only the stale crumb</td>
 </tr>
 <tr>
-<td>#2805</td>
-<td>Make Python <code>download()</code> reentrant by removing shared globals</td>
-<td>Mostly not applicable; Go already uses per-call result maps</td>
+<td>#2851</td>
+<td>Replace valuation-measures HTML scrape with fundamentals-timeseries API; add <code>freq</code> and <code>periods</code></td>
+<td>Done: Go now fetches fundamentals-timeseries, supports freq-specific cache and periods slicing, and exposes raw numeric cells</td>
 </tr>
 <tr>
-<td>#2825</td>
-<td>Preserve localized intraday download timezone</td>
-<td>Planned review: add opt-in exchange-timezone localization if needed</td>
+<td>#2853</td>
+<td>Normalize configured proxy strings</td>
+<td>Done for Go shape: CycleTLS accepts a single proxy string, so config/client now trim and pass the string through request options</td>
 </tr>
 <tr>
-<td>#2777</td>
-<td>Preserve repair choice in <code>history_metadata()</code></td>
-<td>Done: connected <code>HistoryParams.Repair</code> to Go repair pipeline</td>
+<td>#2863 / #2877</td>
+<td>Guard complementary info parsing against empty, missing, or malformed timeseries result</td>
+<td>Done: <code>Info()</code> now fetches <code>trailingPegRatio</code> from fundamentals-timeseries and treats sparse/malformed cells as missing</td>
 </tr>
 <tr>
-<td>#2778 / #2794</td>
-<td>Harden history parsing for malformed or null chart payloads</td>
-<td>Planned: add defensive parsing tests and typed errors</td>
+<td>Commit <code>974fac8</code></td>
+<td>Fix <code>_fetch_info</code> handling of <code>None</code> responses</td>
+<td>Done for analogous quoteSummary path: added parser tests for empty, missing, and null result payloads</td>
 </tr>
 <tr>
-<td>#2780</td>
-<td>Fix 1-month interval comparison across years</td>
-<td>Planned review for analogous Go interval logic</td>
+<td>#2867</td>
+<td>Fix missing comma between two screener EPS fields</td>
+<td>Done: split the Go constants and added regression coverage</td>
 </tr>
 <tr>
-<td>#2797</td>
-<td>Fix dividends on unlisted tickers</td>
-<td>Planned: verify empty/missing chart action behavior</td>
+<td>#2842</td>
+<td>Fix price-repair unit-switch sometimes applying twice</td>
+<td>Done for Go shape: unit-switch correction stops after the first detected switch, preventing overlapping prefix re-correction</td>
 </tr>
 <tr>
-<td>#2810</td>
-<td>Simplify phantom-dividend repair and remove ticker allowlist</td>
-<td>Planned: compare Go dividend repair behavior and tests</td>
+<td>#2843</td>
+<td>Avoid premarket false-positive bad-dividend repair</td>
+<td>Done for Go shape: intraday pre/post dividend too-small detection now suppresses recovered low-price drops</td>
 </tr>
 <tr>
-<td>#2821</td>
-<td>Drop <code>frozendict</code> hard dependency</td>
-<td>Python-only dependency cleanup; not applicable</td>
+<td>#2859</td>
+<td>Price repair: handle <code>NaN</code> volume</td>
+<td>Reviewed for Go shape: parsed volume is <code>int64</code>, so direct <code>NaN</code> volume is not representable; added non-finite correction guards around repair factors</td>
 </tr>
 <tr>
-<td>#2779 / #2792</td>
-<td>Typo and test maintenance</td>
-<td>Not applicable unless docs/tests share wording</td>
+<td>#2860</td>
+<td>Dividend repair: handle <code>Adj Close</code> going to infinity</td>
+<td>Done for Go shape: non-finite adjusted close is normalized on parse and guarded in auto-adjust/dividend repair</td>
 </tr>
-</tbody>
-</table>
-<h2 id="python-yfinance-v141-review">Python yfinance v1.4.1 Review</h2>
-<table>
-<thead>
 <tr>
-<th>Upstream PR</th>
-<th>Python Change</th>
-<th>Go Status</th>
+<td>Commit <code>df54d12</code></td>
+<td>Ensure parsed OHLC/Adj Close columns are float when <code>Adj Close</code> contains infinity</td>
+<td>Done for Go shape: added value-level <code>Inf</code> guards and regression tests</td>
 </tr>
-</thead>
-<tbody>
 <tr>
-<td>#2832</td>
-<td>Preserve <code>Date</code>/<code>Datetime</code> pandas index name in <code>yf.download()</code> output</td>
-<td>Not applicable: Go returns <code>map[string][]models.Bar</code> and stores timestamps in <code>models.Bar.Date</code>, with no pandas index metadata</td>
+<td>Docs-only patches</td>
+<td>CONTRIBUTING typo/link updates</td>
+<td>Not applicable unless local docs copy equivalent text</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="implementation-plan">Implementation Plan</h2>
-<h3 id="phase-1-locale-and-market-correctness">Phase 1: Locale and Market Correctness</h3>
+<h3 id="phase-0-audit-and-regression-scaffold">Phase 0: Audit and Regression Scaffold</h3>
 <ul>
-<li>Add thread-safe locale fields to <code>pkg/config</code> with defaults <code>en-US</code> and <code>US</code>.</li>
-<li>Propagate locale to v7/v10 quote, quoteSummary, info, calendar, lookup, and calendars endpoints where applicable.</li>
-<li>Add <code>models.MarketRegion</code> values matching Python v1.4.0.</li>
-<li>Recheck <code>pkg/market</code> request parameters: Python uses <code>market</code>, while current Go code sends <code>region</code>.</li>
-<li>Return an explicit unavailable status for non-US markettime responses that Yahoo answers with U.S. data.</li>
+<li>Create a per-upstream-item checklist from the table above and update statuses
+  as code lands.</li>
+<li>Add or adjust tests before behavior changes where practical:</li>
+<li>screener EPS field validation;</li>
+<li><code>Info()</code> nil, empty, and missing-result response handling;</li>
+<li>valuation API parser with missing measures and missing cells;</li>
+<li>financials chunk fallback success, sticky mode, and rollback on chunk failure;</li>
+<li>price repair fixtures for premarket false positives, <code>NaN</code> volume, and <code>Inf</code>
+    adjusted close.</li>
+<li>Preserve existing user work in unrelated files. At branch creation, the
+  worktree already had a pre-existing modification in <code>pkg/repair/CLAUDE.md</code>.</li>
 </ul>
-<h3 id="phase-2-sector-and-industry-region-scoping">Phase 2: Sector and Industry Region Scoping</h3>
+<h3 id="phase-1-low-risk-correctness-fixes">Phase 1: Low-Risk Correctness Fixes</h3>
 <ul>
-<li>Add <code>WithRegion(region string)</code> options to <code>pkg/sector</code> and <code>pkg/industry</code>.</li>
-<li>Normalize region with <code>strings.TrimSpace</code> and <code>strings.ToUpper</code>.</li>
-<li>Preserve default U.S. behavior.</li>
-<li>Add tests proving region appears in request params and cache behavior remains per instance.</li>
+<li>[x] Split the concatenated screener fields into
+  <code>netepsbasic.lasttwelvemonths</code> and <code>netepsdiluted.lasttwelvemonths</code>.</li>
+<li>[x] Add regression coverage proving both fields validate and the concatenated key
+  is absent.</li>
+<li>[x] Review proxy configuration flow. CycleTLS accepts a single proxy string,
+  so Go does not need Python's <code>{"http": proxy, "https": proxy}</code> mapping. The
+  configured string is now trimmed and passed to CycleTLS request options.</li>
+<li>[x] Harden <code>Info()</code> parsing for empty/missing Yahoo result payloads without
+  changing successful response behavior.</li>
 </ul>
-<h3 id="phase-3-manual-yahoo-login-cookies">Phase 3: Manual Yahoo Login Cookies</h3>
+<h3 id="phase-2-valuation-measures-api-migration">Phase 2: Valuation Measures API Migration</h3>
 <ul>
-<li>Add a public API for setting Yahoo login cookies <code>T</code> and <code>Y</code>.</li>
-<li>Change client cookie storage from a single raw cookie string to mergeable named cookies.</li>
-<li>Add <code>CheckLogin()</code> support by parsing Yahoo Finance's <code>nimbus-benji-config</code> user payload.</li>
-<li>Ensure login cookies and crumb/cookie authentication coexist without overwriting each other.</li>
+<li>[x] Replace key-statistics HTML scraping with the fundamentals-timeseries API.</li>
+<li>[x] Keep <code>Ticker.Valuation()</code> and <code>Ticker.ValuationMeasures()</code> as compatibility
+  entry points using Python defaults: <code>freq="quarterly"</code> and <code>periods=5</code>.</li>
+<li>[x] Add a method form, <code>GetValuationMeasures(freq string, periods *int)</code>,
+  for callers that need <code>monthly</code>, <code>yearly</code>, <code>trailing</code>, or all periods.</li>
+<li>[x] Fetch current values from trailing series and period columns from the selected
+  frequency, matching Python's <code>Current</code> plus newest-first date columns shape.</li>
+<li>[x] Emit all nine valuation measure rows even when individual cells are missing.</li>
+<li>[x] Decide model compatibility carefully:</li>
+<li>Python v1.5.1 returns raw numeric cells with missing values represented as
+    null/NaN in DataFrame form.</li>
+<li>Existing Go <code>models.ValuationMeasures</code> exposed string values. The model now
+    stores nullable raw numeric cells in <code>RawValues</code>, adds <code>FloatValue()</code>, and
+    keeps <code>Value()</code> as a compatibility string helper.</li>
+<li>[x] Retire HTML parser tests and replace them with timeseries parser,
+  periods, invalid-input, and freq tests.</li>
 </ul>
-<h3 id="phase-4-history-and-repair-stability">Phase 4: History and Repair Stability</h3>
+<h3 id="phase-3-fundamentals-chunked-fallback">Phase 3: Fundamentals Chunked Fallback</h3>
 <ul>
-<li>Harden chart parsing for <code>chart=null</code>, <code>result=null</code>, missing quote payloads, and Yahoo error payloads.</li>
-<li>Decide whether <code>HistoryParams.Repair</code> should run <code>pkg/repair</code> automatically; implement or document explicitly.</li>
-<li>Review intraday timestamp behavior and add opt-in local exchange timezone conversion if it aligns with Go API expectations.</li>
-<li>Compare Python v1.4.0 repair changes with Go repair logic, especially phantom dividends and zero-volume statistics.</li>
+<li>[x] Add a small, shared state flag for fundamentals-timeseries chunked mode. The
+  state should live with the ticker/client data path rather than as a package
+  global.</li>
+<li>[x] Keep the fast path as a single request when the flag is false.</li>
+<li>[x] On timeout, transport failure, empty result, or malformed result from the
+  single request, retry using chunks of 60 keys.</li>
+<li>[x] If chunked retry succeeds, keep chunked mode for later fundamentals fetches on
+  the same data path to avoid repeated long-request timeouts.</li>
+<li>[x] If chunked retry also fails, revert the flag so future calls can retry the
+  fast path.</li>
+<li>[x] Add mock tests for chunk fallback, sticky mode, rollback behavior, and the
+  60-key chunk boundary.</li>
 </ul>
-<h3 id="phase-5-documentation-and-verification">Phase 5: Documentation and Verification</h3>
+<h3 id="phase-4-authentication-parity">Phase 4: Authentication Parity</h3>
 <ul>
-<li>Add <code>docs/releases/RELEASE_NOTES_v1.4.0.md</code>. New release notes should live under <code>docs/releases/</code>, not the repository root.</li>
-<li>Update README and docs index/navigation.</li>
-<li>Regenerate API docs if public APIs change.</li>
-<li>Run <code>go test ./...</code>; run broader checks if available.</li>
+<li>[x] Add the Yahoo subscriptions endpoint:
+  <code>https://query1.finance.yahoo.com/ws/obi-integration/v1/subscriptions</code>.</li>
+<li>[x] Change login checking to use the subscriptions response instead of parsing
+  the Yahoo Finance home page.</li>
+<li>[x] Add <code>SubscriptionTier()</code> returning <code>gold</code>, <code>silver</code>, <code>bronze</code>, <code>premium</code>,
+  <code>free</code>, or an empty/none state for not logged in.</li>
+<li>[x] Revisit <code>SetLoginCookies</code> API compatibility:</li>
+<li>Python now returns a bool after live validation.</li>
+<li>Go currently exposes <code>SetLoginCookies(cookieT, cookieY string)</code> with no
+    return. Prefer preserving it and adding <code>SetLoginCookiesAndCheck</code> or a
+    separate <code>CheckLogin</code> call unless a breaking change is explicitly chosen.</li>
+<li>[x] Ensure manually supplied login cookies merge into the existing cookie jar
+  and invalidate the cached crumb so the next request remints it under the login
+  cookies.</li>
+</ul>
+<h3 id="phase-5-price-repair-hardening">Phase 5: Price Repair Hardening</h3>
+<ul>
+<li>[x] Compare Go repair behavior against Python changes before editing algorithms.</li>
+<li>[x] Add targeted fixtures/tests first, especially around:</li>
+<li>[x] premarket dividend false positives;</li>
+<li>[x] <code>NaN</code> volume or absent volume before volume scaling;</li>
+<li>[x] adjusted close values that are <code>+Inf</code> or <code>-Inf</code>;</li>
+<li>[x] unit-switch repair that may run after currency standardization.</li>
+<li>[x] Apply the smallest algorithm changes needed to match Python behavior without
+  expanding repair scope.</li>
+<li>[x] Update repair docs if behavior or caveats change.</li>
+</ul>
+<h3 id="phase-6-documentation-and-verification">Phase 6: Documentation and Verification</h3>
+<ul>
+<li>[x] Update release notes under <code>docs/releases/</code>.</li>
+<li>[x] Update README/API docs only when public APIs change.</li>
+<li>[x] Run targeted package tests while developing.</li>
+<li>[x] Run the full verification set before completion:</li>
+<li>[x] <code>go test ./...</code></li>
+<li>[x] <code>go vet ./...</code></li>
+<li>[x] <code>golangci-lint run ./...</code> if available locally</li>
+<li>[x] <code>go test -v -race -coverprofile=coverage.out ./...</code></li>
+<li>[x] <code>make docs</code></li>
+<li>[x] <code>cp README.md docs/index.md</code></li>
+<li>[x] <code>make docs-build</code></li>
 </ul>
 <hr />
 <h2 id="verification-plan">Verification Plan</h2>
@@ -1981,59 +2067,81 @@ surface.</p>
 </thead>
 <tbody>
 <tr>
-<td>Unit tests for locale config and endpoint params</td>
-<td>Partial PASS: <code>go test ./pkg/config ./pkg/ticker ./pkg/calendars ./pkg/lookup</code></td>
+<td>Screener EPS field regression tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/screener</code></td>
 </tr>
 <tr>
-<td>Unit tests for market validation/status mismatch</td>
-<td>PASS: <code>go test ./pkg/market</code></td>
+<td><code>Info()</code> nil/empty/malformed response tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/ticker</code>, including sparse complementary <code>trailingPegRatio</code> timeseries</td>
 </tr>
 <tr>
-<td>Unit tests for sector/industry region options</td>
-<td>PASS: <code>go test ./pkg/sector ./pkg/industry</code></td>
+<td>Client proxy config pass-through tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/client</code></td>
 </tr>
 <tr>
-<td>Unit tests for login cookie merge and login parsing</td>
-<td>PASS: <code>go test ./pkg/client</code></td>
+<td>Valuation fundamentals-timeseries parser tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/ticker</code></td>
 </tr>
 <tr>
-<td>Unit tests for malformed chart responses</td>
-<td>Follow-up: deeper fixture coverage is still useful; existing chart parsing remains defensive</td>
+<td>Valuation public API compatibility tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/models ./pkg/ticker</code></td>
+</tr>
+<tr>
+<td>Financials chunk fallback tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/ticker</code></td>
+</tr>
+<tr>
+<td>Auth subscriptions and subscription-tier tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/client</code></td>
+</tr>
+<tr>
+<td>Login cookie preservation tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/client</code></td>
+</tr>
+<tr>
+<td>Price repair edge-case tests</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./pkg/repair ./pkg/ticker</code> for non-finite adjusted close, repair correction guards, intraday pre/post dividend false-positive suppression, and unit-switch single-application</td>
 </tr>
 <tr>
 <td><code>go test ./...</code></td>
 <td>PASS: <code>GOCACHE=/tmp/go-build-cache go test ./...</code></td>
 </tr>
 <tr>
-<td><code>go vet ./...</code></td>
-<td>PASS: <code>GOCACHE=/tmp/go-build-cache go vet ./...</code></td>
+<td>CI race/coverage test</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test -v -race -coverprofile=coverage.out ./...</code> with network-enabled integration tests</td>
 </tr>
 <tr>
-<td><code>golangci-lint run --timeout=5m ./...</code></td>
-<td>PASS: <code>GOCACHE=/tmp/go-build-cache GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run --timeout=5m ./...</code></td>
+<td>Broader lint/vet checks</td>
+<td>PASS: <code>GOCACHE=/tmp/go-build-cache go vet ./...</code>; PASS: <code>GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...</code>; PASS: <code>make lint</code> after updating the lint target for <code>golangci-lint</code> v2 package discovery</td>
 </tr>
 <tr>
-<td>Race tests</td>
-<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test -race ./...</code></td>
+<td>GoDoc/API docs generation</td>
+<td>PASS: <code>GOMARKDOC=/tmp/gobin/gomarkdoc make docs</code></td>
 </tr>
 <tr>
-<td>Coverage report</td>
-<td>PASS: <code>GOCACHE=/tmp/go-build-cache go test -coverprofile=coverage.out ./...</code>; total statement coverage <code>42.9%</code></td>
-</tr>
-<tr>
-<td>Go Report Card CLI</td>
-<td>Not run locally: <code>goreportcard-cli</code> is not installed; local substitutes above are clean</td>
+<td>MkDocs site build</td>
+<td>PASS: <code>make docs-build</code>; README was synced to <code>docs/index.md</code> before build</td>
 </tr>
 </tbody>
 </table>
+<hr />
 <h2 id="python-vs-go-call-structure-notes">Python vs Go Call Structure Notes</h2>
 <ul>
-<li>Python uses <code>YfData</code> as a process-wide singleton with a shared session/cookie jar. Go keeps explicit <code>client.Client</code> instances and <code>AuthManager</code> values, which is more idiomatic for resource ownership and caller-controlled sharing.</li>
-<li>Python <code>Auth.set_login_cookies(T, Y)</code> writes to the session cookie jar. Go <code>AuthManager.SetLoginCookies(T, Y)</code> writes mergeable named cookies into <code>client.Client</code>; this preserves crumb cookies instead of replacing the whole cookie header.</li>
-<li>Python <code>Auth.check_login()</code> parses the <code>nimbus-benji-config</code> script and returns <code>False</code> or raises depending on debug config. Go <code>CheckLogin()</code> parses the same script but returns <code>(bool, error)</code>, which is the Go-native way to expose parse/network failures.</li>
-<li>Python <code>Market(MarketRegion.X)</code> validates enum values and sends <code>market=&lt;value&gt;</code> to both market summary and markettime. Go mirrors the endpoint parameter and adds <code>NewWithRegion(models.MarketRegionX)</code> while retaining legacy <code>us_market</code> aliases for compatibility.</li>
-<li>Python <code>Sector</code>/<code>Industry</code> accept <code>region</code> in the constructor and call <code>/v1/finance/sectors|industries/{key}</code> with <code>formatted=true</code>, <code>withReturns=true</code>, <code>lang=en-US</code>, and <code>region=&lt;region&gt;</code>. Go mirrors the endpoint shape, but expresses region as <code>WithRegion(...)</code> because the package already uses functional options.</li>
-<li>Python keeps the domain endpoint <code>lang</code> fixed at <code>en-US</code>. Go intentionally defaults to <code>en-US</code> but allows callers to override it through <code>config.SetLocale</code>, applying the same locale behavior consistently across Yahoo endpoints that accept <code>lang</code>.</li>
+<li>Python uses a process-wide <code>YfData</code> singleton and stores the sticky
+  fundamentals chunked flag there. Go should keep equivalent state scoped to the
+  client/ticker data path so callers can control sharing through object reuse.</li>
+<li>Python's valuation result is a pandas DataFrame. Go should preserve a
+  structured model with stable JSON tags and helper methods rather than expose a
+  DataFrame-like abstraction.</li>
+<li>Python changed <code>Auth.set_login_cookies()</code> to validate and return <code>bool</code>. Go's
+  existing method does not return a value, so a non-breaking additive API is
+  preferable unless this branch intentionally introduces a breaking release.</li>
+<li>Python repair code uses pandas/NumPy behavior around <code>NaN</code>, dtype, and
+  infinity. Go needs explicit <code>math.IsNaN</code> and <code>math.IsInf</code> guards where values
+  are parsed, compared, rounded, or converted to integer volume.</li>
+<li>Python complementary-info fixes now map to Go's <code>Info()</code> path through an
+  additive <code>trailingPegRatio</code> fundamentals-timeseries fetch. Sparse or malformed
+  values are treated as missing, matching Python v1.5.1's guarded parse.</li>
 </ul>
 <hr />
 <h2 id="change-history">Change History</h2>
@@ -2046,36 +2154,52 @@ surface.</p>
 </thead>
 <tbody>
 <tr>
-<td>2026-05-24</td>
-<td>Branch created and Python v1.4.0 diff reviewed</td>
+<td>2026-06-29</td>
+<td>Branch created and Python yfinance v1.5.1 release scope reviewed</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Added locale config and propagated locale params to ticker, lookup, and calendars</td>
+<td>2026-06-29</td>
+<td>Added implementation plan before code changes</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Added MarketRegion support and corrected market summary/status request params</td>
+<td>2026-06-29</td>
+<td>Completed Phase 1 low-risk fixes: screener EPS fields, Info sparse-response guards, and client proxy pass-through</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Added Sector and Industry region scoping options</td>
+<td>2026-06-29</td>
+<td>Completed Phase 2 valuation migration from HTML scraping to fundamentals-timeseries API</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Added manual Yahoo login cookie support and login user parsing</td>
+<td>2026-06-29</td>
+<td>Completed Phase 3 fundamentals chunked fallback with sticky/rollback behavior and chunk-size regression tests</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Connected <code>HistoryParams.Repair</code> to the repair package</td>
+<td>2026-06-29</td>
+<td>Completed Phase 4 authentication parity using Yahoo subscriptions API, additive login-cookie validation, and tier mapping tests</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Rechecked Python v1.4.0 call structure; documented Go's intentional locale customization for Sector/Industry domain <code>lang</code></td>
+<td>2026-06-29</td>
+<td>Started Phase 5 price repair hardening with non-finite adjusted-close parsing, auto-adjust, dividend, zero, and unit-correction guards</td>
 </tr>
 <tr>
-<td>2026-05-24</td>
-<td>Verified <code>go vet</code>, <code>golangci-lint</code>, race tests, and coverage report</td>
+<td>2026-06-29</td>
+<td>Added Phase 5 intraday pre/post dividend false-positive guard matching Python's recovered-price behavior</td>
+</tr>
+<tr>
+<td>2026-06-29</td>
+<td>Completed Phase 5 unit-switch overlap guard so sudden-change correction applies once per repair pass</td>
+</tr>
+<tr>
+<td>2026-06-29</td>
+<td>Completed Phase 6 release notes, README update, regenerated API docs, and full test/vet/lint verification</td>
+</tr>
+<tr>
+<td>2026-06-29</td>
+<td>Added final complementary-info parity for <code>Info().TrailingPegRatio</code> and sparse timeseries guards</td>
+</tr>
+<tr>
+<td>2026-06-29</td>
+<td>Re-ran release checks including race/coverage integration tests, API docs generation, README-to-docs index sync, MkDocs build, vet, and lint</td>
 </tr>
 </tbody>
 </table>

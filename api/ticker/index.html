@@ -739,6 +739,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#func-ticker-getvaluationmeasures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetValuationMeasures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#func-ticker-growthestimates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1683,6 +1694,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
         
   
@@ -1899,6 +1938,62 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -2361,6 +2456,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#func-ticker-getvaluationmeasures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Ticker) GetValuationMeasures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#func-ticker-growthestimates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2779,6 +2885,7 @@
 <li><a href="#Ticker.FinancialsJSON">func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)</a></li>
 <li><a href="#Ticker.GetHistoryMetadata">func (t *Ticker) GetHistoryMetadata() *models.ChartMeta</a></li>
 <li><a href="#Ticker.GetNews">func (t *Ticker) GetNews() ([]models.NewsArticle, error)</a></li>
+<li><a href="#Ticker.GetValuationMeasures">func (t *Ticker) GetValuationMeasures(freq string, periods *int) (*models.ValuationMeasures, error)</a></li>
 <li><a href="#Ticker.GrowthEstimates">func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error)</a></li>
 <li><a href="#Ticker.History">func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error)</a></li>
 <li><a href="#Ticker.HistoryPeriod">func (t *Ticker) HistoryPeriod(period string) ([]models.Bar, error)</a></li>
@@ -2962,14 +3069,20 @@
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>news, err := ticker.GetNews()
 </code></pre></div>
+<p><a name="Ticker.GetValuationMeasures"></a></p>
+<h3 id="func-ticker-getvaluationmeasures">func (*Ticker) GetValuationMeasures</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GetValuationMeasures</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">periods</span><span class="w"> </span><span class="o">*</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>GetValuationMeasures returns valuation measures from Yahoo's fundamentals-timeseries API.</p>
+<p>freq must be one of "quarterly", "monthly", "yearly", or "trailing". periods caps the number of period date columns returned, newest first. A nil periods pointer returns every available period column. Use 0 for the "Current" column only.</p>
 <p><a name="Ticker.GrowthEstimates"></a></p>
 <h3 id="func-ticker-growthestimates">func (*Ticker) GrowthEstimates</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GrowthEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">GrowthEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">GrowthEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">GrowthEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>GrowthEstimates returns growth estimates comparing stock to industry/sector/index.</p>
 <p><a name="Ticker.History"></a></p>
 <h3 id="func-ticker-history">func (*Ticker) History</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">History</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">History</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>History fetches historical OHLCV data for the ticker.</p>
 <p>The method returns a slice of [models.Bar] containing Open, High, Low, Close, Adjusted Close, and Volume data for each period.</p>
@@ -2983,21 +3096,21 @@
 <li>Actions: Include dividend and split data in bars</li>
 </ul>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>bars, err := ticker.History(models.HistoryParams{
-<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>    Period:   &quot;1mo&quot;,
-<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>    Interval: &quot;1d&quot;,
-<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>})
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>bars, err := ticker.History(models.HistoryParams{
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>    Period:   &quot;1mo&quot;,
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>    Interval: &quot;1d&quot;,
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>})
 </code></pre></div>
 <p><a name="Ticker.HistoryPeriod"></a></p>
 <h3 id="func-ticker-historyperiod">func (*Ticker) HistoryPeriod</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryPeriod</span><span class="p">(</span><span class="nx">period</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryPeriod</span><span class="p">(</span><span class="nx">period</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>HistoryPeriod is a convenience method to fetch history with just a period string.</p>
 <p>Valid periods: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max</p>
 <p>Uses daily interval with auto-adjustment enabled.</p>
 <p><a name="Ticker.HistoryRange"></a></p>
 <h3 id="func-ticker-historyrange">func (*Ticker) HistoryRange</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryRange</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span><span class="w"> </span><span class="nx">end</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="nx">interval</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">HistoryRange</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span><span class="w"> </span><span class="nx">end</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="nx">interval</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>HistoryRange fetches history for a specific date range.</p>
 <p>Parameters:</p>
@@ -3009,7 +3122,7 @@
 <p>Uses auto-adjustment enabled by default.</p>
 <p><a name="Ticker.IncomeStatement"></a></p>
 <h3 id="func-ticker-incomestatement">func (*Ticker) IncomeStatement</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">IncomeStatement</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FinancialStatement</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">IncomeStatement</span><span class="p">(</span><span class="nx">freq</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">FinancialStatement</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>IncomeStatement returns the income statement data.</p>
 <p>Parameters:</p>
@@ -3019,114 +3132,114 @@
 <p>Note: "yearly" is accepted as an alias for "annual" for Python yfinance compatibility.</p>
 <p>The returned [models.FinancialStatement] contains fields like TotalRevenue, GrossProfit, OperatingIncome, NetIncome, EBITDA, BasicEPS, and DilutedEPS.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>income, err := ticker.IncomeStatement(&quot;annual&quot;)
-<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>if revenue, ok := income.GetLatest(&quot;TotalRevenue&quot;); ok {
-<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>    fmt.Printf(&quot;Revenue: %.2f\n&quot;, revenue)
-<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>income, err := ticker.IncomeStatement(&quot;annual&quot;)
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>if revenue, ok := income.GetLatest(&quot;TotalRevenue&quot;); ok {
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>    fmt.Printf(&quot;Revenue: %.2f\n&quot;, revenue)
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>}
 </code></pre></div>
 <p><a name="Ticker.Info"></a></p>
 <h3 id="func-ticker-info">func (*Ticker) Info</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Info</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Info</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Info</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Info</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Info fetches comprehensive company information for the ticker.</p>
 <p><a name="Ticker.InsiderPurchases"></a></p>
 <h3 id="func-ticker-insiderpurchases">func (*Ticker) InsiderPurchases</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderPurchases</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderPurchases</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderPurchases</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderPurchases</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>InsiderPurchases returns insider purchase activity summary.</p>
 <p>This summarizes net share purchases/sales by insiders over a period.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>purchases, err := ticker.InsiderPurchases()
-<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>if err != nil {
-<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>    log.Fatal(err)
-<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>}
-<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>fmt.Printf(&quot;Net shares: %d (%s)\n&quot;, purchases.Net.Shares, purchases.Period)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>purchases, err := ticker.InsiderPurchases()
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>if err != nil {
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>    log.Fatal(err)
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>}
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>fmt.Printf(&quot;Net shares: %d (%s)\n&quot;, purchases.Net.Shares, purchases.Period)
 </code></pre></div>
 <p><a name="Ticker.InsiderRoster"></a></p>
 <h3 id="func-ticker-insiderroster">func (*Ticker) InsiderRoster</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRoster</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRoster</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>InsiderRoster returns the list of company insiders.</p>
 <p>Deprecated: Use InsiderRosterHolders instead.</p>
 <p><a name="Ticker.InsiderRosterHolders"></a></p>
 <h3 id="func-ticker-insiderrosterholders">func (*Ticker) InsiderRosterHolders</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRosterHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderRosterHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderHolder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>InsiderRosterHolders returns the list of company insiders.</p>
 <p>This includes insider names, positions, and their holdings.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>roster, err := ticker.InsiderRosterHolders()
-<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>if err != nil {
-<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>    log.Fatal(err)
-<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>}
-<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>for _, insider := range roster {
-<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>    fmt.Printf(&quot;%s (%s): %d shares\n&quot;,
-<a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a>        insider.Name, insider.Position, insider.TotalShares())
-<a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>roster, err := ticker.InsiderRosterHolders()
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>if err != nil {
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>    log.Fatal(err)
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>}
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>for _, insider := range roster {
+<a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>    fmt.Printf(&quot;%s (%s): %d shares\n&quot;,
+<a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a>        insider.Name, insider.Position, insider.TotalShares())
+<a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a>}
 </code></pre></div>
 <p><a name="Ticker.InsiderTransactions"></a></p>
 <h3 id="func-ticker-insidertransactions">func (*Ticker) InsiderTransactions</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderTransactions</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderTransaction</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InsiderTransactions</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">InsiderTransaction</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>InsiderTransactions returns the list of insider transactions.</p>
 <p>This includes purchases, sales, and other transactions by company insiders.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>transactions, err := ticker.InsiderTransactions()
-<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>if err != nil {
-<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>    log.Fatal(err)
-<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>}
-<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>for _, tx := range transactions {
-<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>    fmt.Printf(&quot;%s: %s %d shares on %s\n&quot;,
-<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>        tx.Insider, tx.Transaction, tx.Shares, tx.StartDate.Format(&quot;2006-01-02&quot;))
-<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>transactions, err := ticker.InsiderTransactions()
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>if err != nil {
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>    log.Fatal(err)
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>}
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a>for _, tx := range transactions {
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a>    fmt.Printf(&quot;%s: %s %d shares on %s\n&quot;,
+<a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>        tx.Insider, tx.Transaction, tx.Shares, tx.StartDate.Format(&quot;2006-01-02&quot;))
+<a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>}
 </code></pre></div>
 <p><a name="Ticker.InstitutionalHolders"></a></p>
 <h3 id="func-ticker-institutionalholders">func (*Ticker) InstitutionalHolders</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InstitutionalHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">InstitutionalHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>InstitutionalHolders returns the list of institutional holders.</p>
 <p>Each holder includes the institution name, shares held, value, and percentage.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>holders, err := ticker.InstitutionalHolders()
-<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>if err != nil {
-<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>    log.Fatal(err)
-<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>}
-<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>for _, h := range holders {
-<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>    fmt.Printf(&quot;%s: %d shares (%.2f%%)\n&quot;, h.Holder, h.Shares, h.PctHeld*100)
-<a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>holders, err := ticker.InstitutionalHolders()
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>if err != nil {
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>    log.Fatal(err)
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a>}
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>for _, h := range holders {
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>    fmt.Printf(&quot;%s: %d shares (%.2f%%)\n&quot;, h.Holder, h.Shares, h.PctHeld*100)
+<a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a>}
 </code></pre></div>
 <p><a name="Ticker.MajorHolders"></a></p>
 <h3 id="func-ticker-majorholders">func (*Ticker) MajorHolders</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MajorHolders</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MajorHolders</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MajorHolders</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MajorHolders</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>MajorHolders returns the major holders breakdown.</p>
 <p>This includes percentages held by insiders, institutions, and institutional count.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>holders, err := ticker.MajorHolders()
-<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>if err != nil {
-<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>    log.Fatal(err)
-<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>}
-<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>fmt.Printf(&quot;Insiders: %.2f%%\n&quot;, holders.InsidersPercentHeld*100)
-<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>fmt.Printf(&quot;Institutions: %.2f%%\n&quot;, holders.InstitutionsPercentHeld*100)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>holders, err := ticker.MajorHolders()
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>if err != nil {
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>    log.Fatal(err)
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>}
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>fmt.Printf(&quot;Insiders: %.2f%%\n&quot;, holders.InsidersPercentHeld*100)
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>fmt.Printf(&quot;Institutions: %.2f%%\n&quot;, holders.InstitutionsPercentHeld*100)
 </code></pre></div>
 <p><a name="Ticker.MutualFundHolders"></a></p>
 <h3 id="func-ticker-mutualfundholders">func (*Ticker) MutualFundHolders</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MutualFundHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">MutualFundHolders</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Holder</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>MutualFundHolders returns the list of mutual fund holders.</p>
 <p>Each holder includes the fund name, shares held, value, and percentage.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>holders, err := ticker.MutualFundHolders()
-<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>if err != nil {
-<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>    log.Fatal(err)
-<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>}
-<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>for _, h := range holders {
-<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>    fmt.Printf(&quot;%s: %d shares\n&quot;, h.Holder, h.Shares)
-<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>holders, err := ticker.MutualFundHolders()
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>if err != nil {
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>    log.Fatal(err)
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a>}
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>for _, h := range holders {
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>    fmt.Printf(&quot;%s: %d shares\n&quot;, h.Holder, h.Shares)
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a>}
 </code></pre></div>
 <p><a name="Ticker.News"></a></p>
 <h3 id="func-ticker-news">func (*Ticker) News</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">News</span><span class="p">(</span><span class="nx">count</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="nx">tab</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsTab</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsArticle</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">News</span><span class="p">(</span><span class="nx">count</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="nx">tab</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsTab</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsArticle</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>News fetches news articles for the ticker.</p>
 <p>Parameters:</p>
@@ -3135,84 +3248,83 @@
 <li>tab: Type of news to fetch (default: NewsTabNews)</li>
 </ul>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>news, err := ticker.News(10, models.NewsTabNews)
-<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>if err != nil {
-<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a>    log.Fatal(err)
-<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a>}
-<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>for _, article := range news {
-<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a>    fmt.Printf(&quot;%s: %s\n&quot;, article.Publisher, article.Title)
-<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>news, err := ticker.News(10, models.NewsTabNews)
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>if err != nil {
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>    log.Fatal(err)
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>}
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>for _, article := range news {
+<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>    fmt.Printf(&quot;%s: %s\n&quot;, article.Publisher, article.Title)
+<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a>}
 </code></pre></div>
 <p><a name="Ticker.OptionChain"></a></p>
 <h3 id="func-ticker-optionchain">func (*Ticker) OptionChain</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChain</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChain</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>OptionChain returns the option chain for a specific expiration date. If date is empty, returns the nearest expiration.</p>
 <p><a name="Ticker.OptionChainAtExpiry"></a></p>
 <h3 id="func-ticker-optionchainatexpiry">func (*Ticker) OptionChainAtExpiry</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChainAtExpiry</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionChainAtExpiry</span><span class="p">(</span><span class="nx">date</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">OptionChain</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>OptionChainAtExpiry is an alias for OptionChain with a specific date.</p>
 <p><a name="Ticker.Options"></a></p>
 <h3 id="func-ticker-options">func (*Ticker) Options</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Options</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Options</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Options returns all available expiration dates for options.</p>
 <p><a name="Ticker.OptionsJSON"></a></p>
 <h3 id="func-ticker-optionsjson">func (*Ticker) OptionsJSON</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionsJSON</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">OptionsJSON</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>OptionsJSON returns raw JSON response for debugging.</p>
 <p><a name="Ticker.PriceTarget"></a></p>
 <h3 id="func-ticker-pricetarget">func (*Ticker) PriceTarget</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">PriceTarget</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">PriceTarget</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">PriceTarget</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">PriceTarget</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>PriceTarget is a deprecated alias for AnalystPriceTargets. Deprecated: Use AnalystPriceTargets() instead for Python yfinance compatibility.</p>
 <p><a name="Ticker.Quote"></a></p>
 <h3 id="func-ticker-quote">func (*Ticker) Quote</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Quote</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Quote</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Quote</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Quote</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Quote fetches the current quote for the ticker.</p>
 <p><a name="Ticker.Recommendations"></a></p>
 <h3 id="func-ticker-recommendations">func (*Ticker) Recommendations</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Recommendations</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">RecommendationTrend</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Recommendations</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">RecommendationTrend</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Recommendations returns analyst recommendation trends.</p>
 <p><a name="Ticker.RevenueEstimate"></a></p>
 <h3 id="func-ticker-revenueestimate">func (*Ticker) RevenueEstimate</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimate</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimate</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>RevenueEstimate returns revenue estimates for upcoming periods. This method name matches Python yfinance's ticker.revenue_estimate property.</p>
 <p><a name="Ticker.RevenueEstimates"></a></p>
 <h3 id="func-ticker-revenueestimates">func (*Ticker) RevenueEstimates</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">RevenueEstimates</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">RevenueEstimate</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>RevenueEstimates is a deprecated alias for RevenueEstimate. Deprecated: Use RevenueEstimate() instead for Python yfinance compatibility.</p>
 <p><a name="Ticker.Splits"></a></p>
 <h3 id="func-ticker-splits">func (*Ticker) Splits</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Splits</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Split</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Splits</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Split</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Splits returns the stock split history for the ticker.</p>
 <p>Returns all historical stock splits with dates and ratios.</p>
 <p><a name="Ticker.Strikes"></a></p>
 <h3 id="func-ticker-strikes">func (*Ticker) Strikes</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Strikes</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Strikes</span><span class="p">()</span><span class="w"> </span><span class="p">([]</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Strikes returns available strike prices for options.</p>
 <p><a name="Ticker.Symbol"></a></p>
 <h3 id="func-ticker-symbol">func (*Ticker) Symbol</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Symbol</span><span class="p">()</span><span class="w"> </span><span class="kt">string</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Symbol</span><span class="p">()</span><span class="w"> </span><span class="kt">string</span>
 </code></pre></div>
 <p>Symbol returns the ticker symbol.</p>
 <p><a name="Ticker.Valuation"></a></p>
 <h3 id="func-ticker-valuation">func (*Ticker) Valuation</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Valuation</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">Valuation</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
-<p>Valuation returns the key-statistics valuation measures table.</p>
-<p>This mirrors Python yfinance's ticker.valuation property added in v1.3.0.</p>
+<p>Valuation returns the valuation measures table using Python yfinance's default settings: quarterly period columns capped to the newest five periods.</p>
 <p><a name="Ticker.ValuationMeasures"></a></p>
 <h3 id="func-ticker-valuationmeasures">func (*Ticker) ValuationMeasures</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">ValuationMeasures</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">ValuationMeasures</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ValuationMeasures</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>ValuationMeasures is an alias for Valuation.</p>
 

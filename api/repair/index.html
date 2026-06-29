@@ -1419,6 +1419,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
         
   
@@ -1635,6 +1663,62 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -2329,14 +2413,15 @@
 <a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="nx">Timezone</span><span class="w">  </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Exchange timezone</span>
 <a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="nx">Currency</span><span class="w">  </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Price currency</span>
 <a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span><span class="nx">QuoteType</span><span class="w"> </span><span class="nx">QuoteType</span><span class="w"> </span><span class="c1">// Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)</span>
-<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>
-<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">    </span><span class="c1">// Feature flags - which repairs to apply</span>
-<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">    </span><span class="nx">FixUnitMixups</span><span class="w">   </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix 100x currency errors ($/cents, £/pence)</span>
-<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="nx">FixZeroes</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix missing/zero values</span>
-<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="nx">FixSplits</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad stock split adjustments</span>
-<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="nx">FixDividends</span><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad dividend adjustments</span>
-<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span><span class="nx">FixCapitalGains</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix capital gains double-counting (ETF/MutualFund only)</span>
-<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="p">}</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="nx">PrePost</span><span class="w">   </span><span class="kt">bool</span><span class="w">      </span><span class="c1">// Whether pre/post market data is included</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">    </span><span class="c1">// Feature flags - which repairs to apply</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="nx">FixUnitMixups</span><span class="w">   </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix 100x currency errors ($/cents, £/pence)</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="nx">FixZeroes</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix missing/zero values</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="nx">FixSplits</span><span class="w">       </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad stock split adjustments</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span><span class="nx">FixDividends</span><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix bad dividend adjustments</span>
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="w">    </span><span class="nx">FixCapitalGains</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="c1">// Fix capital gains double-counting (ETF/MutualFund only)</span>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="DefaultOptions"></a></p>
 <h3 id="func-defaultoptions">func DefaultOptions</h3>

@@ -2797,6 +2797,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="type ValuationMeasureRow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-valuationmeasurerow-setvalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*ValuationMeasureRow) SetValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2816,6 +2833,17 @@
     <span class="md-ellipsis">
       
         func (*ValuationMeasures) Empty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-valuationmeasures-floatvalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*ValuationMeasures) FloatValue
       
     </span>
   </a>
@@ -3190,6 +3218,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
         
   
@@ -3406,6 +3462,62 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -5646,6 +5758,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="type ValuationMeasureRow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-valuationmeasurerow-setvalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*ValuationMeasureRow) SetValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5665,6 +5794,17 @@
     <span class="md-ellipsis">
       
         func (*ValuationMeasures) Empty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-valuationmeasures-floatvalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*ValuationMeasures) FloatValue
       
     </span>
   </a>
@@ -5980,8 +6120,10 @@
 <li><a href="#TimeseriesResult">type TimeseriesResult</a></li>
 <li><a href="#TransactionStats">type TransactionStats</a></li>
 <li><a href="#ValuationMeasureRow">type ValuationMeasureRow</a></li>
+<li><a href="#ValuationMeasureRow.SetValue">func (r *ValuationMeasureRow) SetValue(column string, value *float64)</a></li>
 <li><a href="#ValuationMeasures">type ValuationMeasures</a></li>
 <li><a href="#ValuationMeasures.Empty">func (v *ValuationMeasures) Empty() bool</a></li>
+<li><a href="#ValuationMeasures.FloatValue">func (v *ValuationMeasures) FloatValue(rowName, columnName string) (float64, bool)</a></li>
 <li><a href="#ValuationMeasures.Value">func (v *ValuationMeasures) Value(rowName, columnName string) (string, bool)</a></li>
 </ul>
 <h2 id="constants">Constants</h2>
@@ -6291,7 +6433,7 @@
 <a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a><span class="w">        </span><span class="s">&quot;netincome1yrgrowth.lasttwelvemonths&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;grossprofitmargin.lasttwelvemonths&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a><span class="w">        </span><span class="s">&quot;ebitdamargin.lasttwelvemonths&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ebit.lasttwelvemonths&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a><span class="w">        </span><span class="s">&quot;basicepscontinuingoperations.lasttwelvemonths&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a><span class="w">        </span><span class="s">&quot;netepsbasic.lasttwelvemonthsnetepsdiluted.lasttwelvemonths&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a><span class="w">        </span><span class="s">&quot;netepsbasic.lasttwelvemonths&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;netepsdiluted.lasttwelvemonths&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a><span class="w">    </span><span class="p">},</span>
 <a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a><span class="w">    </span><span class="s">&quot;balance_sheet&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a><span class="w">        </span><span class="s">&quot;totalassets.lasttwelvemonths&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;totalcommonsharesoutstanding.lasttwelvemonths&quot;</span><span class="p">,</span>
@@ -9703,29 +9845,46 @@
 <a id="__codelineno-212-2" name="__codelineno-212-2" href="#__codelineno-212-2"></a><span class="w">    </span><span class="c1">// Name is the valuation measure label, such as &quot;Market Cap&quot;.</span>
 <a id="__codelineno-212-3" name="__codelineno-212-3" href="#__codelineno-212-3"></a><span class="w">    </span><span class="nx">Name</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&quot;name&quot;`</span>
 <a id="__codelineno-212-4" name="__codelineno-212-4" href="#__codelineno-212-4"></a>
-<a id="__codelineno-212-5" name="__codelineno-212-5" href="#__codelineno-212-5"></a><span class="w">    </span><span class="c1">// Values maps each column name to the displayed Yahoo Finance value.</span>
-<a id="__codelineno-212-6" name="__codelineno-212-6" href="#__codelineno-212-6"></a><span class="w">    </span><span class="nx">Values</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&quot;values&quot;`</span>
-<a id="__codelineno-212-7" name="__codelineno-212-7" href="#__codelineno-212-7"></a><span class="p">}</span>
+<a id="__codelineno-212-5" name="__codelineno-212-5" href="#__codelineno-212-5"></a><span class="w">    </span><span class="c1">// Values maps each column name to a string representation of the raw value.</span>
+<a id="__codelineno-212-6" name="__codelineno-212-6" href="#__codelineno-212-6"></a><span class="w">    </span><span class="c1">//</span>
+<a id="__codelineno-212-7" name="__codelineno-212-7" href="#__codelineno-212-7"></a><span class="w">    </span><span class="c1">// This is kept for compatibility with go-yfinance versions that exposed</span>
+<a id="__codelineno-212-8" name="__codelineno-212-8" href="#__codelineno-212-8"></a><span class="w">    </span><span class="c1">// valuation cells as strings from Yahoo&#39;s key-statistics HTML page.</span>
+<a id="__codelineno-212-9" name="__codelineno-212-9" href="#__codelineno-212-9"></a><span class="w">    </span><span class="nx">Values</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&quot;values&quot;`</span>
+<a id="__codelineno-212-10" name="__codelineno-212-10" href="#__codelineno-212-10"></a>
+<a id="__codelineno-212-11" name="__codelineno-212-11" href="#__codelineno-212-11"></a><span class="w">    </span><span class="c1">// RawValues maps each column name to Yahoo&#39;s raw numeric value.</span>
+<a id="__codelineno-212-12" name="__codelineno-212-12" href="#__codelineno-212-12"></a><span class="w">    </span><span class="c1">// Missing cells are stored as nil.</span>
+<a id="__codelineno-212-13" name="__codelineno-212-13" href="#__codelineno-212-13"></a><span class="w">    </span><span class="nx">RawValues</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="kt">float64</span><span class="w"> </span><span class="s">`json:&quot;rawValues,omitempty&quot;`</span>
+<a id="__codelineno-212-14" name="__codelineno-212-14" href="#__codelineno-212-14"></a><span class="p">}</span>
 </code></pre></div>
+<p><a name="ValuationMeasureRow.SetValue"></a></p>
+<h3 id="func-valuationmeasurerow-setvalue">func (*ValuationMeasureRow) SetValue</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-213-1" name="__codelineno-213-1" href="#__codelineno-213-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasureRow</span><span class="p">)</span><span class="w"> </span><span class="nx">SetValue</span><span class="p">(</span><span class="nx">column</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">*</span><span class="kt">float64</span><span class="p">)</span>
+</code></pre></div>
+<p>SetValue stores a raw numeric valuation cell while maintaining the compatibility string map.</p>
 <p><a name="ValuationMeasures"></a></p>
 <h2 id="type-valuationmeasures">type ValuationMeasures</h2>
 <p>ValuationMeasures represents Yahoo Finance's key-statistics valuation table.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-213-1" name="__codelineno-213-1" href="#__codelineno-213-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">ValuationMeasures</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-213-2" name="__codelineno-213-2" href="#__codelineno-213-2"></a><span class="w">    </span><span class="c1">// Columns are the table value columns, such as &quot;Current&quot; and quarter-end dates.</span>
-<a id="__codelineno-213-3" name="__codelineno-213-3" href="#__codelineno-213-3"></a><span class="w">    </span><span class="nx">Columns</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&quot;columns&quot;`</span>
-<a id="__codelineno-213-4" name="__codelineno-213-4" href="#__codelineno-213-4"></a>
-<a id="__codelineno-213-5" name="__codelineno-213-5" href="#__codelineno-213-5"></a><span class="w">    </span><span class="c1">// Rows contains one row per valuation measure.</span>
-<a id="__codelineno-213-6" name="__codelineno-213-6" href="#__codelineno-213-6"></a><span class="w">    </span><span class="nx">Rows</span><span class="w"> </span><span class="p">[]</span><span class="nx">ValuationMeasureRow</span><span class="w"> </span><span class="s">`json:&quot;rows&quot;`</span>
-<a id="__codelineno-213-7" name="__codelineno-213-7" href="#__codelineno-213-7"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-214-1" name="__codelineno-214-1" href="#__codelineno-214-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">ValuationMeasures</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-214-2" name="__codelineno-214-2" href="#__codelineno-214-2"></a><span class="w">    </span><span class="c1">// Columns are the table value columns, such as &quot;Current&quot; and quarter-end dates.</span>
+<a id="__codelineno-214-3" name="__codelineno-214-3" href="#__codelineno-214-3"></a><span class="w">    </span><span class="nx">Columns</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="w"> </span><span class="s">`json:&quot;columns&quot;`</span>
+<a id="__codelineno-214-4" name="__codelineno-214-4" href="#__codelineno-214-4"></a>
+<a id="__codelineno-214-5" name="__codelineno-214-5" href="#__codelineno-214-5"></a><span class="w">    </span><span class="c1">// Rows contains one row per valuation measure.</span>
+<a id="__codelineno-214-6" name="__codelineno-214-6" href="#__codelineno-214-6"></a><span class="w">    </span><span class="nx">Rows</span><span class="w"> </span><span class="p">[]</span><span class="nx">ValuationMeasureRow</span><span class="w"> </span><span class="s">`json:&quot;rows&quot;`</span>
+<a id="__codelineno-214-7" name="__codelineno-214-7" href="#__codelineno-214-7"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="ValuationMeasures.Empty"></a></p>
 <h3 id="func-valuationmeasures-empty">func (*ValuationMeasures) Empty</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-214-1" name="__codelineno-214-1" href="#__codelineno-214-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasures</span><span class="p">)</span><span class="w"> </span><span class="nx">Empty</span><span class="p">()</span><span class="w"> </span><span class="kt">bool</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-215-1" name="__codelineno-215-1" href="#__codelineno-215-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasures</span><span class="p">)</span><span class="w"> </span><span class="nx">Empty</span><span class="p">()</span><span class="w"> </span><span class="kt">bool</span>
 </code></pre></div>
 <p>Empty reports whether the valuation table has no rows.</p>
+<p><a name="ValuationMeasures.FloatValue"></a></p>
+<h3 id="func-valuationmeasures-floatvalue">func (*ValuationMeasures) FloatValue</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-216-1" name="__codelineno-216-1" href="#__codelineno-216-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasures</span><span class="p">)</span><span class="w"> </span><span class="nx">FloatValue</span><span class="p">(</span><span class="nx">rowName</span><span class="p">,</span><span class="w"> </span><span class="nx">columnName</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span>
+</code></pre></div>
+<p>FloatValue returns the raw numeric value by row name and column name. It returns false when the row/column is missing or the cell has no value.</p>
 <p><a name="ValuationMeasures.Value"></a></p>
 <h3 id="func-valuationmeasures-value">func (*ValuationMeasures) Value</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-215-1" name="__codelineno-215-1" href="#__codelineno-215-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasures</span><span class="p">)</span><span class="w"> </span><span class="nx">Value</span><span class="p">(</span><span class="nx">rowName</span><span class="p">,</span><span class="w"> </span><span class="nx">columnName</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-217-1" name="__codelineno-217-1" href="#__codelineno-217-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="nx">ValuationMeasures</span><span class="p">)</span><span class="w"> </span><span class="nx">Value</span><span class="p">(</span><span class="nx">rowName</span><span class="p">,</span><span class="w"> </span><span class="nx">columnName</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span>
 </code></pre></div>
 <p>Value returns a value by row name and column name.</p>
 
