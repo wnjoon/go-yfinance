@@ -102,7 +102,7 @@ This package is designed to match the behavior of Python yfinance's price repair
 
 
 <a name="CountRepaired"></a>
-## func CountRepaired
+## func [CountRepaired](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L155>)
 
 ```go
 func CountRepaired(bars []models.Bar) int
@@ -111,7 +111,7 @@ func CountRepaired(bars []models.Bar) int
 CountRepaired counts how many bars have been repaired.
 
 <a name="DetectBadDividends"></a>
-## func DetectBadDividends
+## func [DetectBadDividends](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/dividend.go#L433>)
 
 ```go
 func DetectBadDividends(bars []models.Bar, currency string) []int
@@ -120,7 +120,7 @@ func DetectBadDividends(bars []models.Bar, currency string) []int
 DetectBadDividends checks if there are dividend issues in the data. Returns indices of bars with suspected dividend problems.
 
 <a name="DetectBadSplits"></a>
-## func DetectBadSplits
+## func [DetectBadSplits](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/split.go#L258>)
 
 ```go
 func DetectBadSplits(bars []models.Bar) []int
@@ -129,7 +129,7 @@ func DetectBadSplits(bars []models.Bar) []int
 DetectBadSplits checks if there are unadjusted splits in the data.
 
 <a name="DetectUnitMixups"></a>
-## func DetectUnitMixups
+## func [DetectUnitMixups](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/unit_mixup.go#L363>)
 
 ```go
 func DetectUnitMixups(bars []models.Bar) []int
@@ -138,7 +138,7 @@ func DetectUnitMixups(bars []models.Bar) []int
 DetectUnitMixups checks if there are 100x errors in the data. Returns indices of bars with suspected 100x errors.
 
 <a name="DetectZeroes"></a>
-## func DetectZeroes
+## func [DetectZeroes](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/zeroes.go#L330>)
 
 ```go
 func DetectZeroes(bars []models.Bar) []int
@@ -147,7 +147,7 @@ func DetectZeroes(bars []models.Bar) []int
 DetectZeroes checks for bars with zero/missing values. Returns indices of bars that may need repair.
 
 <a name="HasCapitalGains"></a>
-## func HasCapitalGains
+## func [HasCapitalGains](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L125>)
 
 ```go
 func HasCapitalGains(bars []models.Bar) bool
@@ -156,7 +156,7 @@ func HasCapitalGains(bars []models.Bar) bool
 HasCapitalGains checks if any bar has capital gains data.
 
 <a name="HasDividends"></a>
-## func HasDividends
+## func [HasDividends](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L135>)
 
 ```go
 func HasDividends(bars []models.Bar) bool
@@ -165,7 +165,7 @@ func HasDividends(bars []models.Bar) bool
 HasDividends checks if any bar has dividend data.
 
 <a name="HasSplits"></a>
-## func HasSplits
+## func [HasSplits](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L145>)
 
 ```go
 func HasSplits(bars []models.Bar) bool
@@ -174,7 +174,7 @@ func HasSplits(bars []models.Bar) bool
 HasSplits checks if any bar has split data.
 
 <a name="CapitalGainsRepairStats"></a>
-## type CapitalGainsRepairStats
+## type [CapitalGainsRepairStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/capital_gains.go#L221-L227>)
 
 CapitalGainsRepairStats returns statistics about capital gains repair.
 
@@ -189,7 +189,7 @@ type CapitalGainsRepairStats struct {
 ```
 
 <a name="DividendInfo"></a>
-## type DividendInfo
+## type [DividendInfo](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/dividend.go#L376-L384>)
 
 DividendInfo contains information about a single dividend.
 
@@ -206,7 +206,7 @@ type DividendInfo struct {
 ```
 
 <a name="DividendRepairStats"></a>
-## type DividendRepairStats
+## type [DividendRepairStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/dividend.go#L365-L373>)
 
 DividendRepairStats contains statistics about dividend repairs.
 
@@ -223,7 +223,7 @@ type DividendRepairStats struct {
 ```
 
 <a name="Options"></a>
-## type Options
+## type [Options](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L20-L35>)
 
 Options configures the repair behavior.
 
@@ -235,6 +235,7 @@ type Options struct {
     Timezone  string    // Exchange timezone
     Currency  string    // Price currency
     QuoteType QuoteType // Type of instrument (EQUITY, ETF, MUTUALFUND, etc.)
+    PrePost   bool      // Whether pre/post market data is included
 
     // Feature flags - which repairs to apply
     FixUnitMixups   bool // Fix 100x currency errors ($/cents, £/pence)
@@ -246,7 +247,7 @@ type Options struct {
 ```
 
 <a name="DefaultOptions"></a>
-### func DefaultOptions
+### func [DefaultOptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L38>)
 
 ```go
 func DefaultOptions() Options
@@ -255,7 +256,7 @@ func DefaultOptions() Options
 DefaultOptions returns options with all repairs enabled.
 
 <a name="QuoteType"></a>
-## type QuoteType
+## type [QuoteType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L8>)
 
 QuoteType represents the type of financial instrument.
 
@@ -277,7 +278,7 @@ const (
 ```
 
 <a name="Repairer"></a>
-## type Repairer
+## type [Repairer](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L50-L52>)
 
 Repairer handles price data repair operations.
 
@@ -288,7 +289,7 @@ type Repairer struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L55>)
 
 ```go
 func New(opts Options) *Repairer
@@ -297,7 +298,7 @@ func New(opts Options) *Repairer
 New creates a new Repairer with the given options.
 
 <a name="Repairer.AnalyzeCapitalGains"></a>
-### func \(\*Repairer\) AnalyzeCapitalGains
+### func \(\*Repairer\) [AnalyzeCapitalGains](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/capital_gains.go#L231>)
 
 ```go
 func (r *Repairer) AnalyzeCapitalGains(bars []models.Bar) CapitalGainsRepairStats
@@ -306,7 +307,7 @@ func (r *Repairer) AnalyzeCapitalGains(bars []models.Bar) CapitalGainsRepairStat
 AnalyzeCapitalGains analyzes bars for capital gains issues without modifying. Useful for debugging and understanding the data.
 
 <a name="Repairer.AnalyzeDividends"></a>
-### func \(\*Repairer\) AnalyzeDividends
+### func \(\*Repairer\) [AnalyzeDividends](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/dividend.go#L387>)
 
 ```go
 func (r *Repairer) AnalyzeDividends(bars []models.Bar) DividendRepairStats
@@ -315,7 +316,7 @@ func (r *Repairer) AnalyzeDividends(bars []models.Bar) DividendRepairStats
 AnalyzeDividends analyzes bars for dividend issues without modifying.
 
 <a name="Repairer.AnalyzeSplits"></a>
-### func \(\*Repairer\) AnalyzeSplits
+### func \(\*Repairer\) [AnalyzeSplits](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/split.go#L240>)
 
 ```go
 func (r *Repairer) AnalyzeSplits(bars []models.Bar) SplitRepairStats
@@ -324,7 +325,7 @@ func (r *Repairer) AnalyzeSplits(bars []models.Bar) SplitRepairStats
 AnalyzeSplits analyzes bars for split issues without modifying.
 
 <a name="Repairer.AnalyzeUnitMixups"></a>
-### func \(\*Repairer\) AnalyzeUnitMixups
+### func \(\*Repairer\) [AnalyzeUnitMixups](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/unit_mixup.go#L332>)
 
 ```go
 func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats
@@ -333,7 +334,7 @@ func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats
 AnalyzeUnitMixups analyzes bars for 100x errors without modifying.
 
 <a name="Repairer.AnalyzeZeroes"></a>
-### func \(\*Repairer\) AnalyzeZeroes
+### func \(\*Repairer\) [AnalyzeZeroes](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/zeroes.go#L301>)
 
 ```go
 func (r *Repairer) AnalyzeZeroes(bars []models.Bar) ZeroRepairStats
@@ -342,7 +343,7 @@ func (r *Repairer) AnalyzeZeroes(bars []models.Bar) ZeroRepairStats
 AnalyzeZeroes analyzes bars for zero/missing values without modifying.
 
 <a name="Repairer.Repair"></a>
-### func \(\*Repairer\) Repair
+### func \(\*Repairer\) [Repair](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/repair.go#L70>)
 
 ```go
 func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error)
@@ -359,7 +360,7 @@ Repair applies all enabled repair operations to the bar data. The order of opera
 Returns the repaired bars and any error encountered.
 
 <a name="SplitInfo"></a>
-## type SplitInfo
+## type [SplitInfo](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/split.go#L233-L237>)
 
 SplitInfo contains information about a single split.
 
@@ -372,7 +373,7 @@ type SplitInfo struct {
 ```
 
 <a name="SplitRepairStats"></a>
-## type SplitRepairStats
+## type [SplitRepairStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/split.go#L225-L230>)
 
 SplitRepairStats contains statistics about split repair.
 
@@ -386,7 +387,7 @@ type SplitRepairStats struct {
 ```
 
 <a name="UnitMixupStats"></a>
-## type UnitMixupStats
+## type [UnitMixupStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/unit_mixup.go#L323-L329>)
 
 UnitMixupStats contains statistics about unit mixup repairs.
 
@@ -401,7 +402,7 @@ type UnitMixupStats struct {
 ```
 
 <a name="ZeroRepairStats"></a>
-## type ZeroRepairStats
+## type [ZeroRepairStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/repair/zeroes.go#L292-L298>)
 
 ZeroRepairStats contains statistics about zero value repairs.
 

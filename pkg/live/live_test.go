@@ -360,7 +360,7 @@ func newTestWSServer(t *testing.T) (*httptest.Server, string) {
 		if err != nil {
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		for {
 			if _, _, err := conn.ReadMessage(); err != nil {
 				return
@@ -387,7 +387,7 @@ func TestSendSubscribeConcurrent(t *testing.T) {
 	if err := ws.Connect(); err != nil {
 		t.Fatalf("Connect() error: %v", err)
 	}
-	defer ws.Close()
+	defer func() { _ = ws.Close() }()
 
 	const goroutines = 5
 	const callsEach = 10

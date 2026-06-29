@@ -156,7 +156,7 @@ sector.research_reports         | s.ResearchReports()
 
 
 <a name="Option"></a>
-## type Option
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L34>)
 
 Option is a function that configures a Sector instance.
 
@@ -165,7 +165,7 @@ type Option func(*Sector)
 ```
 
 <a name="WithClient"></a>
-### func WithClient
+### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L37>)
 
 ```go
 func WithClient(c *client.Client) Option
@@ -174,7 +174,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client for the Sector instance.
 
 <a name="WithRegion"></a>
-### func WithRegion
+### func [WithRegion](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L45>)
 
 ```go
 func WithRegion(region string) Option
@@ -183,7 +183,7 @@ func WithRegion(region string) Option
 WithRegion scopes regional lists to a Yahoo region such as "US", "GB", or "JP".
 
 <a name="Sector"></a>
-## type Sector
+## type [Sector](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L20-L31>)
 
 Sector provides access to financial sector data from Yahoo Finance.
 
@@ -196,7 +196,7 @@ type Sector struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L66>)
 
 ```go
 func New(key string, opts ...Option) (*Sector, error)
@@ -220,7 +220,7 @@ fmt.Printf("Sector has %d companies\n", overview.CompaniesCount)
 ```
 
 <a name="NewWithPredefined"></a>
-### func NewWithPredefined
+### func [NewWithPredefined](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L102>)
 
 ```go
 func NewWithPredefined(sector models.PredefinedSector, opts ...Option) (*Sector, error)
@@ -238,7 +238,7 @@ if err != nil {
 ```
 
 <a name="Sector.ClearCache"></a>
-### func \(\*Sector\) ClearCache
+### func \(\*Sector\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L444>)
 
 ```go
 func (s *Sector) ClearCache()
@@ -247,7 +247,7 @@ func (s *Sector) ClearCache()
 ClearCache clears the cached sector data. The next call to any data method will fetch fresh data.
 
 <a name="Sector.Close"></a>
-### func \(\*Sector\) Close
+### func \(\*Sector\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L107>)
 
 ```go
 func (s *Sector) Close()
@@ -256,7 +256,7 @@ func (s *Sector) Close()
 Close releases resources used by the Sector instance.
 
 <a name="Sector.Data"></a>
-### func \(\*Sector\) Data
+### func \(\*Sector\) [Data](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L275>)
 
 ```go
 func (s *Sector) Data() (*models.SectorData, error)
@@ -278,7 +278,7 @@ fmt.Printf("Companies: %d\n", data.Overview.CompaniesCount)
 ```
 
 <a name="Sector.Industries"></a>
-### func \(\*Sector\) Industries
+### func \(\*Sector\) [Industries](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L365>)
 
 ```go
 func (s *Sector) Industries() ([]models.SectorIndustry, error)
@@ -299,7 +299,7 @@ for _, i := range industries {
 ```
 
 <a name="Sector.Key"></a>
-### func \(\*Sector\) Key
+### func \(\*Sector\) [Key](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L114>)
 
 ```go
 func (s *Sector) Key() string
@@ -308,7 +308,7 @@ func (s *Sector) Key() string
 Key returns the sector key.
 
 <a name="Sector.Name"></a>
-### func \(\*Sector\) Name
+### func \(\*Sector\) [Name](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L291>)
 
 ```go
 func (s *Sector) Name() (string, error)
@@ -324,7 +324,7 @@ fmt.Println(name) // "Technology"
 ```
 
 <a name="Sector.Overview"></a>
-### func \(\*Sector\) Overview
+### func \(\*Sector\) [Overview](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L322>)
 
 ```go
 func (s *Sector) Overview() (models.SectorOverview, error)
@@ -344,7 +344,7 @@ fmt.Printf("Market Cap: $%.2f\n", overview.MarketCap)
 ```
 
 <a name="Sector.Region"></a>
-### func \(\*Sector\) Region
+### func \(\*Sector\) [Region](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L119>)
 
 ```go
 func (s *Sector) Region() string
@@ -353,7 +353,7 @@ func (s *Sector) Region() string
 Region returns the Yahoo region used to scope regional lists.
 
 <a name="Sector.ResearchReports"></a>
-### func \(\*Sector\) ResearchReports
+### func \(\*Sector\) [ResearchReports](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L432>)
 
 ```go
 func (s *Sector) ResearchReports() ([]models.ResearchReport, error)
@@ -374,7 +374,7 @@ for _, r := range reports {
 ```
 
 <a name="Sector.Symbol"></a>
-### func \(\*Sector\) Symbol
+### func \(\*Sector\) [Symbol](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L302>)
 
 ```go
 func (s *Sector) Symbol() (string, error)
@@ -383,7 +383,7 @@ func (s *Sector) Symbol() (string, error)
 Symbol returns the sector symbol.
 
 <a name="Sector.TopCompanies"></a>
-### func \(\*Sector\) TopCompanies
+### func \(\*Sector\) [TopCompanies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L344>)
 
 ```go
 func (s *Sector) TopCompanies() ([]models.SectorTopCompany, error)
@@ -405,7 +405,7 @@ for _, c := range companies {
 ```
 
 <a name="Sector.TopETFs"></a>
-### func \(\*Sector\) TopETFs
+### func \(\*Sector\) [TopETFs](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L388>)
 
 ```go
 func (s *Sector) TopETFs() (map[string]string, error)
@@ -428,7 +428,7 @@ for symbol, name := range etfs {
 ```
 
 <a name="Sector.TopMutualFunds"></a>
-### func \(\*Sector\) TopMutualFunds
+### func \(\*Sector\) [TopMutualFunds](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/sector/sector.go#L411>)
 
 ```go
 func (s *Sector) TopMutualFunds() (map[string]string, error)

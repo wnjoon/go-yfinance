@@ -357,15 +357,6 @@ func financialsResultItems(body string) ([]interface{}, error) {
 	return result, nil
 }
 
-// parseFinancialsResponse parses the timeseries API response into a FinancialStatement.
-func (t *Ticker) parseFinancialsResponse(body, prefix string) (*models.FinancialStatement, error) {
-	result, err := financialsResultItems(body)
-	if err != nil {
-		return nil, err
-	}
-	return t.parseFinancialsResult(result, prefix), nil
-}
-
 func (t *Ticker) parseFinancialsResult(result []interface{}, prefix string) *models.FinancialStatement {
 	stmt := models.NewFinancialStatement()
 	allDates := make(map[time.Time]bool)
