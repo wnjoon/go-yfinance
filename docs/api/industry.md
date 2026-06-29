@@ -176,7 +176,7 @@ industry.research_reports           | i.ResearchReports()
 
 
 <a name="Industry"></a>
-## type [Industry](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L20-L31>)
+## type Industry
 
 Industry provides access to financial industry data from Yahoo Finance.
 
@@ -189,7 +189,7 @@ type Industry struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L66>)
+### func New
 
 ```go
 func New(key string, opts ...Option) (*Industry, error)
@@ -213,7 +213,7 @@ fmt.Printf("Industry has %d companies\n", overview.CompaniesCount)
 ```
 
 <a name="NewWithPredefined"></a>
-### func [NewWithPredefined](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L102>)
+### func NewWithPredefined
 
 ```go
 func NewWithPredefined(ind models.PredefinedIndustry, opts ...Option) (*Industry, error)
@@ -231,7 +231,7 @@ if err != nil {
 ```
 
 <a name="Industry.ClearCache"></a>
-### func \(\*Industry\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L447>)
+### func \(\*Industry\) ClearCache
 
 ```go
 func (i *Industry) ClearCache()
@@ -240,7 +240,7 @@ func (i *Industry) ClearCache()
 ClearCache clears the cached industry data. The next call to any data method will fetch fresh data.
 
 <a name="Industry.Close"></a>
-### func \(\*Industry\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L107>)
+### func \(\*Industry\) Close
 
 ```go
 func (i *Industry) Close()
@@ -249,7 +249,7 @@ func (i *Industry) Close()
 Close releases resources used by the Industry instance.
 
 <a name="Industry.Data"></a>
-### func \(\*Industry\) [Data](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L265>)
+### func \(\*Industry\) Data
 
 ```go
 func (i *Industry) Data() (*models.IndustryData, error)
@@ -270,7 +270,7 @@ fmt.Printf("Industry: %s in Sector: %s\n", data.Name, data.SectorName)
 ```
 
 <a name="Industry.Key"></a>
-### func \(\*Industry\) [Key](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L114>)
+### func \(\*Industry\) Key
 
 ```go
 func (i *Industry) Key() string
@@ -279,7 +279,7 @@ func (i *Industry) Key() string
 Key returns the industry key.
 
 <a name="Industry.Name"></a>
-### func \(\*Industry\) [Name](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L281>)
+### func \(\*Industry\) Name
 
 ```go
 func (i *Industry) Name() (string, error)
@@ -295,7 +295,7 @@ fmt.Println(name) // "Semiconductors"
 ```
 
 <a name="Industry.Overview"></a>
-### func \(\*Industry\) [Overview](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L344>)
+### func \(\*Industry\) Overview
 
 ```go
 func (i *Industry) Overview() (models.IndustryOverview, error)
@@ -315,7 +315,7 @@ fmt.Printf("Market Cap: $%.2f\n", overview.MarketCap)
 ```
 
 <a name="Industry.Region"></a>
-### func \(\*Industry\) [Region](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L119>)
+### func \(\*Industry\) Region
 
 ```go
 func (i *Industry) Region() string
@@ -324,7 +324,7 @@ func (i *Industry) Region() string
 Region returns the Yahoo region used to scope regional lists.
 
 <a name="Industry.ResearchReports"></a>
-### func \(\*Industry\) [ResearchReports](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L435>)
+### func \(\*Industry\) ResearchReports
 
 ```go
 func (i *Industry) ResearchReports() ([]models.ResearchReport, error)
@@ -345,7 +345,7 @@ for _, r := range reports {
 ```
 
 <a name="Industry.SectorKey"></a>
-### func \(\*Industry\) [SectorKey](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L308>)
+### func \(\*Industry\) SectorKey
 
 ```go
 func (i *Industry) SectorKey() (string, error)
@@ -361,7 +361,7 @@ fmt.Println(sectorKey) // "technology"
 ```
 
 <a name="Industry.SectorName"></a>
-### func \(\*Industry\) [SectorName](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L324>)
+### func \(\*Industry\) SectorName
 
 ```go
 func (i *Industry) SectorName() (string, error)
@@ -377,7 +377,7 @@ fmt.Println(sectorName) // "Technology"
 ```
 
 <a name="Industry.Symbol"></a>
-### func \(\*Industry\) [Symbol](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L292>)
+### func \(\*Industry\) Symbol
 
 ```go
 func (i *Industry) Symbol() (string, error)
@@ -386,7 +386,7 @@ func (i *Industry) Symbol() (string, error)
 Symbol returns the industry symbol.
 
 <a name="Industry.TopCompanies"></a>
-### func \(\*Industry\) [TopCompanies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L366>)
+### func \(\*Industry\) TopCompanies
 
 ```go
 func (i *Industry) TopCompanies() ([]models.IndustryTopCompany, error)
@@ -408,7 +408,7 @@ for _, c := range companies {
 ```
 
 <a name="Industry.TopGrowthCompanies"></a>
-### func \(\*Industry\) [TopGrowthCompanies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L414>)
+### func \(\*Industry\) TopGrowthCompanies
 
 ```go
 func (i *Industry) TopGrowthCompanies() ([]models.GrowthCompany, error)
@@ -432,7 +432,7 @@ for _, c := range companies {
 ```
 
 <a name="Industry.TopPerformingCompanies"></a>
-### func \(\*Industry\) [TopPerformingCompanies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L390>)
+### func \(\*Industry\) TopPerformingCompanies
 
 ```go
 func (i *Industry) TopPerformingCompanies() ([]models.PerformingCompany, error)
@@ -456,7 +456,7 @@ for _, c := range companies {
 ```
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L34>)
+## type Option
 
 Option is a function that configures an Industry instance.
 
@@ -465,7 +465,7 @@ type Option func(*Industry)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L37>)
+### func WithClient
 
 ```go
 func WithClient(c *client.Client) Option
@@ -474,7 +474,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client for the Industry instance.
 
 <a name="WithRegion"></a>
-### func [WithRegion](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/industry/industry.go#L45>)
+### func WithRegion
 
 ```go
 func WithRegion(region string) Option

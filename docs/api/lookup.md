@@ -130,7 +130,7 @@ lookup.get_cryptocurrency() | l.Cryptocurrency(10)
 
 
 <a name="Lookup"></a>
-## type [Lookup](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L20-L29>)
+## type Lookup
 
 Lookup provides Yahoo Finance ticker lookup functionality.
 
@@ -143,7 +143,7 @@ type Lookup struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L58>)
+### func New
 
 ```go
 func New(query string, opts ...Option) (*Lookup, error)
@@ -169,7 +169,7 @@ for _, doc := range results {
 ```
 
 <a name="Lookup.All"></a>
-### func \(\*Lookup\) [All](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L214>)
+### func \(\*Lookup\) All
 
 ```go
 func (l *Lookup) All(count int) ([]models.LookupDocument, error)
@@ -191,7 +191,7 @@ for _, doc := range results {
 ```
 
 <a name="Lookup.ClearCache"></a>
-### func \(\*Lookup\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L380>)
+### func \(\*Lookup\) ClearCache
 
 ```go
 func (l *Lookup) ClearCache()
@@ -200,7 +200,7 @@ func (l *Lookup) ClearCache()
 ClearCache clears the cached lookup results.
 
 <a name="Lookup.Close"></a>
-### func \(\*Lookup\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L85>)
+### func \(\*Lookup\) Close
 
 ```go
 func (l *Lookup) Close()
@@ -209,7 +209,7 @@ func (l *Lookup) Close()
 Close releases resources used by the Lookup instance.
 
 <a name="Lookup.Cryptocurrency"></a>
-### func \(\*Lookup\) [Cryptocurrency](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L368>)
+### func \(\*Lookup\) Cryptocurrency
 
 ```go
 func (l *Lookup) Cryptocurrency(count int) ([]models.LookupDocument, error)
@@ -231,7 +231,7 @@ for _, doc := range cryptos {
 ```
 
 <a name="Lookup.Currency"></a>
-### func \(\*Lookup\) [Currency](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L346>)
+### func \(\*Lookup\) Currency
 
 ```go
 func (l *Lookup) Currency(count int) ([]models.LookupDocument, error)
@@ -253,7 +253,7 @@ for _, doc := range currencies {
 ```
 
 <a name="Lookup.ETF"></a>
-### func \(\*Lookup\) [ETF](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L280>)
+### func \(\*Lookup\) ETF
 
 ```go
 func (l *Lookup) ETF(count int) ([]models.LookupDocument, error)
@@ -275,7 +275,7 @@ for _, doc := range etfs {
 ```
 
 <a name="Lookup.Future"></a>
-### func \(\*Lookup\) [Future](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L324>)
+### func \(\*Lookup\) Future
 
 ```go
 func (l *Lookup) Future(count int) ([]models.LookupDocument, error)
@@ -297,7 +297,7 @@ for _, doc := range futures {
 ```
 
 <a name="Lookup.Index"></a>
-### func \(\*Lookup\) [Index](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L302>)
+### func \(\*Lookup\) Index
 
 ```go
 func (l *Lookup) Index(count int) ([]models.LookupDocument, error)
@@ -319,7 +319,7 @@ for _, doc := range indices {
 ```
 
 <a name="Lookup.MutualFund"></a>
-### func \(\*Lookup\) [MutualFund](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L258>)
+### func \(\*Lookup\) MutualFund
 
 ```go
 func (l *Lookup) MutualFund(count int) ([]models.LookupDocument, error)
@@ -341,7 +341,7 @@ for _, doc := range funds {
 ```
 
 <a name="Lookup.Query"></a>
-### func \(\*Lookup\) [Query](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L92>)
+### func \(\*Lookup\) Query
 
 ```go
 func (l *Lookup) Query() string
@@ -350,7 +350,7 @@ func (l *Lookup) Query() string
 Query returns the search query string.
 
 <a name="Lookup.Stock"></a>
-### func \(\*Lookup\) [Stock](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L236>)
+### func \(\*Lookup\) Stock
 
 ```go
 func (l *Lookup) Stock(count int) ([]models.LookupDocument, error)
@@ -372,7 +372,7 @@ for _, doc := range stocks {
 ```
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L32>)
+## type Option
 
 Option is a function that configures a Lookup instance.
 
@@ -381,7 +381,7 @@ type Option func(*Lookup)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/lookup/lookup.go#L35>)
+### func WithClient
 
 ```go
 func WithClient(c *client.Client) Option

@@ -130,7 +130,7 @@ All Ticker methods are safe for concurrent use from multiple goroutines.
 
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L41>)
+## type Option
 
 Option is a function that configures a Ticker.
 
@@ -139,7 +139,7 @@ type Option func(*Ticker)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L44>)
+### func WithClient
 
 ```go
 func WithClient(c *client.Client) Option
@@ -148,7 +148,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom client for the Ticker.
 
 <a name="Ticker"></a>
-## type [Ticker](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L15-L38>)
+## type Ticker
 
 Ticker represents a single stock/ETF/fund ticker.
 
@@ -159,7 +159,7 @@ type Ticker struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L52>)
+### func New
 
 ```go
 func New(symbol string, opts ...Option) (*Ticker, error)
@@ -168,7 +168,7 @@ func New(symbol string, opts ...Option) (*Ticker, error)
 New creates a new Ticker for the given symbol.
 
 <a name="Ticker.Actions"></a>
-### func \(\*Ticker\) [Actions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L380>)
+### func \(\*Ticker\) Actions
 
 ```go
 func (t *Ticker) Actions() (*models.Actions, error)
@@ -179,7 +179,7 @@ Actions returns dividends, splits, and capital gains for the ticker.
 This is a convenience method that combines the action event series into a single response.
 
 <a name="Ticker.AnalystPriceTargets"></a>
-### func \(\*Ticker\) [AnalystPriceTargets](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L52>)
+### func \(\*Ticker\) AnalystPriceTargets
 
 ```go
 func (t *Ticker) AnalystPriceTargets() (*models.PriceTarget, error)
@@ -188,7 +188,7 @@ func (t *Ticker) AnalystPriceTargets() (*models.PriceTarget, error)
 AnalystPriceTargets returns analyst price targets. This method name matches Python yfinance's ticker.analyst\_price\_targets property.
 
 <a name="Ticker.BalanceSheet"></a>
-### func \(\*Ticker\) [BalanceSheet](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L90>)
+### func \(\*Ticker\) BalanceSheet
 
 ```go
 func (t *Ticker) BalanceSheet(freq string) (*models.FinancialStatement, error)
@@ -214,7 +214,7 @@ if assets, ok := balance.GetLatest("TotalAssets"); ok {
 ```
 
 <a name="Ticker.Calendar"></a>
-### func \(\*Ticker\) [Calendar](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/calendar.go#L26>)
+### func \(\*Ticker\) Calendar
 
 ```go
 func (t *Ticker) Calendar() (*models.Calendar, error)
@@ -240,7 +240,7 @@ for _, date := range calendar.EarningsDate {
 ```
 
 <a name="Ticker.CapitalGains"></a>
-### func \(\*Ticker\) [CapitalGains](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L363>)
+### func \(\*Ticker\) CapitalGains
 
 ```go
 func (t *Ticker) CapitalGains() ([]models.CapitalGain, error)
@@ -249,7 +249,7 @@ func (t *Ticker) CapitalGains() ([]models.CapitalGain, error)
 CapitalGains returns capital gain distributions for the ticker.
 
 <a name="Ticker.CashFlow"></a>
-### func \(\*Ticker\) [CashFlow](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L135>)
+### func \(\*Ticker\) CashFlow
 
 ```go
 func (t *Ticker) CashFlow(freq string) (*models.FinancialStatement, error)
@@ -275,7 +275,7 @@ if fcf, ok := cashFlow.GetLatest("FreeCashFlow"); ok {
 ```
 
 <a name="Ticker.ClearCache"></a>
-### func \(\*Ticker\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L134>)
+### func \(\*Ticker\) ClearCache
 
 ```go
 func (t *Ticker) ClearCache()
@@ -284,7 +284,7 @@ func (t *Ticker) ClearCache()
 ClearCache clears all cached data.
 
 <a name="Ticker.Close"></a>
-### func \(\*Ticker\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L87>)
+### func \(\*Ticker\) Close
 
 ```go
 func (t *Ticker) Close()
@@ -293,7 +293,7 @@ func (t *Ticker) Close()
 Close releases resources used by the Ticker. If the client was created by the Ticker, it will be closed.
 
 <a name="Ticker.Dividends"></a>
-### func \(\*Ticker\) [Dividends](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L333>)
+### func \(\*Ticker\) Dividends
 
 ```go
 func (t *Ticker) Dividends() ([]models.Dividend, error)
@@ -304,7 +304,7 @@ Dividends returns the dividend history for the ticker.
 Returns all historical dividend payments with dates and amounts.
 
 <a name="Ticker.EPSRevisions"></a>
-### func \(\*Ticker\) [EPSRevisions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L144>)
+### func \(\*Ticker\) EPSRevisions
 
 ```go
 func (t *Ticker) EPSRevisions() ([]models.EPSRevision, error)
@@ -313,7 +313,7 @@ func (t *Ticker) EPSRevisions() ([]models.EPSRevision, error)
 EPSRevisions returns EPS revision data.
 
 <a name="Ticker.EPSTrend"></a>
-### func \(\*Ticker\) [EPSTrend](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L127>)
+### func \(\*Ticker\) EPSTrend
 
 ```go
 func (t *Ticker) EPSTrend() ([]models.EPSTrend, error)
@@ -322,7 +322,7 @@ func (t *Ticker) EPSTrend() ([]models.EPSTrend, error)
 EPSTrend returns EPS trend data.
 
 <a name="Ticker.EarningsEstimate"></a>
-### func \(\*Ticker\) [EarningsEstimate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L80>)
+### func \(\*Ticker\) EarningsEstimate
 
 ```go
 func (t *Ticker) EarningsEstimate() ([]models.EarningsEstimate, error)
@@ -331,7 +331,7 @@ func (t *Ticker) EarningsEstimate() ([]models.EarningsEstimate, error)
 EarningsEstimate returns earnings estimates for upcoming periods. This method name matches Python yfinance's ticker.earnings\_estimate property.
 
 <a name="Ticker.EarningsEstimates"></a>
-### func \(\*Ticker\) [EarningsEstimates](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L98>)
+### func \(\*Ticker\) EarningsEstimates
 
 ```go
 func (t *Ticker) EarningsEstimates() ([]models.EarningsEstimate, error)
@@ -340,7 +340,7 @@ func (t *Ticker) EarningsEstimates() ([]models.EarningsEstimate, error)
 EarningsEstimates is a deprecated alias for EarningsEstimate. Deprecated: Use EarningsEstimate\(\) instead for Python yfinance compatibility.
 
 <a name="Ticker.EarningsHistory"></a>
-### func \(\*Ticker\) [EarningsHistory](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L161>)
+### func \(\*Ticker\) EarningsHistory
 
 ```go
 func (t *Ticker) EarningsHistory() (*models.EarningsHistory, error)
@@ -349,7 +349,7 @@ func (t *Ticker) EarningsHistory() (*models.EarningsHistory, error)
 EarningsHistory returns historical earnings data.
 
 <a name="Ticker.FastInfo"></a>
-### func \(\*Ticker\) [FastInfo](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/quote.go#L109>)
+### func \(\*Ticker\) FastInfo
 
 ```go
 func (t *Ticker) FastInfo() (*models.FastInfo, error)
@@ -358,7 +358,7 @@ func (t *Ticker) FastInfo() (*models.FastInfo, error)
 FastInfo returns a FastInfo struct with commonly used data. This fetches data from the history endpoint which can be faster for some fields.
 
 <a name="Ticker.FinancialsJSON"></a>
-### func \(\*Ticker\) [FinancialsJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L475>)
+### func \(\*Ticker\) FinancialsJSON
 
 ```go
 func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)
@@ -367,7 +367,7 @@ func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)
 FinancialsJSON returns raw JSON for debugging.
 
 <a name="Ticker.GetHistoryMetadata"></a>
-### func \(\*Ticker\) [GetHistoryMetadata](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L151>)
+### func \(\*Ticker\) GetHistoryMetadata
 
 ```go
 func (t *Ticker) GetHistoryMetadata() *models.ChartMeta
@@ -376,7 +376,7 @@ func (t *Ticker) GetHistoryMetadata() *models.ChartMeta
 GetHistoryMetadata returns the cached history metadata.
 
 <a name="Ticker.GetNews"></a>
-### func \(\*Ticker\) [GetNews](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/news.go#L153>)
+### func \(\*Ticker\) GetNews
 
 ```go
 func (t *Ticker) GetNews() ([]models.NewsArticle, error)
@@ -391,7 +391,7 @@ news, err := ticker.GetNews()
 ```
 
 <a name="Ticker.GetValuationMeasures"></a>
-### func \(\*Ticker\) [GetValuationMeasures](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/valuation.go#L77>)
+### func \(\*Ticker\) GetValuationMeasures
 
 ```go
 func (t *Ticker) GetValuationMeasures(freq string, periods *int) (*models.ValuationMeasures, error)
@@ -402,7 +402,7 @@ GetValuationMeasures returns valuation measures from Yahoo's fundamentals\-times
 freq must be one of "quarterly", "monthly", "yearly", or "trailing". periods caps the number of period date columns returned, newest first. A nil periods pointer returns every available period column. Use 0 for the "Current" column only.
 
 <a name="Ticker.GrowthEstimates"></a>
-### func \(\*Ticker\) [GrowthEstimates](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L182>)
+### func \(\*Ticker\) GrowthEstimates
 
 ```go
 func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error)
@@ -411,7 +411,7 @@ func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error)
 GrowthEstimates returns growth estimates comparing stock to industry/sector/index.
 
 <a name="Ticker.History"></a>
-### func \(\*Ticker\) [History](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L35>)
+### func \(\*Ticker\) History
 
 ```go
 func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error)
@@ -440,7 +440,7 @@ bars, err := ticker.History(models.HistoryParams{
 ```
 
 <a name="Ticker.HistoryPeriod"></a>
-### func \(\*Ticker\) [HistoryPeriod](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L309>)
+### func \(\*Ticker\) HistoryPeriod
 
 ```go
 func (t *Ticker) HistoryPeriod(period string) ([]models.Bar, error)
@@ -453,7 +453,7 @@ Valid periods: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max
 Uses daily interval with auto\-adjustment enabled.
 
 <a name="Ticker.HistoryRange"></a>
-### func \(\*Ticker\) [HistoryRange](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L321>)
+### func \(\*Ticker\) HistoryRange
 
 ```go
 func (t *Ticker) HistoryRange(start, end time.Time, interval string) ([]models.Bar, error)
@@ -470,7 +470,7 @@ Parameters:
 Uses auto\-adjustment enabled by default.
 
 <a name="Ticker.IncomeStatement"></a>
-### func \(\*Ticker\) [IncomeStatement](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/financials.go#L45>)
+### func \(\*Ticker\) IncomeStatement
 
 ```go
 func (t *Ticker) IncomeStatement(freq string) (*models.FinancialStatement, error)
@@ -496,7 +496,7 @@ if revenue, ok := income.GetLatest("TotalRevenue"); ok {
 ```
 
 <a name="Ticker.Info"></a>
-### func \(\*Ticker\) [Info](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/info.go#L16>)
+### func \(\*Ticker\) Info
 
 ```go
 func (t *Ticker) Info() (*models.Info, error)
@@ -505,7 +505,7 @@ func (t *Ticker) Info() (*models.Info, error)
 Info fetches comprehensive company information for the ticker.
 
 <a name="Ticker.InsiderPurchases"></a>
-### func \(\*Ticker\) [InsiderPurchases](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L190>)
+### func \(\*Ticker\) InsiderPurchases
 
 ```go
 func (t *Ticker) InsiderPurchases() (*models.InsiderPurchases, error)
@@ -526,7 +526,7 @@ fmt.Printf("Net shares: %d (%s)\n", purchases.Net.Shares, purchases.Period)
 ```
 
 <a name="Ticker.InsiderRoster"></a>
-### func \(\*Ticker\) [InsiderRoster](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L175>)
+### func \(\*Ticker\) InsiderRoster
 
 ```go
 func (t *Ticker) InsiderRoster() ([]models.InsiderHolder, error)
@@ -537,7 +537,7 @@ InsiderRoster returns the list of company insiders.
 Deprecated: Use InsiderRosterHolders instead.
 
 <a name="Ticker.InsiderRosterHolders"></a>
-### func \(\*Ticker\) [InsiderRosterHolders](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L157>)
+### func \(\*Ticker\) InsiderRosterHolders
 
 ```go
 func (t *Ticker) InsiderRosterHolders() ([]models.InsiderHolder, error)
@@ -561,7 +561,7 @@ for _, insider := range roster {
 ```
 
 <a name="Ticker.InsiderTransactions"></a>
-### func \(\*Ticker\) [InsiderTransactions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L128>)
+### func \(\*Ticker\) InsiderTransactions
 
 ```go
 func (t *Ticker) InsiderTransactions() ([]models.InsiderTransaction, error)
@@ -585,7 +585,7 @@ for _, tx := range transactions {
 ```
 
 <a name="Ticker.InstitutionalHolders"></a>
-### func \(\*Ticker\) [InstitutionalHolders](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L71>)
+### func \(\*Ticker\) InstitutionalHolders
 
 ```go
 func (t *Ticker) InstitutionalHolders() ([]models.Holder, error)
@@ -608,7 +608,7 @@ for _, h := range holders {
 ```
 
 <a name="Ticker.MajorHolders"></a>
-### func \(\*Ticker\) [MajorHolders](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L43>)
+### func \(\*Ticker\) MajorHolders
 
 ```go
 func (t *Ticker) MajorHolders() (*models.MajorHolders, error)
@@ -630,7 +630,7 @@ fmt.Printf("Institutions: %.2f%%\n", holders.InstitutionsPercentHeld*100)
 ```
 
 <a name="Ticker.MutualFundHolders"></a>
-### func \(\*Ticker\) [MutualFundHolders](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/holders.go#L99>)
+### func \(\*Ticker\) MutualFundHolders
 
 ```go
 func (t *Ticker) MutualFundHolders() ([]models.Holder, error)
@@ -653,7 +653,7 @@ for _, h := range holders {
 ```
 
 <a name="Ticker.News"></a>
-### func \(\*Ticker\) [News](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/news.go#L57>)
+### func \(\*Ticker\) News
 
 ```go
 func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error)
@@ -679,7 +679,7 @@ for _, article := range news {
 ```
 
 <a name="Ticker.OptionChain"></a>
-### func \(\*Ticker\) [OptionChain](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/options.go#L35>)
+### func \(\*Ticker\) OptionChain
 
 ```go
 func (t *Ticker) OptionChain(date string) (*models.OptionChain, error)
@@ -688,7 +688,7 @@ func (t *Ticker) OptionChain(date string) (*models.OptionChain, error)
 OptionChain returns the option chain for a specific expiration date. If date is empty, returns the nearest expiration.
 
 <a name="Ticker.OptionChainAtExpiry"></a>
-### func \(\*Ticker\) [OptionChainAtExpiry](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/options.go#L72>)
+### func \(\*Ticker\) OptionChainAtExpiry
 
 ```go
 func (t *Ticker) OptionChainAtExpiry(date time.Time) (*models.OptionChain, error)
@@ -697,7 +697,7 @@ func (t *Ticker) OptionChainAtExpiry(date time.Time) (*models.OptionChain, error
 OptionChainAtExpiry is an alias for OptionChain with a specific date.
 
 <a name="Ticker.Options"></a>
-### func \(\*Ticker\) [Options](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/options.go#L20>)
+### func \(\*Ticker\) Options
 
 ```go
 func (t *Ticker) Options() ([]time.Time, error)
@@ -706,7 +706,7 @@ func (t *Ticker) Options() ([]time.Time, error)
 Options returns all available expiration dates for options.
 
 <a name="Ticker.OptionsJSON"></a>
-### func \(\*Ticker\) [OptionsJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/options.go#L207>)
+### func \(\*Ticker\) OptionsJSON
 
 ```go
 func (t *Ticker) OptionsJSON() ([]byte, error)
@@ -715,7 +715,7 @@ func (t *Ticker) OptionsJSON() ([]byte, error)
 OptionsJSON returns raw JSON response for debugging.
 
 <a name="Ticker.PriceTarget"></a>
-### func \(\*Ticker\) [PriceTarget](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L74>)
+### func \(\*Ticker\) PriceTarget
 
 ```go
 func (t *Ticker) PriceTarget() (*models.PriceTarget, error)
@@ -724,7 +724,7 @@ func (t *Ticker) PriceTarget() (*models.PriceTarget, error)
 PriceTarget is a deprecated alias for AnalystPriceTargets. Deprecated: Use AnalystPriceTargets\(\) instead for Python yfinance compatibility.
 
 <a name="Ticker.Quote"></a>
-### func \(\*Ticker\) [Quote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/quote.go#L15>)
+### func \(\*Ticker\) Quote
 
 ```go
 func (t *Ticker) Quote() (*models.Quote, error)
@@ -733,7 +733,7 @@ func (t *Ticker) Quote() (*models.Quote, error)
 Quote fetches the current quote for the ticker.
 
 <a name="Ticker.Recommendations"></a>
-### func \(\*Ticker\) [Recommendations](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L30>)
+### func \(\*Ticker\) Recommendations
 
 ```go
 func (t *Ticker) Recommendations() (*models.RecommendationTrend, error)
@@ -742,7 +742,7 @@ func (t *Ticker) Recommendations() (*models.RecommendationTrend, error)
 Recommendations returns analyst recommendation trends.
 
 <a name="Ticker.RevenueEstimate"></a>
-### func \(\*Ticker\) [RevenueEstimate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L104>)
+### func \(\*Ticker\) RevenueEstimate
 
 ```go
 func (t *Ticker) RevenueEstimate() ([]models.RevenueEstimate, error)
@@ -751,7 +751,7 @@ func (t *Ticker) RevenueEstimate() ([]models.RevenueEstimate, error)
 RevenueEstimate returns revenue estimates for upcoming periods. This method name matches Python yfinance's ticker.revenue\_estimate property.
 
 <a name="Ticker.RevenueEstimates"></a>
-### func \(\*Ticker\) [RevenueEstimates](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/analysis.go#L122>)
+### func \(\*Ticker\) RevenueEstimates
 
 ```go
 func (t *Ticker) RevenueEstimates() ([]models.RevenueEstimate, error)
@@ -760,7 +760,7 @@ func (t *Ticker) RevenueEstimates() ([]models.RevenueEstimate, error)
 RevenueEstimates is a deprecated alias for RevenueEstimate. Deprecated: Use RevenueEstimate\(\) instead for Python yfinance compatibility.
 
 <a name="Ticker.Splits"></a>
-### func \(\*Ticker\) [Splits](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/history.go#L349>)
+### func \(\*Ticker\) Splits
 
 ```go
 func (t *Ticker) Splits() ([]models.Split, error)
@@ -771,7 +771,7 @@ Splits returns the stock split history for the ticker.
 Returns all historical stock splits with dates and ratios.
 
 <a name="Ticker.Strikes"></a>
-### func \(\*Ticker\) [Strikes](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/options.go#L188>)
+### func \(\*Ticker\) Strikes
 
 ```go
 func (t *Ticker) Strikes() ([]float64, error)
@@ -780,7 +780,7 @@ func (t *Ticker) Strikes() ([]float64, error)
 Strikes returns available strike prices for options.
 
 <a name="Ticker.Symbol"></a>
-### func \(\*Ticker\) [Symbol](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L81>)
+### func \(\*Ticker\) Symbol
 
 ```go
 func (t *Ticker) Symbol() string
@@ -789,7 +789,7 @@ func (t *Ticker) Symbol() string
 Symbol returns the ticker symbol.
 
 <a name="Ticker.Valuation"></a>
-### func \(\*Ticker\) [Valuation](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/valuation.go#L60>)
+### func \(\*Ticker\) Valuation
 
 ```go
 func (t *Ticker) Valuation() (*models.ValuationMeasures, error)
@@ -798,7 +798,7 @@ func (t *Ticker) Valuation() (*models.ValuationMeasures, error)
 Valuation returns the valuation measures table using Python yfinance's default settings: quarterly period columns capped to the newest five periods.
 
 <a name="Ticker.ValuationMeasures"></a>
-### func \(\*Ticker\) [ValuationMeasures](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/valuation.go#L66>)
+### func \(\*Ticker\) ValuationMeasures
 
 ```go
 func (t *Ticker) ValuationMeasures() (*models.ValuationMeasures, error)
