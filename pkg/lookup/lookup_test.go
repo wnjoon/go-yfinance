@@ -11,11 +11,11 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create Lookup: %v", err)
 	}
-	defer l.Close()
-
 	if l == nil {
 		t.Fatal("Lookup should not be nil")
+		return
 	}
+	defer l.Close()
 
 	if l.query != "AAPL" {
 		t.Errorf("Expected query 'AAPL', got '%s'", l.query)
@@ -211,6 +211,7 @@ func TestParseResponse(t *testing.T) {
 
 	if result == nil {
 		t.Fatal("Result should not be nil")
+		return
 	}
 
 	if len(result.Documents) != 0 {

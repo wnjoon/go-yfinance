@@ -14,6 +14,7 @@ func TestNew(t *testing.T) {
 
 	if s == nil {
 		t.Fatal("Screener should not be nil")
+		return
 	}
 
 	if s.ownsClient != true {
@@ -117,6 +118,7 @@ func TestNewEquityQuery(t *testing.T) {
 
 	if query == nil {
 		t.Fatal("Query should not be nil")
+		return
 	}
 
 	if query.QuoteType() != "EQUITY" {

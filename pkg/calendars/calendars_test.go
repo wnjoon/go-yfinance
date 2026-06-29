@@ -12,11 +12,11 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create Calendars: %v", err)
 	}
-	defer cal.Close()
-
 	if cal == nil {
 		t.Fatal("Calendars should not be nil")
+		return
 	}
+	defer cal.Close()
 
 	if cal.ownsClient != true {
 		t.Error("ownsClient should be true when no custom client is provided")

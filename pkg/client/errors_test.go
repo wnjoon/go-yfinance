@@ -103,8 +103,7 @@ func TestHTTPStatusToError(t *testing.T) {
 			err := HTTPStatusToError(tt.status, "test body")
 			if err == nil {
 				t.Fatal("Expected error, got nil")
-			}
-			if err.Code != tt.expected {
+			} else if err.Code != tt.expected {
 				t.Errorf("HTTP %d: got code %v, want %v", tt.status, err.Code, tt.expected)
 			}
 		})
