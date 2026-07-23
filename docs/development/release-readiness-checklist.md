@@ -16,6 +16,13 @@ names that do not match the actual upstream parity target.
 - For the 1.5.x line, Python yfinance `1.5.0` was retracted and `1.5.1` is the
   corrected parity target. Therefore go-yfinance should release `v1.5.1` without
   creating `v1.5.0`.
+- Python yfinance `1.5.2` is a single patch that fixes yfinance breaking with
+  `curl_cffi >= 0.16`. That fix lives entirely in Python's user-injected-session
+  cache detection, which has no analogue in go-yfinance (Go uses its own
+  project-owned CycleTLS-backed client with no external session and no
+  `requests_cache`/`curl_cffi` layer). The Go `v1.5.2` release is therefore
+  documentation-and-versioning only;
+  record the no-op assessment in the progress document.
 
 ## 2. Upstream Parity Audit
 
