@@ -56,6 +56,7 @@ type newsStreamItem struct {
 //	}
 func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error) {
 	// Check cache first
+	// Deep copy cache elements and nested thumbnail pointers to prevent external mutation
 	t.mu.RLock()
 	if t.newsCache != nil {
 		res := make([]models.NewsArticle, len(t.newsCache))
@@ -148,7 +149,7 @@ func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, erro
 	t.newsCache = articles
 	t.mu.Unlock()
 
-	// Return a copy to prevent mutation of cached data
+	// Return a deep copy to prevent mutation of cached data by caller
 	res := make([]models.NewsArticle, len(articles))
 	for i, article := range articles {
 		res[i] = article

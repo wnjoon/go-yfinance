@@ -44,7 +44,7 @@ type WebSocket struct {
 	heartbeatDone chan struct{}
 	isConnected   bool
 	isListening   bool
-	isClosed      bool
+	isClosed      bool // Tracks if Close() was called to prevent reconnect races and panics
 }
 
 // Option is a function that configures a WebSocket.
@@ -108,6 +108,7 @@ func (ws *WebSocket) Connect() error {
 	ws.mu.Lock()
 	defer ws.mu.Unlock()
 
+	// Prevent connecting if the client has already been closed
 	if ws.isClosed {
 		return fmt.Errorf("client closed")
 	}
@@ -190,8 +191,8 @@ func (ws *WebSocket) Unsubscribe(symbols []string) error {
 //	})
 func (ws *WebSocket) Listen(handler MessageHandler) error {
 	ws.mu.Lock()
-	ws.isClosed = false
-	ws.done = make(chan struct{})
+	ws.isClosed = false           // Reset closed state to allow client reuse
+	ws.done = make(chan struct{}) // Re-allocate channel so it can be closed again
 	ws.messageHandler = handler
 	ws.isListening = true
 	ws.heartbeatDone = make(chan struct{})
@@ -204,11 +205,13 @@ func (ws *WebSocket) Listen(handler MessageHandler) error {
 	// Start heartbeat goroutine
 	go ws.heartbeatLoop()
 
+	// Ensure background heartbeatLoop goroutine exits when Listen() returns
 	defer func() {
 		ws.mu.Lock()
 		if ws.heartbeatDone != nil {
 			select {
 			case <-ws.heartbeatDone:
+				// Already closed
 			default:
 				close(ws.heartbeatDone)
 			}
@@ -262,15 +265,17 @@ func (ws *WebSocket) Close() error {
 	ws.mu.Lock()
 	defer ws.mu.Unlock()
 
+	// Handle idempotency (avoid closing channels twice and panicking)
 	if ws.isClosed {
 		return nil
 	}
 	ws.isClosed = true
 
-	// Signal goroutines to stop
+	// Signal goroutines to stop safely using select blocks
 	if ws.done != nil {
 		select {
 		case <-ws.done:
+			// Already closed
 		default:
 			close(ws.done)
 		}
@@ -278,6 +283,7 @@ func (ws *WebSocket) Close() error {
 	if ws.heartbeatDone != nil {
 		select {
 		case <-ws.heartbeatDone:
+			// Already closed
 		default:
 			close(ws.heartbeatDone)
 		}
@@ -407,6 +413,7 @@ func (ws *WebSocket) heartbeatLoop() {
 // reconnect attempts to reconnect after a connection failure.
 func (ws *WebSocket) reconnect() error {
 	ws.mu.Lock()
+	// Abort reconnection early if the client was closed
 	if ws.isClosed {
 		ws.mu.Unlock()
 		return fmt.Errorf("client closed")
@@ -422,6 +429,7 @@ func (ws *WebSocket) reconnect() error {
 	time.Sleep(ws.reconnectDelay)
 
 	ws.mu.Lock()
+	// Abort if client was closed during the reconnectDelay sleep
 	if ws.isClosed {
 		ws.mu.Unlock()
 		return fmt.Errorf("client closed")

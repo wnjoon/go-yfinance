@@ -217,6 +217,8 @@ func (r *protoReader) readString() (string, error) {
 		return "", err
 	}
 
+	// Avoid integer overflow/underflow if length cast to int is negative
+	// or exceeds remaining readable buffer space.
 	if int(length) < 0 || int(length) > len(r.data)-r.pos {
 		return "", io.ErrUnexpectedEOF
 	}
@@ -265,6 +267,8 @@ func (r *protoReader) skipField(wireType int) error {
 		if err != nil {
 			return err
 		}
+		// Avoid integer overflow/underflow if length cast to int is negative
+		// or exceeds remaining readable buffer space.
 		if int(length) < 0 || int(length) > len(r.data)-r.pos {
 			return io.ErrUnexpectedEOF
 		}

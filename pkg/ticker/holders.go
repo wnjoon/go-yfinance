@@ -52,6 +52,7 @@ func (t *Ticker) MajorHolders() (*models.MajorHolders, error) {
 		return nil, fmt.Errorf("major holders data not available")
 	}
 
+	// Return a dereferenced copy of the cached struct to prevent external mutation
 	copy := *t.holdersCache.major
 	return &copy, nil
 }
@@ -81,6 +82,7 @@ func (t *Ticker) InstitutionalHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
+	// Return a copy of the slice to prevent external mutation of cached elements
 	res := make([]models.Holder, len(t.holdersCache.institutional))
 	copy(res, t.holdersCache.institutional)
 	return res, nil
@@ -111,6 +113,7 @@ func (t *Ticker) MutualFundHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
+	// Return a copy of the slice to prevent external mutation of cached elements
 	res := make([]models.Holder, len(t.holdersCache.mutualFund))
 	copy(res, t.holdersCache.mutualFund)
 	return res, nil
@@ -142,6 +145,7 @@ func (t *Ticker) InsiderTransactions() ([]models.InsiderTransaction, error) {
 		return nil, nil
 	}
 
+	// Return a copy of the slice to prevent external mutation of cached elements
 	res := make([]models.InsiderTransaction, len(t.holdersCache.insiderTransactions))
 	copy(res, t.holdersCache.insiderTransactions)
 	return res, nil
@@ -173,6 +177,7 @@ func (t *Ticker) InsiderRosterHolders() ([]models.InsiderHolder, error) {
 		return nil, nil
 	}
 
+	// Deep copy the slice and nested pointer fields to prevent external mutation of cache
 	res := make([]models.InsiderHolder, len(t.holdersCache.insiderRoster))
 	for i, h := range t.holdersCache.insiderRoster {
 		res[i] = h
@@ -218,6 +223,7 @@ func (t *Ticker) InsiderPurchases() (*models.InsiderPurchases, error) {
 		return nil, nil
 	}
 
+	// Return a dereferenced copy of the cached struct to prevent external mutation
 	copy := *t.holdersCache.insiderPurchases
 	return &copy, nil
 }
