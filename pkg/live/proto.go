@@ -217,7 +217,7 @@ func (r *protoReader) readString() (string, error) {
 		return "", err
 	}
 
-	if r.pos+int(length) > len(r.data) {
+	if int(length) < 0 || int(length) > len(r.data)-r.pos {
 		return "", io.ErrUnexpectedEOF
 	}
 
@@ -265,7 +265,7 @@ func (r *protoReader) skipField(wireType int) error {
 		if err != nil {
 			return err
 		}
-		if r.pos+int(length) > len(r.data) {
+		if int(length) < 0 || int(length) > len(r.data)-r.pos {
 			return io.ErrUnexpectedEOF
 		}
 		r.pos += int(length)

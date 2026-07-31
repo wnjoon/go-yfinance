@@ -356,17 +356,25 @@ func (a *AuthManager) fetchCSRF() error {
 
 // extractCookies extracts and stores cookies from response headers.
 func (a *AuthManager) extractCookies(headers map[string]string) {
+	var lastCookie string
 	for key, value := range headers {
 		if strings.ToLower(key) == "set-cookie" {
-			// Extract just the cookie name=value part (before any attributes like Expires, Path, etc.)
-			parts := strings.Split(value, ";")
-			if len(parts) > 0 {
-				a.cookie = strings.TrimSpace(parts[0])
-				// Set cookie on the client for subsequent requests
-				a.client.SetCookie(a.cookie)
+			// In some environments, multiple Set-Cookie headers are joined by newlines
+			lines := strings.Split(value, "\n")
+			for _, line := range lines {
+				parts := strings.Split(line, ";")
+				if len(parts) > 0 {
+					cookiePart := strings.TrimSpace(parts[0])
+					if cookiePart != "" {
+						lastCookie = cookiePart
+						a.client.SetCookie(cookiePart)
+					}
+				}
 			}
-			break
 		}
+	}
+	if lastCookie != "" {
+		a.cookie = lastCookie
 	}
 }
 

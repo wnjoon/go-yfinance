@@ -52,7 +52,8 @@ func (t *Ticker) MajorHolders() (*models.MajorHolders, error) {
 		return nil, fmt.Errorf("major holders data not available")
 	}
 
-	return t.holdersCache.major, nil
+	copy := *t.holdersCache.major
+	return &copy, nil
 }
 
 // InstitutionalHolders returns the list of institutional holders.
@@ -80,7 +81,9 @@ func (t *Ticker) InstitutionalHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.institutional, nil
+	res := make([]models.Holder, len(t.holdersCache.institutional))
+	copy(res, t.holdersCache.institutional)
+	return res, nil
 }
 
 // MutualFundHolders returns the list of mutual fund holders.
@@ -108,7 +111,9 @@ func (t *Ticker) MutualFundHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.mutualFund, nil
+	res := make([]models.Holder, len(t.holdersCache.mutualFund))
+	copy(res, t.holdersCache.mutualFund)
+	return res, nil
 }
 
 // InsiderTransactions returns the list of insider transactions.
@@ -137,7 +142,9 @@ func (t *Ticker) InsiderTransactions() ([]models.InsiderTransaction, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderTransactions, nil
+	res := make([]models.InsiderTransaction, len(t.holdersCache.insiderTransactions))
+	copy(res, t.holdersCache.insiderTransactions)
+	return res, nil
 }
 
 // InsiderRosterHolders returns the list of company insiders.
@@ -166,7 +173,19 @@ func (t *Ticker) InsiderRosterHolders() ([]models.InsiderHolder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderRoster, nil
+	res := make([]models.InsiderHolder, len(t.holdersCache.insiderRoster))
+	for i, h := range t.holdersCache.insiderRoster {
+		res[i] = h
+		if h.LatestTransDate != nil {
+			tCopy := *h.LatestTransDate
+			res[i].LatestTransDate = &tCopy
+		}
+		if h.PositionDirectDate != nil {
+			tCopy := *h.PositionDirectDate
+			res[i].PositionDirectDate = &tCopy
+		}
+	}
+	return res, nil
 }
 
 // InsiderRoster returns the list of company insiders.
@@ -199,7 +218,8 @@ func (t *Ticker) InsiderPurchases() (*models.InsiderPurchases, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderPurchases, nil
+	copy := *t.holdersCache.insiderPurchases
+	return &copy, nil
 }
 
 // ensureHoldersCache fetches and caches all holders data.
