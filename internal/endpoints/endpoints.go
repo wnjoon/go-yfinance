@@ -88,6 +88,7 @@ var BalanceSheetKeys = []string{
 	"TotalEquityGrossMinorityInterest", "StockholdersEquity", "CommonStockEquity",
 	"RetainedEarnings", "AdditionalPaidInCapital", "TreasuryStock",
 	"TotalDebt", "NetDebt", "WorkingCapital", "TangibleBookValue", "InvestedCapital",
+	"FixedMaturityInvestments", "EquityInvestments", "NetLoan", "DeferredAssets",
 }
 
 // CashFlowKeys defines fields for cash flow statement.

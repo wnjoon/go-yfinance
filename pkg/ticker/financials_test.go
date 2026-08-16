@@ -153,6 +153,27 @@ func TestNormalizeFrequency(t *testing.T) {
 	}
 }
 
+func TestBalanceSheetKeysIncludeNewFields(t *testing.T) {
+	// New balance sheet keys added in python yfinance v1.6.0 (upstream PR #2879).
+	keys, prefix, err := financialKeysAndPrefix("balance-sheet", "annual")
+	if err != nil {
+		t.Fatalf("financialKeysAndPrefix failed: %v", err)
+	}
+	if prefix != "annual" {
+		t.Errorf("Expected prefix 'annual', got %q", prefix)
+	}
+
+	keySet := make(map[string]bool, len(keys))
+	for _, k := range keys {
+		keySet[k] = true
+	}
+	for _, want := range []string{"FixedMaturityInvestments", "EquityInvestments", "NetLoan", "DeferredAssets"} {
+		if !keySet[want] {
+			t.Errorf("Expected balance sheet keys to contain %q", want)
+		}
+	}
+}
+
 func TestFinancialsChunkedFallbackOnSingleFailure(t *testing.T) {
 	tkr, err := New("MSFT")
 	if err != nil {

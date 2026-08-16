@@ -150,3 +150,13 @@ func TestValidIntervals(t *testing.T) {
 		t.Errorf("Expected 13 valid intervals, got %d", len(intervals))
 	}
 }
+
+func TestEquityScreenerDividendFields(t *testing.T) {
+	// New profitability fields added in python yfinance v1.6.0 (upstream PR #2888).
+	if _, err := NewEquityQuery("gt", []any{"dividendyield", 3}); err != nil {
+		t.Errorf("EquityQuery with field 'dividendyield' should validate, got error: %v", err)
+	}
+	if _, err := NewEquityQuery("gt", []any{"dividendpershare.lasttwelvemonths", 1}); err != nil {
+		t.Errorf("EquityQuery with field 'dividendpershare.lasttwelvemonths' should validate, got error: %v", err)
+	}
+}
