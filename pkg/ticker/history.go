@@ -139,13 +139,22 @@ func (t *Ticker) fetchChartResult(params models.HistoryParams) (*models.ChartRes
 		return nil, fmt.Errorf("failed to fetch history: %w", err)
 	}
 
+	return t.decodeChartResponse(resp.Body)
+}
+
+// decodeChartResponse decodes a chart API response body.
+//
+// A Yahoo-reported error is returned as [client.ChartAPIError], carrying the
+// ticker symbol plus Yahoo's error code and description.
+func (t *Ticker) decodeChartResponse(body string) (*models.ChartResult, error) {
 	var chartResp models.ChartResponse
-	if err := json.Unmarshal([]byte(resp.Body), &chartResp); err != nil {
+	if err := json.Unmarshal([]byte(body), &chartResp); err != nil {
 		return nil, client.WrapInvalidResponseError(err)
 	}
 
 	if chartResp.Chart.Error != nil {
-		return nil, fmt.Errorf("API error: %s", chartResp.Chart.Error.Description)
+		return nil, client.NewChartAPIError(t.symbol,
+			chartResp.Chart.Error.Code, chartResp.Chart.Error.Description)
 	}
 
 	if len(chartResp.Chart.Result) == 0 {

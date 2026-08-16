@@ -1,12 +1,60 @@
 package ticker
 
 import (
+	"errors"
 	"math"
 	"testing"
 	"time"
 
+	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
+
+func TestDecodeChartResponseYahooError(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	body := `{"chart":{"result":null,"error":{"code":"Not Found","description":"No data found, symbol may be delisted"}}}`
+	result, err := tkr.decodeChartResponse(body)
+	if err == nil {
+		t.Fatalf("Expected error for Yahoo error response, got result=%+v", result)
+	}
+
+	// Message mirrors python v1.6.0: "$SYM: <description>"
+	expected := "$MSFT: No data found, symbol may be delisted"
+	if err.Error() != expected {
+		t.Errorf("Error() = %q, want %q", err.Error(), expected)
+	}
+
+	var chartErr *client.ChartAPIError
+	if !errors.As(err, &chartErr) {
+		t.Fatalf("Expected errors.As to extract *client.ChartAPIError, got %T", err)
+	}
+	if chartErr.Symbol != "MSFT" {
+		t.Errorf("Symbol = %q, want %q", chartErr.Symbol, "MSFT")
+	}
+	if chartErr.Code != "Not Found" {
+		t.Errorf("Code = %q, want %q", chartErr.Code, "Not Found")
+	}
+	if chartErr.Description != "No data found, symbol may be delisted" {
+		t.Errorf("Description = %q, want %q", chartErr.Description, "No data found, symbol may be delisted")
+	}
+}
+
+func TestDecodeChartResponseEmptyResult(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	// null result without an error should map to not-found, not a panic
+	_, err = tkr.decodeChartResponse(`{"chart":{"result":null,"error":null}}`)
+	if !errors.Is(err, client.ErrNotFound) {
+		t.Fatalf("Expected not-found error, got %v", err)
+	}
+}
 
 func TestParseDividendEventsPreservesEventRows(t *testing.T) {
 	result := &models.ChartResult{

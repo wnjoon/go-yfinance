@@ -1,6 +1,7 @@
 package lookup
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/wnjoon/go-yfinance/pkg/models"
@@ -313,6 +314,48 @@ func TestParseResponseWithShortName(t *testing.T) {
 	doc := result.Documents[0]
 	if doc.Name != "Apple Inc" {
 		t.Errorf("Expected name to be 'Apple Inc' from shortName, got '%s'", doc.Name)
+	}
+}
+
+func TestLookupErrorHandling(t *testing.T) {
+	l, err := New("INVALID_QUERY_XYZ")
+	if err != nil {
+		t.Fatalf("Failed to create Lookup: %v", err)
+	}
+	defer l.Close()
+
+	body := `{"finance":{"result":null,"error":{"code":"Bad Request","description":"Invalid query"}}}`
+	result, err := l.parseBody(body)
+	if err == nil {
+		t.Fatalf("Expected error for Yahoo error response, got result=%+v", result)
+	}
+
+	msg := err.Error()
+	if !strings.Contains(msg, "INVALID_QUERY_XYZ") {
+		t.Errorf("Error message should contain the query, got %q", msg)
+	}
+	if !strings.Contains(msg, "'lookup' fetch returned error") {
+		t.Errorf("Error message should contain \"'lookup' fetch returned error\", got %q", msg)
+	}
+	if !strings.Contains(msg, "Bad Request - Invalid query") {
+		t.Errorf("Error message should contain Yahoo's code and description, got %q", msg)
+	}
+}
+
+func TestParseBodyNullResult(t *testing.T) {
+	l, err := New("AAPL")
+	if err != nil {
+		t.Fatalf("Failed to create Lookup: %v", err)
+	}
+	defer l.Close()
+
+	// null result without an error should yield an empty result, not fail
+	result, err := l.parseBody(`{"finance":{"result":null,"error":null}}`)
+	if err != nil {
+		t.Fatalf("Expected no error for null result, got %v", err)
+	}
+	if len(result.Documents) != 0 {
+		t.Errorf("Expected empty documents, got %d", len(result.Documents))
 	}
 }
 

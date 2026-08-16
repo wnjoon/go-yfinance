@@ -67,6 +67,31 @@ func NewError(code ErrorCode, message string, cause error) *YFError {
 	}
 }
 
+// ChartAPIError represents an error returned by the Yahoo Finance chart API.
+//
+// The message mirrors python yfinance v1.6.0: Yahoo's own reason is the
+// entire rationale ("$SYM: <description>"), with the Yahoo error code kept
+// as a field for programmatic inspection via errors.As.
+type ChartAPIError struct {
+	Symbol      string
+	Code        string
+	Description string
+}
+
+// Error implements the error interface.
+func (e *ChartAPIError) Error() string {
+	return fmt.Sprintf("$%s: %s", e.Symbol, e.Description)
+}
+
+// NewChartAPIError creates a new ChartAPIError.
+func NewChartAPIError(symbol, code, description string) *ChartAPIError {
+	return &ChartAPIError{
+		Symbol:      symbol,
+		Code:        code,
+		Description: description,
+	}
+}
+
 // Predefined errors for easy comparison
 var (
 	ErrNetwork         = &YFError{Code: ErrCodeNetwork, Message: "network error"}

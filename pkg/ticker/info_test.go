@@ -61,6 +61,39 @@ func TestParseInfoResponseYahooError(t *testing.T) {
 	}
 }
 
+func TestParseInfoResponseNullResultWithYahooError(t *testing.T) {
+	tkr, err := New("MSFT")
+	if err != nil {
+		t.Fatalf("Failed to create ticker: %v", err)
+	}
+
+	// Regression for upstream PR #2906: a null "result" alongside a Yahoo
+	// error object must return an error, not panic. json decodes null into
+	// a nil slice, so the len==0 / error branches must handle it.
+	tests := []struct {
+		name string
+		body string
+	}{
+		{
+			name: "null result with error",
+			body: `{"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No data found"}}}`,
+		},
+		{
+			name: "absent result with error",
+			body: `{"quoteSummary":{"error":{"code":"Not Found","description":"No data found"}}}`,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			info, err := tkr.parseInfoResponse(tc.body)
+			if err == nil {
+				t.Fatalf("Expected error, got info=%+v", info)
+			}
+		})
+	}
+}
+
 func TestParseInfoResponsePartialResult(t *testing.T) {
 	tkr, err := New("MSFT")
 	if err != nil {

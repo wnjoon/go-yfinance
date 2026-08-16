@@ -127,19 +127,10 @@ func (l *Lookup) fetch(lookupType models.LookupType, count int) (*models.LookupR
 	}
 
 	// Parse response
-	var rawResp models.LookupResponse
-	if err := json.Unmarshal([]byte(resp.Body), &rawResp); err != nil {
-		return nil, fmt.Errorf("failed to parse lookup response: %w", err)
+	result, err := l.parseBody(resp.Body)
+	if err != nil {
+		return nil, err
 	}
-
-	// Check for API error
-	if rawResp.Finance.Error != nil {
-		return nil, fmt.Errorf("lookup API error: %s - %s",
-			rawResp.Finance.Error.Code, rawResp.Finance.Error.Description)
-	}
-
-	// Parse results
-	result := l.parseResponse(&rawResp)
 
 	// Cache the result
 	l.mu.Lock()
@@ -147,6 +138,26 @@ func (l *Lookup) fetch(lookupType models.LookupType, count int) (*models.LookupR
 	l.mu.Unlock()
 
 	return result, nil
+}
+
+// parseBody decodes a lookup API response body into a LookupResult.
+//
+// If the response carries a Yahoo error, the returned error includes the
+// query string, mirroring python yfinance's message format:
+// "<query>: 'lookup' fetch returned error: <code> - <description>".
+func (l *Lookup) parseBody(body string) (*models.LookupResult, error) {
+	var rawResp models.LookupResponse
+	if err := json.Unmarshal([]byte(body), &rawResp); err != nil {
+		return nil, fmt.Errorf("failed to parse lookup response: %w", err)
+	}
+
+	// Check for API error
+	if rawResp.Finance.Error != nil {
+		return nil, fmt.Errorf("%s: 'lookup' fetch returned error: %s - %s",
+			l.query, rawResp.Finance.Error.Code, rawResp.Finance.Error.Description)
+	}
+
+	return l.parseResponse(&rawResp), nil
 }
 
 // parseResponse converts the raw API response to LookupResult.
