@@ -20,7 +20,7 @@ func loadBarsCSV(t *testing.T, name string) []models.Bar {
 	if err != nil {
 		t.Fatalf("open fixture %s: %v", name, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	rows, err := csv.NewReader(f).ReadAll()
 	if err != nil {
