@@ -28,9 +28,6 @@ func (r *Repairer) repairZeroes(bars []models.Bar) []models.Bar {
 
 	// Find bars with zero/missing prices
 	zeroIndices := findZeroIndices(result)
-	if len(zeroIndices) == 0 {
-		return bars
-	}
 
 	// Skip if too many zeroes (need good data for calibration)
 	if float64(len(zeroIndices))/float64(len(bars)) > 0.5 {
@@ -42,6 +39,71 @@ func (r *Repairer) repairZeroes(bars []models.Bar) []models.Bar {
 		if shouldRepairZero(result, idx) {
 			result[idx] = repairZeroBar(result, idx)
 		}
+	}
+
+	// Contradictory OHLC values are treated as bad data too (upstream #2908).
+	result = repairInconsistentOHLC(result)
+
+	return result
+}
+
+// repairInconsistentOHLC fixes bars whose OHLC values contradict each other:
+// Close < Low, Close > High, Open < Low, Open > High. Upstream #2908 marks the
+// offending pair of columns as bad and repairs them; here the suspect values
+// are refilled from the remaining consistent ones.
+func repairInconsistentOHLC(bars []models.Bar) []models.Bar {
+	result := make([]models.Bar, len(bars))
+	copy(result, bars)
+
+	for i := range result {
+		bar := &result[i]
+		if invalidPrice(bar.Open) || invalidPrice(bar.High) ||
+			invalidPrice(bar.Low) || invalidPrice(bar.Close) {
+			continue
+		}
+
+		suspectOpen := bar.Open < bar.Low || bar.Open > bar.High
+		suspectClose := bar.Close < bar.Low || bar.Close > bar.High
+		if !suspectOpen && !suspectClose {
+			continue
+		}
+
+		// The offending pair is suspect: the violated bound as well.
+		suspectLow := bar.Close < bar.Low || bar.Open < bar.Low
+		suspectHigh := bar.Close > bar.High || bar.Open > bar.High
+
+		good := make([]float64, 0, 4)
+		if !suspectOpen {
+			good = append(good, bar.Open)
+		}
+		if !suspectHigh {
+			good = append(good, bar.High)
+		}
+		if !suspectLow {
+			good = append(good, bar.Low)
+		}
+		if !suspectClose {
+			good = append(good, bar.Close)
+		}
+		if len(good) == 0 {
+			continue
+		}
+
+		avg := stats.Mean(good)
+		if suspectOpen {
+			bar.Open = avg
+		}
+		if suspectHigh {
+			bar.High = avg
+		}
+		if suspectLow {
+			bar.Low = avg
+		}
+		if suspectClose {
+			bar.Close = avg
+		}
+		normalizeOHLCBounds(bar)
+		bar.Repaired = true
 	}
 
 	return result

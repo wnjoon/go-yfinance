@@ -70,7 +70,7 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 
 		// Apply corrections to result using original indices
 		for i, idx := range nonZeroIndices {
-			applyUnitCorrection(&result[idx], corrections[i])
+			applyCellCorrections(&result[idx], corrections[i])
 		}
 
 		return result
@@ -80,7 +80,7 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 	corrections := detectAndCorrectMixups(data)
 
 	for i := range result {
-		applyUnitCorrection(&result[i], corrections[i])
+		applyCellCorrections(&result[i], corrections[i])
 	}
 
 	return result
@@ -130,25 +130,49 @@ func filteredMatrix(data [][]float64, indices []int) [][]float64 {
 	return filteredData
 }
 
-func applyUnitCorrection(bar *models.Bar, correction float64) {
-	if correction == 1.0 || !validPrice(correction) {
-		return
+// applyCellCorrections applies per-cell 100x corrections to a bar. The
+// corrections slice is aligned with ohlcMatrix column order: High, Open, Low,
+// Close, AdjClose. After a partial repair, Low/High are recalculated because
+// Yahoo derived them from the corrupt cells (upstream #2908).
+func applyCellCorrections(bar *models.Bar, corrections []float64) {
+	fields := []*float64{&bar.High, &bar.Open, &bar.Low, &bar.Close, &bar.AdjClose}
+
+	anyUp, anyDown := false, false
+	for k, field := range fields {
+		c := corrections[k]
+		if c == 1.0 || !validPrice(c) {
+			continue
+		}
+		*field *= c
+		bar.Repaired = true
+		if c > 1 {
+			anyUp = true
+		} else {
+			anyDown = true
+		}
 	}
-	bar.Open *= correction
-	bar.High *= correction
-	bar.Low *= correction
-	bar.Close *= correction
-	bar.AdjClose *= correction
-	bar.Repaired = true
+
+	if anyUp {
+		bar.Low = math.Min(bar.Open, bar.Close)
+	}
+	if anyDown {
+		bar.High = math.Max(bar.Open, bar.Close)
+	}
 }
 
-// detectAndCorrectMixups detects 100x errors using median filtering.
-// Returns a slice of correction factors (1.0 means no correction, 0.01 or 100.0 for fixes).
-func detectAndCorrectMixups(data [][]float64) []float64 {
+// detectAndCorrectMixups detects 100x errors per cell using median filtering.
+// Returns one correction factor per cell, aligned with the input matrix
+// (1.0 means no correction, 0.01 or 100.0 for fixes). Per-cell granularity
+// matters: Yahoo can corrupt only some columns of a bar (upstream ASAI.L
+// fixture: Low/Close/Adj Close 100x low while Open/High are fine).
+func detectAndCorrectMixups(data [][]float64) [][]float64 {
 	n := len(data)
-	corrections := make([]float64, n)
+	corrections := make([][]float64, n)
 	for i := range corrections {
-		corrections[i] = 1.0
+		corrections[i] = make([]float64, len(data[i]))
+		for j := range corrections[i] {
+			corrections[i][j] = 1.0
+		}
 	}
 
 	if n < 3 {
@@ -158,8 +182,10 @@ func detectAndCorrectMixups(data [][]float64) []float64 {
 	// Apply 2D median filter (3x3 window)
 	median := stats.MedianFilter2D(data, 3)
 
-	// Calculate ratio of actual to median
+	// Coarse pass: flag rows containing at least one cell whose ratio to the
+	// local median rounds to ~100 in either direction.
 	for i := range data {
+		flagged := false
 		for j := range data[i] {
 			if median[i][j] == 0 {
 				continue
@@ -172,20 +198,45 @@ func detectAndCorrectMixups(data [][]float64) []float64 {
 			ratioRounded := math.Round(ratio/20) * 20
 			ratioRcpRounded := math.Round(ratioRcp/20) * 20
 
-			// Check if ratio is ~100 (either direction)
-			if ratioRounded == 100 {
+			if ratioRounded == 100 || ratioRcpRounded == 100 {
+				flagged = true
+				break
+			}
+		}
+		if !flagged {
+			continue
+		}
+
+		// Refinement pass: within a flagged row, correct every cell decisively
+		// on the 100x side of its local median (geometric midpoint of 1 and
+		// 100 is 10). Cells near ratio 1 are genuine and stay untouched —
+		// Yahoo can corrupt only some columns of a bar.
+		for j := range data[i] {
+			if median[i][j] == 0 {
+				continue
+			}
+			ratio := data[i][j] / median[i][j]
+			if ratio > 10 {
 				// Price is 100x too high, need to divide by 100
-				corrections[i] = 0.01
-				break
-			} else if ratioRcpRounded == 100 {
+				corrections[i][j] = 0.01
+			} else if ratio < 0.1 {
 				// Price is 100x too low, need to multiply by 100
-				corrections[i] = 100.0
-				break
+				corrections[i][j] = 100.0
 			}
 		}
 	}
 
 	return corrections
+}
+
+// rowHasCorrection reports whether any cell of a row needs correcting.
+func rowHasCorrection(corrections []float64) bool {
+	for _, c := range corrections {
+		if c != 1.0 {
+			return true
+		}
+	}
+	return false
 }
 
 // fixPricesSuddenChange detects and fixes a sudden permanent change in price level.
@@ -356,7 +407,7 @@ func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats {
 	// Check for random mixups
 	corrections := detectAndCorrectMixups(data)
 	for _, c := range corrections {
-		if c != 1.0 {
+		if rowHasCorrection(c) {
 			stats.RandomMixupCount++
 		}
 	}
@@ -383,7 +434,7 @@ func DetectUnitMixups(bars []models.Bar) []int {
 
 	corrections := detectAndCorrectMixups(data)
 	for i, c := range corrections {
-		if c != 1.0 {
+		if rowHasCorrection(c) {
 			badIndices = append(badIndices, i)
 		}
 	}
