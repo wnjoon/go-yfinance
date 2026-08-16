@@ -42,14 +42,7 @@ func (r *Repairer) repairUnitSwitch(bars []models.Bar) []models.Bar {
 		return bars
 	}
 
-	// Determine multiplier based on currency
-	n := 100.0
-	if r.opts.Currency == "KWF" {
-		// Kuwaiti Dinar divided into 1000, not 100
-		n = 1000.0
-	}
-
-	return r.fixPricesSuddenChange(bars, n)
+	return r.fixPricesSuddenChange(bars, currencySubUnitDivisor(r.opts.Currency))
 }
 
 // repairRandomUnitMixups fixes sporadic 100x errors scattered through the data.
@@ -207,6 +200,13 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 		return bars
 	}
 
+	// Volume is required to tell a unit switch from a real corporate action
+	// (upstream #2908: "No Volume data, cannot repair").
+	vol := barVolumes(bars)
+	if allVolumesZero(vol) {
+		return bars
+	}
+
 	result := make([]models.Bar, len(bars))
 	copy(result, bars)
 
@@ -248,9 +248,12 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 		return bars
 	}
 
-	// Detect change points
-	// Threshold is halfway between change ratio and largest normal change
-	threshold := (changeMax + 1.0 + largestChangePct) * 0.5
+	// Detect change points (upstream 8b85f90:
+	// threshold = 1 + (split_max - 1 + largest_change_pct) * 0.6)
+	threshold := 1 + (changeMax-1+largestChangePct)*0.6
+
+	// Abnormal-volume threshold for the boundary cross-check
+	volThreshold := volumeChangeThreshold(vol, changeMax, r.opts.Interval)
 
 	// Find where sudden change occurs
 	for i := 1; i < len(bars); i++ {
@@ -264,6 +267,11 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 
 		// Check if this looks like a unit switch
 		if dayChange >= threshold || dayChange <= 1.0/threshold {
+			if !unitSwitchVolumeOK(vol, i, dayChange >= threshold, volThreshold) {
+				// Volume says this is a real corporate action, not a unit
+				// switch — keep scanning for a genuine switch point.
+				continue
+			}
 			correction := switchCorrection(dayChange, threshold, change, changeRcp)
 			applyUnitSwitchCorrection(result[:i], correction)
 			break

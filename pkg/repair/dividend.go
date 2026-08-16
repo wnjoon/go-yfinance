@@ -48,10 +48,7 @@ func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
 	copy(result, bars)
 
 	// Determine currency divisor
-	currencyDivide := 100.0
-	if r.opts.Currency == "KWF" {
-		currencyDivide = 1000.0
-	}
+	currencyDivide := currencySubUnitDivisor(r.opts.Currency)
 
 	// Analyze each dividend
 	for _, idx := range divIndices {
@@ -390,10 +387,7 @@ func (r *Repairer) AnalyzeDividends(bars []models.Bar) DividendRepairStats {
 	divIndices := findDividendIndices(bars)
 	result.TotalDividends = len(divIndices)
 
-	currencyDivide := 100.0
-	if r.opts.Currency == "KWF" {
-		currencyDivide = 1000.0
-	}
+	currencyDivide := currencySubUnitDivisor(r.opts.Currency)
 
 	for _, idx := range divIndices {
 		info := DividendInfo{
@@ -435,10 +429,7 @@ func DetectBadDividends(bars []models.Bar, currency string) []int {
 
 	divIndices := findDividendIndices(bars)
 
-	currencyDivide := 100.0
-	if currency == "KWF" {
-		currencyDivide = 1000.0
-	}
+	currencyDivide := currencySubUnitDivisor(currency)
 
 	for _, idx := range divIndices {
 		if idx == 0 {

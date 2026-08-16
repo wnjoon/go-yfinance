@@ -1,6 +1,8 @@
 package repair
 
 import (
+	"strings"
+
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -76,19 +78,31 @@ func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 	result := make([]models.Bar, len(bars))
 	copy(result, bars)
 
+	// Standardise sub-unit currencies (GBp/ZAc/ILA) so repair math runs in the
+	// main currency; reverted before returning so user-visible prices and
+	// dividends stay in the original sub-unit (upstream #2907).
+	originalCurrency := r.opts.Currency
+	var pricesScaled bool
+	result, r.opts.Currency, pricesScaled = standardiseCurrency(result, originalCurrency)
+	defer func() { r.opts.Currency = originalCurrency }()
+
 	// Apply repairs in order (order matters!)
 	// 1. Dividend adjustments first
 	if r.opts.FixDividends {
 		result = r.repairDividends(result)
 	}
 
+	// 2 & 3: unit and split repairs depend on volume, which is meaningless for
+	// FX tickers (upstream #2908: skipped when '=' is in the ticker).
+	isFX := strings.Contains(r.opts.Ticker, "=")
+
 	// 2. 100x unit errors
-	if r.opts.FixUnitMixups {
+	if r.opts.FixUnitMixups && !isFX {
 		result = r.repairUnitMixups(result)
 	}
 
 	// 3. Stock split errors
-	if r.opts.FixSplits {
+	if r.opts.FixSplits && !isFX {
 		result = r.repairStockSplits(result)
 	}
 
@@ -100,6 +114,10 @@ func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 	// 5. Capital gains double-counting (only for ETF/MutualFund)
 	if r.opts.FixCapitalGains && r.isCapitalGainsApplicable() {
 		result = r.repairCapitalGains(result)
+	}
+
+	if pricesScaled {
+		result = revertCurrency(result, originalCurrency)
 	}
 
 	return result, nil

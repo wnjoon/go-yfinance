@@ -47,7 +47,7 @@ func (r *Repairer) repairStockSplits(bars []models.Bar) []models.Bar {
 		}
 
 		// Analyze and repair data before this split
-		result = repairSplitAtIndex(result, idx, splitRatio)
+		result = repairSplitAtIndex(result, idx, splitRatio, r.opts.Interval)
 	}
 
 	return result
@@ -65,7 +65,7 @@ func findSplitIndices(bars []models.Bar) []int {
 }
 
 // repairSplitAtIndex repairs data around a specific split event.
-func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []models.Bar {
+func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, interval string) []models.Bar {
 	if splitIdx == 0 {
 		return bars
 	}
@@ -125,6 +125,11 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 	// If the change on split date is close to what we'd expect from an unadjusted split,
 	// the data before the split needs to be adjusted
 	if math.Abs(splitDateChange-expectedChange) < threshold {
+		// Volume cross-check (upstream #2943): a genuinely unadjusted split
+		// shows the mirror-image jump in volume at the split date.
+		if !splitVolumeConfirms(result, splitIdx, splitRatio, interval) {
+			return bars
+		}
 		// Data appears to be unadjusted - apply correction
 		result = applySplitCorrection(result, splitIdx, splitRatio)
 	}
@@ -154,11 +159,14 @@ func absBoundedChanges(changes []float64, lowerBound, upperBound float64) []floa
 	return normalChanges
 }
 
+// expectedSplitChange returns the signed price change an UNADJUSTED split
+// produces on the split date: a 2:1 forward split halves the price (-0.5), a
+// 1:4 reverse split quadruples it (+3.0). Matches DetectBadSplits.
 func expectedSplitChange(splitRatio float64) float64 {
 	if splitRatio > 1 {
-		return 1.0 - 1.0/splitRatio
+		return -(1.0 - 1.0/splitRatio)
 	}
-	return splitRatio - 1.0
+	return 1.0/splitRatio - 1.0
 }
 
 func splitDateChange(bars []models.Bar, splitIdx int) float64 {
