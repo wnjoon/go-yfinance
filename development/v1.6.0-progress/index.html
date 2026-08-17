@@ -1,0 +1,2768 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.6.0-progress/">
+      
+      
+        <link rel="prev" href="../release-readiness-checklist/">
+      
+      
+        <link rel="next" href="../v1.5.2-progress/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>v1.6.0 Progress - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#go-yfinance-v160-development-progress" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              v1.6.0 Progress
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/ticker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.6.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-release-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Release Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-item-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Item Assessment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upstream Item Assessment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-pre-existing-gaps-recorded-out-of-v160-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known pre-existing gaps recorded (out of v1.6.0 scope)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-verify-assessments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Verify assessments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-data-tables-screener-fields-balance-sheet-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data tables (screener fields, balance-sheet keys)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-error-handling-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Error-handling parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-repair-currency-standardisation-gbpzacila" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Repair — currency standardisation (GBp/ZAc/ILA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-repair-sudden-change-detection-with-volume-cross-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Repair — sudden-change detection with volume cross-check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-repair-invalid-ohlc-rows-and-per-column-lowhigh-recalc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Repair — invalid OHLC rows and per-column Low/High recalc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-repair-dividend-adjust-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Repair — dividend-adjust updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-docs-and-version-bump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Docs and version bump
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-outcome-notes-deviations-from-the-plan-as-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation outcome notes (deviations from the plan as written)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-verification-and-close-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Verification and close-out
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-merge-cross-verification-round-parallel-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-merge cross-verification round (parallel-verify)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-merge cross-verification round (parallel-verify)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documented-gap-not-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented gap (not fixed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-after-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification after fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Legend
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.2-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-release-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Release Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-item-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Item Assessment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upstream Item Assessment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-pre-existing-gaps-recorded-out-of-v160-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known pre-existing gaps recorded (out of v1.6.0 scope)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-verify-assessments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: Verify assessments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-data-tables-screener-fields-balance-sheet-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data tables (screener fields, balance-sheet keys)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-error-handling-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Error-handling parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-repair-currency-standardisation-gbpzacila" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Repair — currency standardisation (GBp/ZAc/ILA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-repair-sudden-change-detection-with-volume-cross-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Repair — sudden-change detection with volume cross-check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-repair-invalid-ohlc-rows-and-per-column-lowhigh-recalc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Repair — invalid OHLC rows and per-column Low/High recalc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-repair-dividend-adjust-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Repair — dividend-adjust updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-docs-and-version-bump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Docs and version bump
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-outcome-notes-deviations-from-the-plan-as-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation outcome notes (deviations from the plan as written)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-verification-and-close-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Verification and close-out
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-merge-cross-verification-round-parallel-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-merge cross-verification round (parallel-verify)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-merge cross-verification round (parallel-verify)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documented-gap-not-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented gap (not fixed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-after-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification after fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Legend
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="go-yfinance-v160-development-progress">go-yfinance v1.6.0 Development Progress</h1>
+<blockquote>
+<p>Last Updated: 2026-08-17</p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>Implementation plan and progress tracking for Python yfinance v1.6.0 parity.</p>
+<p>Python yfinance v1.6.0 is a feature release. The bulk of the change is a large
+price-repair overhaul in <code>yfinance/scrapers/history.py</code> (~708 changed lines):
+volume-based cross-checking of unit-switch/split detection, DBSCAN-based
+calibration pruning, a rewritten dividend-adjust repair for intraday data, and
+a user-visible fix so <code>repair=True</code> no longer permanently converts GBp/ZAc/ILA
+prices to the main currency (upstream #2907/#2943/#2908). Outside repair, the
+release adds two screener fields and four balance-sheet keys, improves error
+messages (surface Yahoo's reason instead of claiming "possibly delisted"),
+fixes a <code>Lookup</code> error-handling bug, guards <code>_fetch_info</code> against a JSON-null
+result, and migrates packaging to <code>pyproject.toml</code>.</p>
+<p>go-yfinance's repair package is a re-implementation, not a line-by-line port:
+it repairs bars in place with statistical fills and has <strong>no</strong> sub-interval
+reconstruction (<code>_reconstruct_intervals_batch</code> has no Go analogue — verified:
+<code>pkg/repair/</code> contains no re-fetch path). Upstream items that live inside the
+reconstruction machinery are therefore N/A; items that change detection
+thresholds, volume cross-checks, currency handling, and data tables port
+directly onto the existing Go functions.</p>
+<p>The purpose of this document is to record the analysis before any code change,
+so each upstream item can be tracked as implemented, adapted, intentionally
+skipped, or verified as not applicable to Go.</p>
+<h2 id="branch-structure">Branch Structure</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>main
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/v1.6.0-parity
+</code></pre></div>
+<hr />
+<h2 id="upstream-release-scope">Upstream Release Scope</h2>
+<p>Commits in <code>1.5.2..1.6.0</code> (python-yfinance, <code>beac22d..0af231f</code>), key items:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>0af231f Version 1.6.0
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>8b85f90 Price repair improvements (#2943)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>f854309 Fix regression in PR #2907 (see last comment)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>880728a Fix: repair=True should not permanently convert GBp/ZAc/ILA prices (#2907)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>bb11309 Price repair fixes &amp; improvements (#2908)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>9bde808 fix: handle null result from Yahoo API in _fetch_info (#2906)
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>fb6af9d Surface Yahoo&#39;s reason directly instead of wrapping it
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>9d672c6 Don&#39;t claim &#39;possibly delisted&#39; when Yahoo explains the missing data (#2903)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>57b9482 Fix error messages showing internal 15m interval for 30m requests (#2900)
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>8676e8d Fix AttributeError in Lookup error handling (#2896)
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>59e6a9c fix: handle read-only Adj Close array in div-adjust repair (#2897)
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>33b12b6 Add missing balance sheet keys (#2879)
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>bf8ff78 fix: add dividendyield screener fields (#2888)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>d8e2cfe / 9a5b72a / f3ef5f4  timedelta/numpy deprecation fixes (#2891, #2915)
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>a166d01 / a18927b  Migrate packaging to pyproject.toml (#2920, #2849)
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>f8f2f87 add scikit-learn as a repair dependency
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>c9bc470 Pin ruff ruleset for deterministic CI (#2919)
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>24ee2ff docs: state download()&#39;s returned index timezone contract (#2936)
+</code></pre></div>
+<p>File-level diff (yfinance sources only):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a> yfinance/const.py            |   4 +-
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a> yfinance/exceptions.py       |  26 +-
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a> yfinance/lookup.py           |   4 +-
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a> yfinance/multi.py            |   5 +   (docstring only)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a> yfinance/scrapers/history.py | 708 +++++++++----------
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a> yfinance/scrapers/quote.py   |   6 +-
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a> yfinance/utils.py            |  43 +-
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a> tests/data/ASAI-L-1h-bad-unit*.csv (new fixtures)
+</code></pre></div>
+<hr />
+<h2 id="upstream-item-assessment">Upstream Item Assessment</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Upstream Item</th>
+<th>Python Change</th>
+<th>Go Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>#2888 screener fields</td>
+<td><code>EQUITY_SCREENER_FIELDS["profitability"]</code> += <code>"dividendyield"</code>, <code>"dividendpershare.lasttwelvemonths"</code></td>
+<td><strong>Port.</strong> Add both strings to <code>EquityScreenerFields["profitability"]</code> in <code>pkg/models/screener_const.go</code>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>#2879 balance-sheet keys</td>
+<td><code>fundamentals_keys['balance-sheet']</code> += <code>FixedMaturityInvestments</code>, <code>EquityInvestments</code>, <code>NetLoan</code>, <code>DeferredAssets</code> (after <code>CashCashEquivalentsAndFederalFundsSold</code>)</td>
+<td><strong>Port.</strong> Add all four to <code>BalanceSheetKeys</code> in <code>internal/endpoints/endpoints.go</code>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>#2903 + follow-up: surface Yahoo's reason, drop "possibly delisted"</td>
+<td><code>YFPricesMissingError(..., yahoo_reason=...)</code>: when Yahoo returns a chart error, its description becomes the whole message</td>
+<td><strong>Mostly aligned already.</strong> Go never had "possibly delisted" wording; <code>pkg/ticker/history.go:147</code> already returns <code>API error: &lt;description&gt;</code>. Adapt: type the error and stop discarding Yahoo's error <code>Code</code>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>#2900 30m/15m interval in messages</td>
+<td>Error text uses user-requested interval, notes <code>resampled from 15m</code></td>
+<td><strong>N/A.</strong> go-yfinance never substitutes 30m→15m (it fetches 30m directly); there is no internal interval to leak. Recorded below.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>#2896 Lookup error handling</td>
+<td><code>self.ticker</code> → <code>self.query</code> in <code>_fetch_lookup</code> error paths (was <code>AttributeError</code>)</td>
+<td><strong>Adapt.</strong> Go has no such crash, but its lookup API error omits the query entirely. Include <code>l.query</code> in the error message for message parity.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>#2906 null <code>result</code> in <code>_fetch_info</code></td>
+<td><code>result.get(quote, {}).get("result") or []</code> — JSON <code>null</code> treated as empty</td>
+<td><strong>N/A by construction, lock with test.</strong> Go's <code>encoding/json</code> decodes <code>null</code> into a nil slice, and <code>len(nil) == 0</code> takes the not-found path. Add a regression test.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>#2907/#2943/#2908 GBp/ZAc/ILA leak</td>
+<td><code>_standardise_currency</code> returns <code>prices_scaled</code>; after repair, prices <strong>and dividends</strong> are scaled back and metadata currency restored</td>
+<td><strong>Port — main gap.</strong> go-yfinance has no currency standardisation at all (no GBp/ZAc/ILA handling anywhere). New <code>pkg/repair/currency.go</code> + revert step in <code>Repairer.Repair</code>.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>#2908/#2943 volume cross-check for unit-switch/split</td>
+<td><code>denoise_volume</code> helper; boundary volume-change gate; new thresholds <code>1+(split_max-1+pct)*0.6</code> and <code>*0.333</code></td>
+<td><strong>Port (adapted).</strong> Go's <code>fixPricesSuddenChange</code> (<code>pkg/repair/unit_mixup.go:200</code>) uses the old formula <code>(max+1+pct)*0.5</code> and has no volume logic. Port formula + zero-volume guard + boundary volume gate. Split repair (<code>pkg/repair/split.go</code>) gets the matching volume-sign requirement.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>#2908 skip unit/split repair for FX</td>
+<td><code>if '=' not in self.ticker</code> gate in <code>history()</code></td>
+<td><strong>Port.</strong> Gate <code>repairUnitMixups</code>/<code>repairStockSplits</code> on <code>strings.Contains(r.opts.Ticker, "=")</code> in <code>pkg/repair/repair.go</code>.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>#2908 invalid OHLC rows (<code>Close &lt; Low</code> etc.) repaired via <code>_fix_zeroes</code></td>
+<td>Offending column pairs marked bad and reconstructed</td>
+<td><strong>Adapt.</strong> Go's <code>normalizeOHLCBounds</code> (<code>pkg/repair/zeroes.go:219</code>) silently widens High/Low without marking <code>Repaired</code>. Detect inconsistent pairs, repair from good values, set <code>Repaired=true</code>.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>#2908 Low/High recalculated after per-column 100x repair</td>
+<td>After multiplying a column by m: m&gt;1 → <code>Low=min(Open,Close)</code>; m&lt;1 → <code>High=max(Open,Close)</code></td>
+<td><strong>Port</strong> into <code>detectAndCorrectMixups</code> (<code>pkg/repair/unit_mixup.go:154</code>). This is exactly what the new ASAI.L fixture asserts.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>#2908/#2943 dividend-repair thresholds &amp; branches</td>
+<td><code>div_too_big</code> fals 0.25→0.5; <code>div_too_small</code> fals 0.15→0.11; <code>.TA</code> true-threshold 0.74; <code>adj_missing</code> never cluster-error; 2 new repair branches; intraday resample-to-1d + back-port</td>
+<td><strong>Port partially.</strong> Go's <code>pkg/repair/dividend.go</code> is a simplified analogue. Port the threshold values where the corresponding check exists; assess the two new branches and the intraday resample in Phase 0.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>#2908 reconstruction changes (DBSCAN ratio pruning, Adj-Close post-anchor, newest-first groups, <code>Repaired=any</code> agg)</td>
+<td>All inside <code>_reconstruct_intervals_batch</code></td>
+<td><strong>N/A.</strong> Go repair has no sub-interval reconstruction; repairs are in-place statistical fills. The scikit-learn dependency exists only for this DBSCAN step, so it is N/A too.</td>
+</tr>
+<tr>
+<td>14</td>
+<td>#2908 <code>_fix_unit_switch</code> writes standardised currency into metadata</td>
+<td>GBp→GBP etc. written to <code>history_metadata['currency']</code> when a switch was repaired</td>
+<td><strong>N/A as metadata</strong> (Go does not mutate user-visible chart metadata), but the currency mapping table is consumed by item 7.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>#2897 read-only <code>Adj Close</code> numpy array</td>
+<td><code>.copy()</code> when not writeable</td>
+<td><strong>N/A.</strong> Python-runtime (pandas copy-on-write) only.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>#2891/#2915 timedelta/numpy deprecations, multi-day <code>_dts_in_same_interval</code></td>
+<td>Explicit <code>m</code>/<code>h</code>/<code>d</code> branches in <code>_interval_to_timedelta</code></td>
+<td><strong>N/A.</strong> Go has no interval→duration utility and no resample path that compares interval spans; the deprecation parts are pandas-only.</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>format_history_metadata</code> always converts, guards missing <code>exchangeTimezoneName</code></td>
+<td><code>tradingPeriodsOnly</code> param removed</td>
+<td><strong>N/A.</strong> Go parses chart metadata into typed structs (<code>models.ChartMeta</code>); there is no deferred-formatting flag to remove.</td>
+</tr>
+<tr>
+<td>18</td>
+<td>#2936 <code>download()</code> tz-contract docstring</td>
+<td>Docs only</td>
+<td><strong>Docs.</strong> Mirror the contract note in <code>pkg/multi</code> docs if the behavior matches; otherwise record the difference.</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Packaging/CI: pyproject.toml, uv, ruff pin, CHANGELOG</td>
+<td>Python packaging only</td>
+<td><strong>N/A.</strong> Nothing to port.</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Version bump 1.5.2 → 1.6.0</td>
+<td><code>version.py</code>, <code>meta.yaml</code></td>
+<td><strong>Port.</strong> Parity strings in <code>README.md</code>, <code>docs/index.md</code>, <code>mkdocs.yml</code>; new release notes + this progress doc.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="known-pre-existing-gaps-recorded-out-of-v160-scope">Known pre-existing gaps recorded (out of v1.6.0 scope)</h3>
+<ul>
+<li><code>CommonScreenerFields</code> does not exist in Go even though three doc comments in
+  <code>pkg/models/screener_const.go</code> reference it; python keeps <code>region</code>/<code>exchange</code>
+  etc. there. Not introduced by v1.6.0 — track separately.</li>
+<li><code>pkg/multi</code> has no repair wiring (<code>Repair</code> param unused there). Python's
+  <code>download()</code> supports repair; not changed by v1.6.0 — track separately.</li>
+<li>go-yfinance issues one chart request per <code>history()</code> call; python's
+  <code>test_no_expensive_calls_introduced</code> (re-enabled upstream) pins python to
+  exactly two (tz probe + data). Behavioral difference, unchanged by v1.6.0.</li>
+</ul>
+<hr />
+<h2 id="implementation-plan">Implementation Plan</h2>
+<h3 id="phase-0-verify-assessments">Phase 0: Verify assessments</h3>
+<ul>
+<li>[x] Read <code>pkg/repair/dividend.go</code> in full and map upstream item 12 onto it.
+  <strong>Finding:</strong> Go analyzes each dividend event independently
+  (<code>analyzeDividendWithOptions</code> → <code>dividendStatus</code>); python's cluster-level
+  classification (group dividends, classify the cluster with
+  true/false-positive ratio thresholds) has no Go analogue. Therefore the
+  cluster threshold changes (<code>div_too_big</code> fals 0.25→0.5, <code>div_too_small</code>
+  fals 0.15→0.11, <code>.TA</code> true-threshold 0.74, <code>adj_exceeds_prices</code> n/n_fail
+  redefinition, <code>adj_missing</code> cluster continue) are <strong>N/A — structural</strong>.
+  Two per-event changes DO map: (a) the pre/post false-positive test — Go's
+  <code>isDividendTooSmall</code> uses <code>dayMove = prevClose − Close</code>; upstream final uses
+  the ex-div bar's own <code>Open − Close</code> ("price recovered by end of session");
+  (b) the new "too-small div and missing div-adjust" combined branch — Go's
+  <code>repairDividends</code> if/else picks <code>IsMissingAdj</code> first and applies the
+  adjustment with the still-wrong (100x-too-small) dividend. The "pre-split &amp;
+  too-small div-adjust" branch needs split-cluster awareness Go lacks — N/A.
+  Intraday resample-to-1d + back-port: N/A — Go's per-event logic is already
+  interval-aware (<code>isIntradayInterval</code>) and has no daily-cluster machinery.</li>
+<li>[x] Read <code>pkg/repair/split.go</code>. <strong>Finding:</strong> the boundary-volume gate goes
+  in <code>repairSplitAtIndex</code>, guarding the <code>applySplitCorrection</code> call: require
+  an abnormal split-date volume change of matching sign (price drop ⇒ volume
+  jump, price jump ⇒ volume drop). Go's detection threshold
+  (<code>(|expectedChange| + largestNormalChange)/2</code>, a distance tolerance in
+  pct-change space) is parameterized differently from python's ratio-space
+  detection threshold, so the 0.5→0.6 weight change does <strong>not</strong> transfer to
+  split.go — only to <code>fixPricesSuddenChange</code>, whose formula is directly
+  analogous.</li>
+<li>[x] Confirm <code>filterValidBars</code> (<code>pkg/ticker/history.go:292</code>) gives the
+  repairer NaN-free bars unless <code>KeepNA=true</code>. Confirmed; per-bar
+  <code>validPrice</code> guards cover the KeepNA path, so python's NaN-row split/rejoin
+  is redundant in Go. <code>denoiseVolume</code> will skip non-positive/NaN inputs.</li>
+<li>[x] Confirm items 4, 6, 15, 16, 17 N/A rationales. Confirmed against
+  <code>pkg/ticker/history.go</code> (no interval substitution), Go <code>encoding/json</code>
+  null→nil-slice semantics, and the absence of any interval→duration or
+  deferred-metadata-formatting code.</li>
+<li>[x] <strong>New finding (extends item 11):</strong> <code>detectAndCorrectMixups</code>
+  (<code>pkg/repair/unit_mixup.go:154</code>) returns one correction per <strong>row</strong> and
+  <code>applyUnitCorrection</code> multiplies the whole bar, so a bar like ASAI.L's
+  (Open/High correct, Low/Close/AdjClose 100x too small) would corrupt the
+  good columns. Python repairs per <strong>cell</strong>. Phase 5 must switch to per-cell
+  corrections; the ASAI golden fixture locks this.</li>
+</ul>
+<h3 id="phase-1-data-tables-screener-fields-balance-sheet-keys">Phase 1: Data tables (screener fields, balance-sheet keys)</h3>
+<ul>
+<li>[x] <code>pkg/models/screener_const.go</code>: add <code>"dividendyield"</code> and
+  <code>"dividendpershare.lasttwelvemonths"</code> to <code>EquityScreenerFields["profitability"]</code>.</li>
+<li>[x] <code>internal/endpoints/endpoints.go</code>: extend <code>BalanceSheetKeys</code> with
+  <code>"FixedMaturityInvestments"</code>, <code>"EquityInvestments"</code>, <code>"NetLoan"</code>,
+  <code>"DeferredAssets"</code>. Python inserts after
+  <code>"CashCashEquivalentsAndFederalFundsSold"</code>; if that anchor is absent in the
+  Go list, append the four keys as a block and note the ordering difference
+  here (ordering only affects statement column order).</li>
+<li>[x] Tests: extend the existing screener-query validation test to accept an
+  <code>EquityQuery</code> on <code>"dividendyield"</code>, and the financials key test (or add one)
+  asserting the four keys are requested. Run <code>go test ./pkg/models/... ./pkg/ticker/... ./internal/...</code>.</li>
+<li>[x] Commit: <code>feat: add v1.6.0 screener fields and balance sheet keys</code></li>
+</ul>
+<h3 id="phase-2-error-handling-parity">Phase 2: Error-handling parity</h3>
+<ul>
+<li>[x] <code>pkg/lookup/lookup.go</code> (<code>fetch</code>, error branch 4): change
+  <code>fmt.Errorf("lookup API error: %s - %s", code, desc)</code> to include the query,
+  mirroring python's final format:
+  <code>fmt.Errorf("%s: 'lookup' fetch returned error: %s - %s", l.query, code, desc)</code>.
+  Update/extend <code>lookup_test.go</code> to assert the query appears in the message
+  (upstream <code>TestLookupErrorHandling</code> equivalent).</li>
+<li>[x] <code>pkg/ticker/history.go:147</code>: stop discarding the chart error code. Add a
+  typed error in <code>pkg/client/errors.go</code> (e.g. <code>ChartAPIError{Symbol, Code,
+  Description string}</code>) whose <code>Error()</code> is <code>"$&lt;symbol&gt;: &lt;description&gt;"</code> —
+  matching upstream's final message shape where Yahoo's reason is the entire
+  rationale, no "possibly delisted" prefix. Keep <code>errors.As</code> support.</li>
+<li>[x] <code>pkg/ticker/info_test.go</code>: add a regression test feeding
+  <code>{"quoteSummary":{"result":null,"error":{...}}}</code> into <code>parseInfoResponse</code>,
+  asserting a clean error (not a panic) — locks upstream #2906's contract.</li>
+<li>[x] Same null-result regression for <code>Quote()</code> if a seam allows; otherwise
+  cover via the shared response model test.</li>
+<li>[x] Run <code>go test ./pkg/lookup/... ./pkg/ticker/... ./pkg/client/...</code>.</li>
+<li>[x] Commit: <code>feat: surface yahoo chart error reason and lookup query in errors</code></li>
+</ul>
+<h3 id="phase-3-repair-currency-standardisation-gbpzacila">Phase 3: Repair — currency standardisation (GBp/ZAc/ILA)</h3>
+<p>Upstream final shape (after #2907 + regression fix f854309): repair math runs
+in the main currency, but user-visible prices <strong>and dividends</strong> are scaled
+back unconditionally, and the reported currency stays GBp/ZAc/ILA.</p>
+<ul>
+<li>[x] New <code>pkg/repair/currency.go</code>:</li>
+<li><code>var currencyConversions = map[string]currencyConversion{"GBp": {0.01, "GBP"}, "ZAc": {0.01, "ZAR"}, "ILA": {0.01, "ILS"}}</code></li>
+<li><code>func standardiseCurrency(bars []models.Bar, currency string) ([]models.Bar, string, bool)</code>
+    returning <code>(bars, standardCurrency, pricesScaled)</code>; multiplies
+    Open/High/Low/Close/AdjClose and Dividends by the factor when the currency
+    is a sub-unit, else returns input unchanged with <code>pricesScaled=false</code>.</li>
+<li><code>func revertCurrency(bars []models.Bar, originalCurrency string) []models.Bar</code>
+    dividing prices <strong>and dividends</strong> by the factor (unconditional dividend
+    revert — this is exactly the f854309 regression fix).</li>
+<li>[x] <code>pkg/repair/repair.go</code> <code>(*Repairer).Repair</code>: call <code>standardiseCurrency</code>
+  first (using <code>r.opts.Currency</code>), run the pipeline with the standardised
+  currency, call <code>revertCurrency</code> before returning when <code>pricesScaled</code>.
+  User-visible output must be in the original sub-currency.</li>
+<li>[x] Consolidate the <code>currencyDivide</code> (100 / KWF 1000) logic duplicated at
+  <code>pkg/repair/unit_mixup.go:44</code> and <code>pkg/repair/dividend.go:51,393,438</code> into
+  one helper in <code>currency.go</code>.</li>
+<li>[x] Tests (<code>pkg/repair/currency_test.go</code>): GBp round-trip — synthetic bars in
+  pence with a 100x error; after <code>Repair</code>, prices are repaired <strong>and</strong> still
+  in pence, dividends still in pence (regression for upstream #2907+f854309);
+  ZAc and ILA table cases; non-sub-currency passthrough.</li>
+<li>[x] Run <code>go test ./pkg/repair/...</code>.</li>
+<li>[x] Commit: <code>feat: keep GBp/ZAc/ILA prices in original unit through repair</code></li>
+</ul>
+<h3 id="phase-4-repair-sudden-change-detection-with-volume-cross-check">Phase 4: Repair — sudden-change detection with volume cross-check</h3>
+<p>All in <code>pkg/repair/unit_mixup.go</code> unless noted. Current Go code uses the old
+threshold formula and no volume signal.</p>
+<ul>
+<li>[x] Zero-volume guard: at the top of <code>fixPricesSuddenChange</code>, if every
+  <code>bar.Volume == 0</code>, return bars unchanged (upstream: "No Volume data, cannot
+  repair").</li>
+<li>[x] Threshold formula: replace
+  <code>threshold := (changeMax + 1.0 + largestChangePct) * 0.5</code> with
+  <code>threshold := 1 + (changeMax - 1 + largestChangePct) * 0.6</code> (upstream 8b85f90).</li>
+<li>[x] New helper <code>denoiseVolume(vol []float64) []float64</code> (port of upstream's
+  nested <code>denoise_volume</code>): window <code>W = min(9, len)</code> forced odd; zeros
+  back-filled then forward-filled; sliding-window median (ignoring NaN pads).
+  Place in <code>unit_mixup.go</code> or a new <code>volume.go</code>.</li>
+<li>[x] Boundary volume gate in <code>fixPricesSuddenChange</code>: at the detected switch
+  index <code>i</code>, compute <code>boundaryVolChange = denoised(vol[i:])[0] / denoised(vol[:i])[last&gt;0]</code>,
+  volume threshold <code>volThreshold := 1 + (changeMax - 1 + largestVolChgPct) * 0.333</code>
+  where <code>largestVolChgPct</code> comes from IQR-filtered 1-bar volume changes
+  (mean/std, <code>5*sdPct</code>, interday multipliers ×3 for interday non-1d, ×2 more
+  for 1mo/3mo). Unit-switch semantics (this function's only current caller):
+  <strong>skip</strong> the repair if the boundary volume change is itself abnormal in the
+  direction that suggests a real corporate event
+  (<code>boundaryVolChange &lt; 1/volThreshold</code> with price up, or
+  <code>&gt; volThreshold</code> with price down).</li>
+<li>[x] Split-side gate in <code>pkg/repair/split.go</code>: a candidate split boundary is
+  only accepted if the boundary volume change <strong>is</strong> abnormal with matching
+  sign (price drop ⇒ volume jump, price jump ⇒ volume drop), using the same
+  <code>denoiseVolume</code> + <code>volThreshold</code>. Exact insertion point comes from Phase 0.</li>
+<li>[x] FX skip (item 9): in <code>pkg/repair/repair.go</code> <code>Repair</code>, skip
+  <code>repairUnitMixups</code> and <code>repairStockSplits</code> when
+  <code>strings.Contains(r.opts.Ticker, "=")</code> (volume-dependent repairs are
+  meaningless for FX). <code>_fix_zeroes</code>/capital-gains still run.</li>
+<li>[x] Tests (<code>pkg/repair/unit_mixup_test.go</code>, <code>split_test.go</code>): genuine unit
+  switch with flat volume → repaired; identical price jump with a matching
+  volume jump (real split pattern) → unit-switch repair skipped; split with
+  flat volume → split repair skipped; all-zero volume → untouched; FX ticker
+  (<code>EURUSD=X</code>) → unit/split repair skipped.</li>
+<li>[x] Run <code>go test ./pkg/repair/...</code>.</li>
+<li>[x] Commit: <code>feat: volume cross-check for unit-switch and split repair</code></li>
+</ul>
+<h3 id="phase-5-repair-invalid-ohlc-rows-and-per-column-lowhigh-recalc">Phase 5: Repair — invalid OHLC rows and per-column Low/High recalc</h3>
+<ul>
+<li>[x] <code>pkg/repair/zeroes.go</code>: extend invalid detection with upstream #2908's
+  consistency rules — treat as bad: (<code>Close &lt; Low</code> → Close+Low), (<code>Close &gt;
+  High</code> → Close+High), (<code>Open &lt; Low</code> → Open+Low), (<code>Open &gt; High</code> →
+  Open+High). Route these rows through the existing
+  <code>goodOHLCValues</code>/<code>fillInvalidOHLC</code> repair and set <code>Repaired=true</code> (today
+  <code>normalizeOHLCBounds</code> silently widens bounds without marking).</li>
+<li>[x] <code>pkg/repair/unit_mixup.go</code>: switch <code>detectAndCorrectMixups</code> from per-row
+  to per-cell corrections (<code>[][]float64</code>, one factor per OHLC/AdjClose cell)
+  and apply them per field, matching python's <code>_fix_unit_random_mixups</code>
+  (Phase 0 finding: the current whole-row multiply corrupts good columns).
+  After a per-cell repair with factor m on any price column, recalculate the
+  row: if m &gt; 1 → <code>Low = min(Open, Close, Low)</code>; if m &lt; 1 →
+  <code>High = max(Open, Close, High)</code> (upstream rationale: Yahoo derived Low/High
+  from the corrupt column).</li>
+<li>[x] Golden fixture: create <code>pkg/repair/testdata/</code> (first fixture in the repo)
+  with <code>ASAI-L-1h-bad-unit.csv</code> and <code>ASAI-L-1h-bad-unit-fixed.csv</code> copied from
+  upstream <code>tests/data/</code> (20 hourly rows; the two files differ in exactly one
+  row where Low/Close/AdjClose are 100x too small). Add
+  <code>TestRepairUnitSwitchASAIGolden</code> in <code>unit_mixup_test.go</code>: load the bad CSV,
+  run the unit-switch repair path with <code>Interval: "1h"</code>, currency <code>GBp</code>,
+  compare O/H/L/C to the fixed CSV within <code>rtol 1e-7</code>. This exercises the
+  per-column 100x repair <strong>plus</strong> the Low recalc (<code>Low = 58.5</code>, not <code>60.0</code>).</li>
+<li>[x] Run <code>go test ./pkg/repair/...</code>.</li>
+<li>[x] Commit: <code>feat: repair inconsistent OHLC rows and recalc bounds after column repair</code></li>
+</ul>
+<h3 id="phase-6-repair-dividend-adjust-updates">Phase 6: Repair — dividend-adjust updates</h3>
+<p>Scope fixed by the Phase 0 mapping: the cluster-level threshold changes
+(<code>div_too_big</code> 0.25→0.5, <code>div_too_small</code> 0.15→0.11, <code>.TA</code> 0.74,
+<code>adj_exceeds_prices</code> redefinition, <code>adj_missing</code> cluster continue) and the
+"pre-split &amp; too-small div-adjust" branch and the intraday resample+back-port
+are <strong>N/A — structural</strong> (Go analyzes per event, python per cluster). Two
+per-event changes port:</p>
+<ul>
+<li>[x] <code>isDividendTooSmall</code> (<code>pkg/repair/dividend.go:184</code>): replace the
+  <code>dayMove</code> argument (<code>prevClose − Close</code>) with the ex-div bar's own
+  <code>Open − Close</code> in the pre/post false-positive test, per upstream
+  <code>(df2['Open'].iloc[div_idx] - df2['Close'].iloc[div_idx]) &lt; 0.2*drop_wo_vol</code>.</li>
+<li>[x] <code>repairDividends</code> switch: add a combined branch <strong>before</strong> the
+  <code>IsMissingAdj</code> branch — when <code>IsMissingAdj &amp;&amp; IsTooSmall</code>, first multiply
+  the dividend by <code>currencyDivide</code>, then apply the missing adjustment with the
+  corrected dividend (upstream "too-small div and missing div-adjust":
+  <code>adj_correction = 1 − pct*currency_divide</code>). Today the <code>IsMissingAdj</code>-first
+  ordering bakes the 100x-too-small dividend into the adjustment.</li>
+<li>[x] Tests: pre/post false-positive test uses Open−Close (a bar whose price
+  recovers intraday must not be classified too-small under
+  <code>PrePost &amp;&amp; intraday</code>); combined too-small+missing-adj case yields the
+  corrected dividend AND the adjustment from the corrected value.</li>
+<li>[x] Run <code>go test ./pkg/repair/...</code>.</li>
+<li>[x] Commit: <code>feat: update dividend repair thresholds to v1.6.0</code></li>
+</ul>
+<h3 id="phase-7-docs-and-version-bump">Phase 7: Docs and version bump</h3>
+<ul>
+<li>[x] <code>README.md:14</code>: parity line → <code>**Python yfinance v1.6.0 Parity**</code> with a
+  one-line feature summary (volume-cross-checked price repair, GBp/ZAc/ILA
+  preservation, new screener fields and balance-sheet keys, Yahoo-reason error
+  messages). Then <code>cp README.md docs/index.md</code>.</li>
+<li>[x] <code>docs/releases/RELEASE_NOTES_v1.6.0.md</code>: follow the existing format;
+  list ported items, adapted items, and the N/A table (reconstruction/DBSCAN,
+  30m substitution, packaging) with one-line reasons.</li>
+<li>[x] <code>mkdocs.yml</code>: insert <code>- v1.6.0: releases/RELEASE_NOTES_v1.6.0.md</code> at the
+  top of the <code>Releases:</code> block and <code>- v1.6.0 Progress:
+  development/v1.6.0-progress.md</code> at the top of the progress list.</li>
+<li>[x] <code>docs/development/release-readiness-checklist.md</code> §1: add the v1.6.0
+  version-decision note.</li>
+<li>[x] <code>make docs</code> (regenerates <code>docs/api/*.md</code> — required because Phases 2–3
+  add exported symbols), <code>make docs-build</code> to verify mkdocs.</li>
+<li>[x] <code>pkg/multi</code> doc comment: state the returned-timestamp timezone contract
+  (upstream #2936 equivalent) if it matches Go behavior; otherwise record the
+  difference in this doc.</li>
+<li>[x] Commit: <code>docs: advance parity baseline to python yfinance v1.6.0</code></li>
+</ul>
+<h3 id="implementation-outcome-notes-deviations-from-the-plan-as-written">Implementation outcome notes (deviations from the plan as written)</h3>
+<ul>
+<li>Balance-sheet keys: the python anchor <code>CashCashEquivalentsAndFederalFundsSold</code>
+  does not exist in Go's <code>BalanceSheetKeys</code> (Go has
+  <code>CashCashEquivalentsAndShortTermInvestments</code>), so the four new keys were
+  appended as a contiguous block at the end. Only statement column order is
+  affected.</li>
+<li>Split repair: porting the volume gate exposed a pre-existing Go bug —
+  <code>expectedSplitChange</code> returned inverted signs (+0.5 for a 2:1 split whose
+  unadjusted price change is −0.5), so <code>repairStockSplits</code> never detected
+  genuinely unadjusted splits. Fixed alongside the gate and covered by new
+  end-to-end tests. Go's split detection threshold formula (a distance
+  tolerance in pct-change space) was left unchanged as planned.</li>
+<li>Per-cell 100x repair: implemented as a two-pass scheme — the coarse
+  round-to-20≈100 test flags rows, then within a flagged row every cell whose
+  ratio to its local median is decisively on the 100x side (&gt;10 or &lt;0.1,
+  the geometric midpoint of 1 and 100) is corrected. The pure per-cell coarse
+  test was too brittle against Go's median-filter edge handling; python
+  reaches the same per-cell outcome via mode="nearest" edge padding.</li>
+<li>Currency standardisation scales prices and dividends symmetrically on entry
+  and revert. Python tracks a separate <code>div_scaled</code> flag on entry but reverts
+  dividends unconditionally (the f854309 regression fix); the symmetric Go
+  version has the same user-visible behavior with less state.</li>
+<li><code>download()</code> tz contract (upstream #2936): N/A as a doc change — Go returns
+  <code>time.Time</code> instants (absolute, timezone-carrying), so python's
+  naive-vs-converted index contract has no Go equivalent to document.</li>
+<li>Dividend combined branch: implemented by scaling the dividend before the
+  existing <code>fixMissingDivAdj</code>, which then derives the adjustment from the
+  corrected value — equivalent to upstream's
+  <code>adj_correction = 1 − pct*currency_divide</code>.</li>
+</ul>
+<h3 id="phase-8-verification-and-close-out">Phase 8: Verification and close-out</h3>
+<ul>
+<li>[x] <code>go build ./...</code>, <code>go vet ./...</code>, <code>GOCACHE=/tmp/go-build-cache go test ./...</code> — all green (17 packages ok).</li>
+<li>[x] <code>GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...</code> — 0 issues.</li>
+<li>[x] Live smoke against <code>XDEV.L</code> (GBp): 3-month history fetched with and
+  without <code>Repair</code>; both return 66 bars with identical last close
+  (6255.00 pence) — repair preserves the sub-unit scale (upstream
+  <code>test_repair_gbp_not_converted</code> equivalent). Run 2026-08-17.</li>
+<li>[x] Mark every checklist item above done, skipped (with reason), or N/A.</li>
+<li>[x] Update the "Last Updated" date at the top of this document.</li>
+<li>[ ] Follow <code>docs/development/release-readiness-checklist.md</code> before merge/tag
+  (left open: done at merge/tag time).</li>
+</ul>
+<hr />
+<hr />
+<h2 id="post-merge-cross-verification-round-parallel-verify">Post-merge cross-verification round (parallel-verify)</h2>
+<p>After the initial implementation (Phases 0-8 above), the branch was
+independently re-verified against the upstream <code>beac22d..0af231f</code> diff by two
+blind parallel agents (Claude Code, Codex), each deriving the oracle
+independently from upstream and reading only this repo — not each other's
+findings. Results were then reconciled by reading the upstream code directly
+for every disputed or single-sourced item. 8 items were accepted; all are
+fixed in this round except one, which is recorded as a documented gap.</p>
+<h3 id="fixed">Fixed</h3>
+<ol>
+<li><strong>Unit-switch repair no longer scales Volume</strong> (<code>unit_mixup.go</code>
+   <code>applyUnitSwitchCorrection</code>) — a currency-unit switch does not change the
+   share count. Upstream's shared <code>_fix_prices_sudden_change</code> call for unit
+   switches passes <code>correct_dividend=True</code> but never <code>correct_volume=True</code>;
+   only the split-repair call passes both. Go's unit-switch path was scaling
+   Volume, which corrupted returned volume by the same factor as the price
+   fix. (high — found independently by one verifier)</li>
+<li><strong>Unit-switch and split repairs now scale Dividends</strong> by the same factor
+   as prices (<code>applyUnitSwitchCorrection</code>, <code>applySplitCorrection</code>) — found
+   while confirming finding 1 against upstream: both call sites pass
+   <code>correct_dividend=True</code>, and the repaired range's dividends must move with
+   the price correction. Neither Go function touched Dividends before this
+   round. (found during judgment, not flagged by either verifier)</li>
+<li><strong>Split detection threshold now matches upstream's shared formula</strong>
+   (<code>split.go</code> <code>repairSplitAtIndex</code>) — replaced the old symmetric
+   distance-band check <code>(|expectedChange|+largestNormalChange)/2</code> with
+   upstream's <code>1 + (splitMax-1+largestNormalChange)*0.6</code>, compared as a
+   ratio-space threshold (beyond threshold in the direction implied by the
+   split), not a tolerance band around one assumed value. The old formula
+   accepted unadjusted-split candidates with materially weaker price drops
+   than upstream would. (med — both verifiers independently flagged this)</li>
+<li><strong>Currency standardisation now scales dividends conditionally on entry</strong>
+   (<code>currency.go</code> <code>standardiseCurrency</code> / new <code>averageDividendToPrevCloseRatio</code>)
+   — upstream only multiplies Dividends by the sub-unit factor on entry when
+   the average dividend/prevClose ratio (using the now-scaled Close) exceeds
+   1, i.e. when the raw dividend is implausible unless it's still in the
+   sub-unit. The unconditional entry-scaling previously in Go breaks the
+   common LSE pattern where the dividend is already reported in the main
+   currency even though prices are in pence. Revert stays unconditional
+   (unchanged — matches upstream's f854309 regression fix). (med)</li>
+<li><strong>Price-noise tolerance now widens for coarser intervals</strong>
+   (<code>unit_mixup.go</code> <code>fixPricesSuddenChange</code>) — added the missing <code>x3</code> (1wk)
+   / <code>x6</code> (1mo, 3mo) multiplier on <code>largestChangePct</code>, matching upstream's
+   <code>interday and interval != '1d'</code> gate. Previously only the volume-noise
+   threshold had this multiplier; the price-detection threshold did not.
+   (low)</li>
+<li><strong><code>5d</code> no longer gets the interday noise multiplier</strong>
+   (<code>volume.go</code> → shared <code>intervalNoiseMultiplier</code>) — upstream's <code>interday</code>
+   set is exactly <code>{1d, 1wk, 1mo, 3mo}</code>; <code>5d</code> was previously included in the
+   <code>x3</code> bucket by mistake, loosening the volume threshold for 5-day bars.
+   (low)</li>
+<li><strong>Standard deviation now uses population variance (ddof=0)</strong> in
+   <code>fixPricesSuddenChange</code>, <code>volumeChangeThreshold</code>, and <code>repairSplitAtIndex</code>
+   — matches upstream <code>np.std</code>'s default (<code>stats.Std(..., 1)</code> → <code>..., 0)</code>
+   at all three call sites; the Go code previously used sample variance,
+   which overestimates volatility for small windows and loosens every
+   threshold that depends on it. (low)</li>
+<li><strong><code>splitVolumeConfirms</code> no longer vetoes on unusable boundary volume</strong>
+   (<code>volume.go</code>) — when the boundary volume change can't be computed (no
+   positive volume on one side), upstream proceeds without the cross-check
+   rather than blocking the repair; only all-zero volume across the whole
+   series disables split repair entirely (kept unchanged, matches upstream's
+   <code>(vol==0.0).all(): return df</code> guard for the whole function). (low)</li>
+</ol>
+<h3 id="documented-gap-not-fixed">Documented gap (not fixed)</h3>
+<ul>
+<li><strong><code>prices_in_subunits</code> freshness heuristic</strong> (<code>currency.go</code>
+  <code>standardiseCurrency</code>) — upstream skips price scaling when a recent
+  (&lt; 30 days old) bar's Close, compared against the ticker's live
+  <code>regularMarketPrice</code> from chart metadata, shows Yahoo already returned
+  main-unit prices (a rare Yahoo-side bug). go-yfinance's repair layer
+  receives only <code>[]models.Bar</code> and repair <code>Options</code> — it has no access to
+  live chart metadata at this layer — so price standardisation in Go always
+  assumes sub-unit prices need scaling. This only diverges from upstream in
+  the rare edge case the heuristic exists for; the common case (prices
+  genuinely in sub-units) is unaffected because the round-trip (standardise
+  → repair → revert) is symmetric either way. Fixing this would require
+  threading chart metadata (or at least <code>regularMarketPrice</code>) into
+  <code>repair.Options</code>, which is a larger interface change than this
+  verification round's scope. (low, tracked here for a future pass)</li>
+</ul>
+<h3 id="verification-after-fixes">Verification after fixes</h3>
+<ul>
+<li><code>go build ./...</code>, <code>go vet ./...</code> — clean.</li>
+<li><code>GOCACHE=/tmp/go-build-cache go test ./...</code> — all 17 packages pass,
+  including new regression tests for each fixed item
+  (<code>pkg/repair/verify_fixes_test.go</code>, plus updates to <code>currency_test.go</code> for
+  the conditional-dividend-scaling contract).</li>
+<li><code>GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...</code> —
+  0 issues.</li>
+</ul>
+<h2 id="status-legend">Status Legend</h2>
+<ul>
+<li><code>[x]</code> Done</li>
+<li><code>[ ]</code> Pending</li>
+<li>N/A — verified not applicable to Go, with the reason recorded inline</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
