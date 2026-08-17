@@ -28,8 +28,13 @@ func closeTo(a, b, rtol float64) bool {
 	return math.Abs(a-b) <= rtol*math.Max(math.Abs(a), math.Abs(b))
 }
 
+// TestStandardiseCurrencyGBpRoundTrip covers a dividend genuinely quoted in
+// the sub-unit (pence): raw 180 against a raw Close of 6010 is a plausible
+// ~3% yield once both are read as pence, so the entry heuristic (average
+// dividend/prevClose using the now-scaled Close) sees a ratio of ~3 and
+// scales it — and revert must bring it back to the original pence value.
 func TestStandardiseCurrencyGBpRoundTrip(t *testing.T) {
-	bars := []models.Bar{penceBar(1, 6000, 6050, 5950, 6010, 50)}
+	bars := []models.Bar{penceBar(1, 6000, 6050, 5950, 6010, 180)}
 
 	scaled, currency, pricesScaled := standardiseCurrency(bars, "GBp")
 	if !pricesScaled {
@@ -41,20 +46,33 @@ func TestStandardiseCurrencyGBpRoundTrip(t *testing.T) {
 	if !closeTo(scaled[0].Close, 60.10, 1e-12) {
 		t.Errorf("expected Close 60.10 after standardise, got %v", scaled[0].Close)
 	}
-	if !closeTo(scaled[0].Dividends, 0.50, 1e-12) {
-		t.Errorf("expected Dividends 0.50 after standardise, got %v", scaled[0].Dividends)
+	if !closeTo(scaled[0].Dividends, 1.80, 1e-9) {
+		t.Errorf("expected Dividends 1.80 after standardise, got %v", scaled[0].Dividends)
 	}
 
 	reverted := revertCurrency(scaled, "GBp")
 	if !closeTo(reverted[0].Close, 6010, 1e-9) {
 		t.Errorf("expected Close 6010 after revert, got %v", reverted[0].Close)
 	}
-	if !closeTo(reverted[0].Dividends, 50, 1e-9) {
-		t.Errorf("expected Dividends 50 after revert, got %v", reverted[0].Dividends)
+	if !closeTo(reverted[0].Dividends, 180, 1e-6) {
+		t.Errorf("expected Dividends 180 after revert, got %v", reverted[0].Dividends)
 	}
 	// Original input untouched
 	if bars[0].Close != 6010 {
 		t.Errorf("input bars mutated: Close=%v", bars[0].Close)
+	}
+}
+
+// TestStandardiseCurrencyDividendAlreadyMainUnit covers the common LSE quirk
+// (upstream #2907): the dividend is already reported in the main currency
+// (GBP) even though prices are in pence. Ratio dividend/scaledPrevClose stays
+// well under 1 for any plausible yield, so entry must leave it untouched.
+func TestStandardiseCurrencyDividendAlreadyMainUnit(t *testing.T) {
+	bars := []models.Bar{penceBar(1, 6000, 6050, 5950, 6010, 1.80)}
+
+	scaled, _, _ := standardiseCurrency(bars, "GBp")
+	if !closeTo(scaled[0].Dividends, 1.80, 1e-9) {
+		t.Errorf("expected Dividends left at 1.80 (already main-unit), got %v", scaled[0].Dividends)
 	}
 }
 

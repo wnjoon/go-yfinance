@@ -25,6 +25,21 @@ func allVolumesZero(vol []float64) bool {
 	return true
 }
 
+// intervalNoiseMultiplier scales an estimated "normal" volatility for coarser
+// intervals. Matches upstream's interday definition exactly:
+// interday = interval in {1d, 1wk, 1mo, 3mo} — note "5d" is NOT interday and
+// gets no multiplier — with an extra factor for monthly bars.
+func intervalNoiseMultiplier(interval string) float64 {
+	switch interval {
+	case "1wk":
+		return 3
+	case "1mo", "3mo":
+		return 6
+	default:
+		return 1
+	}
+}
+
 // denoiseVolume smooths a volume series for boundary comparison: zeros are
 // backward- then forward-filled, then a sliding median with window <= 9 is
 // taken. Port of upstream _fix_prices_sudden_change's denoise_volume.
@@ -98,7 +113,7 @@ func volumeChangeThreshold(vol []float64, changeMax float64, interval string) fl
 			normal := boundedChanges(changes, q1-1.5*iqr, q3+1.5*iqr)
 			if len(normal) > 0 {
 				avg := stats.Mean(normal)
-				sd := stats.Std(normal, 1)
+				sd := stats.Std(normal, 0)
 				if !math.IsNaN(sd) && avg != 0 {
 					largestVolChgPct = 5 * sd / avg
 				}
@@ -106,14 +121,7 @@ func volumeChangeThreshold(vol []float64, changeMax float64, interval string) fl
 		}
 	}
 
-	// Coarser intervals aggregate more volume noise (upstream: x3 for interday
-	// above 1d, x2 more for months).
-	switch interval {
-	case "1wk", "5d":
-		largestVolChgPct *= 3
-	case "1mo", "3mo":
-		largestVolChgPct *= 6
-	}
+	largestVolChgPct *= intervalNoiseMultiplier(interval)
 
 	return 1 + (changeMax-1+largestVolChgPct)*0.333
 }
@@ -174,7 +182,10 @@ func splitVolumeConfirms(bars []models.Bar, splitIdx int, splitRatio float64, in
 
 	change := boundaryVolumeChange(vol, splitIdx)
 	if math.IsNaN(change) {
-		return false
+		// Boundary volume unusable (e.g. no positive volume on one side):
+		// upstream only cross-checks when it CAN compute the change, and
+		// does not veto when it cannot.
+		return true
 	}
 
 	changeMax := math.Max(splitRatio, 1/splitRatio)

@@ -282,9 +282,10 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 		return bars
 	}
 
-	// Calculate mean and std of normal changes
+	// Calculate mean and std of normal changes (population std, matching
+	// upstream np.std's ddof=0 default).
 	avg := stats.Mean(normalChanges)
-	sd := stats.Std(normalChanges, 1)
+	sd := stats.Std(normalChanges, 0)
 	if math.IsNaN(sd) {
 		sd = 0.01
 	}
@@ -292,8 +293,11 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 	// SD as percentage of mean
 	sdPct := sd / avg
 
-	// Only proceed if change far exceeds normal volatility
+	// Only proceed if change far exceeds normal volatility. Coarser
+	// intervals aggregate more price noise (upstream: x3 for interday
+	// above 1d, x2 more for months — 5d is NOT interday upstream).
 	largestChangePct := 5 * sdPct
+	largestChangePct *= intervalNoiseMultiplier(r.opts.Interval)
 	changeMax := math.Max(change, changeRcp)
 	if changeMax < 1.0+largestChangePct {
 		return bars
@@ -363,6 +367,10 @@ func switchCorrection(dayChange, threshold, change, changeRcp float64) float64 {
 	return changeRcp
 }
 
+// applyUnitSwitchCorrection rescales prices and dividends by the same factor
+// (upstream unit-switch call passes correct_dividend=True but does NOT pass
+// correct_volume: a currency-unit switch does not change the share count, so
+// Volume must stay untouched — unlike a genuine stock split).
 func applyUnitSwitchCorrection(bars []models.Bar, correction float64) {
 	if !validPrice(correction) {
 		return
@@ -373,7 +381,7 @@ func applyUnitSwitchCorrection(bars []models.Bar, correction float64) {
 		bars[j].Low *= correction
 		bars[j].Close *= correction
 		bars[j].AdjClose *= correction
-		bars[j].Volume = int64(float64(bars[j].Volume) / correction)
+		bars[j].Dividends *= correction
 		bars[j].Repaired = true
 	}
 }

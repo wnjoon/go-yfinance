@@ -8,6 +8,12 @@ improves error messages. The Go port carries every upstream change that maps
 onto go-yfinance's in-place repair model, plus one Go-side bug fix the port
 uncovered.
 
+The repair port was independently cross-verified by two blind agents against
+the upstream diff after the initial implementation; 8 findings were accepted
+and are folded into the changes below (see the
+[v1.6.0 progress document](../development/v1.6.0-progress.md#post-merge-cross-verification-round-parallel-verify)
+for the full before/after list).
+
 ## Ported Changes
 
 ### Price repair
@@ -16,13 +22,23 @@ uncovered.
   repair math for GBp/ZAc/ILA tickers now runs in the main currency
   (GBP/ZAR/ILS) and the result — prices *and* dividends — is unconditionally
   converted back, so `Repair` no longer permanently converts pence/cents/agorot
-  quotes to the main currency.
+  quotes to the main currency. Dividends are scaled to the main currency on
+  entry only when they look like they're still in the sub-unit (average
+  dividend/prevClose ratio > 1), matching upstream's handling of the common
+  LSE pattern where a dividend is already reported in GBP even though prices
+  are in pence.
 - **Volume cross-check for unit switches and splits** (upstream #2908/#2943):
   a candidate unit switch whose boundary volume mirrors the price move is a
   real corporate action and is skipped; stock-split repair now *requires* the
-  mirror-image volume jump at the split date. Data with no volume at all is
+  mirror-image volume jump at the split date, and does not veto when the
+  boundary volume simply can't be computed. Data with no volume at all is
   left untouched. The detection threshold moved to upstream's
-  `1 + (change - 1 + pct) * 0.6` formula.
+  `1 + (change - 1 + pct) * 0.6` formula, with the correct interday noise
+  multiplier (1wk/1mo/3mo, not 5d) and population (not sample) standard
+  deviation on both the price and volume sides. Unit-switch repair no longer
+  rescales Volume (a currency switch doesn't change share counts); both
+  unit-switch and split repair now rescale Dividends along with prices,
+  matching upstream's `correct_dividend=True`.
 - **Per-cell 100x repair** (upstream #2908, ASAI.L fixture): bars where only
   some columns are 100x wrong are repaired column by column; the good columns
   stay untouched, and Low/High are recalculated from Open/Close afterwards.
