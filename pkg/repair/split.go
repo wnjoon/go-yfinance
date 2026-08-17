@@ -47,7 +47,7 @@ func (r *Repairer) repairStockSplits(bars []models.Bar) []models.Bar {
 		}
 
 		// Analyze and repair data before this split
-		result = repairSplitAtIndex(result, idx, splitRatio)
+		result = repairSplitAtIndex(result, idx, splitRatio, r.opts.Interval)
 	}
 
 	return result
@@ -65,7 +65,7 @@ func findSplitIndices(bars []models.Bar) []int {
 }
 
 // repairSplitAtIndex repairs data around a specific split event.
-func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []models.Bar {
+func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, interval string) []models.Bar {
 	if splitIdx == 0 {
 		return bars
 	}
@@ -103,28 +103,41 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64) []m
 		return bars
 	}
 
-	// Calculate standard deviation of normal changes
-	stdDev := stats.Std(normalChanges, 1)
+	// Calculate standard deviation of normal changes (population std,
+	// matching upstream np.std's ddof=0 default).
+	stdDev := stats.Std(normalChanges, 0)
 	if math.IsNaN(stdDev) {
 		stdDev = stats.Mean(normalChanges)
 	}
 
-	// Calculate the expected price change from split
-	// For a n:1 split, price should be divided by n (ratio > 1)
-	// For a 1:n reverse split, price should be multiplied by n (ratio < 1)
-	expectedChange := expectedSplitChange(splitRatio)
-
-	// Set threshold: halfway between split change and largest normal change
+	// Split repair shares its detection formula with unit-switch repair
+	// upstream (both call the same _fix_prices_sudden_change with `change` =
+	// the split ratio): threshold = 1 + (splitMax-1+largestNormalChange)*0.6,
+	// compared against the ratio observed on the split date — not a
+	// symmetric distance band around a single expected value.
+	splitMax := math.Max(splitRatio, 1.0/splitRatio)
 	largestNormalChange := 5 * stdDev
-	threshold := (math.Abs(expectedChange) + largestNormalChange) / 2
+	threshold := 1 + (splitMax-1+largestNormalChange)*0.6
 
-	// Check if the split appears unadjusted
-	// Look at the price change on the split date
-	splitDateChange := splitDateChange(result, splitIdx)
+	// Ratio observed on the split date (splitDateChange returns 0, a safe
+	// no-op ratio of 1, when prevPrice is unusable).
+	dayChangeRatio := 1 + splitDateChange(result, splitIdx)
 
-	// If the change on split date is close to what we'd expect from an unadjusted split,
-	// the data before the split needs to be adjusted
-	if math.Abs(splitDateChange-expectedChange) < threshold {
+	var unadjusted bool
+	if splitRatio > 1 {
+		// Forward split: unadjusted data shows a big price drop.
+		unadjusted = dayChangeRatio <= 1.0/threshold
+	} else {
+		// Reverse split: unadjusted data shows a big price jump.
+		unadjusted = dayChangeRatio >= threshold
+	}
+
+	if unadjusted {
+		// Volume cross-check (upstream #2943): a genuinely unadjusted split
+		// shows the mirror-image jump in volume at the split date.
+		if !splitVolumeConfirms(result, splitIdx, splitRatio, interval) {
+			return bars
+		}
 		// Data appears to be unadjusted - apply correction
 		result = applySplitCorrection(result, splitIdx, splitRatio)
 	}
@@ -154,11 +167,14 @@ func absBoundedChanges(changes []float64, lowerBound, upperBound float64) []floa
 	return normalChanges
 }
 
+// expectedSplitChange returns the signed price change an UNADJUSTED split
+// produces on the split date: a 2:1 forward split halves the price (-0.5), a
+// 1:4 reverse split quadruples it (+3.0). Matches DetectBadSplits.
 func expectedSplitChange(splitRatio float64) float64 {
 	if splitRatio > 1 {
-		return 1.0 - 1.0/splitRatio
+		return -(1.0 - 1.0/splitRatio)
 	}
-	return splitRatio - 1.0
+	return 1.0/splitRatio - 1.0
 }
 
 func splitDateChange(bars []models.Bar, splitIdx int) float64 {
@@ -173,7 +189,10 @@ func splitDateChange(bars []models.Bar, splitIdx int) float64 {
 	return (currPrice - prevPrice) / prevPrice
 }
 
-// applySplitCorrection adjusts historical prices for a split.
+// applySplitCorrection adjusts historical prices, dividends, and volume for a
+// split. Dividends scale by the same factor as prices, and volume by the
+// reciprocal factor (upstream: correct_dividend=True, correct_volume=True are
+// both passed to the shared _fix_prices_sudden_change call for split repair).
 func applySplitCorrection(bars []models.Bar, splitIdx int, splitRatio float64) []models.Bar {
 	result := make([]models.Bar, len(bars))
 	copy(result, bars)
@@ -188,6 +207,7 @@ func applySplitCorrection(bars []models.Bar, splitIdx int, splitRatio float64) [
 			result[i].Low /= splitRatio
 			result[i].Close /= splitRatio
 			result[i].AdjClose /= splitRatio
+			result[i].Dividends /= splitRatio
 			result[i].Volume = int64(float64(result[i].Volume) * splitRatio)
 		} else if splitRatio > 0 {
 			// Reverse split: historical prices should be higher
@@ -196,6 +216,7 @@ func applySplitCorrection(bars []models.Bar, splitIdx int, splitRatio float64) [
 			result[i].Low *= (1 / splitRatio)
 			result[i].Close *= (1 / splitRatio)
 			result[i].AdjClose *= (1 / splitRatio)
+			result[i].Dividends *= (1 / splitRatio)
 			result[i].Volume = int64(float64(result[i].Volume) / (1 / splitRatio))
 		}
 		result[i].Repaired = true

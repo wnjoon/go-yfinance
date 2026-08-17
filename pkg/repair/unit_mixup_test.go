@@ -20,15 +20,17 @@ func TestDetectAndCorrectMixups(t *testing.T) {
 
 	corrections := detectAndCorrectMixups(data)
 
-	// Third row should have correction factor of 0.01
-	if corrections[2] != 0.01 {
-		t.Errorf("Expected correction factor 0.01 for row 2, got %v", corrections[2])
+	// Every cell of the third row should have correction factor of 0.01
+	for j, c := range corrections[2] {
+		if c != 0.01 {
+			t.Errorf("Expected correction factor 0.01 for row 2 cell %d, got %v", j, c)
+		}
 	}
 
-	// Other rows should have correction factor 1.0
+	// Other rows should have no corrections
 	for i, c := range corrections {
-		if i != 2 && c != 1.0 {
-			t.Errorf("Expected correction factor 1.0 for row %d, got %v", i, c)
+		if i != 2 && rowHasCorrection(c) {
+			t.Errorf("Expected no correction for row %d, got %v", i, c)
 		}
 	}
 }
@@ -45,9 +47,11 @@ func TestDetectAndCorrectMixups100xLow(t *testing.T) {
 
 	corrections := detectAndCorrectMixups(data)
 
-	// Third row should have correction factor of 100.0
-	if corrections[2] != 100.0 {
-		t.Errorf("Expected correction factor 100.0 for row 2, got %v", corrections[2])
+	// Every cell of the third row should have correction factor of 100.0
+	for j, c := range corrections[2] {
+		if c != 100.0 {
+			t.Errorf("Expected correction factor 100.0 for row 2 cell %d, got %v", j, c)
+		}
 	}
 }
 
@@ -98,16 +102,39 @@ func TestRepairRandomUnitMixupsWithError(t *testing.T) {
 	}
 }
 
-func TestApplyUnitCorrectionSkipsInvalidCorrection(t *testing.T) {
+func TestApplyCellCorrectionsSkipsInvalidCorrection(t *testing.T) {
 	bar := models.Bar{Open: 100, High: 110, Low: 95, Close: 105, AdjClose: 105}
 
-	applyUnitCorrection(&bar, math.Inf(1))
+	applyCellCorrections(&bar, []float64{math.Inf(1), math.Inf(1), math.Inf(1), math.Inf(1), math.Inf(1)})
 
 	if bar.Repaired {
 		t.Fatal("Expected invalid correction to leave bar unrepaired")
 	}
 	if bar.Close != 105 {
 		t.Fatalf("Expected close to remain unchanged, got %v", bar.Close)
+	}
+}
+
+func TestApplyCellCorrectionsPartialRow(t *testing.T) {
+	// Only Low/Close/AdjClose are 100x low (upstream ASAI.L pattern);
+	// Open/High must stay untouched and Low must be recalculated.
+	bar := models.Bar{Open: 58.5, High: 61.5, Low: 0.6, Close: 0.6, AdjClose: 0.6}
+
+	// Column order: High, Open, Low, Close, AdjClose
+	applyCellCorrections(&bar, []float64{1, 1, 100, 100, 100})
+
+	if !bar.Repaired {
+		t.Fatal("Expected bar to be marked repaired")
+	}
+	if bar.Open != 58.5 || bar.High != 61.5 {
+		t.Errorf("Open/High must stay untouched, got %v/%v", bar.Open, bar.High)
+	}
+	if math.Abs(bar.Close-60.0) > 1e-9 {
+		t.Errorf("Expected Close 60, got %v", bar.Close)
+	}
+	// Low is recalculated as min(Open, Close), not 0.6*100
+	if math.Abs(bar.Low-58.5) > 1e-9 {
+		t.Errorf("Expected Low 58.5 (recalculated), got %v", bar.Low)
 	}
 }
 

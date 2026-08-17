@@ -70,6 +70,9 @@ See [ErrorCode](<#ErrorCode>) for all available error types.
   - [func \(a \*AuthManager\) SwitchStrategy\(\)](<#AuthManager.SwitchStrategy>)
   - [func \(a \*AuthManager\) User\(\) map\[string\]interface\{\}](<#AuthManager.User>)
 - [type AuthStrategy](<#AuthStrategy>)
+- [type ChartAPIError](<#ChartAPIError>)
+  - [func NewChartAPIError\(symbol, code, description string\) \*ChartAPIError](<#NewChartAPIError>)
+  - [func \(e \*ChartAPIError\) Error\(\) string](<#ChartAPIError.Error>)
 - [type Client](<#Client>)
   - [func New\(opts ...ClientOption\) \(\*Client, error\)](<#New>)
   - [func \(c \*Client\) Close\(\)](<#Client.Close>)
@@ -322,6 +325,39 @@ const (
     StrategyCSRF
 )
 ```
+
+<a name="ChartAPIError"></a>
+## type ChartAPIError
+
+ChartAPIError represents an error returned by the Yahoo Finance chart API.
+
+The message mirrors python yfinance v1.6.0: Yahoo's own reason is the entire rationale \("$SYM: \<description\>"\), with the Yahoo error code kept as a field for programmatic inspection via errors.As.
+
+```go
+type ChartAPIError struct {
+    Symbol      string
+    Code        string
+    Description string
+}
+```
+
+<a name="NewChartAPIError"></a>
+### func NewChartAPIError
+
+```go
+func NewChartAPIError(symbol, code, description string) *ChartAPIError
+```
+
+NewChartAPIError creates a new ChartAPIError.
+
+<a name="ChartAPIError.Error"></a>
+### func \(\*ChartAPIError\) Error
+
+```go
+func (e *ChartAPIError) Error() string
+```
+
+Error implements the error interface.
 
 <a name="Client"></a>
 ## type Client

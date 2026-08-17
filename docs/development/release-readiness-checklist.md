@@ -23,6 +23,12 @@ names that do not match the actual upstream parity target.
   `requests_cache`/`curl_cffi` layer). The Go `v1.5.2` release is therefore
   documentation-and-versioning only;
   record the no-op assessment in the progress document.
+- Python yfinance `1.6.0` is a normal (non-retracted) feature release; the Go
+  tag `v1.6.0` matches it directly. Its price-repair overhaul splits into
+  portable behavior (volume cross-check, sub-unit currency preservation,
+  per-cell 100x repair) and reconstruction-internal changes that are N/A for
+  Go's in-place repair model; the split is itemized in
+  `v1.6.0-progress.md`.
 
 ## 2. Upstream Parity Audit
 

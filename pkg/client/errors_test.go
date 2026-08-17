@@ -82,6 +82,26 @@ func TestErrorHelpers(t *testing.T) {
 	}
 }
 
+func TestChartAPIError(t *testing.T) {
+	err := NewChartAPIError("AAPL", "Not Found", "No data found, symbol may be delisted")
+
+	expected := "$AAPL: No data found, symbol may be delisted"
+	if err.Error() != expected {
+		t.Errorf("Error() = %q, want %q", err.Error(), expected)
+	}
+
+	var chartErr *ChartAPIError
+	if !errors.As(error(err), &chartErr) {
+		t.Fatal("errors.As should extract *ChartAPIError")
+	}
+	if chartErr.Code != "Not Found" {
+		t.Errorf("Code = %q, want %q", chartErr.Code, "Not Found")
+	}
+	if chartErr.Symbol != "AAPL" {
+		t.Errorf("Symbol = %q, want %q", chartErr.Symbol, "AAPL")
+	}
+}
+
 func TestHTTPStatusToError(t *testing.T) {
 	tests := []struct {
 		status   int
