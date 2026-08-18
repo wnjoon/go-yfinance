@@ -109,6 +109,11 @@ secrets.
 Authentication responses must be classified before their bodies are parsed or
 accepted:
 
+CycleTLS can encode transport failures as synthetic responses with a zero or
+HTTP-like status and the underlying error in the response body. Authentication
+must classify those responses as sanitized network errors before applying the
+HTTP or body rules below.
+
 | Stage | Required handling |
 |-------|-------------------|
 | Basic cookie GET | Preserve current behavior where `fc.yahoo.com` can return a non-2xx status while setting a usable cookie; fail on transport failure, but do not reject the response based on status alone. |
@@ -164,27 +169,27 @@ All other authentication endpoint URLs remain unchanged.
 
 ## Test Plan
 
-- [ ] Basic success uses `query1` and never invokes CSRF.
-- [ ] Basic failure followed by CSRF success returns the CSRF crumb.
-- [ ] CSRF failure followed by Basic success returns the Basic crumb.
-- [ ] Two failures retain labeled Basic and CSRF causes.
-- [ ] Basic crumb 429 is recognized by `IsRateLimitError`.
-- [ ] CSRF consent 429 is recognized by `IsRateLimitError` before parsing.
-- [ ] CSRF consent 403 reports the HTTP failure instead of missing tokens.
-- [ ] Successful consent HTML without required inputs is an invalid-response
+- [x] Basic success uses `query1` and never invokes CSRF.
+- [x] Basic failure followed by CSRF success returns the CSRF crumb.
+- [x] CSRF failure followed by Basic success returns the Basic crumb.
+- [x] Two failures retain labeled Basic and CSRF causes.
+- [x] Basic crumb 429 is recognized by `IsRateLimitError`.
+- [x] CSRF consent 429 is recognized by `IsRateLimitError` before parsing.
+- [x] CSRF consent 403 reports the HTTP failure instead of missing tokens.
+- [x] Successful consent HTML without required inputs is an invalid-response
   error.
-- [ ] Collect-consent and copy-consent HTTP errors identify their stage.
-- [ ] CSRF crumb acquisition uses `query2`.
-- [ ] Combined fallback failure is recognized by both `IsAuthError` and, when
+- [x] Collect-consent and copy-consent HTTP errors identify their stage.
+- [x] CSRF crumb acquisition uses `query2`.
+- [x] Combined fallback failure is recognized by both `IsAuthError` and, when
   applicable, `IsRateLimitError`.
-- [ ] Error strings do not contain fixture cookie, crumb, CSRF token, session
+- [x] Error strings do not contain fixture cookie, crumb, CSRF token, session
   ID, response-body, or proxy-secret values.
-- [ ] Existing login-cookie, subscription, and strategy-switch tests continue
+- [x] Existing login-cookie, subscription, and strategy-switch tests continue
   to pass.
-- [ ] `go test ./pkg/client/...`
-- [ ] `go test ./...`
-- [ ] `go test -race ./pkg/client/...`
-- [ ] `go vet ./...`
+- [x] `go test ./pkg/client/...`
+- [x] `go test ./...`
+- [x] `go test -race ./pkg/client/...`
+- [x] `go vet ./...`
 
 Live Yahoo checks may be run as a limited smoke test, but they are not part of
 the deterministic acceptance criteria.

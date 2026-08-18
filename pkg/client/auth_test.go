@@ -307,6 +307,90 @@ func TestAuthManagerBasicCrumb429IsRateLimit(t *testing.T) {
 	fakeClient.assertDrained(t)
 }
 
+func TestAuthManagerBasicRejectsCycleTLSTransportFailures(t *testing.T) {
+	tests := []struct {
+		name  string
+		steps []scriptedAuthResponse
+	}{
+		{
+			name: "cookie status zero",
+			steps: []scriptedAuthResponse{
+				{method: "GET", rawURL: endpoints.CookieURL, status: 0, body: "-> \ntransport-response-secret"},
+			},
+		},
+		{
+			name: "cookie synthetic status",
+			steps: []scriptedAuthResponse{
+				{method: "GET", rawURL: endpoints.CookieURL, status: 401, body: "Request returned a Syscall Error: transport-response-secret"},
+			},
+		},
+		{
+			name: "crumb status zero",
+			steps: []scriptedAuthResponse{
+				{method: "GET", rawURL: endpoints.CookieURL, status: 404},
+				{method: "GET", rawURL: endpoints.CrumbURL, status: 0, body: "-> \ntransport-response-secret"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fakeClient := newScriptedAuthClient(t, tt.steps...)
+			auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+
+			err := auth.fetchBasic()
+			if err == nil {
+				t.Fatal("expected error")
+			}
+			if !errors.Is(err, ErrNetwork) {
+				t.Fatalf("expected network error, got %v", err)
+			}
+			if strings.Contains(err.Error(), "transport-response-secret") {
+				t.Fatalf("expected sanitized error, got %q", err.Error())
+			}
+			if auth.crumb != "" {
+				t.Fatalf("expected no crumb, got %q", auth.crumb)
+			}
+			fakeClient.assertDrained(t)
+		})
+	}
+}
+
+func TestValidateCrumbResponseRejectsInvalidBodies(t *testing.T) {
+	tests := []struct {
+		name string
+		body string
+	}{
+		{name: "empty", body: " \n\t"},
+		{name: "html", body: "<!DOCTYPE html><HTML><body>challenge</body></HTML>"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateCrumbResponse("csrf crumb", &Response{StatusCode: 200, Body: tt.body})
+			if !errors.Is(err, ErrInvalidResponse) {
+				t.Fatalf("expected invalid-response error, got %v", err)
+			}
+			if !strings.Contains(err.Error(), "csrf crumb") {
+				t.Fatalf("expected stage in error, got %q", err.Error())
+			}
+		})
+	}
+}
+
+func TestValidateAuthHTTPResponseIncludes404Status(t *testing.T) {
+	err := validateAuthHTTPResponse("csrf copy consent", &Response{StatusCode: 404, Body: "response-body-secret"})
+	if !errors.Is(err, ErrNotFound) {
+		t.Fatalf("expected not-found error, got %v", err)
+	}
+	if !strings.Contains(err.Error(), "HTTP 404") {
+		t.Fatalf("expected HTTP 404, got %q", err.Error())
+	}
+	if strings.Contains(err.Error(), "response-body-secret") {
+		t.Fatalf("expected sanitized error, got %q", err.Error())
+	}
+}
+
 func TestAuthManagerCSRFConsentStatusCheckedBeforeParsing(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -322,6 +406,20 @@ func TestAuthManagerCSRFConsentStatusCheckedBeforeParsing(t *testing.T) {
 				t.Helper()
 				if !IsRateLimitError(err) {
 					t.Fatalf("expected rate-limit error, got %v", err)
+				}
+			},
+		},
+		{
+			name:       "transport failure",
+			statusCode: 0,
+			body:       "-> \ntransport-response-secret",
+			assert: func(t *testing.T, err error) {
+				t.Helper()
+				if !errors.Is(err, ErrNetwork) {
+					t.Fatalf("expected network error, got %v", err)
+				}
+				if strings.Contains(err.Error(), "missing csrfToken or sessionId") {
+					t.Fatalf("expected transport classification before token parsing, got %q", err.Error())
 				}
 			},
 		},
@@ -423,6 +521,95 @@ func TestAuthManagerCSRFCollectAndCopyStatusErrorsIncludeStage(t *testing.T) {
 			}
 			if strings.Contains(err.Error(), "response-body-secret") || strings.Contains(err.Error(), sessionID) {
 				t.Fatalf("expected sanitized error, got %q", err.Error())
+			}
+			fakeClient.assertDrained(t)
+		})
+	}
+}
+
+func TestAuthManagerCSRFTransportErrorsAreSanitized(t *testing.T) {
+	sessionID := "session-secret"
+	transportSecret := "proxy-user:proxy-password"
+	tests := []struct {
+		name      string
+		failStage string
+		steps     []scriptedAuthResponse
+	}{
+		{
+			name:      "collect consent",
+			failStage: "csrf collect consent",
+			steps: []scriptedAuthResponse{
+				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf-secret", sessionID)},
+				{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, err: fmt.Errorf("POST %s via %s", sessionID, transportSecret)},
+			},
+		},
+		{
+			name:      "copy consent",
+			failStage: "csrf copy consent",
+			steps: []scriptedAuthResponse{
+				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf-secret", sessionID)},
+				{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, status: 200},
+				{method: "GET", rawURL: endpoints.CopyConsentURL + "?sessionId=" + sessionID, err: fmt.Errorf("GET %s via %s", sessionID, transportSecret)},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fakeClient := newScriptedAuthClient(t, tt.steps...)
+			auth := newScriptedAuthManager(fakeClient, StrategyCSRF)
+
+			err := auth.fetchCSRF()
+			if err == nil {
+				t.Fatal("expected error")
+			}
+			if !errors.Is(err, ErrNetwork) {
+				t.Fatalf("expected network error, got %v", err)
+			}
+			if !strings.Contains(err.Error(), tt.failStage) {
+				t.Fatalf("expected stage %q, got %q", tt.failStage, err.Error())
+			}
+			for _, secret := range []string{sessionID, transportSecret} {
+				if strings.Contains(err.Error(), secret) {
+					t.Fatalf("expected error to omit secret %q, got %q", secret, err.Error())
+				}
+			}
+			fakeClient.assertDrained(t)
+		})
+	}
+}
+
+func TestAuthManagerCSRFCrumbFailuresAreClassified(t *testing.T) {
+	sessionID := "session-secret"
+	tests := []struct {
+		name   string
+		status int
+		body   string
+		want   error
+	}{
+		{name: "rate limit", status: 429, body: "response-body-secret", want: ErrRateLimit},
+		{name: "transport", status: 0, body: "-> \ntransport-response-secret", want: ErrNetwork},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fakeClient := newScriptedAuthClient(t,
+				scriptedAuthResponse{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf-secret", sessionID)},
+				scriptedAuthResponse{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, status: 200},
+				scriptedAuthResponse{method: "GET", rawURL: endpoints.CopyConsentURL + "?sessionId=" + sessionID, status: 204},
+				scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbCSRFURL, status: tt.status, body: tt.body},
+			)
+			auth := newScriptedAuthManager(fakeClient, StrategyCSRF)
+
+			err := auth.fetchCSRF()
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("expected %v, got %v", tt.want, err)
+			}
+			if strings.Contains(err.Error(), tt.body) {
+				t.Fatalf("expected sanitized error, got %q", err.Error())
+			}
+			if auth.crumb != "" {
+				t.Fatalf("expected no crumb, got %q", auth.crumb)
 			}
 			fakeClient.assertDrained(t)
 		})

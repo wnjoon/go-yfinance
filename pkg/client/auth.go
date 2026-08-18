@@ -271,6 +271,9 @@ func (a *AuthManager) fetchBasic() error {
 	// Step 1: Get cookie from fc.yahoo.com
 	resp, err := a.client.Get(endpoints.CookieURL, nil)
 	if err != nil {
+		return fmt.Errorf("failed to get cookie: %w", sanitizedAuthTransportError("basic cookie"))
+	}
+	if err := validateBasicCookieResponse(resp); err != nil {
 		return fmt.Errorf("failed to get cookie: %w", err)
 	}
 
@@ -280,7 +283,7 @@ func (a *AuthManager) fetchBasic() error {
 	// Step 2: Get crumb
 	resp, err = a.client.Get(endpoints.CrumbURL, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get crumb: %w", err)
+		return fmt.Errorf("failed to get crumb: %w", sanitizedAuthTransportError("basic crumb"))
 	}
 
 	if err := validateCrumbResponse("basic crumb", resp); err != nil {
@@ -299,7 +302,7 @@ func (a *AuthManager) fetchCSRF() error {
 	// Step 1: Get consent page
 	resp, err := a.client.Get(endpoints.ConsentURL, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get consent page: %w", err)
+		return fmt.Errorf("failed to get consent page: %w", sanitizedAuthTransportError("csrf consent"))
 	}
 	if err := validateAuthHTTPResponse("csrf consent", resp); err != nil {
 		return fmt.Errorf("failed to get consent page: %w", err)
@@ -326,7 +329,7 @@ func (a *AuthManager) fetchCSRF() error {
 	collectURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CollectConsentURL, sessionID)
 	resp, err = a.client.Post(collectURL, nil, consentData)
 	if err != nil {
-		return fmt.Errorf("failed to submit consent: %w", err)
+		return fmt.Errorf("failed to submit consent: %w", sanitizedAuthTransportError("csrf collect consent"))
 	}
 	if err := validateAuthHTTPResponse("csrf collect consent", resp); err != nil {
 		return fmt.Errorf("failed to submit consent: %w", err)
@@ -336,7 +339,7 @@ func (a *AuthManager) fetchCSRF() error {
 	copyURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CopyConsentURL, sessionID)
 	resp, err = a.client.Get(copyURL, nil)
 	if err != nil {
-		return fmt.Errorf("failed to copy consent: %w", err)
+		return fmt.Errorf("failed to copy consent: %w", sanitizedAuthTransportError("csrf copy consent"))
 	}
 	if err := validateAuthHTTPResponse("csrf copy consent", resp); err != nil {
 		return fmt.Errorf("failed to copy consent: %w", err)
@@ -345,7 +348,7 @@ func (a *AuthManager) fetchCSRF() error {
 	// Step 4: Get crumb
 	resp, err = a.client.Get(endpoints.CrumbCSRFURL, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get crumb: %w", err)
+		return fmt.Errorf("failed to get crumb: %w", sanitizedAuthTransportError("csrf crumb"))
 	}
 
 	if err := validateCrumbResponse("csrf crumb", resp); err != nil {
@@ -380,9 +383,22 @@ func validateCrumbResponse(stage string, resp *Response) error {
 	return nil
 }
 
+func validateBasicCookieResponse(resp *Response) error {
+	if resp == nil {
+		return WrapInvalidResponseError(fmt.Errorf("basic cookie: nil response"))
+	}
+	if isCycleTLSTransportFailure(resp) {
+		return sanitizedAuthTransportError("basic cookie")
+	}
+	return nil
+}
+
 func validateAuthHTTPResponse(stage string, resp *Response) error {
 	if resp == nil {
 		return WrapInvalidResponseError(fmt.Errorf("%s: nil response", stage))
+	}
+	if isCycleTLSTransportFailure(resp) {
+		return sanitizedAuthTransportError(stage)
 	}
 	if resp.StatusCode == 429 || strings.Contains(resp.Body, "Too Many Requests") {
 		return fmt.Errorf("%s: %w", stage, WrapRateLimitError())
@@ -393,12 +409,24 @@ func validateAuthHTTPResponse(stage string, resp *Response) error {
 	return nil
 }
 
+func isCycleTLSTransportFailure(resp *Response) bool {
+	if resp.StatusCode <= 0 {
+		return true
+	}
+	body := strings.TrimSpace(resp.Body)
+	return strings.HasPrefix(body, "Request returned a Syscall Error:")
+}
+
+func sanitizedAuthTransportError(stage string) error {
+	return fmt.Errorf("%s: %w", stage, WrapNetworkError(errors.New("transport failure")))
+}
+
 func sanitizedHTTPStatusError(statusCode int) error {
 	switch statusCode {
 	case 401, 403:
 		return WrapAuthError(fmt.Errorf("HTTP %d", statusCode))
 	case 404:
-		return NewError(ErrCodeNotFound, "resource not found", nil)
+		return NewError(ErrCodeNotFound, fmt.Sprintf("resource not found: HTTP %d", statusCode), nil)
 	case 500, 502, 503, 504:
 		return NewError(ErrCodeNetwork, fmt.Sprintf("server error: HTTP %d", statusCode), nil)
 	default:
