@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -24,7 +25,7 @@ const (
 
 // AuthManager handles Yahoo Finance authentication (Cookie + Crumb).
 type AuthManager struct {
-	client   *Client
+	client   authClient
 	mu       sync.RWMutex
 	cookie   string
 	crumb    string
@@ -34,6 +35,13 @@ type AuthManager struct {
 }
 
 type authResponseGetter func(rawURL string, params url.Values) (*Response, error)
+
+type authClient interface {
+	Get(rawURL string, params url.Values) (*Response, error)
+	Post(rawURL string, params url.Values, body map[string]string) (*Response, error)
+	SetCookie(cookie string)
+	SetCookies(cookies map[string]string)
+}
 
 var subscriptionTierNames = map[int]string{
 	6: "gold",
@@ -237,25 +245,20 @@ func (a *AuthManager) refreshAuth() (string, error) {
 		return a.crumb, nil
 	}
 
-	var err error
 	if a.strategy == StrategyBasic {
-		err = a.fetchBasic()
-		if err != nil {
-			// Fallback to CSRF strategy
+		if err := a.fetchBasic(); err != nil {
 			a.strategy = StrategyCSRF
-			err = a.fetchCSRF()
+			if fallbackErr := a.fetchCSRF(); fallbackErr != nil {
+				return "", combinedAuthError("basic", err, "csrf", fallbackErr)
+			}
 		}
 	} else {
-		err = a.fetchCSRF()
-		if err != nil {
-			// Fallback to Basic strategy
+		if err := a.fetchCSRF(); err != nil {
 			a.strategy = StrategyBasic
-			err = a.fetchBasic()
+			if fallbackErr := a.fetchBasic(); fallbackErr != nil {
+				return "", combinedAuthError("csrf", err, "basic", fallbackErr)
+			}
 		}
-	}
-
-	if err != nil {
-		return "", fmt.Errorf("authentication failed: %w", err)
 	}
 
 	return a.crumb, nil
@@ -263,7 +266,7 @@ func (a *AuthManager) refreshAuth() (string, error) {
 
 // fetchBasic implements the basic authentication strategy.
 // 1. GET https://fc.yahoo.com -> captures cookies
-// 2. GET https://query2.finance.yahoo.com/v1/test/getcrumb -> gets crumb
+// 2. GET https://query1.finance.yahoo.com/v1/test/getcrumb -> gets crumb
 func (a *AuthManager) fetchBasic() error {
 	// Step 1: Get cookie from fc.yahoo.com
 	resp, err := a.client.Get(endpoints.CookieURL, nil)
@@ -280,12 +283,8 @@ func (a *AuthManager) fetchBasic() error {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
 
-	if resp.StatusCode == 429 || strings.Contains(resp.Body, "Too Many Requests") {
-		return fmt.Errorf("rate limited")
-	}
-
-	if resp.Body == "" || strings.Contains(resp.Body, "<html>") {
-		return fmt.Errorf("invalid crumb response")
+	if err := validateCrumbResponse("basic crumb", resp); err != nil {
+		return fmt.Errorf("failed to get crumb: %w", err)
 	}
 
 	a.crumb = strings.TrimSpace(resp.Body)
@@ -302,13 +301,16 @@ func (a *AuthManager) fetchCSRF() error {
 	if err != nil {
 		return fmt.Errorf("failed to get consent page: %w", err)
 	}
+	if err := validateAuthHTTPResponse("csrf consent", resp); err != nil {
+		return fmt.Errorf("failed to get consent page: %w", err)
+	}
 
 	// Extract CSRF token and session ID from HTML
 	csrfToken := extractInputValue(resp.Body, "csrfToken")
 	sessionID := extractInputValue(resp.Body, "sessionId")
 
 	if csrfToken == "" || sessionID == "" {
-		return fmt.Errorf("failed to extract CSRF tokens")
+		return WrapInvalidResponseError(fmt.Errorf("csrf consent: missing csrfToken or sessionId"))
 	}
 
 	// Step 2: Submit consent
@@ -322,15 +324,21 @@ func (a *AuthManager) fetchCSRF() error {
 	}
 
 	collectURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CollectConsentURL, sessionID)
-	_, err = a.client.Post(collectURL, nil, consentData)
+	resp, err = a.client.Post(collectURL, nil, consentData)
 	if err != nil {
+		return fmt.Errorf("failed to submit consent: %w", err)
+	}
+	if err := validateAuthHTTPResponse("csrf collect consent", resp); err != nil {
 		return fmt.Errorf("failed to submit consent: %w", err)
 	}
 
 	// Step 3: Copy consent
 	copyURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CopyConsentURL, sessionID)
-	_, err = a.client.Get(copyURL, nil)
+	resp, err = a.client.Get(copyURL, nil)
 	if err != nil {
+		return fmt.Errorf("failed to copy consent: %w", err)
+	}
+	if err := validateAuthHTTPResponse("csrf copy consent", resp); err != nil {
 		return fmt.Errorf("failed to copy consent: %w", err)
 	}
 
@@ -340,18 +348,62 @@ func (a *AuthManager) fetchCSRF() error {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
 
-	if resp.StatusCode == 429 || strings.Contains(resp.Body, "Too Many Requests") {
-		return fmt.Errorf("rate limited")
-	}
-
-	if resp.Body == "" || strings.Contains(resp.Body, "<html>") {
-		return fmt.Errorf("invalid crumb response")
+	if err := validateCrumbResponse("csrf crumb", resp); err != nil {
+		return fmt.Errorf("failed to get crumb: %w", err)
 	}
 
 	a.crumb = strings.TrimSpace(resp.Body)
 	a.expiry = time.Now().Add(1 * time.Hour)
 
 	return nil
+}
+
+func combinedAuthError(firstStrategy string, firstErr error, secondStrategy string, secondErr error) error {
+	return WrapAuthError(errors.Join(
+		fmt.Errorf("%s strategy: %w", firstStrategy, firstErr),
+		fmt.Errorf("%s strategy: %w", secondStrategy, secondErr),
+	))
+}
+
+func validateCrumbResponse(stage string, resp *Response) error {
+	if err := validateAuthHTTPResponse(stage, resp); err != nil {
+		return err
+	}
+
+	body := strings.TrimSpace(resp.Body)
+	if body == "" {
+		return WrapInvalidResponseError(fmt.Errorf("%s: empty crumb response", stage))
+	}
+	if strings.Contains(strings.ToLower(body), "<html") {
+		return WrapInvalidResponseError(fmt.Errorf("%s: HTML crumb response", stage))
+	}
+	return nil
+}
+
+func validateAuthHTTPResponse(stage string, resp *Response) error {
+	if resp == nil {
+		return WrapInvalidResponseError(fmt.Errorf("%s: nil response", stage))
+	}
+	if resp.StatusCode == 429 || strings.Contains(resp.Body, "Too Many Requests") {
+		return fmt.Errorf("%s: %w", stage, WrapRateLimitError())
+	}
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("%s: %w", stage, sanitizedHTTPStatusError(resp.StatusCode))
+	}
+	return nil
+}
+
+func sanitizedHTTPStatusError(statusCode int) error {
+	switch statusCode {
+	case 401, 403:
+		return WrapAuthError(fmt.Errorf("HTTP %d", statusCode))
+	case 404:
+		return NewError(ErrCodeNotFound, "resource not found", nil)
+	case 500, 502, 503, 504:
+		return NewError(ErrCodeNetwork, fmt.Sprintf("server error: HTTP %d", statusCode), nil)
+	default:
+		return NewError(ErrCodeUnknown, fmt.Sprintf("HTTP %d", statusCode), nil)
+	}
 }
 
 // extractCookies extracts and stores cookies from response headers.
