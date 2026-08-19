@@ -249,16 +249,24 @@ func TestAuthManagerCSRFFallbackToBasicSuccess(t *testing.T) {
 func TestAuthManagerCombinedFallbackErrorPreservesTypedCauses(t *testing.T) {
 	secretValues := []string{
 		"response-body-secret",
+		"cookie-secret",
 		"csrf-secret",
 		"session-secret",
 		"crumb-secret",
 	}
 	fakeClient := newScriptedAuthClient(t,
-		scriptedAuthResponse{method: "GET", rawURL: endpoints.CookieURL, status: 404},
+		scriptedAuthResponse{
+			method:  "GET",
+			rawURL:  endpoints.CookieURL,
+			status:  404,
+			headers: map[string]string{"Set-Cookie": "A3=cookie-secret; Path=/; Secure"},
+		},
 		scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbURL, status: 429, body: "Too Many Requests response-body-secret"},
 		scriptedAuthResponse{method: "GET", rawURL: endpoints.ConsentURL, status: 403, body: hiddenConsentHTML("csrf-secret", "session-secret")},
 	)
 	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.crumb = "crumb-secret"
+	auth.expiry = time.Now().Add(-time.Hour)
 
 	crumb, err := auth.GetCrumb()
 	if err == nil {
@@ -365,6 +373,12 @@ func TestValidateCrumbResponseRejectsInvalidBodies(t *testing.T) {
 		{name: "html document", body: "<!DOCTYPE html><HTML><body>challenge</body></HTML>"},
 		{name: "body fragment", body: "<body>challenge</body>"},
 		{name: "head fragment", body: "<head><title>challenge</title></head>"},
+		{name: "div fragment", body: `<div id="challenge">blocked</div>`},
+		{name: "paragraph fragment", body: "<p>Access denied</p>"},
+		{name: "span fragment mixed case", body: "<SpAn>challenge</sPaN>"},
+		{name: "meta fragment", body: `<meta http-equiv="refresh" content="0">`},
+		{name: "title fragment", body: "<title>Yahoo</title>"},
+		{name: "comment fragment", body: "<!-- challenge -->"},
 	}
 
 	for _, tt := range tests {
@@ -381,9 +395,13 @@ func TestValidateCrumbResponseRejectsInvalidBodies(t *testing.T) {
 }
 
 func TestValidateCrumbResponseAllowsTagLikeText(t *testing.T) {
-	err := validateCrumbResponse("basic crumb", &Response{StatusCode: 200, Body: "crumb<bodyguard>text"})
-	if err != nil {
-		t.Fatalf("expected tag-like text to remain valid, got %v", err)
+	for _, body := range []string{"crumb<bodyguard>text", "crumb<diversion>text", "<htmlx>not-html</htmlx>"} {
+		t.Run(body, func(t *testing.T) {
+			err := validateCrumbResponse("basic crumb", &Response{StatusCode: 200, Body: body})
+			if err != nil {
+				t.Fatalf("expected tag-like text to remain valid, got %v", err)
+			}
+		})
 	}
 }
 
@@ -750,10 +768,6 @@ func TestAuthManagerCheckLoginSubscriptions(t *testing.T) {
 }
 
 func TestAuthManagerCheckLoginSubscriptionsLoggedOut(t *testing.T) {
-	client, _ := New()
-	auth := NewAuthManager(client)
-	auth.user = map[string]interface{}{"guid": "stale"}
-
 	cases := []struct {
 		name       string
 		statusCode int
@@ -767,6 +781,13 @@ func TestAuthManagerCheckLoginSubscriptionsLoggedOut(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
+			client, err := New()
+			if err != nil {
+				t.Fatalf("New returned error: %v", err)
+			}
+			auth := NewAuthManager(client)
+			auth.user = map[string]interface{}{"guid": "stale"}
+
 			loggedIn, err := auth.checkLoginWithGetter(func(_ string, _ url.Values) (*Response, error) {
 				return &Response{StatusCode: tc.statusCode, Body: tc.body}, nil
 			})
