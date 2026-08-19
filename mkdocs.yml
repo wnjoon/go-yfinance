@@ -66,6 +66,7 @@ nav:
     - v1.0.0: releases/RELEASE_NOTES_v1.0.0.md
   - Development:
     - Release Readiness Checklist: development/release-readiness-checklist.md
+    - Issue 10 Authentication: development/issue-10-authentication.md
     - v1.6.0 Progress: development/v1.6.0-progress.md
     - v1.5.2 Progress: development/v1.5.2-progress.md
     - v1.5.1 Progress: development/v1.5.1-progress.md
