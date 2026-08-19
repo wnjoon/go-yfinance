@@ -1463,6 +1463,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../development/issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../development/v1.6.0-progress/" class="md-nav__link">
         
   
@@ -1783,9 +1811,9 @@
 <h2 id="new-features">New Features</h2>
 <h3 id="etfquery-support">ETFQuery Support</h3>
 <p>Build validated ETF screener queries and run the new ETF predefined screeners:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">&quot;gt&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;intradayprice&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">})</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">q2</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">&quot;eq&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="s">&quot;region&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;us&quot;</span><span class="p">})</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">query</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">&quot;and&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">q2</span><span class="p">})</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">"gt"</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="s">"intradayprice"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">})</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">q2</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">"eq"</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="s">"region"</span><span class="p">,</span><span class="w"> </span><span class="s">"us"</span><span class="p">})</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">query</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewETFQuery</span><span class="p">(</span><span class="s">"and"</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">any</span><span class="p">{</span><span class="nx">q1</span><span class="p">,</span><span class="w"> </span><span class="nx">q2</span><span class="p">})</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">ScreenWithQuery</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
 </code></pre></div>
 <p>New predefined ETF screeners:</p>
@@ -1817,13 +1845,13 @@
 </table>
 <h3 id="valuation-measures">Valuation Measures</h3>
 <p>Fetch the key-statistics valuation table:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ticker</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;AAPL&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ticker</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">"AAPL"</span><span class="p">)</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">valuation</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Valuation</span><span class="p">()</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">}</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nx">marketCap</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">valuation</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="s">&quot;Market Cap&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Current&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nx">marketCap</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">valuation</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="s">"Market Cap"</span><span class="p">,</span><span class="w"> </span><span class="s">"Current"</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="patch-parity">Patch Parity</h2>
 <ul>

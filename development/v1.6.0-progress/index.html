@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.6.0-progress/">
       
       
-        <link rel="prev" href="../release-readiness-checklist/">
+        <link rel="prev" href="../issue-10-authentication/">
       
       
         <link rel="next" href="../v1.5.2-progress/">
@@ -1341,6 +1341,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2170,8 +2198,8 @@ skipped, or verified as not applicable to Go.</p>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>880728a Fix: repair=True should not permanently convert GBp/ZAc/ILA prices (#2907)
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>bb11309 Price repair fixes &amp; improvements (#2908)
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>9bde808 fix: handle null result from Yahoo API in _fetch_info (#2906)
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>fb6af9d Surface Yahoo&#39;s reason directly instead of wrapping it
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>9d672c6 Don&#39;t claim &#39;possibly delisted&#39; when Yahoo explains the missing data (#2903)
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>fb6af9d Surface Yahoo's reason directly instead of wrapping it
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>9d672c6 Don't claim 'possibly delisted' when Yahoo explains the missing data (#2903)
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>57b9482 Fix error messages showing internal 15m interval for 30m requests (#2900)
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>8676e8d Fix AttributeError in Lookup error handling (#2896)
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>59e6a9c fix: handle read-only Adj Close array in div-adjust repair (#2897)
@@ -2181,7 +2209,7 @@ skipped, or verified as not applicable to Go.</p>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>a166d01 / a18927b  Migrate packaging to pyproject.toml (#2920, #2849)
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>f8f2f87 add scikit-learn as a repair dependency
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>c9bc470 Pin ruff ruleset for deterministic CI (#2919)
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>24ee2ff docs: state download()&#39;s returned index timezone contract (#2936)
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>24ee2ff docs: state download()'s returned index timezone contract (#2936)
 </code></pre></div>
 <p>File-level diff (yfinance sources only):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a> yfinance/const.py            |   4 +-

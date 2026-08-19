@@ -1485,6 +1485,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../development/issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../development/v1.6.0-progress/" class="md-nav__link">
         
   
@@ -1828,7 +1856,7 @@
 <h3 id="locale-configuration">Locale Configuration</h3>
 <p>Configure Yahoo locale parameters for endpoints that support localized fields:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">cfg</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">config</span><span class="p">.</span><span class="nx">Get</span><span class="p">()</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">cfg</span><span class="p">.</span><span class="nx">SetLocale</span><span class="p">(</span><span class="s">&quot;ja-JP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;JP&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">cfg</span><span class="p">.</span><span class="nx">SetLocale</span><span class="p">(</span><span class="s">"ja-JP"</span><span class="p">,</span><span class="w"> </span><span class="s">"JP"</span><span class="p">)</span>
 </code></pre></div>
 <p>Ticker quote/summary, lookup, and calendars requests now forward the configured <code>lang</code> and <code>region</code>.</p>
 <h3 id="market-regions">Market Regions</h3>
@@ -1839,8 +1867,8 @@
 <p>Legacy values such as <code>us_market</code>, <code>gb_market</code>, and <code>jp_market</code> are normalized to compatible Yahoo market regions. Non-U.S. market status avoids returning misleading U.S. <code>markettime</code> data.</p>
 <h3 id="sector-and-industry-region-scoping">Sector and Industry Region Scoping</h3>
 <p>Scope regional sector and industry lists:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sector</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;technology&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sector</span><span class="p">.</span><span class="nx">WithRegion</span><span class="p">(</span><span class="s">&quot;GB&quot;</span><span class="p">))</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">industry</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;software-infrastructure&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">industry</span><span class="p">.</span><span class="nx">WithRegion</span><span class="p">(</span><span class="s">&quot;JP&quot;</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sector</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">"technology"</span><span class="p">,</span><span class="w"> </span><span class="nx">sector</span><span class="p">.</span><span class="nx">WithRegion</span><span class="p">(</span><span class="s">"GB"</span><span class="p">))</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">industry</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">"software-infrastructure"</span><span class="p">,</span><span class="w"> </span><span class="nx">industry</span><span class="p">.</span><span class="nx">WithRegion</span><span class="p">(</span><span class="s">"JP"</span><span class="p">))</span>
 </code></pre></div>
 <h3 id="manual-yahoo-login-cookies">Manual Yahoo Login Cookies</h3>
 <p>Set manually retrieved Yahoo Finance login cookies:</p>

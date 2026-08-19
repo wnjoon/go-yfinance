@@ -1474,6 +1474,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../development/issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../development/v1.6.0-progress/" class="md-nav__link">
         
   
@@ -1805,9 +1833,9 @@
 <h2 id="new-features">New Features</h2>
 <h3 id="valuation-measures-timeseries-api">Valuation Measures Timeseries API</h3>
 <p>Valuation measures now use Yahoo's fundamentals-timeseries API instead of key-statistics HTML scraping.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ticker</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;AAPL&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ticker</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">"AAPL"</span><span class="p">)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">periods</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">5</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">valuation</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">GetValuationMeasures</span><span class="p">(</span><span class="s">&quot;quarterly&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">periods</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">valuation</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">GetValuationMeasures</span><span class="p">(</span><span class="s">"quarterly"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">periods</span><span class="p">)</span>
 </code></pre></div>
 <p><code>Valuation()</code> and <code>ValuationMeasures()</code> remain compatibility entry points and use Python-compatible defaults: quarterly data capped to five periods. Raw numeric cells are available through <code>FloatValue()</code>, while <code>Value()</code> remains for string compatibility.</p>
 <h3 id="yahoo-subscription-authentication">Yahoo Subscription Authentication</h3>
