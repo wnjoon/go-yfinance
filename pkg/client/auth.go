@@ -49,6 +49,8 @@ var subscriptionTierNames = map[int]string{
 	3: "bronze",
 }
 
+var htmlCrumbPattern = regexp.MustCompile(`(?i)<!doctype\s+html(?:\s|>)|</?(?:html|head|body|form|script)(?:\s|/?>)`)
+
 // NewAuthManager creates a new AuthManager with the given client.
 func NewAuthManager(client *Client) *AuthManager {
 	return &AuthManager{
@@ -377,10 +379,14 @@ func validateCrumbResponse(stage string, resp *Response) error {
 	if body == "" {
 		return WrapInvalidResponseError(fmt.Errorf("%s: empty crumb response", stage))
 	}
-	if strings.Contains(strings.ToLower(body), "<html") {
+	if looksLikeHTML(body) {
 		return WrapInvalidResponseError(fmt.Errorf("%s: HTML crumb response", stage))
 	}
 	return nil
+}
+
+func looksLikeHTML(body string) bool {
+	return htmlCrumbPattern.MatchString(body)
 }
 
 func validateBasicCookieResponse(resp *Response) error {

@@ -362,7 +362,9 @@ func TestValidateCrumbResponseRejectsInvalidBodies(t *testing.T) {
 		body string
 	}{
 		{name: "empty", body: " \n\t"},
-		{name: "html", body: "<!DOCTYPE html><HTML><body>challenge</body></HTML>"},
+		{name: "html document", body: "<!DOCTYPE html><HTML><body>challenge</body></HTML>"},
+		{name: "body fragment", body: "<body>challenge</body>"},
+		{name: "head fragment", body: "<head><title>challenge</title></head>"},
 	}
 
 	for _, tt := range tests {
@@ -375,6 +377,13 @@ func TestValidateCrumbResponseRejectsInvalidBodies(t *testing.T) {
 				t.Fatalf("expected stage in error, got %q", err.Error())
 			}
 		})
+	}
+}
+
+func TestValidateCrumbResponseAllowsTagLikeText(t *testing.T) {
+	err := validateCrumbResponse("basic crumb", &Response{StatusCode: 200, Body: "crumb<bodyguard>text"})
+	if err != nil {
+		t.Fatalf("expected tag-like text to remain valid, got %v", err)
 	}
 }
 
@@ -529,6 +538,7 @@ func TestAuthManagerCSRFCollectAndCopyStatusErrorsIncludeStage(t *testing.T) {
 
 func TestAuthManagerCSRFTransportErrorsAreSanitized(t *testing.T) {
 	sessionID := "session-secret"
+	csrfToken := "csrf-secret"
 	transportSecret := "proxy-user:proxy-password"
 	tests := []struct {
 		name      string
@@ -539,7 +549,7 @@ func TestAuthManagerCSRFTransportErrorsAreSanitized(t *testing.T) {
 			name:      "collect consent",
 			failStage: "csrf collect consent",
 			steps: []scriptedAuthResponse{
-				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf-secret", sessionID)},
+				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML(csrfToken, sessionID)},
 				{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, err: fmt.Errorf("POST %s via %s", sessionID, transportSecret)},
 			},
 		},
@@ -547,7 +557,7 @@ func TestAuthManagerCSRFTransportErrorsAreSanitized(t *testing.T) {
 			name:      "copy consent",
 			failStage: "csrf copy consent",
 			steps: []scriptedAuthResponse{
-				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf-secret", sessionID)},
+				{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML(csrfToken, sessionID)},
 				{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, status: 200},
 				{method: "GET", rawURL: endpoints.CopyConsentURL + "?sessionId=" + sessionID, err: fmt.Errorf("GET %s via %s", sessionID, transportSecret)},
 			},
@@ -569,7 +579,7 @@ func TestAuthManagerCSRFTransportErrorsAreSanitized(t *testing.T) {
 			if !strings.Contains(err.Error(), tt.failStage) {
 				t.Fatalf("expected stage %q, got %q", tt.failStage, err.Error())
 			}
-			for _, secret := range []string{sessionID, transportSecret} {
+			for _, secret := range []string{sessionID, csrfToken, transportSecret} {
 				if strings.Contains(err.Error(), secret) {
 					t.Fatalf("expected error to omit secret %q, got %q", secret, err.Error())
 				}

@@ -174,12 +174,17 @@ All other authentication endpoint URLs remain unchanged.
 - [x] CSRF failure followed by Basic success returns the Basic crumb.
 - [x] Two failures retain labeled Basic and CSRF causes.
 - [x] Basic crumb 429 is recognized by `IsRateLimitError`.
+- [x] CycleTLS status-zero and synthetic HTTP-like transport responses become
+  sanitized network errors before parsing.
 - [x] CSRF consent 429 is recognized by `IsRateLimitError` before parsing.
 - [x] CSRF consent 403 reports the HTTP failure instead of missing tokens.
 - [x] Successful consent HTML without required inputs is an invalid-response
   error.
 - [x] Collect-consent and copy-consent HTTP errors identify their stage.
+- [x] HTTP 404 authentication errors retain stage and status context.
 - [x] CSRF crumb acquisition uses `query2`.
+- [x] Empty, full-document HTML, and HTML-fragment crumb bodies are invalid
+  responses.
 - [x] Combined fallback failure is recognized by both `IsAuthError` and, when
   applicable, `IsRateLimitError`.
 - [x] Error strings do not contain fixture cookie, crumb, CSRF token, session
