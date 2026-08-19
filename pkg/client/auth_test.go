@@ -783,6 +783,101 @@ func TestAuthManagerCheckLoginSubscriptionsLoggedOut(t *testing.T) {
 	}
 }
 
+func TestAuthManagerEntitlementTransportFailuresAreNetworkErrors(t *testing.T) {
+	transportSecret := "proxy-user:proxy-password"
+	tests := []struct {
+		name   string
+		resp   *Response
+		err    error
+		secret string
+	}{
+		{
+			name:   "direct transport error",
+			err:    fmt.Errorf("GET subscriptions via %s", transportSecret),
+			secret: transportSecret,
+		},
+		{
+			name:   "status zero",
+			resp:   &Response{StatusCode: 0, Body: "-> \ntransport-response-secret"},
+			secret: "transport-response-secret",
+		},
+		{
+			name:   "synthetic unauthorized",
+			resp:   &Response{StatusCode: 401, Body: "Request returned a Syscall Error: transport-response-secret"},
+			secret: "transport-response-secret",
+		},
+		{
+			name:   "synthetic forbidden",
+			resp:   &Response{StatusCode: 403, Body: "Request returned a Syscall Error: transport-response-secret"},
+			secret: "transport-response-secret",
+		},
+		{
+			name:   "synthetic timeout",
+			resp:   &Response{StatusCode: 408, Body: "Request returned a Syscall Error: transport-response-secret"},
+			secret: "transport-response-secret",
+		},
+		{
+			name:   "synthetic DNS failure",
+			resp:   &Response{StatusCode: 421, Body: "Request returned a Syscall Error: transport-response-secret"},
+			secret: "transport-response-secret",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client, _ := New()
+			auth := NewAuthManager(client)
+			entitlement, loggedIn, err := auth.fetchEntitlementWithGetter(func(_ string, _ url.Values) (*Response, error) {
+				return tt.resp, tt.err
+			})
+
+			if !errors.Is(err, ErrNetwork) {
+				t.Fatalf("expected network error, got %v", err)
+			}
+			if loggedIn || entitlement != nil {
+				t.Fatalf("expected no entitlement on transport failure, got loggedIn=%v entitlement=%v", loggedIn, entitlement)
+			}
+			if strings.Contains(err.Error(), tt.secret) {
+				t.Fatalf("expected sanitized error, got %q", err.Error())
+			}
+		})
+	}
+}
+
+func TestAuthManagerCheckLoginTransportFailurePreservesCachedUser(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+	auth.user = map[string]interface{}{"guid": "cached-guid"}
+
+	loggedIn, err := auth.checkLoginWithGetter(func(_ string, _ url.Values) (*Response, error) {
+		return &Response{StatusCode: 401, Body: "Request returned a Syscall Error: transport-response-secret"}, nil
+	})
+	if !errors.Is(err, ErrNetwork) {
+		t.Fatalf("expected network error, got %v", err)
+	}
+	if loggedIn {
+		t.Fatal("expected unsuccessful login check")
+	}
+	if user := auth.User(); user["guid"] != "cached-guid" {
+		t.Fatalf("expected cached user to remain unchanged, got %v", user)
+	}
+}
+
+func TestAuthManagerSubscriptionTierTransportFailure(t *testing.T) {
+	client, _ := New()
+	auth := NewAuthManager(client)
+
+	tier, err := auth.subscriptionTierWithGetter(func(_ string, _ url.Values) (*Response, error) {
+		return &Response{StatusCode: 0, Body: "-> \ntransport-response-secret"}, nil
+	})
+	if !errors.Is(err, ErrNetwork) {
+		t.Fatalf("expected network error, got %v", err)
+	}
+	if tier != "" {
+		t.Fatalf("expected empty tier on error, got %q", tier)
+	}
+}
+
 func TestAuthManagerSubscriptionTier(t *testing.T) {
 	tests := []struct {
 		name string

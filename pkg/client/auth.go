@@ -117,7 +117,13 @@ func (a *AuthManager) subscriptionTierWithGetter(getter authResponseGetter) (str
 func (a *AuthManager) fetchEntitlementWithGetter(getter authResponseGetter) (map[string]interface{}, bool, error) {
 	resp, err := getter(endpoints.SubscriptionsURL, nil)
 	if err != nil {
-		return nil, false, err
+		return nil, false, sanitizedAuthTransportError("subscriptions entitlement")
+	}
+	if resp == nil {
+		return nil, false, WrapInvalidResponseError(fmt.Errorf("subscriptions entitlement: nil response"))
+	}
+	if isCycleTLSTransportFailure(resp) {
+		return nil, false, sanitizedAuthTransportError("subscriptions entitlement")
 	}
 	if resp.StatusCode == 401 || resp.StatusCode == 403 {
 		return nil, false, nil

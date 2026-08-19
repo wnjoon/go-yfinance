@@ -122,6 +122,7 @@ HTTP or body rules below.
 | Collect-consent POST | Any status >= 400 is rejected with stage and status context. |
 | Copy-consent GET | Any status >= 400 is rejected with stage and status context. |
 | CSRF crumb GET | Apply the same classification rules as the Basic crumb GET. |
+| Subscriptions entitlement GET | Direct and synthetic transport failures become sanitized `ErrNetwork`; genuine 401/403 responses mean logged out; other statuses >= 400 are rejected before JSON parsing. |
 
 The `fc.yahoo.com` exception is intentional: Yahoo commonly returns a 404 page
 while still supplying the authentication cookie.
@@ -191,6 +192,10 @@ All other authentication endpoint URLs remain unchanged.
   ID, response-body, or proxy-secret values.
 - [x] Existing login-cookie, subscription, and strategy-switch tests continue
   to pass.
+- [x] `CheckLogin` and `SubscriptionTier` distinguish synthetic transport
+  failures from genuine logged-out 401/403 responses.
+- [x] Entitlement transport errors are typed as `ErrNetwork`, omit raw secrets,
+  and do not clear a cached user as though logout were confirmed.
 - [x] `go test ./pkg/client/...`
 - [x] `go test ./...`
 - [x] `go test -race ./pkg/client/...`
