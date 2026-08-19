@@ -1,9 +1,17 @@
 package utils
 
 import (
+	"sync"
 	"time"
 
 	"github.com/wnjoon/go-yfinance/pkg/cache"
+)
+
+var (
+	// locationCache stores loaded timezone locations to prevent expensive disk/zip lookups
+	locationCache = make(map[string]*time.Location)
+	// locCacheMu protects concurrent access to the locationCache map
+	locCacheMu    sync.RWMutex
 )
 
 // Timezone cache key prefix
@@ -104,10 +112,24 @@ func CacheTimezone(exchange, timezone string) {
 // LoadLocation loads a timezone location by name.
 // Returns nil if the timezone is invalid.
 func LoadLocation(name string) *time.Location {
+	// First, check the local cache using a read lock
+	locCacheMu.RLock()
+	loc, ok := locationCache[name]
+	locCacheMu.RUnlock()
+	if ok {
+		return loc
+	}
+
+	// Fallback to time.LoadLocation (which can perform disk I/O)
 	loc, err := time.LoadLocation(name)
 	if err != nil {
 		return nil
 	}
+
+	// Cache the loaded location using a write lock
+	locCacheMu.Lock()
+	locationCache[name] = loc
+	locCacheMu.Unlock()
 	return loc
 }
 
