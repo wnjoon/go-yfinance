@@ -24,16 +24,22 @@ reworks the safety fixes proposed in contributor PR #11 for the current code.
 
 - The manual protobuf decoder rejects overflowing varints and validates
   length-delimited fields as `uint64` before converting lengths to `int`,
-  preventing malformed WebSocket input from causing slice-bound panics.
+  preventing malformed WebSocket input from causing slice-bound panics. Known
+  pricing fields also reject incompatible protobuf wire types rather than
+  silently desynchronizing the decoder.
 - WebSocket shutdown is final and idempotent. Normal `Close` stops listeners
   without reporting an error, cancels reconnect delays, prevents reconnect
   after shutdown, and stops heartbeat work without double-closing channels.
+  Writes have bounded deadlines and do not hold the lifecycle mutex, while a
+  listener's heartbeat exits whenever that listener returns.
 
 ### Cache safety
 
 - Holders and news APIs return independent values instead of mutable cache
   storage. Copies include nested insider date pointers, related-ticker slices,
   thumbnails, and thumbnail resolution slices.
+- News cache entries are keyed by both requested count and tab, preventing a
+  prior query from being returned for a different news request.
 
 ## Deferred
 

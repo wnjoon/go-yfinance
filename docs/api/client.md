@@ -226,7 +226,7 @@ func NewAuthManager(client *Client) *AuthManager
 NewAuthManager creates a new AuthManager with the given client.
 
 <a name="AuthManager.AddCrumbToParams"></a>
-### func \(\*AuthManager\) [AddCrumbToParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L526>)
+### func \(\*AuthManager\) [AddCrumbToParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L531>)
 
 ```go
 func (a *AuthManager) AddCrumbToParams(params url.Values) (url.Values, error)
@@ -253,7 +253,7 @@ func (a *AuthManager) GetCrumb() (string, error)
 GetCrumb returns the current crumb, fetching it if necessary.
 
 <a name="AuthManager.Reset"></a>
-### func \(\*AuthManager\) [Reset](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L540>)
+### func \(\*AuthManager\) [Reset](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L545>)
 
 ```go
 func (a *AuthManager) Reset()
@@ -289,7 +289,7 @@ func (a *AuthManager) SubscriptionTier() (string, error)
 SubscriptionTier returns the active Yahoo Finance subscription tier.
 
 <a name="AuthManager.SwitchStrategy"></a>
-### func \(\*AuthManager\) [SwitchStrategy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L551>)
+### func \(\*AuthManager\) [SwitchStrategy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L556>)
 
 ```go
 func (a *AuthManager) SwitchStrategy()
@@ -380,7 +380,7 @@ func New(opts ...ClientOption) (*Client, error)
 New creates a new Client with optional configuration. The underlying CycleTLS client is lazily initialized on first request.
 
 <a name="Client.Close"></a>
-### func \(\*Client\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L339>)
+### func \(\*Client\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L350>)
 
 ```go
 func (c *Client) Close()
@@ -398,7 +398,7 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error)
 Get performs an HTTP GET request.
 
 <a name="Client.GetCookie"></a>
-### func \(\*Client\) [GetCookie](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L194>)
+### func \(\*Client\) [GetCookie](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L205>)
 
 ```go
 func (c *Client) GetCookie() string
@@ -407,7 +407,7 @@ func (c *Client) GetCookie() string
 GetCookie returns the current cookie.
 
 <a name="Client.GetJSON"></a>
-### func \(\*Client\) [GetJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L218>)
+### func \(\*Client\) [GetJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L229>)
 
 ```go
 func (c *Client) GetJSON(rawURL string, params url.Values, v interface{}) error
@@ -416,7 +416,7 @@ func (c *Client) GetJSON(rawURL string, params url.Values, v interface{}) error
 GetJSON performs an HTTP GET request and unmarshals the JSON response.
 
 <a name="Client.Post"></a>
-### func \(\*Client\) [Post](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L236>)
+### func \(\*Client\) [Post](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L247>)
 
 ```go
 func (c *Client) Post(rawURL string, params url.Values, body map[string]string) (*Response, error)
@@ -425,7 +425,7 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 Post performs an HTTP POST request with form data.
 
 <a name="Client.PostJSON"></a>
-### func \(\*Client\) [PostJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L279>)
+### func \(\*Client\) [PostJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L290>)
 
 ```go
 func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error)
@@ -443,7 +443,7 @@ func (c *Client) SetCookie(cookie string)
 SetCookie sets or replaces one cookie for subsequent requests.
 
 <a name="Client.SetCookies"></a>
-### func \(\*Client\) [SetCookies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L178>)
+### func \(\*Client\) [SetCookies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L184>)
 
 ```go
 func (c *Client) SetCookies(cookies map[string]string)

@@ -130,7 +130,7 @@ All Ticker methods are safe for concurrent use from multiple goroutines.
 
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L41>)
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L43>)
 
 Option is a function that configures a Ticker.
 
@@ -139,7 +139,7 @@ type Option func(*Ticker)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L44>)
+### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L46>)
 
 ```go
 func WithClient(c *client.Client) Option
@@ -148,7 +148,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom client for the Ticker.
 
 <a name="Ticker"></a>
-## type [Ticker](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L15-L38>)
+## type [Ticker](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L15-L40>)
 
 Ticker represents a single stock/ETF/fund ticker.
 
@@ -159,7 +159,7 @@ type Ticker struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L52>)
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L54>)
 
 ```go
 func New(symbol string, opts ...Option) (*Ticker, error)
@@ -275,7 +275,7 @@ if fcf, ok := cashFlow.GetLatest("FreeCashFlow"); ok {
 ```
 
 <a name="Ticker.ClearCache"></a>
-### func \(\*Ticker\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L134>)
+### func \(\*Ticker\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L136>)
 
 ```go
 func (t *Ticker) ClearCache()
@@ -284,7 +284,7 @@ func (t *Ticker) ClearCache()
 ClearCache clears all cached data.
 
 <a name="Ticker.Close"></a>
-### func \(\*Ticker\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L87>)
+### func \(\*Ticker\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L89>)
 
 ```go
 func (t *Ticker) Close()
@@ -367,7 +367,7 @@ func (t *Ticker) FinancialsJSON(statementType, freq string) ([]byte, error)
 FinancialsJSON returns raw JSON for debugging.
 
 <a name="Ticker.GetHistoryMetadata"></a>
-### func \(\*Ticker\) [GetHistoryMetadata](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L151>)
+### func \(\*Ticker\) [GetHistoryMetadata](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L155>)
 
 ```go
 func (t *Ticker) GetHistoryMetadata() *models.ChartMeta
@@ -376,7 +376,7 @@ func (t *Ticker) GetHistoryMetadata() *models.ChartMeta
 GetHistoryMetadata returns the cached history metadata.
 
 <a name="Ticker.GetNews"></a>
-### func \(\*Ticker\) [GetNews](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/news.go#L173>)
+### func \(\*Ticker\) [GetNews](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/news.go#L181>)
 
 ```go
 func (t *Ticker) GetNews() ([]models.NewsArticle, error)
@@ -780,7 +780,7 @@ func (t *Ticker) Strikes() ([]float64, error)
 Strikes returns available strike prices for options.
 
 <a name="Ticker.Symbol"></a>
-### func \(\*Ticker\) [Symbol](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L81>)
+### func \(\*Ticker\) [Symbol](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/ticker/ticker.go#L83>)
 
 ```go
 func (t *Ticker) Symbol() string
