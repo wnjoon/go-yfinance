@@ -114,6 +114,22 @@ func TestClientCookieMerge(t *testing.T) {
 	}
 }
 
+func TestClientEmptyCookieValueDeletesCookie(t *testing.T) {
+	c, err := New()
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	c.SetCookies(map[string]string{"A1": "first", "A3": "second"})
+	c.SetCookie("A1=")
+	if got := c.GetCookie(); got != "A3=second" {
+		t.Fatalf("GetCookie() after SetCookie deletion = %q", got)
+	}
+	c.SetCookies(map[string]string{"A3": ""})
+	if got := c.GetCookie(); got != "" {
+		t.Fatalf("GetCookie() after SetCookies deletion = %q", got)
+	}
+}
+
 func TestResponseCookiesPreservesAllParsedCookies(t *testing.T) {
 	got := responseCookies([]*http.Cookie{
 		{Name: "A1", Value: "first"},

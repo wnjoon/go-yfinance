@@ -32,6 +32,8 @@ type Ticker struct {
 	holdersCache      *holdersCache
 	calendarCache     *models.Calendar
 	newsCache         []models.NewsArticle
+	newsCacheCount    int
+	newsCacheTab      models.NewsTab
 
 	// Ownership tracking for cleanup
 	ownsClient bool
@@ -145,6 +147,8 @@ func (t *Ticker) ClearCache() {
 	t.holdersCache = nil
 	t.calendarCache = nil
 	t.newsCache = nil
+	t.newsCacheCount = 0
+	t.newsCacheTab = ""
 }
 
 // GetHistoryMetadata returns the cached history metadata.

@@ -171,7 +171,13 @@ func (c *Client) SetCookie(cookie string) {
 	if !ok || strings.TrimSpace(name) == "" {
 		return
 	}
-	c.cookies[strings.TrimSpace(name)] = strings.TrimSpace(value)
+	name = strings.TrimSpace(name)
+	value = strings.TrimSpace(value)
+	if value == "" {
+		delete(c.cookies, name)
+		return
+	}
+	c.cookies[name] = value
 }
 
 // SetCookies sets or replaces named cookies for subsequent requests.
@@ -186,7 +192,12 @@ func (c *Client) SetCookies(cookies map[string]string) {
 		if name == "" {
 			continue
 		}
-		c.cookies[name] = strings.TrimSpace(value)
+		value = strings.TrimSpace(value)
+		if value == "" {
+			delete(c.cookies, name)
+			continue
+		}
+		c.cookies[name] = value
 	}
 }
 

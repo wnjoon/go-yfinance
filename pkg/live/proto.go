@@ -148,8 +148,18 @@ var pricingFieldDecoders = map[int]func(*models.PricingData, *protoReader) error
 	},
 }
 
+var pricingFieldWireTypes = map[int]int{
+	1: 2, 2: 5, 3: 0, 4: 2, 5: 2, 6: 0, 7: 0, 8: 5, 9: 0,
+	10: 5, 11: 5, 12: 5, 13: 2, 14: 0, 15: 5, 16: 5, 17: 5,
+	18: 2, 19: 0, 20: 0, 21: 0, 22: 0, 23: 5, 24: 0, 25: 5,
+	26: 0, 27: 0, 28: 0, 29: 0, 30: 2, 31: 2, 32: 1, 33: 1,
+}
+
 func decodePricingField(pd *models.PricingData, reader *protoReader, fieldTag, wireType int) error {
 	if decode, ok := pricingFieldDecoders[fieldTag]; ok {
+		if expected := pricingFieldWireTypes[fieldTag]; wireType != expected {
+			return fmt.Errorf("field %d has wire type %d, want %d", fieldTag, wireType, expected)
+		}
 		return decode(pd, reader)
 	}
 	return reader.skipField(wireType)

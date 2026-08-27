@@ -53,6 +53,12 @@ func TestNewWithOptions(t *testing.T) {
 	}
 }
 
+func TestNewRejectsNonPositiveHeartbeatInterval(t *testing.T) {
+	if _, err := New(WithHeartbeatInterval(0)); err == nil {
+		t.Fatal("New() unexpectedly accepted zero heartbeat interval")
+	}
+}
+
 func TestSubscriptions(t *testing.T) {
 	ws, _ := New()
 
@@ -226,6 +232,14 @@ func TestDecodeBase64MessageInvalid(t *testing.T) {
 	_, err := decodeBase64Message("not-valid-base64!!!")
 	if err == nil {
 		t.Error("Expected error for invalid base64")
+	}
+}
+
+func TestDecodeProtobufRejectsKnownFieldWithWrongWireType(t *testing.T) {
+	// Field 2 (price) must be fixed32/wire type 5, not length-delimited/type 2.
+	_, err := decodeProtobuf([]byte{(2 << 3) | 2, 4, 0, 0, 0, 0})
+	if err == nil || !strings.Contains(err.Error(), "wire type") {
+		t.Fatalf("decodeProtobuf() error = %v, want wire-type error", err)
 	}
 }
 

@@ -21,6 +21,8 @@ const (
 
 	// DefaultReconnectDelay is the delay before attempting reconnection.
 	DefaultReconnectDelay = 3 * time.Second
+
+	defaultWriteTimeout = 10 * time.Second
 )
 
 var errWebSocketClosed = errors.New("websocket client is closed")
@@ -101,6 +103,9 @@ func New(opts ...Option) (*WebSocket, error) {
 	for _, opt := range opts {
 		opt(ws)
 	}
+	if ws.heartbeatInterval <= 0 {
+		return nil, fmt.Errorf("heartbeat interval must be positive")
+	}
 
 	return ws, nil
 }
@@ -174,11 +179,15 @@ func (ws *WebSocket) Unsubscribe(symbols []string) error {
 	ws.writeMu.Lock()
 	defer ws.writeMu.Unlock()
 	ws.mu.RLock()
-	defer ws.mu.RUnlock()
-	if ws.conn == nil {
+	conn := ws.conn
+	ws.mu.RUnlock()
+	if conn == nil {
 		return fmt.Errorf("not connected")
 	}
-	return ws.conn.WriteMessage(websocket.TextMessage, data)
+	if err := conn.SetWriteDeadline(time.Now().Add(defaultWriteTimeout)); err != nil {
+		return err
+	}
+	return conn.WriteMessage(websocket.TextMessage, data)
 }
 
 // Listen starts listening for messages and calls the handler for each message.
@@ -213,7 +222,9 @@ func (ws *WebSocket) Listen(handler MessageHandler) error {
 	}()
 
 	// Start heartbeat goroutine
-	go ws.heartbeatLoop()
+	heartbeatDone := make(chan struct{})
+	go ws.heartbeatLoop(heartbeatDone)
+	defer close(heartbeatDone)
 
 	// Message loop
 	for {
@@ -325,11 +336,15 @@ func (ws *WebSocket) sendSubscribe(symbols []string) error {
 	ws.writeMu.Lock()
 	defer ws.writeMu.Unlock()
 	ws.mu.RLock()
-	defer ws.mu.RUnlock()
-	if ws.conn == nil {
+	conn := ws.conn
+	ws.mu.RUnlock()
+	if conn == nil {
 		return fmt.Errorf("not connected")
 	}
-	return ws.conn.WriteMessage(websocket.TextMessage, data)
+	if err := conn.SetWriteDeadline(time.Now().Add(defaultWriteTimeout)); err != nil {
+		return err
+	}
+	return conn.WriteMessage(websocket.TextMessage, data)
 }
 
 // readMessage reads and processes a single message.
@@ -375,12 +390,14 @@ func (ws *WebSocket) readMessage() error {
 }
 
 // heartbeatLoop sends periodic subscription messages to keep connection alive.
-func (ws *WebSocket) heartbeatLoop() {
+func (ws *WebSocket) heartbeatLoop(listenDone <-chan struct{}) {
 	ticker := time.NewTicker(ws.heartbeatInterval)
 	defer ticker.Stop()
 
 	for {
 		select {
+		case <-listenDone:
+			return
 		case <-ws.done:
 			return
 		case <-ticker.C:

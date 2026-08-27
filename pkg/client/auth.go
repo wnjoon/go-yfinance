@@ -300,6 +300,7 @@ func (a *AuthManager) fetchBasic() error {
 	if err := validateCrumbResponse("basic crumb", resp); err != nil {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
+	a.extractCookies(resp)
 
 	a.crumb = strings.TrimSpace(resp.Body)
 	a.expiry = time.Now().Add(1 * time.Hour) // Crumb typically valid for ~1 hour
@@ -318,6 +319,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf consent", resp); err != nil {
 		return fmt.Errorf("failed to get consent page: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Extract CSRF token and session ID from HTML
 	csrfToken := extractInputValue(resp.Body, "csrfToken")
@@ -345,6 +347,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf collect consent", resp); err != nil {
 		return fmt.Errorf("failed to submit consent: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Step 3: Copy consent
 	copyURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CopyConsentURL, sessionID)
@@ -355,6 +358,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf copy consent", resp); err != nil {
 		return fmt.Errorf("failed to copy consent: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Step 4: Get crumb
 	resp, err = a.client.Get(endpoints.CrumbCSRFURL, nil)
@@ -365,6 +369,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateCrumbResponse("csrf crumb", resp); err != nil {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
+	a.extractCookies(resp)
 
 	a.crumb = strings.TrimSpace(resp.Body)
 	a.expiry = time.Now().Add(1 * time.Hour)

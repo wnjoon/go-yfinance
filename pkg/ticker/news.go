@@ -55,22 +55,22 @@ type newsStreamItem struct {
 //	    fmt.Printf("%s: %s\n", article.Publisher, article.Title)
 //	}
 func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error) {
-	// Check cache first
-	t.mu.RLock()
-	if t.newsCache != nil {
-		cached := cloneNewsArticles(t.newsCache)
-		t.mu.RUnlock()
-		return cached, nil
-	}
-	t.mu.RUnlock()
-
-	// Set defaults
+	// Set defaults before comparing the cache key.
 	if count <= 0 {
 		count = 10
 	}
 	if tab == "" {
 		tab = models.NewsTabNews
 	}
+
+	// Check cache first
+	t.mu.RLock()
+	if t.newsCacheMatches(count, tab) {
+		cached := cloneNewsArticles(t.newsCache)
+		t.mu.RUnlock()
+		return cached, nil
+	}
+	t.mu.RUnlock()
 
 	// Build request URL
 	url := fmt.Sprintf("%s?queryRef=%s&serviceKey=ncp_fin",
@@ -139,9 +139,17 @@ func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, erro
 	// Cache the results
 	t.mu.Lock()
 	t.newsCache = articles
+	t.newsCacheCount = count
+	t.newsCacheTab = tab
 	t.mu.Unlock()
 
 	return cloneNewsArticles(articles), nil
+}
+
+// newsCacheMatches reports whether the cached response belongs to the request.
+// The caller must hold at least t.mu.RLock.
+func (t *Ticker) newsCacheMatches(count int, tab models.NewsTab) bool {
+	return t.newsCache != nil && t.newsCacheCount == count && t.newsCacheTab == tab
 }
 
 func cloneNewsArticles(articles []models.NewsArticle) []models.NewsArticle {
