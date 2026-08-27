@@ -29,6 +29,11 @@ names that do not match the actual upstream parity target.
   per-cell 100x repair) and reconstruction-internal changes that are N/A for
   Go's in-place repair model; the split is itemized in
   `v1.6.0-progress.md`.
+- Go `v1.6.1` is a Go-specific maintenance release on the Python yfinance
+  `1.6.0` parity baseline. It packages authentication, protobuf, WebSocket,
+  cache-immutability, and cookie-preservation fixes before the Python
+  yfinance `1.7.0` parity branch begins; it does not claim a Python yfinance
+  `1.6.1` release or parity target.
 
 ## 2. Upstream Parity Audit
 
