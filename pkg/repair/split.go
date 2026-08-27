@@ -313,28 +313,6 @@ func applySplitRanges(bars []models.Bar, cutoff int, split float64, up, down []b
 	return bars
 }
 
-func splitWindowChanges(bars []models.Bar, startIdx, splitIdx, windowSize int) []float64 {
-	pctChanges := make([]float64, 0, windowSize)
-	for i := startIdx + 1; i <= splitIdx; i++ {
-		prevPrice := ohlcMedian(bars[i-1])
-		currPrice := ohlcMedian(bars[i])
-		if prevPrice != 0 {
-			pctChanges = append(pctChanges, (currPrice-prevPrice)/prevPrice)
-		}
-	}
-	return pctChanges
-}
-
-func absBoundedChanges(changes []float64, lowerBound, upperBound float64) []float64 {
-	var normalChanges []float64
-	for _, pct := range changes {
-		if pct >= lowerBound && pct <= upperBound {
-			normalChanges = append(normalChanges, math.Abs(pct))
-		}
-	}
-	return normalChanges
-}
-
 // expectedSplitChange returns the signed price change an UNADJUSTED split
 // produces on the split date: a 2:1 forward split halves the price (-0.5), a
 // 1:4 reverse split quadruples it (+3.0). Matches DetectBadSplits.
@@ -343,18 +321,6 @@ func expectedSplitChange(splitRatio float64) float64 {
 		return -(1.0 - 1.0/splitRatio)
 	}
 	return 1.0/splitRatio - 1.0
-}
-
-func splitDateChange(bars []models.Bar, splitIdx int) float64 {
-	if splitIdx == 0 {
-		return 0
-	}
-	prevPrice := ohlcMedian(bars[splitIdx-1])
-	currPrice := ohlcMedian(bars[splitIdx])
-	if prevPrice == 0 {
-		return 0
-	}
-	return (currPrice - prevPrice) / prevPrice
 }
 
 // applySplitCorrection adjusts historical prices, dividends, and volume for a
