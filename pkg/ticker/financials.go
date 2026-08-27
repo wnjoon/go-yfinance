@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
+	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -263,11 +264,6 @@ func (t *Ticker) financialsBaseParams() (url.Values, error) {
 	params.Set("period1", fmt.Sprintf("%d", start.Unix()))
 	params.Set("period2", fmt.Sprintf("%d", end.Unix()))
 
-	// Add crumb
-	params, err := t.auth.AddCrumbToParams(params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add crumb: %w", err)
-	}
 	return params, nil
 }
 
@@ -306,7 +302,7 @@ func (t *Ticker) fetchFinancialsChunked(apiURL string, baseParams url.Values, pr
 }
 
 func (t *Ticker) fetchFinancialsBody(apiURL string, params url.Values) (string, error) {
-	resp, err := t.client.Get(apiURL, params)
+	resp, err := t.auth.GetWithCrumb(apiURL, params)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch financials: %w", err)
 	}
@@ -520,14 +516,12 @@ func (t *Ticker) fetchFinancialsRaw(statementType, freq string) (map[string]inte
 	params.Set("period1", fmt.Sprintf("%d", start.Unix()))
 	params.Set("period2", fmt.Sprintf("%d", end.Unix()))
 
-	params, err := t.auth.AddCrumbToParams(params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add crumb: %w", err)
-	}
-
-	resp, err := t.client.Get(apiURL, params)
+	resp, err := t.auth.GetWithCrumb(apiURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch financials: %w", err)
+	}
+	if resp.StatusCode >= 400 {
+		return nil, client.HTTPStatusToError(resp.StatusCode, resp.Body)
 	}
 
 	var result map[string]interface{}

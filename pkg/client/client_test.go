@@ -63,6 +63,26 @@ func TestClientOptions(t *testing.T) {
 	}
 }
 
+func TestClientPreservesSOCKSProxySchemes(t *testing.T) {
+	for _, proxy := range []string{
+		"socks5://user:pass@127.0.0.1:1080",
+		"socks5h://user:pass@127.0.0.1:1080",
+	} {
+		t.Run(proxy[:7], func(t *testing.T) {
+			config.Reset()
+			t.Cleanup(config.Reset)
+			config.Get().SetProxy("http://configured.example:8080")
+			c, err := New(WithProxy("  " + proxy + "  "))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if c.proxy != proxy {
+				t.Fatalf("proxy = %q, want %q", c.proxy, proxy)
+			}
+		})
+	}
+}
+
 func TestNewClientUsesGlobalConfig(t *testing.T) {
 	config.Reset()
 	t.Cleanup(config.Reset)

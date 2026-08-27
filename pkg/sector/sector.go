@@ -138,13 +138,7 @@ func (s *Sector) fetchData() error {
 	params.Set("lang", lang)
 	params.Set("region", s.region)
 
-	// Add crumb authentication
-	params, err := s.auth.AddCrumbToParams(params)
-	if err != nil {
-		return fmt.Errorf("failed to add crumb: %w", err)
-	}
-
-	resp, err := s.client.Get(queryURL, params)
+	resp, err := s.auth.GetWithCrumb(queryURL, params)
 	if err != nil {
 		return fmt.Errorf("failed to fetch sector data: %w", err)
 	}

@@ -101,12 +101,7 @@ func (t *Ticker) Close() {
 
 // getWithCrumb performs a GET request with crumb authentication.
 func (t *Ticker) getWithCrumb(rawURL string, params url.Values) (*client.Response, error) {
-	params, err := t.auth.AddCrumbToParams(params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get crumb: %w", err)
-	}
-
-	resp, err := t.client.Get(rawURL, params)
+	resp, err := t.auth.GetWithCrumb(rawURL, params)
 	if err != nil {
 		return nil, err
 	}
