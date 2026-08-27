@@ -180,24 +180,23 @@ func (r *protoReader) readTag() (fieldTag int, wireType int, err error) {
 // readVarint reads a varint from the buffer.
 func (r *protoReader) readVarint() (uint64, error) {
 	var result uint64
-	var shift uint
 
-	for {
+	for i := 0; i < 10; i++ {
 		if r.pos >= len(r.data) {
 			return 0, io.ErrUnexpectedEOF
 		}
 
 		b := r.data[r.pos]
 		r.pos++
-
-		result |= uint64(b&0x7F) << shift
-		if b&0x80 == 0 {
-			break
+		if i == 9 && b > 1 {
+			return 0, fmt.Errorf("varint overflows uint64")
 		}
-		shift += 7
+		result |= uint64(b&0x7F) << (7 * i)
+		if b&0x80 == 0 {
+			return result, nil
+		}
 	}
-
-	return result, nil
+	return 0, fmt.Errorf("varint overflows uint64")
 }
 
 // readSint64 reads a signed varint (zigzag encoded).
@@ -217,12 +216,14 @@ func (r *protoReader) readString() (string, error) {
 		return "", err
 	}
 
-	if r.pos+int(length) > len(r.data) {
+	remaining := len(r.data) - r.pos
+	if length > uint64(remaining) {
 		return "", io.ErrUnexpectedEOF
 	}
 
-	s := string(r.data[r.pos : r.pos+int(length)])
-	r.pos += int(length)
+	end := r.pos + int(length)
+	s := string(r.data[r.pos:end])
+	r.pos = end
 	return s, nil
 }
 
@@ -265,7 +266,8 @@ func (r *protoReader) skipField(wireType int) error {
 		if err != nil {
 			return err
 		}
-		if r.pos+int(length) > len(r.data) {
+		remaining := len(r.data) - r.pos
+		if length > uint64(remaining) {
 			return io.ErrUnexpectedEOF
 		}
 		r.pos += int(length)

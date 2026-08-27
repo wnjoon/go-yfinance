@@ -253,6 +253,51 @@ func TestProtoReaderVarint(t *testing.T) {
 	}
 }
 
+func TestProtoReaderRejectsVarintOverflow(t *testing.T) {
+	tests := [][]byte{
+		{0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02},
+		{0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00},
+	}
+	for _, data := range tests {
+		r := &protoReader{data: data}
+		if _, err := r.readVarint(); err == nil {
+			t.Fatalf("readVarint(%x) unexpectedly succeeded", data)
+		}
+	}
+}
+
+func TestProtoReaderRejectsOversizedLengthWithoutPanic(t *testing.T) {
+	// MaxUint64 encoded as a protobuf varint. Converting this length to int
+	// before checking the remaining buffer used to permit integer overflow.
+	length := []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}
+
+	t.Run("read string", func(t *testing.T) {
+		r := &protoReader{data: append(append([]byte(nil), length...), 'x')}
+		if _, err := r.readString(); err == nil {
+			t.Fatal("readString unexpectedly accepted oversized length")
+		}
+	})
+
+	t.Run("skip field", func(t *testing.T) {
+		r := &protoReader{data: append(append([]byte(nil), length...), 'x')}
+		if err := r.skipField(2); err == nil {
+			t.Fatal("skipField unexpectedly accepted oversized length")
+		}
+	})
+}
+
+func TestProtoReaderAcceptsMaximumUint64Varint(t *testing.T) {
+	data := []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}
+	r := &protoReader{data: data}
+	got, err := r.readVarint()
+	if err != nil {
+		t.Fatalf("readVarint() error: %v", err)
+	}
+	if got != math.MaxUint64 {
+		t.Fatalf("readVarint() = %d, want %d", got, uint64(math.MaxUint64))
+	}
+}
+
 // TestProtoReaderSint64 tests zigzag decoding.
 func TestProtoReaderSint64(t *testing.T) {
 	tests := []struct {
