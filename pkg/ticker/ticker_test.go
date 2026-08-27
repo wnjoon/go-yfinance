@@ -1,8 +1,179 @@
 package ticker
 
 import (
+	"errors"
+	"sync"
+	"sync/atomic"
 	"testing"
+	"time"
+
+	"github.com/wnjoon/go-yfinance/pkg/models"
 )
+
+func TestGetHistoryMetadataReturnsDeepClone(t *testing.T) {
+	tkr, _ := New("AAPL")
+	pre := int64(1)
+	meta := models.ChartMeta{Symbol: "AAPL", ValidRanges: []string{"1d"}}
+	meta = meta.WithTradingPeriods([]models.TradingPeriod{{Start: 2, End: 3, PreStart: &pre}})
+	tkr.setHistoryMetadata(&meta)
+	first := tkr.GetHistoryMetadata()
+	first.ValidRanges[0] = "changed"
+	*first.TradingPeriods[0].PreStart = 99
+	second := tkr.GetHistoryMetadata()
+	if second.ValidRanges[0] != "1d" || *second.TradingPeriods[0].PreStart != 1 {
+		t.Fatalf("cached metadata was mutated: %+v", second)
+	}
+}
+
+func TestGetTradingPeriodsCachesClonesAndPreservesBase(t *testing.T) {
+	tkr, _ := New("AAPL")
+	tkr.setHistoryMetadata(&models.ChartMeta{Symbol: "BASE", Currency: "USD"})
+	var calls atomic.Int32
+	tkr.tradingPeriodsFetcher = func() (*models.ChartMeta, error) {
+		calls.Add(1)
+		meta := models.ChartMeta{Symbol: "INTRADAY"}.WithTradingPeriods([]models.TradingPeriod{{Start: 10, End: 20}})
+		return &meta, nil
+	}
+	periods, err := tkr.GetTradingPeriods()
+	if err != nil {
+		t.Fatal(err)
+	}
+	periods[0].Start = 999
+	again, err := tkr.GetTradingPeriods()
+	if err != nil || again[0].Start != 10 || calls.Load() != 1 {
+		t.Fatalf("periods=%+v calls=%d err=%v", again, calls.Load(), err)
+	}
+	if meta := tkr.GetHistoryMetadata(); meta.Symbol != "BASE" || meta.Currency != "USD" {
+		t.Fatalf("base replaced: %+v", meta)
+	}
+}
+
+func TestSetHistoryMetadataPreservesCachedTradingPeriods(t *testing.T) {
+	tkr, _ := New("AAPL")
+	intraday := models.ChartMeta{Symbol: "OLD"}.WithTradingPeriods([]models.TradingPeriod{{Start: 10, End: 20}})
+	tkr.setHistoryMetadata(&intraday)
+	tkr.setHistoryMetadata(&models.ChartMeta{Symbol: "NEW", Currency: "USD"})
+	meta := tkr.GetHistoryMetadata()
+	if meta.Symbol != "NEW" || len(meta.TradingPeriods) != 1 || meta.TradingPeriods[0].Start != 10 {
+		t.Fatalf("metadata merge failed: %+v", meta)
+	}
+}
+
+func TestGetTradingPeriodsCoalescesConcurrentLoad(t *testing.T) {
+	tkr, _ := New("AAPL")
+	var calls atomic.Int32
+	release := make(chan struct{})
+	tkr.tradingPeriodsFetcher = func() (*models.ChartMeta, error) {
+		calls.Add(1)
+		<-release
+		meta := models.ChartMeta{}.WithTradingPeriods([]models.TradingPeriod{{Start: 10, End: 20}})
+		return &meta, nil
+	}
+	const workers = 12
+	var wg sync.WaitGroup
+	wg.Add(workers)
+	errs := make(chan error, workers)
+	for i := 0; i < workers; i++ {
+		go func() {
+			defer wg.Done()
+			p, err := tkr.GetTradingPeriods()
+			if err == nil && len(p) != 1 {
+				err = errors.New("missing period")
+			}
+			errs <- err
+		}()
+	}
+	time.Sleep(10 * time.Millisecond)
+	close(release)
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if calls.Load() != 1 {
+		t.Fatalf("fetches=%d, want 1", calls.Load())
+	}
+}
+
+func TestGetTradingPeriodsCoalescesConcurrentFailure(t *testing.T) {
+	tkr, _ := New("AAPL")
+	var calls atomic.Int32
+	release := make(chan struct{})
+	tkr.tradingPeriodsFetcher = func() (*models.ChartMeta, error) {
+		calls.Add(1)
+		<-release
+		return nil, errors.New("temporary")
+	}
+	const workers = 12
+	var wg sync.WaitGroup
+	wg.Add(workers)
+	errs := make(chan error, workers)
+	for i := 0; i < workers; i++ {
+		go func() { defer wg.Done(); _, err := tkr.GetTradingPeriods(); errs <- err }()
+	}
+	time.Sleep(10 * time.Millisecond)
+	close(release)
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		if err == nil || err.Error() != "temporary" {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	}
+	if calls.Load() != 1 {
+		t.Fatalf("fetches=%d, want 1", calls.Load())
+	}
+}
+
+func TestGetTradingPeriodsFailureRetriesAndClearCacheResets(t *testing.T) {
+	tkr, _ := New("AAPL")
+	var calls atomic.Int32
+	tkr.tradingPeriodsFetcher = func() (*models.ChartMeta, error) {
+		if calls.Add(1) == 1 {
+			return nil, errors.New("temporary")
+		}
+		meta := models.ChartMeta{}.WithTradingPeriods([]models.TradingPeriod{{Start: 10, End: 20}})
+		return &meta, nil
+	}
+	if _, err := tkr.GetTradingPeriods(); err == nil {
+		t.Fatal("expected failure")
+	}
+	if _, err := tkr.GetTradingPeriods(); err != nil {
+		t.Fatalf("retry: %v", err)
+	}
+	tkr.ClearCache()
+	if _, err := tkr.GetTradingPeriods(); err != nil {
+		t.Fatalf("after clear: %v", err)
+	}
+	if calls.Load() != 3 {
+		t.Fatalf("fetches=%d, want 3", calls.Load())
+	}
+}
+
+func TestGetTradingPeriodsClearDuringLoadInvalidatesResult(t *testing.T) {
+	tkr, _ := New("AAPL")
+	started := make(chan struct{})
+	release := make(chan struct{})
+	tkr.tradingPeriodsFetcher = func() (*models.ChartMeta, error) {
+		close(started)
+		<-release
+		meta := models.ChartMeta{}.WithTradingPeriods([]models.TradingPeriod{{Start: 10, End: 20}})
+		return &meta, nil
+	}
+	errCh := make(chan error, 1)
+	go func() { _, err := tkr.GetTradingPeriods(); errCh <- err }()
+	<-started
+	tkr.ClearCache()
+	close(release)
+	if err := <-errCh; err == nil {
+		t.Fatal("in-flight result survived ClearCache")
+	}
+	if meta := tkr.GetHistoryMetadata(); meta != nil {
+		t.Fatalf("cleared metadata repopulated: %+v", meta)
+	}
+}
 
 func TestNew(t *testing.T) {
 	// Test with valid symbol

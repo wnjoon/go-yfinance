@@ -1,9 +1,61 @@
 package models
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 )
+
+func TestChartMetaTradingPeriodsDecoding(t *testing.T) {
+	tests := []struct {
+		name    string
+		body    string
+		present bool
+		count   int
+	}{
+		{"absent", `{}`, false, 0},
+		{"empty", `{"tradingPeriods":[]}`, true, 0},
+		{"empty-pre-post", `{"tradingPeriods":{"pre":[],"post":[]}}`, true, 0},
+		{"regular-only", `{"tradingPeriods":[[{"start":10,"end":20}],[{"start":30,"end":40}]]}`, true, 2},
+		{"grouped-sparse", `{"tradingPeriods":{"pre":[[{"start":1,"end":2}]],"regular":[[{"start":3,"end":4},{"start":5,"end":6}]],"post":[]}}`, true, 2},
+		{"grouped-empty-day", `{"tradingPeriods":{"pre":[[],[{"start":11,"end":12}]],"regular":[[{"start":3,"end":4}],[{"start":5,"end":6}]],"post":[]}}`, true, 2},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var meta ChartMeta
+			if err := json.Unmarshal([]byte(tc.body), &meta); err != nil {
+				t.Fatal(err)
+			}
+			if meta.HasTradingPeriods() != tc.present || len(meta.TradingPeriods) != tc.count {
+				t.Fatalf("present=%v periods=%+v", meta.HasTradingPeriods(), meta.TradingPeriods)
+			}
+			if tc.name == "grouped-sparse" {
+				if meta.TradingPeriods[0].PreStart == nil || *meta.TradingPeriods[0].PreStart != 1 || meta.TradingPeriods[1].PreStart != nil {
+					t.Fatalf("unexpected sparse periods: %+v", meta.TradingPeriods)
+				}
+			}
+			if tc.name == "grouped-empty-day" && (meta.TradingPeriods[0].PreStart != nil || meta.TradingPeriods[1].PreStart == nil || *meta.TradingPeriods[1].PreStart != 11) {
+				t.Fatalf("empty group shifted extended session: %+v", meta.TradingPeriods)
+			}
+		})
+	}
+}
+
+func TestChartMetaTradingPeriodsJSONRoundTrip(t *testing.T) {
+	pre := int64(5)
+	want := ChartMeta{Symbol: "AAPL"}.WithTradingPeriods([]TradingPeriod{{Start: 10, End: 20, PreStart: &pre}})
+	body, err := json.Marshal(want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got ChartMeta
+	if err := json.Unmarshal(body, &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Symbol != want.Symbol || len(got.TradingPeriods) != 1 || got.TradingPeriods[0].PreStart == nil || *got.TradingPeriods[0].PreStart != pre {
+		t.Fatalf("round-trip lost trading periods: %s -> %+v", body, got)
+	}
+}
 
 func TestDefaultHistoryParams(t *testing.T) {
 	params := DefaultHistoryParams()

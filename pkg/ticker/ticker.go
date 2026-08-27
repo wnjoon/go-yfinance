@@ -20,20 +20,26 @@ type Ticker struct {
 	auth   *client.AuthManager
 
 	// Cached data
-	mu                sync.RWMutex
-	infoCache         *models.Info
-	quoteCache        *models.Quote
-	historyMeta       *models.ChartMeta
-	optionsCache      *optionsCache
-	financialsCache   *financialsCache
-	financialsChunked bool
-	analysisCache     *analysisCache
-	valuationCache    map[string]*models.ValuationMeasures
-	holdersCache      *holdersCache
-	calendarCache     *models.Calendar
-	newsCache         []models.NewsArticle
-	newsCacheCount    int
-	newsCacheTab      models.NewsTab
+	mu                    sync.RWMutex
+	infoCache             *models.Info
+	quoteCache            *models.Quote
+	historyMeta           *models.ChartMeta
+	tradingPeriodsLoading bool
+	tradingPeriodsLoadSeq uint64
+	tradingPeriodsLastErr error
+	cacheGeneration       uint64
+	tradingPeriodsCond    *sync.Cond
+	tradingPeriodsFetcher func() (*models.ChartMeta, error)
+	optionsCache          *optionsCache
+	financialsCache       *financialsCache
+	financialsChunked     bool
+	analysisCache         *analysisCache
+	valuationCache        map[string]*models.ValuationMeasures
+	holdersCache          *holdersCache
+	calendarCache         *models.Calendar
+	newsCache             []models.NewsArticle
+	newsCacheCount        int
+	newsCacheTab          models.NewsTab
 
 	// Ownership tracking for cleanup
 	ownsClient bool
@@ -60,6 +66,7 @@ func New(symbol string, opts ...Option) (*Ticker, error) {
 		symbol:     strings.ToUpper(symbol),
 		ownsClient: true,
 	}
+	t.tradingPeriodsCond = sync.NewCond(&t.mu)
 
 	for _, opt := range opts {
 		opt(t)
@@ -140,6 +147,8 @@ func (t *Ticker) ClearCache() {
 	t.infoCache = nil
 	t.quoteCache = nil
 	t.historyMeta = nil
+	t.cacheGeneration++
+	t.tradingPeriodsLastErr = nil
 	t.optionsCache = nil
 	t.financialsCache = nil
 	t.analysisCache = nil
@@ -155,12 +164,50 @@ func (t *Ticker) ClearCache() {
 func (t *Ticker) GetHistoryMetadata() *models.ChartMeta {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
-	return t.historyMeta
+	return cloneChartMeta(t.historyMeta)
 }
 
 // setHistoryMetadata sets the history metadata cache.
 func (t *Ticker) setHistoryMetadata(meta *models.ChartMeta) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	t.historyMeta = meta
+	clone := cloneChartMeta(meta)
+	if clone != nil && !clone.HasTradingPeriods() && t.historyMeta != nil && t.historyMeta.HasTradingPeriods() {
+		merged := clone.WithTradingPeriods(cloneTradingPeriods(t.historyMeta.TradingPeriods))
+		clone = &merged
+	}
+	t.historyMeta = clone
+}
+
+func cloneChartMeta(meta *models.ChartMeta) *models.ChartMeta {
+	if meta == nil {
+		return nil
+	}
+	clone := *meta
+	clone.ValidRanges = append([]string(nil), meta.ValidRanges...)
+	clone.TradingPeriods = cloneTradingPeriods(meta.TradingPeriods)
+	return &clone
+}
+
+func cloneTradingPeriods(periods []models.TradingPeriod) []models.TradingPeriod {
+	if periods == nil {
+		return nil
+	}
+	clone := make([]models.TradingPeriod, len(periods))
+	for i, period := range periods {
+		clone[i] = period
+		clone[i].PreStart = cloneInt64(period.PreStart)
+		clone[i].PreEnd = cloneInt64(period.PreEnd)
+		clone[i].PostStart = cloneInt64(period.PostStart)
+		clone[i].PostEnd = cloneInt64(period.PostEnd)
+	}
+	return clone
+}
+
+func cloneInt64(value *int64) *int64 {
+	if value == nil {
+		return nil
+	}
+	clone := *value
+	return &clone
 }
