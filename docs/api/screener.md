@@ -115,7 +115,7 @@ var PredefinedScreenerQueries map[string]PredefinedQuery
 ```
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L21>)
+## type Option
 
 Option is a function that configures a Screener instance.
 
@@ -124,7 +124,7 @@ type Option func(*Screener)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L24>)
+### func WithClient
 
 ```go
 func WithClient(c *client.Client) Option
@@ -133,7 +133,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client.
 
 <a name="PredefinedQuery"></a>
-## type [PredefinedQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/predefined.go#L6-L10>)
+## type PredefinedQuery
 
 PredefinedQuery holds a predefined screener query with its sort configuration.
 
@@ -146,7 +146,7 @@ type PredefinedQuery struct {
 ```
 
 <a name="Screener"></a>
-## type [Screener](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L15-L18>)
+## type Screener
 
 Screener provides Yahoo Finance stock screener functionality.
 
@@ -157,7 +157,7 @@ type Screener struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L40>)
+### func New
 
 ```go
 func New(opts ...Option) (*Screener, error)
@@ -176,7 +176,7 @@ defer s.Close()
 ```
 
 <a name="Screener.Close"></a>
-### func \(\*Screener\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L61>)
+### func \(\*Screener\) Close
 
 ```go
 func (s *Screener) Close()
@@ -185,7 +185,7 @@ func (s *Screener) Close()
 Close releases resources used by the Screener instance.
 
 <a name="Screener.DayGainers"></a>
-### func \(\*Screener\) [DayGainers](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L191>)
+### func \(\*Screener\) DayGainers
 
 ```go
 func (s *Screener) DayGainers(count int) (*models.ScreenerResult, error)
@@ -203,7 +203,7 @@ for _, quote := range result.Quotes {
 ```
 
 <a name="Screener.DayLosers"></a>
-### func \(\*Screener\) [DayLosers](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L204>)
+### func \(\*Screener\) DayLosers
 
 ```go
 func (s *Screener) DayLosers(count int) (*models.ScreenerResult, error)
@@ -221,7 +221,7 @@ for _, quote := range result.Quotes {
 ```
 
 <a name="Screener.MostActives"></a>
-### func \(\*Screener\) [MostActives](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L217>)
+### func \(\*Screener\) MostActives
 
 ```go
 func (s *Screener) MostActives(count int) (*models.ScreenerResult, error)
@@ -239,7 +239,7 @@ for _, quote := range result.Quotes {
 ```
 
 <a name="Screener.Screen"></a>
-### func \(\*Screener\) [Screen](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L78>)
+### func \(\*Screener\) Screen
 
 ```go
 func (s *Screener) Screen(screener models.PredefinedScreener, params *models.ScreenerParams) (*models.ScreenerResult, error)
@@ -260,7 +260,7 @@ for _, quote := range result.Quotes {
 ```
 
 <a name="Screener.ScreenWithQuery"></a>
-### func \(\*Screener\) [ScreenWithQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/screener/screener.go#L138>)
+### func \(\*Screener\) ScreenWithQuery
 
 ```go
 func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *models.ScreenerParams) (*models.ScreenerResult, error)

@@ -111,7 +111,7 @@ const DefaultJA3 = "771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171
 ```
 
 <a name="Reset"></a>
-## func [Reset](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L243>)
+## func Reset
 
 ```go
 func Reset()
@@ -120,7 +120,7 @@ func Reset()
 Reset resets the global configuration to defaults.
 
 <a name="Config"></a>
-## type [Config](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L9-L35>)
+## type Config
 
 Config holds the global configuration for go\-yfinance.
 
@@ -155,7 +155,7 @@ type Config struct {
 ```
 
 <a name="Get"></a>
-### func [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L57>)
+### func Get
 
 ```go
 func Get() *Config
@@ -164,7 +164,7 @@ func Get() *Config
 Get returns the global configuration instance.
 
 <a name="NewDefault"></a>
-### func [NewDefault](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L65>)
+### func NewDefault
 
 ```go
 func NewDefault() *Config
@@ -173,7 +173,7 @@ func NewDefault() *Config
 NewDefault creates a new Config with default values.
 
 <a name="Config.Clone"></a>
-### func \(\*Config\) [Clone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L222>)
+### func \(\*Config\) Clone
 
 ```go
 func (c *Config) Clone() *Config
@@ -182,7 +182,7 @@ func (c *Config) Clone() *Config
 Clone creates a copy of the configuration.
 
 <a name="Config.DisableCache"></a>
-### func \(\*Config\) [DisableCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L148>)
+### func \(\*Config\) DisableCache
 
 ```go
 func (c *Config) DisableCache() *Config
@@ -191,7 +191,7 @@ func (c *Config) DisableCache() *Config
 DisableCache disables response caching.
 
 <a name="Config.EnableCache"></a>
-### func \(\*Config\) [EnableCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L139>)
+### func \(\*Config\) EnableCache
 
 ```go
 func (c *Config) EnableCache(ttl time.Duration) *Config
@@ -200,7 +200,7 @@ func (c *Config) EnableCache(ttl time.Duration) *Config
 EnableCache enables response caching.
 
 <a name="Config.GetJA3"></a>
-### func \(\*Config\) [GetJA3](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L187>)
+### func \(\*Config\) GetJA3
 
 ```go
 func (c *Config) GetJA3() string
@@ -209,7 +209,7 @@ func (c *Config) GetJA3() string
 GetJA3 returns the JA3 fingerprint.
 
 <a name="Config.GetLocale"></a>
-### func \(\*Config\) [GetLocale](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L201>)
+### func \(\*Config\) GetLocale
 
 ```go
 func (c *Config) GetLocale() (lang, region string)
@@ -218,7 +218,7 @@ func (c *Config) GetLocale() (lang, region string)
 GetLocale returns the configured Yahoo Finance locale.
 
 <a name="Config.GetProxyURL"></a>
-### func \(\*Config\) [GetProxyURL](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L194>)
+### func \(\*Config\) GetProxyURL
 
 ```go
 func (c *Config) GetProxyURL() string
@@ -227,7 +227,7 @@ func (c *Config) GetProxyURL() string
 GetProxyURL returns the proxy URL.
 
 <a name="Config.GetTimeout"></a>
-### func \(\*Config\) [GetTimeout](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L173>)
+### func \(\*Config\) GetTimeout
 
 ```go
 func (c *Config) GetTimeout() time.Duration
@@ -236,7 +236,7 @@ func (c *Config) GetTimeout() time.Duration
 GetTimeout returns the timeout value.
 
 <a name="Config.GetUserAgent"></a>
-### func \(\*Config\) [GetUserAgent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L180>)
+### func \(\*Config\) GetUserAgent
 
 ```go
 func (c *Config) GetUserAgent() string
@@ -245,7 +245,7 @@ func (c *Config) GetUserAgent() string
 GetUserAgent returns the User\-Agent string.
 
 <a name="Config.IsCacheEnabled"></a>
-### func \(\*Config\) [IsCacheEnabled](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L215>)
+### func \(\*Config\) IsCacheEnabled
 
 ```go
 func (c *Config) IsCacheEnabled() bool
@@ -254,7 +254,7 @@ func (c *Config) IsCacheEnabled() bool
 IsCacheEnabled returns whether caching is enabled.
 
 <a name="Config.IsDebug"></a>
-### func \(\*Config\) [IsDebug](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L208>)
+### func \(\*Config\) IsDebug
 
 ```go
 func (c *Config) IsDebug() bool
@@ -263,7 +263,7 @@ func (c *Config) IsDebug() bool
 IsDebug returns whether debug mode is enabled.
 
 <a name="Config.SetDebug"></a>
-### func \(\*Config\) [SetDebug](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L165>)
+### func \(\*Config\) SetDebug
 
 ```go
 func (c *Config) SetDebug(debug bool) *Config
@@ -272,7 +272,7 @@ func (c *Config) SetDebug(debug bool) *Config
 SetDebug enables or disables debug mode.
 
 <a name="Config.SetJA3"></a>
-### func \(\*Config\) [SetJA3](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L99>)
+### func \(\*Config\) SetJA3
 
 ```go
 func (c *Config) SetJA3(ja3 string) *Config
@@ -281,7 +281,7 @@ func (c *Config) SetJA3(ja3 string) *Config
 SetJA3 sets the JA3 TLS fingerprint.
 
 <a name="Config.SetLocale"></a>
-### func \(\*Config\) [SetLocale](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L156>)
+### func \(\*Config\) SetLocale
 
 ```go
 func (c *Config) SetLocale(lang, region string) *Config
@@ -290,7 +290,7 @@ func (c *Config) SetLocale(lang, region string) *Config
 SetLocale sets the Yahoo Finance locale for endpoints that support localized fields.
 
 <a name="Config.SetMaxConcurrent"></a>
-### func \(\*Config\) [SetMaxConcurrent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L131>)
+### func \(\*Config\) SetMaxConcurrent
 
 ```go
 func (c *Config) SetMaxConcurrent(n int) *Config
@@ -299,7 +299,7 @@ func (c *Config) SetMaxConcurrent(n int) *Config
 SetMaxConcurrent sets the maximum concurrent requests.
 
 <a name="Config.SetMaxRetries"></a>
-### func \(\*Config\) [SetMaxRetries](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L115>)
+### func \(\*Config\) SetMaxRetries
 
 ```go
 func (c *Config) SetMaxRetries(n int) *Config
@@ -308,7 +308,7 @@ func (c *Config) SetMaxRetries(n int) *Config
 SetMaxRetries sets the maximum number of retries.
 
 <a name="Config.SetProxy"></a>
-### func \(\*Config\) [SetProxy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L107>)
+### func \(\*Config\) SetProxy
 
 ```go
 func (c *Config) SetProxy(proxyURL string) *Config
@@ -317,7 +317,7 @@ func (c *Config) SetProxy(proxyURL string) *Config
 SetProxy sets the proxy URL.
 
 <a name="Config.SetRetryDelay"></a>
-### func \(\*Config\) [SetRetryDelay](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L123>)
+### func \(\*Config\) SetRetryDelay
 
 ```go
 func (c *Config) SetRetryDelay(d time.Duration) *Config
@@ -326,7 +326,7 @@ func (c *Config) SetRetryDelay(d time.Duration) *Config
 SetRetryDelay sets the delay between retries.
 
 <a name="Config.SetTimeout"></a>
-### func \(\*Config\) [SetTimeout](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L83>)
+### func \(\*Config\) SetTimeout
 
 ```go
 func (c *Config) SetTimeout(d time.Duration) *Config
@@ -335,7 +335,7 @@ func (c *Config) SetTimeout(d time.Duration) *Config
 SetTimeout sets the HTTP request timeout.
 
 <a name="Config.SetUserAgent"></a>
-### func \(\*Config\) [SetUserAgent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/config/config.go#L91>)
+### func \(\*Config\) SetUserAgent
 
 ```go
 func (c *Config) SetUserAgent(ua string) *Config

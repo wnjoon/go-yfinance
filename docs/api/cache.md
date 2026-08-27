@@ -81,7 +81,7 @@ const (
 ```
 
 <a name="ClearGlobal"></a>
-## func [ClearGlobal](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L206>)
+## func ClearGlobal
 
 ```go
 func ClearGlobal()
@@ -90,7 +90,7 @@ func ClearGlobal()
 ClearGlobal removes all entries from the global cache.
 
 <a name="DeleteGlobal"></a>
-## func [DeleteGlobal](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L201>)
+## func DeleteGlobal
 
 ```go
 func DeleteGlobal(key string)
@@ -99,7 +99,7 @@ func DeleteGlobal(key string)
 DeleteGlobal removes a key from the global cache.
 
 <a name="GetGlobal"></a>
-## func [GetGlobal](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L191>)
+## func GetGlobal
 
 ```go
 func GetGlobal(key string) (interface{}, bool)
@@ -108,7 +108,7 @@ func GetGlobal(key string) (interface{}, bool)
 GetGlobal retrieves a value from the global cache.
 
 <a name="GetGlobalString"></a>
-## func [GetGlobalString](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L196>)
+## func GetGlobalString
 
 ```go
 func GetGlobalString(key string) (string, bool)
@@ -117,7 +117,7 @@ func GetGlobalString(key string) (string, bool)
 GetGlobalString retrieves a string value from the global cache.
 
 <a name="SetGlobal"></a>
-## func [SetGlobal](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L181>)
+## func SetGlobal
 
 ```go
 func SetGlobal(key string, value interface{})
@@ -126,7 +126,7 @@ func SetGlobal(key string, value interface{})
 SetGlobal stores a value in the global cache.
 
 <a name="SetGlobalWithTTL"></a>
-## func [SetGlobalWithTTL](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L186>)
+## func SetGlobalWithTTL
 
 ```go
 func SetGlobalWithTTL(key string, value interface{}, ttl time.Duration)
@@ -135,7 +135,7 @@ func SetGlobalWithTTL(key string, value interface{}, ttl time.Duration)
 SetGlobalWithTTL stores a value in the global cache with a custom TTL.
 
 <a name="Cache"></a>
-## type [Cache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L29-L34>)
+## type Cache
 
 Cache is a thread\-safe, TTL\-based in\-memory cache.
 
@@ -146,7 +146,7 @@ type Cache struct {
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L47>)
+### func New
 
 ```go
 func New(opts ...Option) *Cache
@@ -155,7 +155,7 @@ func New(opts ...Option) *Cache
 New creates a new Cache with the given options.
 
 <a name="Cache.Clear"></a>
-### func \(\*Cache\) [Clear](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L119>)
+### func \(\*Cache\) Clear
 
 ```go
 func (c *Cache) Clear()
@@ -164,7 +164,7 @@ func (c *Cache) Clear()
 Clear removes all entries from the cache.
 
 <a name="Cache.Close"></a>
-### func \(\*Cache\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L135>)
+### func \(\*Cache\) Close
 
 ```go
 func (c *Cache) Close()
@@ -173,7 +173,7 @@ func (c *Cache) Close()
 Close stops the cleanup goroutine and releases resources.
 
 <a name="Cache.Delete"></a>
-### func \(\*Cache\) [Delete](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L111>)
+### func \(\*Cache\) Delete
 
 ```go
 func (c *Cache) Delete(key string)
@@ -182,7 +182,7 @@ func (c *Cache) Delete(key string)
 Delete removes a key from the cache.
 
 <a name="Cache.Get"></a>
-### func \(\*Cache\) [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L82>)
+### func \(\*Cache\) Get
 
 ```go
 func (c *Cache) Get(key string) (interface{}, bool)
@@ -191,7 +191,7 @@ func (c *Cache) Get(key string) (interface{}, bool)
 Get retrieves a value from the cache. Returns the value and true if found and not expired, otherwise nil and false.
 
 <a name="Cache.GetString"></a>
-### func \(\*Cache\) [GetString](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L100>)
+### func \(\*Cache\) GetString
 
 ```go
 func (c *Cache) GetString(key string) (string, bool)
@@ -200,7 +200,7 @@ func (c *Cache) GetString(key string) (string, bool)
 GetString retrieves a string value from the cache. Returns the value and true if found, not expired, and is a string.
 
 <a name="Cache.Len"></a>
-### func \(\*Cache\) [Len](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L127>)
+### func \(\*Cache\) Len
 
 ```go
 func (c *Cache) Len() int
@@ -209,7 +209,7 @@ func (c *Cache) Len() int
 Len returns the number of items in the cache \(including expired ones\).
 
 <a name="Cache.Set"></a>
-### func \(\*Cache\) [Set](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L65>)
+### func \(\*Cache\) Set
 
 ```go
 func (c *Cache) Set(key string, value interface{})
@@ -218,7 +218,7 @@ func (c *Cache) Set(key string, value interface{})
 Set stores a value in the cache with the default TTL.
 
 <a name="Cache.SetWithTTL"></a>
-### func \(\*Cache\) [SetWithTTL](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L70>)
+### func \(\*Cache\) SetWithTTL
 
 ```go
 func (c *Cache) SetWithTTL(key string, value interface{}, ttl time.Duration)
@@ -227,7 +227,7 @@ func (c *Cache) SetWithTTL(key string, value interface{}, ttl time.Duration)
 SetWithTTL stores a value in the cache with a custom TTL.
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L37>)
+## type Option
 
 Option is a function that configures a Cache.
 
@@ -236,7 +236,7 @@ type Option func(*Cache)
 ```
 
 <a name="WithTTL"></a>
-### func [WithTTL](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/cache/cache.go#L40>)
+### func WithTTL
 
 ```go
 func WithTTL(ttl time.Duration) Option
