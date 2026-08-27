@@ -2,6 +2,7 @@ package live
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -22,6 +23,8 @@ const (
 	DefaultReconnectDelay = 3 * time.Second
 )
 
+var errWebSocketClosed = errors.New("websocket client is closed")
+
 // MessageHandler is a callback function for handling pricing data.
 type MessageHandler func(*models.PricingData)
 
@@ -38,12 +41,12 @@ type WebSocket struct {
 	heartbeatInterval time.Duration
 	reconnectDelay    time.Duration
 
-	mu            sync.RWMutex
-	writeMu       sync.Mutex // serializes all conn.WriteMessage calls
-	done          chan struct{}
-	heartbeatDone chan struct{}
-	isConnected   bool
-	isListening   bool
+	mu          sync.RWMutex
+	writeMu     sync.Mutex // serializes all conn.WriteMessage calls
+	done        chan struct{}
+	isConnected bool
+	isListening bool
+	isClosed    bool
 }
 
 // Option is a function that configures a WebSocket.
@@ -107,6 +110,9 @@ func (ws *WebSocket) Connect() error {
 	ws.mu.Lock()
 	defer ws.mu.Unlock()
 
+	if ws.isClosed {
+		return errWebSocketClosed
+	}
 	if ws.isConnected {
 		return nil
 	}
@@ -189,10 +195,22 @@ func (ws *WebSocket) Listen(handler MessageHandler) error {
 	}
 
 	ws.mu.Lock()
+	if ws.isClosed {
+		ws.mu.Unlock()
+		return errWebSocketClosed
+	}
+	if ws.isListening {
+		ws.mu.Unlock()
+		return fmt.Errorf("websocket listener already running")
+	}
 	ws.messageHandler = handler
 	ws.isListening = true
-	ws.heartbeatDone = make(chan struct{})
 	ws.mu.Unlock()
+	defer func() {
+		ws.mu.Lock()
+		ws.isListening = false
+		ws.mu.Unlock()
+	}()
 
 	// Start heartbeat goroutine
 	go ws.heartbeatLoop()
@@ -205,16 +223,23 @@ func (ws *WebSocket) Listen(handler MessageHandler) error {
 		default:
 			if err := ws.readMessage(); err != nil {
 				ws.mu.RLock()
-				handler := ws.errorHandler
+				closed := ws.isClosed
+				errorHandler := ws.errorHandler
 				ws.mu.RUnlock()
 
-				if handler != nil {
-					handler(err)
+				if closed {
+					return nil
+				}
+				if errorHandler != nil {
+					errorHandler(err)
 				}
 
 				// Attempt reconnection
-				if ws.reconnect() != nil {
-					return err
+				if reconnectErr := ws.reconnect(); reconnectErr != nil {
+					if errors.Is(reconnectErr, errWebSocketClosed) {
+						return nil
+					}
+					return reconnectErr
 				}
 			}
 		}
@@ -241,23 +266,21 @@ func (ws *WebSocket) ListenAsync(handler MessageHandler) error {
 // Close closes the WebSocket connection.
 func (ws *WebSocket) Close() error {
 	ws.mu.Lock()
-	defer ws.mu.Unlock()
-
-	if !ws.isConnected {
+	if ws.isClosed {
+		ws.mu.Unlock()
 		return nil
 	}
+	ws.isClosed = true
 
-	// Signal goroutines to stop
 	close(ws.done)
-	if ws.heartbeatDone != nil {
-		close(ws.heartbeatDone)
-	}
-
 	ws.isConnected = false
 	ws.isListening = false
+	conn := ws.conn
+	ws.conn = nil
+	ws.mu.Unlock()
 
-	if ws.conn != nil {
-		return ws.conn.Close()
+	if conn != nil {
+		return conn.Close()
 	}
 	return nil
 }
@@ -358,8 +381,6 @@ func (ws *WebSocket) heartbeatLoop() {
 
 	for {
 		select {
-		case <-ws.heartbeatDone:
-			return
 		case <-ws.done:
 			return
 		case <-ticker.C:
@@ -377,6 +398,10 @@ func (ws *WebSocket) heartbeatLoop() {
 // reconnect attempts to reconnect after a connection failure.
 func (ws *WebSocket) reconnect() error {
 	ws.mu.Lock()
+	if ws.isClosed {
+		ws.mu.Unlock()
+		return errWebSocketClosed
+	}
 	ws.isConnected = false
 	if ws.conn != nil {
 		_ = ws.conn.Close()
@@ -385,7 +410,13 @@ func (ws *WebSocket) reconnect() error {
 	subscriptions := ws.getSubscriptionList()
 	ws.mu.Unlock()
 
-	time.Sleep(ws.reconnectDelay)
+	timer := time.NewTimer(ws.reconnectDelay)
+	defer timer.Stop()
+	select {
+	case <-ws.done:
+		return errWebSocketClosed
+	case <-timer.C:
+	}
 
 	if err := ws.Connect(); err != nil {
 		return err

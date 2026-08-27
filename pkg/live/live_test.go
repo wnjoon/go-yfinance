@@ -3,11 +3,13 @@ package live
 import (
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"math"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -466,4 +468,111 @@ func TestSendSubscribeConcurrent(t *testing.T) {
 	for p := range panicCh {
 		t.Errorf("sendSubscribe panicked: %v", p)
 	}
+}
+
+func TestListenCloseIsNormalAndIdempotent(t *testing.T) {
+	srv, url := newTestWSServer(t)
+	defer srv.Close()
+
+	var handlerCalls atomic.Int32
+	ws, err := New(
+		WithURL(url),
+		WithErrorHandler(func(error) { handlerCalls.Add(1) }),
+	)
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+
+	listenDone := make(chan error, 1)
+	go func() { listenDone <- ws.Listen(nil) }()
+	waitForWebSocketState(t, ws, func(ws *WebSocket) bool { return ws.isListening })
+
+	if err := ws.Close(); err != nil {
+		t.Fatalf("Close() error: %v", err)
+	}
+	if err := ws.Close(); err != nil {
+		t.Fatalf("second Close() error: %v", err)
+	}
+
+	select {
+	case err := <-listenDone:
+		if err != nil {
+			t.Fatalf("Listen() after normal Close() = %v, want nil", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Listen() did not stop after Close()")
+	}
+	if got := handlerCalls.Load(); got != 0 {
+		t.Fatalf("error handler called %d times during normal close", got)
+	}
+	if err := ws.Connect(); !errors.Is(err, errWebSocketClosed) {
+		t.Fatalf("Connect() after Close() = %v, want errWebSocketClosed", err)
+	}
+}
+
+func TestCloseCancelsReconnect(t *testing.T) {
+	var connections atomic.Int32
+	closedFirst := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			return
+		}
+		connections.Add(1)
+		_ = conn.Close()
+		select {
+		case <-closedFirst:
+		default:
+			close(closedFirst)
+		}
+	}))
+	defer srv.Close()
+
+	ws, err := New(
+		WithURL("ws"+strings.TrimPrefix(srv.URL, "http")),
+		WithReconnectDelay(5*time.Second),
+	)
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	listenDone := make(chan error, 1)
+	go func() { listenDone <- ws.Listen(nil) }()
+
+	select {
+	case <-closedFirst:
+	case <-time.After(time.Second):
+		t.Fatal("server did not close the initial connection")
+	}
+	// Allow Listen to enter reconnect's cancellable delay.
+	time.Sleep(20 * time.Millisecond)
+	if err := ws.Close(); err != nil {
+		t.Fatalf("Close() error: %v", err)
+	}
+
+	select {
+	case err := <-listenDone:
+		if err != nil {
+			t.Fatalf("Listen() after closing during reconnect = %v, want nil", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Close() did not cancel reconnect promptly")
+	}
+	if got := connections.Load(); got != 1 {
+		t.Fatalf("connection count = %d, want 1", got)
+	}
+}
+
+func waitForWebSocketState(t *testing.T, ws *WebSocket, predicate func(*WebSocket) bool) {
+	t.Helper()
+	deadline := time.Now().Add(time.Second)
+	for time.Now().Before(deadline) {
+		ws.mu.RLock()
+		ready := predicate(ws)
+		ws.mu.RUnlock()
+		if ready {
+			return
+		}
+		time.Sleep(time.Millisecond)
+	}
+	t.Fatal("timed out waiting for websocket state")
 }
