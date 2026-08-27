@@ -74,7 +74,7 @@ All multi package functions are safe for concurrent use.
 
 
 <a name="Download"></a>
-## func [Download](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L337>)
+## func Download
 
 ```go
 func Download(symbols []string, params *models.DownloadParams) (*models.MultiTickerResult, error)
@@ -95,7 +95,7 @@ for symbol, bars := range result.Data {
 ```
 
 <a name="DownloadString"></a>
-## func [DownloadString](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L352>)
+## func DownloadString
 
 ```go
 func DownloadString(tickerStr string, params *models.DownloadParams) (*models.MultiTickerResult, error)
@@ -110,7 +110,7 @@ result, err := multi.DownloadString("AAPL MSFT GOOGL", nil)
 ```
 
 <a name="Option"></a>
-## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L67>)
+## type Option
 
 Option is a function that configures Tickers.
 
@@ -119,7 +119,7 @@ type Option func(*Tickers)
 ```
 
 <a name="WithClient"></a>
-### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L70>)
+### func WithClient
 
 ```go
 func WithClient(c *client.Client) Option
@@ -128,7 +128,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client.
 
 <a name="Tickers"></a>
-## type [Tickers](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L58-L64>)
+## type Tickers
 
 Tickers represents a collection of multiple ticker symbols.
 
@@ -139,7 +139,7 @@ type Tickers struct {
 ```
 
 <a name="NewTickers"></a>
-### func [NewTickers](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L88>)
+### func NewTickers
 
 ```go
 func NewTickers(symbols []string, opts ...Option) (*Tickers, error)
@@ -160,7 +160,7 @@ defer tickers.Close()
 ```
 
 <a name="NewTickersFromString"></a>
-### func [NewTickersFromString](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L144>)
+### func NewTickersFromString
 
 ```go
 func NewTickersFromString(tickerStr string, opts ...Option) (*Tickers, error)
@@ -177,7 +177,7 @@ tickers, err := multi.NewTickersFromString("AAPL,MSFT,GOOGL")
 ```
 
 <a name="Tickers.Close"></a>
-### func \(\*Tickers\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L152>)
+### func \(\*Tickers\) Close
 
 ```go
 func (t *Tickers) Close()
@@ -186,7 +186,7 @@ func (t *Tickers) Close()
 Close releases all resources used by Tickers.
 
 <a name="Tickers.Count"></a>
-### func \(\*Tickers\) [Count](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L184>)
+### func \(\*Tickers\) Count
 
 ```go
 func (t *Tickers) Count() int
@@ -195,7 +195,7 @@ func (t *Tickers) Count() int
 Count returns the number of tickers.
 
 <a name="Tickers.Download"></a>
-### func \(\*Tickers\) [Download](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L208>)
+### func \(\*Tickers\) Download
 
 ```go
 func (t *Tickers) Download() (*models.MultiTickerResult, error)
@@ -204,7 +204,7 @@ func (t *Tickers) Download() (*models.MultiTickerResult, error)
 Download downloads historical data for all tickers with default parameters.
 
 <a name="Tickers.Get"></a>
-### func \(\*Tickers\) [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L177>)
+### func \(\*Tickers\) Get
 
 ```go
 func (t *Tickers) Get(symbol string) *ticker.Ticker
@@ -215,7 +215,7 @@ Get returns the Ticker instance for a specific symbol.
 Returns nil if the symbol is not found.
 
 <a name="Tickers.History"></a>
-### func \(\*Tickers\) [History](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L198>)
+### func \(\*Tickers\) History
 
 ```go
 func (t *Tickers) History(params *models.DownloadParams) (*models.MultiTickerResult, error)
@@ -233,7 +233,7 @@ result, err := tickers.History(&models.DownloadParams{
 ```
 
 <a name="Tickers.Symbols"></a>
-### func \(\*Tickers\) [Symbols](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/multi/multi.go#L168>)
+### func \(\*Tickers\) Symbols
 
 ```go
 func (t *Tickers) Symbols() []string
