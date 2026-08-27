@@ -63,6 +63,8 @@ See [ErrorCode](<#ErrorCode>) for all available error types.
   - [func \(a \*AuthManager\) AddCrumbToParams\(params url.Values\) \(url.Values, error\)](<#AuthManager.AddCrumbToParams>)
   - [func \(a \*AuthManager\) CheckLogin\(\) \(bool, error\)](<#AuthManager.CheckLogin>)
   - [func \(a \*AuthManager\) GetCrumb\(\) \(string, error\)](<#AuthManager.GetCrumb>)
+  - [func \(a \*AuthManager\) GetWithCrumb\(rawURL string, params url.Values\) \(\*Response, error\)](<#AuthManager.GetWithCrumb>)
+  - [func \(a \*AuthManager\) PostJSONWithCrumb\(rawURL string, params url.Values, body \[\]byte\) \(\*Response, error\)](<#AuthManager.PostJSONWithCrumb>)
   - [func \(a \*AuthManager\) Reset\(\)](<#AuthManager.Reset>)
   - [func \(a \*AuthManager\) SetLoginCookies\(cookieT, cookieY string\)](<#AuthManager.SetLoginCookies>)
   - [func \(a \*AuthManager\) SetLoginCookiesAndCheck\(cookieT, cookieY string\) \(bool, error\)](<#AuthManager.SetLoginCookiesAndCheck>)
@@ -143,7 +145,7 @@ var UserAgents = []string{
 ```
 
 <a name="IsAuthError"></a>
-## func IsAuthError
+## func [IsAuthError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L153>)
 
 ```go
 func IsAuthError(err error) bool
@@ -152,7 +154,7 @@ func IsAuthError(err error) bool
 IsAuthError checks if the error is an authentication error.
 
 <a name="IsInvalidSymbolError"></a>
-## func IsInvalidSymbolError
+## func [IsInvalidSymbolError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L163>)
 
 ```go
 func IsInvalidSymbolError(err error) bool
@@ -161,7 +163,7 @@ func IsInvalidSymbolError(err error) bool
 IsInvalidSymbolError checks if the error is an invalid symbol error.
 
 <a name="IsNoDataError"></a>
-## func IsNoDataError
+## func [IsNoDataError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L168>)
 
 ```go
 func IsNoDataError(err error) bool
@@ -170,7 +172,7 @@ func IsNoDataError(err error) bool
 IsNoDataError checks if the error is a no data error.
 
 <a name="IsNotFoundError"></a>
-## func IsNotFoundError
+## func [IsNotFoundError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L158>)
 
 ```go
 func IsNotFoundError(err error) bool
@@ -179,7 +181,7 @@ func IsNotFoundError(err error) bool
 IsNotFoundError checks if the error is a not found error.
 
 <a name="IsRateLimitError"></a>
-## func IsRateLimitError
+## func [IsRateLimitError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L148>)
 
 ```go
 func IsRateLimitError(err error) bool
@@ -188,7 +190,7 @@ func IsRateLimitError(err error) bool
 IsRateLimitError checks if the error is a rate limit error.
 
 <a name="IsTimeoutError"></a>
-## func IsTimeoutError
+## func [IsTimeoutError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L173>)
 
 ```go
 func IsTimeoutError(err error) bool
@@ -197,7 +199,7 @@ func IsTimeoutError(err error) bool
 IsTimeoutError checks if the error is a timeout error.
 
 <a name="RandomUserAgent"></a>
-## func RandomUserAgent
+## func [RandomUserAgent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/useragent.go#L25>)
 
 ```go
 func RandomUserAgent() string
@@ -206,7 +208,7 @@ func RandomUserAgent() string
 RandomUserAgent returns a random User\-Agent string.
 
 <a name="AuthManager"></a>
-## type AuthManager
+## type [AuthManager](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L28-L36>)
 
 AuthManager handles Yahoo Finance authentication \(Cookie \+ Crumb\).
 
@@ -217,7 +219,7 @@ type AuthManager struct {
 ```
 
 <a name="NewAuthManager"></a>
-### func NewAuthManager
+### func [NewAuthManager](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L59>)
 
 ```go
 func NewAuthManager(client *Client) *AuthManager
@@ -226,7 +228,7 @@ func NewAuthManager(client *Client) *AuthManager
 NewAuthManager creates a new AuthManager with the given client.
 
 <a name="AuthManager.AddCrumbToParams"></a>
-### func \(\*AuthManager\) AddCrumbToParams
+### func \(\*AuthManager\) [AddCrumbToParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L532>)
 
 ```go
 func (a *AuthManager) AddCrumbToParams(params url.Values) (url.Values, error)
@@ -235,7 +237,7 @@ func (a *AuthManager) AddCrumbToParams(params url.Values) (url.Values, error)
 AddCrumbToParams adds the crumb parameter to URL values.
 
 <a name="AuthManager.CheckLogin"></a>
-### func \(\*AuthManager\) CheckLogin
+### func \(\*AuthManager\) [CheckLogin](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L88>)
 
 ```go
 func (a *AuthManager) CheckLogin() (bool, error)
@@ -244,7 +246,7 @@ func (a *AuthManager) CheckLogin() (bool, error)
 CheckLogin checks whether the current Yahoo cookies represent a logged\-in user.
 
 <a name="AuthManager.GetCrumb"></a>
-### func \(\*AuthManager\) GetCrumb
+### func \(\*AuthManager\) [GetCrumb](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L238>)
 
 ```go
 func (a *AuthManager) GetCrumb() (string, error)
@@ -252,8 +254,26 @@ func (a *AuthManager) GetCrumb() (string, error)
 
 GetCrumb returns the current crumb, fetching it if necessary.
 
+<a name="AuthManager.GetWithCrumb"></a>
+### func \(\*AuthManager\) [GetWithCrumb](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L546>)
+
+```go
+func (a *AuthManager) GetWithCrumb(rawURL string, params url.Values) (*Response, error)
+```
+
+GetWithCrumb performs a GET request with Yahoo crumb authentication. Transient crumb acquisition failures degrade to a crumb\-less target request, and an HTTP error response is retried once with the alternate auth strategy.
+
+<a name="AuthManager.PostJSONWithCrumb"></a>
+### func \(\*AuthManager\) [PostJSONWithCrumb](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L554>)
+
+```go
+func (a *AuthManager) PostJSONWithCrumb(rawURL string, params url.Values, body []byte) (*Response, error)
+```
+
+PostJSONWithCrumb performs a JSON POST with the same crumb degradation and bounded alternate\-strategy retry behavior as GetWithCrumb.
+
 <a name="AuthManager.Reset"></a>
-### func \(\*AuthManager\) Reset
+### func \(\*AuthManager\) [Reset](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L654>)
 
 ```go
 func (a *AuthManager) Reset()
@@ -262,7 +282,7 @@ func (a *AuthManager) Reset()
 Reset clears the authentication state.
 
 <a name="AuthManager.SetLoginCookies"></a>
-### func \(\*AuthManager\) SetLoginCookies
+### func \(\*AuthManager\) [SetLoginCookies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L67>)
 
 ```go
 func (a *AuthManager) SetLoginCookies(cookieT, cookieY string)
@@ -271,7 +291,7 @@ func (a *AuthManager) SetLoginCookies(cookieT, cookieY string)
 SetLoginCookies sets manually retrieved Yahoo Finance login cookies.
 
 <a name="AuthManager.SetLoginCookiesAndCheck"></a>
-### func \(\*AuthManager\) SetLoginCookiesAndCheck
+### func \(\*AuthManager\) [SetLoginCookiesAndCheck](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L82>)
 
 ```go
 func (a *AuthManager) SetLoginCookiesAndCheck(cookieT, cookieY string) (bool, error)
@@ -280,7 +300,7 @@ func (a *AuthManager) SetLoginCookiesAndCheck(cookieT, cookieY string) (bool, er
 SetLoginCookiesAndCheck sets Yahoo Finance login cookies and verifies them.
 
 <a name="AuthManager.SubscriptionTier"></a>
-### func \(\*AuthManager\) SubscriptionTier
+### func \(\*AuthManager\) [SubscriptionTier](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L109>)
 
 ```go
 func (a *AuthManager) SubscriptionTier() (string, error)
@@ -289,7 +309,7 @@ func (a *AuthManager) SubscriptionTier() (string, error)
 SubscriptionTier returns the active Yahoo Finance subscription tier.
 
 <a name="AuthManager.SwitchStrategy"></a>
-### func \(\*AuthManager\) SwitchStrategy
+### func \(\*AuthManager\) [SwitchStrategy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L665>)
 
 ```go
 func (a *AuthManager) SwitchStrategy()
@@ -298,7 +318,7 @@ func (a *AuthManager) SwitchStrategy()
 SwitchStrategy switches to the alternate authentication strategy.
 
 <a name="AuthManager.User"></a>
-### func \(\*AuthManager\) User
+### func \(\*AuthManager\) [User](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L224>)
 
 ```go
 func (a *AuthManager) User() map[string]interface{}
@@ -307,7 +327,7 @@ func (a *AuthManager) User() map[string]interface{}
 User returns the cached logged\-in Yahoo user payload, if available.
 
 <a name="AuthStrategy"></a>
-## type AuthStrategy
+## type [AuthStrategy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/auth.go#L18>)
 
 AuthStrategy represents the authentication strategy.
 
@@ -327,7 +347,7 @@ const (
 ```
 
 <a name="ChartAPIError"></a>
-## type ChartAPIError
+## type [ChartAPIError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L75-L79>)
 
 ChartAPIError represents an error returned by the Yahoo Finance chart API.
 
@@ -342,7 +362,7 @@ type ChartAPIError struct {
 ```
 
 <a name="NewChartAPIError"></a>
-### func NewChartAPIError
+### func [NewChartAPIError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L87>)
 
 ```go
 func NewChartAPIError(symbol, code, description string) *ChartAPIError
@@ -351,7 +371,7 @@ func NewChartAPIError(symbol, code, description string) *ChartAPIError
 NewChartAPIError creates a new ChartAPIError.
 
 <a name="ChartAPIError.Error"></a>
-### func \(\*ChartAPIError\) Error
+### func \(\*ChartAPIError\) [Error](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L82>)
 
 ```go
 func (e *ChartAPIError) Error() string
@@ -360,7 +380,7 @@ func (e *ChartAPIError) Error() string
 Error implements the error interface.
 
 <a name="Client"></a>
-## type Client
+## type [Client](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L18-L33>)
 
 Client is the HTTP client for Yahoo Finance API with TLS fingerprint spoofing.
 
@@ -371,7 +391,7 @@ type Client struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L71>)
 
 ```go
 func New(opts ...ClientOption) (*Client, error)
@@ -380,7 +400,7 @@ func New(opts ...ClientOption) (*Client, error)
 New creates a new Client with optional configuration. The underlying CycleTLS client is lazily initialized on first request.
 
 <a name="Client.Close"></a>
-### func \(\*Client\) Close
+### func \(\*Client\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L350>)
 
 ```go
 func (c *Client) Close()
@@ -389,7 +409,7 @@ func (c *Client) Close()
 Close closes the CycleTLS client.
 
 <a name="Client.Get"></a>
-### func \(\*Client\) Get
+### func \(\*Client\) [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L118>)
 
 ```go
 func (c *Client) Get(rawURL string, params url.Values) (*Response, error)
@@ -398,7 +418,7 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error)
 Get performs an HTTP GET request.
 
 <a name="Client.GetCookie"></a>
-### func \(\*Client\) GetCookie
+### func \(\*Client\) [GetCookie](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L205>)
 
 ```go
 func (c *Client) GetCookie() string
@@ -407,7 +427,7 @@ func (c *Client) GetCookie() string
 GetCookie returns the current cookie.
 
 <a name="Client.GetJSON"></a>
-### func \(\*Client\) GetJSON
+### func \(\*Client\) [GetJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L229>)
 
 ```go
 func (c *Client) GetJSON(rawURL string, params url.Values, v interface{}) error
@@ -416,7 +436,7 @@ func (c *Client) GetJSON(rawURL string, params url.Values, v interface{}) error
 GetJSON performs an HTTP GET request and unmarshals the JSON response.
 
 <a name="Client.Post"></a>
-### func \(\*Client\) Post
+### func \(\*Client\) [Post](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L247>)
 
 ```go
 func (c *Client) Post(rawURL string, params url.Values, body map[string]string) (*Response, error)
@@ -425,7 +445,7 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 Post performs an HTTP POST request with form data.
 
 <a name="Client.PostJSON"></a>
-### func \(\*Client\) PostJSON
+### func \(\*Client\) [PostJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L290>)
 
 ```go
 func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error)
@@ -434,7 +454,7 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 PostJSON performs an HTTP POST request with JSON body.
 
 <a name="Client.SetCookie"></a>
-### func \(\*Client\) SetCookie
+### func \(\*Client\) [SetCookie](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L159>)
 
 ```go
 func (c *Client) SetCookie(cookie string)
@@ -443,7 +463,7 @@ func (c *Client) SetCookie(cookie string)
 SetCookie sets or replaces one cookie for subsequent requests.
 
 <a name="Client.SetCookies"></a>
-### func \(\*Client\) SetCookies
+### func \(\*Client\) [SetCookies](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L184>)
 
 ```go
 func (c *Client) SetCookies(cookies map[string]string)
@@ -452,7 +472,7 @@ func (c *Client) SetCookies(cookies map[string]string)
 SetCookies sets or replaces named cookies for subsequent requests.
 
 <a name="ClientOption"></a>
-## type ClientOption
+## type [ClientOption](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L39>)
 
 ClientOption is a function that configures a Client.
 
@@ -461,7 +481,7 @@ type ClientOption func(*Client)
 ```
 
 <a name="WithJA3"></a>
-### func WithJA3
+### func [WithJA3](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L49>)
 
 ```go
 func WithJA3(ja3 string) ClientOption
@@ -470,7 +490,7 @@ func WithJA3(ja3 string) ClientOption
 WithJA3 sets a custom JA3 fingerprint.
 
 <a name="WithProxy"></a>
-### func WithProxy
+### func [WithProxy](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L63>)
 
 ```go
 func WithProxy(proxy string) ClientOption
@@ -479,7 +499,7 @@ func WithProxy(proxy string) ClientOption
 WithProxy sets a proxy URL for requests.
 
 <a name="WithTimeout"></a>
-### func WithTimeout
+### func [WithTimeout](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L42>)
 
 ```go
 func WithTimeout(timeout int) ClientOption
@@ -488,7 +508,7 @@ func WithTimeout(timeout int) ClientOption
 WithTimeout sets the request timeout in seconds.
 
 <a name="WithUserAgent"></a>
-### func WithUserAgent
+### func [WithUserAgent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L56>)
 
 ```go
 func WithUserAgent(userAgent string) ClientOption
@@ -497,7 +517,7 @@ func WithUserAgent(userAgent string) ClientOption
 WithUserAgent sets a custom User\-Agent.
 
 <a name="ErrorCode"></a>
-## type ErrorCode
+## type [ErrorCode](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L9>)
 
 ErrorCode represents the type of error.
 
@@ -531,7 +551,7 @@ const (
 ```
 
 <a name="Response"></a>
-## type Response
+## type [Response](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/client.go#L110-L115>)
 
 Response represents an HTTP response.
 
@@ -545,7 +565,7 @@ type Response struct {
 ```
 
 <a name="YFError"></a>
-## type YFError
+## type [YFError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L33-L37>)
 
 YFError represents a Yahoo Finance API error.
 
@@ -558,7 +578,7 @@ type YFError struct {
 ```
 
 <a name="HTTPStatusToError"></a>
-### func HTTPStatusToError
+### func [HTTPStatusToError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L178>)
 
 ```go
 func HTTPStatusToError(statusCode int, body string) *YFError
@@ -567,7 +587,7 @@ func HTTPStatusToError(statusCode int, body string) *YFError
 HTTPStatusToError converts an HTTP status code to an appropriate error.
 
 <a name="NewError"></a>
-### func NewError
+### func [NewError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L62>)
 
 ```go
 func NewError(code ErrorCode, message string, cause error) *YFError
@@ -576,7 +596,7 @@ func NewError(code ErrorCode, message string, cause error) *YFError
 NewError creates a new YFError.
 
 <a name="WrapAuthError"></a>
-### func WrapAuthError
+### func [WrapAuthError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L113>)
 
 ```go
 func WrapAuthError(err error) *YFError
@@ -585,7 +605,7 @@ func WrapAuthError(err error) *YFError
 WrapAuthError wraps an error as an authentication error.
 
 <a name="WrapInvalidResponseError"></a>
-### func WrapInvalidResponseError
+### func [WrapInvalidResponseError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L133>)
 
 ```go
 func WrapInvalidResponseError(err error) *YFError
@@ -594,7 +614,7 @@ func WrapInvalidResponseError(err error) *YFError
 WrapInvalidResponseError wraps an error as an invalid response error.
 
 <a name="WrapInvalidSymbolError"></a>
-### func WrapInvalidSymbolError
+### func [WrapInvalidSymbolError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L128>)
 
 ```go
 func WrapInvalidSymbolError(symbol string) *YFError
@@ -603,7 +623,7 @@ func WrapInvalidSymbolError(symbol string) *YFError
 WrapInvalidSymbolError creates an invalid symbol error.
 
 <a name="WrapNetworkError"></a>
-### func WrapNetworkError
+### func [WrapNetworkError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L108>)
 
 ```go
 func WrapNetworkError(err error) *YFError
@@ -612,7 +632,7 @@ func WrapNetworkError(err error) *YFError
 WrapNetworkError wraps an error as a network error.
 
 <a name="WrapNoDataError"></a>
-### func WrapNoDataError
+### func [WrapNoDataError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L138>)
 
 ```go
 func WrapNoDataError(symbol string) *YFError
@@ -621,7 +641,7 @@ func WrapNoDataError(symbol string) *YFError
 WrapNoDataError creates a no data error for a symbol.
 
 <a name="WrapNotFoundError"></a>
-### func WrapNotFoundError
+### func [WrapNotFoundError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L123>)
 
 ```go
 func WrapNotFoundError(symbol string) *YFError
@@ -630,7 +650,7 @@ func WrapNotFoundError(symbol string) *YFError
 WrapNotFoundError creates a not found error for a symbol.
 
 <a name="WrapRateLimitError"></a>
-### func WrapRateLimitError
+### func [WrapRateLimitError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L118>)
 
 ```go
 func WrapRateLimitError() *YFError
@@ -639,7 +659,7 @@ func WrapRateLimitError() *YFError
 WrapRateLimitError creates a rate limit error.
 
 <a name="WrapTimeoutError"></a>
-### func WrapTimeoutError
+### func [WrapTimeoutError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L143>)
 
 ```go
 func WrapTimeoutError(err error) *YFError
@@ -648,7 +668,7 @@ func WrapTimeoutError(err error) *YFError
 WrapTimeoutError wraps an error as a timeout error.
 
 <a name="YFError.Error"></a>
-### func \(\*YFError\) Error
+### func \(\*YFError\) [Error](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L40>)
 
 ```go
 func (e *YFError) Error() string
@@ -657,7 +677,7 @@ func (e *YFError) Error() string
 Error implements the error interface.
 
 <a name="YFError.Is"></a>
-### func \(\*YFError\) Is
+### func \(\*YFError\) [Is](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L53>)
 
 ```go
 func (e *YFError) Is(target error) bool
@@ -666,7 +686,7 @@ func (e *YFError) Is(target error) bool
 Is reports whether the error matches the target.
 
 <a name="YFError.Unwrap"></a>
-### func \(\*YFError\) Unwrap
+### func \(\*YFError\) [Unwrap](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/client/errors.go#L48>)
 
 ```go
 func (e *YFError) Unwrap() error
