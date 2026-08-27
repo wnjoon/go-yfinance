@@ -2219,7 +2219,7 @@ branch must start from that final <code>main</code> commit.</p>
   <code>.github/workflows/docs.yml</code>.</li>
 <li>[x] Keep generated documentation and workflow corrections in explicit,
   separate commits.</li>
-<li>[ ] Merge the verified branch to <code>main</code>, confirm remote CI on the final
+<li>[x] Merge the verified branch to <code>main</code>, confirm remote CI on the final
   <code>main</code> commit, and only then create and publish <code>v1.6.1</code>.</li>
 </ul>
 <h3 id="verification-record">Verification record</h3>
@@ -2241,6 +2241,10 @@ branch must start from that final <code>main</code> commit.</p>
   1.22, matching <code>go.mod</code> and the docs workflow.</li>
 <li>Claude/Codex cross-verification findings were reconciled in <code>dec679e</code>; the
   post-fix Claude review found no remaining accepted defect.</li>
+<li>PR #15 merged to <code>main</code> as <code>5478a4b</code>. The merge commit's Tests workflow
+  (test and lint jobs) and Generate Documentation &amp; Deploy Site workflow both
+  completed successfully. The docs workflow then committed its canonical
+  generated API output as <code>247a71e</code>; that commit changes generated docs only.</li>
 </ul>
 <h2 id="guardrails">Guardrails</h2>
 <ul>
