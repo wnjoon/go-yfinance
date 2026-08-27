@@ -8,31 +8,31 @@
       
       
       
-        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/API/">
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/releases/RELEASE_NOTES_v1.7.0/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../../advanced/mic-codes/">
       
       
-        <link rel="next" href="../api/ticker/">
+        <link rel="next" href="../RELEASE_NOTES_v1.6.1/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Overview - go-yfinance Docs</title>
+        <title>v1.7.0 - go-yfinance Docs</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference" class="md-skip">
+        <a href="#go-yfinance-v170" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              v1.7.0
             
           </span>
         </div>
@@ -230,7 +230,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -260,7 +260,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -284,20 +284,20 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -318,7 +318,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -333,37 +333,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
         
   
   
@@ -379,48 +352,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#primary-packages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Primary Packages
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#support-packages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Support Packages
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -433,7 +364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/ticker/" class="md-nav__link">
+      <a href="../../api/ticker/" class="md-nav__link">
         
   
   
@@ -461,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/multi/" class="md-nav__link">
+      <a href="../../api/multi/" class="md-nav__link">
         
   
   
@@ -489,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/screener/" class="md-nav__link">
+      <a href="../../api/screener/" class="md-nav__link">
         
   
   
@@ -517,7 +448,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/search/" class="md-nav__link">
+      <a href="../../api/search/" class="md-nav__link">
         
   
   
@@ -545,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/lookup/" class="md-nav__link">
+      <a href="../../api/lookup/" class="md-nav__link">
         
   
   
@@ -573,7 +504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/market/" class="md-nav__link">
+      <a href="../../api/market/" class="md-nav__link">
         
   
   
@@ -601,7 +532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/sector/" class="md-nav__link">
+      <a href="../../api/sector/" class="md-nav__link">
         
   
   
@@ -629,7 +560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/industry/" class="md-nav__link">
+      <a href="../../api/industry/" class="md-nav__link">
         
   
   
@@ -657,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/calendars/" class="md-nav__link">
+      <a href="../../api/calendars/" class="md-nav__link">
         
   
   
@@ -685,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/live/" class="md-nav__link">
+      <a href="../../api/live/" class="md-nav__link">
         
   
   
@@ -713,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/models/" class="md-nav__link">
+      <a href="../../api/models/" class="md-nav__link">
         
   
   
@@ -741,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/client/" class="md-nav__link">
+      <a href="../../api/client/" class="md-nav__link">
         
   
   
@@ -769,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/config/" class="md-nav__link">
+      <a href="../../api/config/" class="md-nav__link">
         
   
   
@@ -797,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/cache/" class="md-nav__link">
+      <a href="../../api/cache/" class="md-nav__link">
         
   
   
@@ -825,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/repair/" class="md-nav__link">
+      <a href="../../api/repair/" class="md-nav__link">
         
   
   
@@ -853,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/stats/" class="md-nav__link">
+      <a href="../../api/stats/" class="md-nav__link">
         
   
   
@@ -881,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/utils/" class="md-nav__link">
+      <a href="../../api/utils/" class="md-nav__link">
         
   
   
@@ -965,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../advanced/price-repair/" class="md-nav__link">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
         
   
   
@@ -993,7 +924,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../advanced/mic-codes/" class="md-nav__link">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
         
   
   
@@ -1025,20 +956,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -1059,7 +990,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1074,10 +1005,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.7.0/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1093,6 +1051,120 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lazy-trading-period-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy trading-period metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookie-crumb-and-proxy-resilience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cookie, crumb, and proxy resilience
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#range-based-stock-split-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Range-based stock-split repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapted-or-not-applicable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapted or not applicable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preserved-from-go-v161" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserved from Go v1.6.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1105,7 +1177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.6.1/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.6.1/" class="md-nav__link">
         
   
   
@@ -1133,7 +1205,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.6.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.6.0/" class="md-nav__link">
         
   
   
@@ -1161,7 +1233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.5.2/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.5.2/" class="md-nav__link">
         
   
   
@@ -1189,7 +1261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.5.1/" class="md-nav__link">
         
   
   
@@ -1217,7 +1289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.4.1/" class="md-nav__link">
         
   
   
@@ -1245,7 +1317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.4.0/" class="md-nav__link">
         
   
   
@@ -1273,7 +1345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.3.0/" class="md-nav__link">
         
   
   
@@ -1301,7 +1373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.2.0/" class="md-nav__link">
         
   
   
@@ -1329,7 +1401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.1.0/" class="md-nav__link">
         
   
   
@@ -1357,7 +1429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+      <a href="../RELEASE_NOTES_v1.0.0/" class="md-nav__link">
         
   
   
@@ -1441,7 +1513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/release-readiness-checklist/" class="md-nav__link">
+      <a href="../../development/release-readiness-checklist/" class="md-nav__link">
         
   
   
@@ -1469,7 +1541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/issue-10-authentication/" class="md-nav__link">
+      <a href="../../development/issue-10-authentication/" class="md-nav__link">
         
   
   
@@ -1497,7 +1569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.7.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.7.0-progress/" class="md-nav__link">
         
   
   
@@ -1525,7 +1597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.6.1-progress/" class="md-nav__link">
+      <a href="../../development/v1.6.1-progress/" class="md-nav__link">
         
   
   
@@ -1553,7 +1625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.6.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.6.0-progress/" class="md-nav__link">
         
   
   
@@ -1581,7 +1653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.5.2-progress/" class="md-nav__link">
+      <a href="../../development/v1.5.2-progress/" class="md-nav__link">
         
   
   
@@ -1609,7 +1681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.5.1-progress/" class="md-nav__link">
+      <a href="../../development/v1.5.1-progress/" class="md-nav__link">
         
   
   
@@ -1637,7 +1709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.4.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.4.0-progress/" class="md-nav__link">
         
   
   
@@ -1665,7 +1737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.3.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.3.0-progress/" class="md-nav__link">
         
   
   
@@ -1693,7 +1765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.2.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.2.0-progress/" class="md-nav__link">
         
   
   
@@ -1721,7 +1793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/v1.1.0-progress/" class="md-nav__link">
+      <a href="../../development/v1.1.0-progress/" class="md-nav__link">
         
   
   
@@ -1776,10 +1848,60 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#primary-packages" class="md-nav__link">
+  <a href="#changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Primary Packages
+        Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lazy-trading-period-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy trading-period metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookie-crumb-and-proxy-resilience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cookie, crumb, and proxy resilience
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#range-based-stock-split-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Range-based stock-split repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapted-or-not-applicable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapted or not applicable
       
     </span>
   </a>
@@ -1787,10 +1909,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#support-packages" class="md-nav__link">
+  <a href="#preserved-from-go-v161" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Support Packages
+        Preserved from Go v1.6.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
       
     </span>
   </a>
@@ -1817,98 +1961,81 @@
   
 
 
-<h1 id="api-reference">API Reference</h1>
-<p>The API reference is generated from the Go packages under <code>pkg/</code> and split by package so each module has its own searchable page.</p>
-<h2 id="primary-packages">Primary Packages</h2>
-<table>
-<thead>
-<tr>
-<th>Package</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../api/ticker/">ticker</a></td>
-<td>Single-symbol quotes, history, financials, options, holders, analysis, news, and valuation data</td>
-</tr>
-<tr>
-<td><a href="../api/multi/">multi</a></td>
-<td>Batch historical downloads for multiple symbols</td>
-</tr>
-<tr>
-<td><a href="../api/screener/">screener</a></td>
-<td>Predefined and custom equity, fund, and ETF screeners</td>
-</tr>
-<tr>
-<td><a href="../api/search/">search</a></td>
-<td>Symbol, company, news, list, and research search</td>
-</tr>
-<tr>
-<td><a href="../api/lookup/">lookup</a></td>
-<td>Ticker lookup by asset type</td>
-</tr>
-<tr>
-<td><a href="../api/market/">market</a></td>
-<td>Market status and summary data</td>
-</tr>
-<tr>
-<td><a href="../api/sector/">sector</a></td>
-<td>Sector overview, companies, industries, ETFs, and funds</td>
-</tr>
-<tr>
-<td><a href="../api/industry/">industry</a></td>
-<td>Industry overview, sector mapping, top companies, and reports</td>
-</tr>
-<tr>
-<td><a href="../api/calendars/">calendars</a></td>
-<td>Earnings, IPO, economic events, and split calendars</td>
-</tr>
-<tr>
-<td><a href="../api/live/">live</a></td>
-<td>Real-time WebSocket pricing stream</td>
-</tr>
-</tbody>
-</table>
-<h2 id="support-packages">Support Packages</h2>
-<table>
-<thead>
-<tr>
-<th>Package</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../api/models/">models</a></td>
-<td>Shared request, response, and domain data structures</td>
-</tr>
-<tr>
-<td><a href="../api/client/">client</a></td>
-<td>Yahoo Finance HTTP client, authentication, and typed errors</td>
-</tr>
-<tr>
-<td><a href="../api/config/">config</a></td>
-<td>Global configuration helpers</td>
-</tr>
-<tr>
-<td><a href="../api/cache/">cache</a></td>
-<td>Thread-safe in-memory cache</td>
-</tr>
-<tr>
-<td><a href="../api/repair/">repair</a></td>
-<td>Price data repair primitives</td>
-</tr>
-<tr>
-<td><a href="../api/stats/">stats</a></td>
-<td>Statistical helpers used by repair logic</td>
-</tr>
-<tr>
-<td><a href="../api/utils/">utils</a></td>
-<td>Timezone and MIC/Yahoo ticker suffix helpers</td>
-</tr>
-</tbody>
-</table>
+<h1 id="go-yfinance-v170">go-yfinance v1.7.0</h1>
+<p><strong>Python yfinance v1.7.0 Parity Release</strong></p>
+<p>This release ports the complete Python yfinance <code>1.6.0...1.7.0</code> behavior
+range onto the Go <code>v1.6.1</code> maintenance baseline. It preserves the Go-specific
+cookie, protobuf, WebSocket, and cache-safety fixes released in <code>v1.6.1</code>.</p>
+<h2 id="changes">Changes</h2>
+<h3 id="lazy-trading-period-metadata">Lazy trading-period metadata</h3>
+<ul>
+<li><code>Ticker.GetTradingPeriods()</code> exposes Yahoo regular, pre-market, and
+  post-market schedules through typed <code>models.TradingPeriod</code> values.</li>
+<li>Trading periods are loaded only when explicitly requested. Existing
+  <code>GetHistoryMetadata()</code> behavior remains cache-only and ordinary daily
+  history and FastInfo calls do not gain a hidden intraday request.</li>
+<li>Successful enrichment is coalesced and cached for concurrent callers.
+  Failures preserve base metadata and can be retried; <code>ClearCache()</code> also
+  invalidates an in-flight enrichment.</li>
+<li>Metadata and schedule results are deep copies, including nested timestamp
+  pointers and valid-range slices.</li>
+</ul>
+<h3 id="cookie-crumb-and-proxy-resilience">Cookie, crumb, and proxy resilience</h3>
+<ul>
+<li>Transient cookie/crumb rate-limit, network, and timeout failures now degrade
+  to a crumb-less target request instead of aborting endpoints that can work
+  without a crumb.</li>
+<li>Target HTTP failures receive at most one retry with the alternate auth
+  strategy. A retry never inserts an empty crumb, while non-transient auth and
+  parsing failures still propagate.</li>
+<li>Crumb-endpoint rate limits remain distinct from target-endpoint rate limits,
+  and caller query parameters are never mutated.</li>
+<li>All eight authenticated request paths share the same behavior, including the
+  calendars JSON POST path. SOCKS5/SOCKS5h proxy configuration remains an
+  immutable request snapshot.</li>
+</ul>
+<h3 id="range-based-stock-split-repair">Range-based stock-split repair</h3>
+<ul>
+<li>Split repair now detects and selectively corrects alternating missing or
+  double-adjusted ranges instead of rescaling every pre-split row.</li>
+<li>Detection uses adjusted OHLC signals, upstream local-volatility and
+  exceptional-volume false-positive suppression, and the finalized <code>0.2</code>
+  volume-threshold coefficient.</li>
+<li>Price, dividend, repaired-marker, and integer-volume semantics follow the
+  final Python v1.7.0 implementation. Go uses half-even rounding to match
+  Pandas/NumPy before storing public <code>int64</code> volume values.</li>
+<li>The complete upstream NRDY fixture and its last-27-row subset are included as
+  golden regressions, alongside forward/reverse, intraday, already-correct,
+  large-dividend, and exceptional-volume cases.</li>
+</ul>
+<h2 id="adapted-or-not-applicable">Adapted or not applicable</h2>
+<ul>
+<li>Python's dict-like lazy metadata wrapper is adapted to the explicit Go
+  <code>GetTradingPeriods() ([]models.TradingPeriod, error)</code> API so network access
+  and failure remain visible.</li>
+<li>Python packaging/test cleanup (<code>nospam</code>, Python 2 cruft) and user-injected
+  session ownership are not applicable to Go.</li>
+<li>Python merge and release-aggregation commits have no standalone Go runtime
+  change; their contained behavior is covered above.</li>
+<li>The minor upstream zero-repair test correction is already represented by a
+  deterministic Go test that selects an explicitly positive-volume row.</li>
+</ul>
+<h2 id="preserved-from-go-v161">Preserved from Go v1.6.1</h2>
+<ul>
+<li>Complete CycleTLS cookie preservation and sanitized auth errors.</li>
+<li>Overflow-safe protobuf decoding and final, race-safe WebSocket shutdown.</li>
+<li>Immutable holders/news cache results and request-keyed news caching.</li>
+</ul>
+<p>The previously deferred timezone location cache remains outside this parity
+release; it is not part of Python yfinance v1.7.0.</p>
+<h2 id="installation">Installation</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>go<span class="w"> </span>get<span class="w"> </span>github.com/wnjoon/go-yfinance@v1.7.0
+</code></pre></div>
+<h2 id="documentation">Documentation</h2>
+<ul>
+<li><a href="https://wnjoon.github.io/go-yfinance/API/">API Reference</a></li>
+<li><a href="https://wnjoon.github.io/go-yfinance/development/v1.7.0-progress/">v1.7.0 Progress</a></li>
+</ul>
 
 
 
@@ -1964,10 +2091,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

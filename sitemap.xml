@@ -125,6 +125,10 @@
          <lastmod>2026-08-27</lastmod>
     </url>
     <url>
+         <loc>https://wnjoon.github.io/go-yfinance/development/v1.7.0-progress/</loc>
+         <lastmod>2026-08-27</lastmod>
+    </url>
+    <url>
          <loc>https://wnjoon.github.io/go-yfinance/releases/RELEASE_NOTES_v1.0.0/</loc>
          <lastmod>2026-08-27</lastmod>
     </url>
@@ -162,6 +166,10 @@
     </url>
     <url>
          <loc>https://wnjoon.github.io/go-yfinance/releases/RELEASE_NOTES_v1.6.1/</loc>
+         <lastmod>2026-08-27</lastmod>
+    </url>
+    <url>
+         <loc>https://wnjoon.github.io/go-yfinance/releases/RELEASE_NOTES_v1.7.0/</loc>
          <lastmod>2026-08-27</lastmod>
     </url>
 </urlset>

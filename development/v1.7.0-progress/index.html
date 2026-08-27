@@ -1,0 +1,3035 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.7.0-progress/">
+      
+      
+        <link rel="prev" href="../issue-10-authentication/">
+      
+      
+        <link rel="next" href="../v1.6.1-progress/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>v1.7.0 Progress - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#go-yfinance-v170-development-progress" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              v1.7.0 Progress
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/ticker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.7.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.6.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.6.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-release-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Release Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-go-gap-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current Go Gap Assessment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locked-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked Design Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t00-freeze-the-upstream-parity-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T00: Freeze the upstream parity oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t01-map-current-go-behavior-and-lock-api-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T01: Map current Go behavior and lock API decisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trading-period-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trading-period parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trading-period parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t02-add-typed-trading-period-models-and-decoding-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T02: Add typed trading-period models and decoding tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t03-implement-explicit-lazy-enrichment-and-cache-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T03: Implement explicit lazy enrichment and cache lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crumb-and-proxy-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crumb and proxy parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crumb and proxy parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t04-build-and-prove-the-shared-degradable-request-primitive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T04: Build and prove the shared degradable request primitive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t05-migrate-every-crumb-call-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T05: Migrate every crumb call site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t06-lock-proxy-preservation-behavior-with-regressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T06: Lock proxy-preservation behavior with regressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stock-split-repair-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stock-split repair parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stock-split repair parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t07-import-and-adapt-the-nrdy-oracle-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T07: Import and adapt the NRDY oracle fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t08-implement-range-detection-and-volume-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T08: Implement range detection and volume validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t09-implement-selective-repair-and-golden-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T09: Implement selective repair and golden verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-and-release-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration and release preparation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration and release preparation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t10-reconcile-feature-findings-and-run-integration-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T10: Reconcile feature findings and run integration regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t11-close-the-upstream-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T11: Close the upstream audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t12-produce-release-and-generated-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T12: Produce release and generated documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t13-execute-the-release-readiness-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T13: Execute the release-readiness gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-verification-checkpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Verification Checkpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Verification Checkpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed-checkpoint-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed checkpoint ledger
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceptance Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-and-release-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification And Release Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Legend
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.6.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.6.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.2-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-release-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Release Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-go-gap-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current Go Gap Assessment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locked-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked Design Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t00-freeze-the-upstream-parity-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T00: Freeze the upstream parity oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t01-map-current-go-behavior-and-lock-api-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T01: Map current Go behavior and lock API decisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trading-period-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trading-period parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trading-period parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t02-add-typed-trading-period-models-and-decoding-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T02: Add typed trading-period models and decoding tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t03-implement-explicit-lazy-enrichment-and-cache-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T03: Implement explicit lazy enrichment and cache lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crumb-and-proxy-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crumb and proxy parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crumb and proxy parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t04-build-and-prove-the-shared-degradable-request-primitive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T04: Build and prove the shared degradable request primitive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t05-migrate-every-crumb-call-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T05: Migrate every crumb call site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t06-lock-proxy-preservation-behavior-with-regressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T06: Lock proxy-preservation behavior with regressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stock-split-repair-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stock-split repair parity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stock-split repair parity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t07-import-and-adapt-the-nrdy-oracle-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T07: Import and adapt the NRDY oracle fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t08-implement-range-detection-and-volume-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T08: Implement range detection and volume validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t09-implement-selective-repair-and-golden-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T09: Implement selective repair and golden verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-and-release-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration and release preparation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration and release preparation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#t10-reconcile-feature-findings-and-run-integration-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T10: Reconcile feature findings and run integration regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t11-close-the-upstream-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T11: Close the upstream audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t12-produce-release-and-generated-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T12: Produce release and generated documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#t13-execute-the-release-readiness-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T13: Execute the release-readiness gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-verification-checkpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Verification Checkpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Verification Checkpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed-checkpoint-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completed checkpoint ledger
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceptance Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-and-release-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification And Release Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Legend
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="go-yfinance-v170-development-progress">go-yfinance v1.7.0 Development Progress</h1>
+<blockquote>
+<p>Last Updated: 2026-08-27</p>
+<p>Tracking: <a href="https://github.com/wnjoon/go-yfinance/issues/14">go-yfinance issue #14</a></p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>This document tracks Python yfinance v1.7.0 parity work. Python yfinance 1.7.0
+was released on 2026-08-26 from <code>3d9d2f0</code>. The audit baseline is the complete
+upstream <code>1.6.0...1.7.0</code> comparison and changelog PR #2959, not only the short
+release notes.</p>
+<p>The Go branch starts from <code>main</code> at <code>94e7b45</code>, tagged <code>v1.6.1</code>. That baseline
+already includes Go-specific authentication hardening, complete CycleTLS
+cookie preservation, protobuf/WebSocket safety fixes, and cache immutability.
+The v1.7.0 work must preserve those guarantees while adding only behavior that
+maps from the upstream release.</p>
+<h2 id="branch-structure">Branch Structure</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>main (v1.6.1, 94e7b45)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> └── feature/parity-1.7.0
+</code></pre></div>
+<h2 id="upstream-release-scope">Upstream Release Scope</h2>
+<p>The upstream comparison contains 13 commits:</p>
+<table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>Item</th>
+<th>Final Go disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1d2cfda</code>, <code>e9fd382</code></td>
+<td>Lazy-load <code>history_metadata["tradingPeriods"]</code> (#2922)</td>
+<td>Adapted in <code>1a6da9f</code>: explicit typed lazy accessor, cache-only legacy getter, deep-copy cache boundaries.</td>
+</tr>
+<tr>
+<td><code>ea30eee</code></td>
+<td>Merge main into the upstream development line</td>
+<td>Audit contained commits; no standalone Go change.</td>
+</tr>
+<tr>
+<td><code>5261b4d</code>, <code>baeca64</code></td>
+<td>Remove <code>nospam</code> extra and Python 2 setup cruft (#2918)</td>
+<td>N/A: Python packaging only.</td>
+</tr>
+<tr>
+<td><code>0f29c85</code>, <code>c732994</code>, <code>5c1f64e</code></td>
+<td>Stock-split volume-validation repair and follow-up (#2958)</td>
+<td>Implemented in <code>c8489cd</code>: final range logic, suppressors, <code>.2</code> threshold, NRDY full/last-27 goldens, half-even integer-volume adaptation.</td>
+</tr>
+<tr>
+<td><code>ba7b650</code>, <code>fdede94</code></td>
+<td>Preserve proxies and degrade cookie/crumb acquisition failures (#2953)</td>
+<td>Implemented/adapted in <code>7042a4e</code>: shared GET/JSON-POST behavior across eight paths; immutable Go proxy retained and covered.</td>
+</tr>
+<tr>
+<td><code>686a031</code></td>
+<td>Minor upstream test correction</td>
+<td>N/A runtime; Go's deterministic zero-repair test already chooses an explicitly positive-volume row (<code>TestShouldRepairZero</code>).</td>
+</tr>
+<tr>
+<td><code>43f3021</code></td>
+<td>Release aggregation merge PR #2959</td>
+<td>No standalone runtime change; audit the contained feature commits without double-counting them.</td>
+</tr>
+<tr>
+<td><code>3d9d2f0</code></td>
+<td>Version 1.7.0</td>
+<td>Code parity complete; Go release documentation and tag remain in T12-T13.</td>
+</tr>
+</tbody>
+</table>
+<p>Changed upstream files:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CHANGELOG.rst
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>meta.yaml
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>tests/context.py
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>tests/data/NRDY-1d-bad-stock-split.csv
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>tests/data/NRDY-1d-bad-stock-split-fixed.csv
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>tests/test_cookie_crumb_degradation.py
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>tests/test_price_repair.py
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>yfinance/data.py
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>yfinance/scrapers/history.py
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>yfinance/version.py
+</code></pre></div>
+<p>Every commit and changed behavior must finish with one of: implemented,
+adapted, intentionally N/A, or deferred with a concrete reason.</p>
+<h2 id="current-go-gap-assessment">Current Go Gap Assessment</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>v1.6.1 behavior</th>
+<th>v1.7.0 target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trading periods</td>
+<td><code>ChartMeta</code> has no typed schedule. <code>GetHistoryMetadata</code> returns cached metadata without fetching and currently exposes its <code>ValidRanges</code> slice by reference.</td>
+<td>Add typed regular/pre/post periods and an explicit lazy accessor. Preserve cache-only behavior and clone metadata/slices on cache boundaries. Never introduce a hidden intraday request into normal daily history or fast-info calls.</td>
+</tr>
+<tr>
+<td>Crumb degradation</td>
+<td>Eight direct paths (<code>getWithCrumb</code> plus sector, industry, calendars, analysis, options, and two financials paths) abort before the target request on every crumb error.</td>
+<td>Degrade only rate-limit/network/timeout crumb failures for endpoints that can work without a crumb. Preserve non-transient auth failures and target error types.</td>
+</tr>
+<tr>
+<td>Proxy preservation</td>
+<td><code>Client.proxy</code> is an immutable configuration snapshot passed to every CycleTLS request.</td>
+<td>Keep implementation; add SOCKS5/SOCKS5h auth-and-target request regression coverage.</td>
+</tr>
+<tr>
+<td>Split repair</td>
+<td>Detection and volume confirmation are centered on one split boundary and correction can rescale the whole pre-split range.</td>
+<td>Detect anomalous ranges and repair only missing/doubly adjusted ranges or cells.</td>
+</tr>
+<tr>
+<td>Volume threshold</td>
+<td><code>volumeChangeThreshold</code> uses the v1.6 coefficient <code>0.333</code>.</td>
+<td>Use the finalized v1.7 coefficient <code>0.2</code>, with regression tests.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="locked-design-decisions">Locked Design Decisions</h2>
+<ul>
+<li>Keep <code>Ticker.GetHistoryMetadata() *models.ChartMeta</code> cache-only and
+  network-free. Return a deep copy so callers cannot mutate ticker cache state.</li>
+<li>Add an explicit <code>Ticker.GetTradingPeriods() ([]models.TradingPeriod, error)</code>
+  accessor. Network access and retryable failure are visible in its signature.</li>
+<li>Represent each schedule row with epoch-second regular <code>Start</code>/<code>End</code> fields
+  and optional pre/post epoch fields, consistent with existing <code>ChartMeta</code>
+  timestamps. Decode Yahoo's regular-only list shape, grouped
+  pre/regular/post shape, empty values, and the <code>{pre:[],post:[]}</code> sentinel.</li>
+<li>Store only a successful schedule enrichment. Coalesce concurrent loads,
+  return cloned slices, preserve base metadata on error, and clear all
+  enrichment state in <code>ClearCache()</code>.</li>
+<li>Put the shared authenticated GET primitive in <code>pkg/client</code>, next to the
+  authentication/error taxonomy it coordinates. Clone all query values.</li>
+<li>Match upstream's one alternate-strategy retry after a target HTTP error.
+  Preserve the final target status classification, never retry transport
+  errors implicitly, and never add an empty crumb.</li>
+<li>Treat Python user-session proxy ownership as N/A. Go's immutable configured
+  proxy already reaches every CycleTLS request; protect that behavior with
+  SOCKS5/SOCKS5h regression tests.</li>
+<li>Port #2958 from the final <code>0f29c859</code> plus <code>5c1f64e</code> state. Use range-based
+  selective repair and rounded integer-volume golden expectations; do not
+  truncate upstream fractional intermediate volumes.</li>
+</ul>
+<h2 id="task-plan">Task Plan</h2>
+<p>Each task must end with its focused tests passing and a reviewable commit (or
+an explicit N/A record). A task is not complete merely because its code has</p>
+<h4 id="t00-freeze-the-upstream-parity-oracle">T00: Freeze the upstream parity oracle</h4>
+<ul>
+<li>[x] Read the complete patches for #2922, #2953, #2958 and their follow-ups,
+  including upstream tests and both NRDY fixtures.</li>
+<li>[x] Build a commit/file/behavior matrix for all 13 upstream commits.</li>
+<li>[x] Classify every item as implemented, adapted, N/A, or deferred with
+  evidence; record Python-only packaging and merge commits explicitly.</li>
+<li>Deliverable: committed parity-audit section or companion document.</li>
+<li>Validation: every changed upstream file and commit has one disposition.</li>
+</ul>
+<h4 id="t01-map-current-go-behavior-and-lock-api-decisions">T01: Map current Go behavior and lock API decisions</h4>
+<ul>
+<li>[x] Map the relevant <code>yfinance/data.py</code> and <code>history.py</code> branches to all Go
+  call sites and existing tests.</li>
+<li>[x] Decide exported trading-period names, return shape, zero-value behavior,
+  JSON shape, and compatibility behavior for <code>GetHistoryMetadata()</code>.</li>
+<li>[x] Decide ownership of the shared degradable-request helper so ticker,
+  sector, industry, and calendars do not duplicate retry rules.</li>
+<li>Deliverable: documented API/request design with affected packages.</li>
+<li>Validation: compile-time API sketch plus focused design review; no runtime
+  implementation starts before public API questions are closed.</li>
+</ul>
+<h3 id="trading-period-parity">Trading-period parity</h3>
+<h4 id="t02-add-typed-trading-period-models-and-decoding-tests">T02: Add typed trading-period models and decoding tests</h4>
+<ul>
+<li>[x] Add typed regular/pre/post schedule models.</li>
+<li>[x] Decode normal, absent, sparse, and upstream variant payload shapes.</li>
+<li>[x] Keep this task free of network and cache behavior.</li>
+<li>Deliverable: models and table-driven decoding tests.</li>
+<li>Validation: focused model tests and <code>go vet</code> for affected packages.</li>
+</ul>
+<h4 id="t03-implement-explicit-lazy-enrichment-and-cache-lifecycle">T03: Implement explicit lazy enrichment and cache lifecycle</h4>
+<ul>
+<li>[x] Preserve <code>Ticker.GetHistoryMetadata()</code> as a cache-only, no-network API.</li>
+<li>[x] Add an explicit lazy accessor that consumes cached intraday metadata or
+  requests <code>range=5d</code>, <code>interval=1h</code>, and <code>includePrePost=true</code>.</li>
+<li>[x] Coalesce concurrent successful first loads into one request.</li>
+<li>[x] Merge only enrichment fields; never replace valid base metadata with a
+  sparse response.</li>
+<li>[x] Cache success, preserve base metadata after failure, allow retry, and
+  reset enrichment state in <code>ClearCache()</code>.</li>
+<li>Deliverable: accessor/cache implementation and deterministic request tests.</li>
+<li>Validation: no hidden daily-history/FastInfo request, first fetch, cache hit,
+  concurrency, sparse response, failure/retry, and clear-cache tests with race.</li>
+</ul>
+<h3 id="crumb-and-proxy-parity">Crumb and proxy parity</h3>
+<h4 id="t04-build-and-prove-the-shared-degradable-request-primitive">T04: Build and prove the shared degradable request primitive</h4>
+<ul>
+<li>[x] Clone caller <code>url.Values</code>; never mutate input or emit an empty crumb.</li>
+<li>[x] Degrade only rate-limit, network, and timeout crumb-acquisition errors.</li>
+<li>[x] Propagate parse, invalid-response, and other non-transient auth errors.</li>
+<li>[x] Send the target request crumb-less after a degradable acquisition error;
+  do not report crumb endpoint 429 as a target 429.</li>
+<li>[x] Preserve target error classifications and cap any upstream-required
+  alternate-strategy retry at one.</li>
+<li>[x] Prevent concurrent crumb-refresh stampedes.</li>
+<li>Deliverable: shared primitive with scripted deterministic tests.</li>
+<li>Validation: upstream six cases, non-transient errors, alternate retry,
+  immutable input, no empty crumb, and concurrent race tests.</li>
+</ul>
+<h4 id="t05-migrate-every-crumb-call-site">T05: Migrate every crumb call site</h4>
+<ul>
+<li>[x] Migrate <code>ticker.getWithCrumb</code>, sector, industry, calendars, analysis,
+  options, and both financials paths.</li>
+<li>[x] Remove bypasses and duplicated fallback logic.</li>
+<li>Deliverable: complete call-site migration as a separate commit.</li>
+<li>Validation: call-site inventory has zero unexplained direct paths; affected
+  package tests and race tests pass.</li>
+</ul>
+<h4 id="t06-lock-proxy-preservation-behavior-with-regressions">T06: Lock proxy-preservation behavior with regressions</h4>
+<ul>
+<li>[x] Prove <code>WithProxy("socks5h://...")</code> and config-provided SOCKS5 values are
+  unchanged on auth and target requests.</li>
+<li>[x] Verify no request or crumb fallback overwrites the configured proxy.</li>
+<li>[x] Do not port Python session-ownership behavior with no Go analogue.</li>
+<li>Deliverable: proxy-focused regression tests; runtime change only if a real
+  Go gap is demonstrated.</li>
+<li>Validation: SOCKS5/SOCKS5h tests pass under race detection.</li>
+</ul>
+<h3 id="stock-split-repair-parity">Stock-split repair parity</h3>
+<h4 id="t07-import-and-adapt-the-nrdy-oracle-fixtures">T07: Import and adapt the NRDY oracle fixtures</h4>
+<ul>
+<li>[x] Import both upstream NRDY CSVs into <code>pkg/repair/testdata</code> with source
+  attribution.</li>
+<li>[x] Document conversion of Python's temporary fractional internal volume to
+  public integer <code>models.Bar.Volume</code> semantics.</li>
+<li>[x] Add the golden harness and fixture parser before changing the repair
+  algorithm; record the observed parity gap without committing a failing test.</li>
+<li>Deliverable: fixture/parser commit plus a precise note of the current gap.</li>
+<li>Validation: fixture parsing and input-invariant tests pass; the recorded gap
+  is narrow and attributable to #2958 behavior.</li>
+</ul>
+<h4 id="t08-implement-range-detection-and-volume-validation">T08: Implement range detection and volume validation</h4>
+<ul>
+<li>[x] Detect contiguous anomalous ratio/reciprocal ranges, including isolated
+  and alternating rows, without requiring an anomaly on the split event row.</li>
+<li>[x] Gather representative positive-volume samples across adjacent ranges
+  and gaps, denoise them, preserve the all-zero guard, and avoid veto when a
+  meaningful comparison cannot be calculated.</li>
+<li>[x] Use threshold
+  <code>1 + (splitMax - 1 + largestVolumeChangePct) * 0.2</code>.</li>
+<li>Deliverable: detection/validation implementation and unit tests.</li>
+<li>Validation: focused forward/reverse split, sparse volume, all-zero, boundary,
+  and false-positive tests pass.</li>
+</ul>
+<h4 id="t09-implement-selective-repair-and-golden-verification">T09: Implement selective repair and golden verification</h4>
+<ul>
+<li>[x] Correct only identified missing or double-adjusted ranges/cells; never
+  rescale every pre-split row in mixed data.</li>
+<li>[x] Preserve dividend scaling, repaired markers, FX exclusion, and existing
+  forward/reverse split behavior.</li>
+<li>[x] Verify full NRDY and last-27-row outputs plus already-correct fixtures.</li>
+<li>Deliverable: selective repair and golden tests in a reviewable commit.</li>
+<li>Validation: expected NRDY output matches value-for-value and existing repair
+  tests pass under race detection.</li>
+</ul>
+<h3 id="integration-and-release-preparation">Integration and release preparation</h3>
+<h4 id="t10-reconcile-feature-findings-and-run-integration-regression">T10: Reconcile feature findings and run integration regression</h4>
+<ul>
+<li>[x] Resolve accepted findings from the feature checkpoints below with new
+  deterministic regression tests.</li>
+<li>[x] Run focused history, ticker, client, repair, cache, and integration tests.</li>
+<li>[x] Audit that v1.6.1 cookie, WebSocket, protobuf, and cache guarantees remain.</li>
+<li>Deliverable: small corrective commits, never one mixed review-fix commit.</li>
+<li>Validation: affected package tests, race tests, <code>go vet</code>, and
+  <code>git diff --check</code> pass.</li>
+</ul>
+<h4 id="t11-close-the-upstream-audit">T11: Close the upstream audit</h4>
+<ul>
+<li>[x] Revisit the T00 matrix against the final code and tests.</li>
+<li>[x] Close every upstream behavior as implemented, adapted, N/A, or deferred.</li>
+<li>[x] Confirm no Python-only concern was accidentally introduced into Go.</li>
+<li>Deliverable: final parity audit suitable for release notes and PR body.</li>
+<li>Validation: no unresolved or evidence-free matrix entry.</li>
+</ul>
+<h4 id="t12-produce-release-and-generated-documentation">T12: Produce release and generated documentation</h4>
+<ul>
+<li>[x] Add <code>docs/releases/RELEASE_NOTES_v1.7.0.md</code> with exact dispositions.</li>
+<li>[x] Update README, <code>docs/index.md</code>, and <code>mkdocs.yml</code> parity/release content.</li>
+<li>[x] Regenerate GoDoc/API pages from the final public API and commit drift.</li>
+<li>Deliverable: independent release-documentation commit(s).</li>
+<li>Validation: README/docs sync check and <code>make docs-build</code> pass.</li>
+</ul>
+<h4 id="t13-execute-the-release-readiness-gate">T13: Execute the release-readiness gate</h4>
+<ul>
+<li>[ ] Re-read <code>docs/development/release-readiness-checklist.md</code> before opening
+  or marking the release PR ready, before merging, and before tagging.</li>
+<li>[ ] Run every local command in Verification And Release Gates.</li>
+<li>[ ] Push, open/refresh the PR, and require clean remote CI and review status.</li>
+<li>[ ] After approval, merge to <code>main</code>, validate final-main CI, then create the
+  annotated <code>v1.7.0</code> tag on the verified release commit.</li>
+<li>Deliverable: mergeable release PR, final-main evidence, and guarded tag.</li>
+<li>Validation: checklist complete with exact commit/tag targets recorded.</li>
+</ul>
+<h2 id="cross-verification-checkpoints">Cross-Verification Checkpoints</h2>
+<p>Cross-verification is intentionally incremental. Waiting until all features are
+combined would make API mistakes and upstream-semantic drift expensive to
+isolate. Claude Code and Codex reviews must be blind: give both the same
+upstream oracle and branch diff, but do not expose either review to the other
+until both reports are complete.</p>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>Timing</th>
+<th>Review focus</th>
+<th>Required before</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CV0: design</td>
+<td>After T00-T01</td>
+<td>Completeness of upstream matrix, Go API shape, compatibility and hidden-network risks</td>
+<td>T02</td>
+</tr>
+<tr>
+<td>CV1: metadata</td>
+<td>After T02-T03</td>
+<td>Upstream #2922 semantics, sparse decoding, cache state machine, concurrency and API compatibility</td>
+<td>T04 or acceptance of metadata work</td>
+</tr>
+<tr>
+<td>CV2: auth/proxy</td>
+<td>After T04-T06</td>
+<td>Error taxonomy, crumb-less fallback, retry bounds, parameter immutability, stampede and proxy preservation</td>
+<td>T07 or acceptance of auth work</td>
+</tr>
+<tr>
+<td>CV3: repair</td>
+<td>After T07-T09</td>
+<td>#2958 range semantics, integer-volume adaptation, false positives and golden fixture fidelity</td>
+<td>T10</td>
+</tr>
+<tr>
+<td>CV4: integrated parity</td>
+<td>After T10-T11</td>
+<td>Full <code>1.6.0...1.7.0</code> behavioral coverage, cross-feature regressions and omitted upstream changes</td>
+<td>T12</td>
+</tr>
+<tr>
+<td>CV5: release candidate</td>
+<td>After T12 and all local gates</td>
+<td>Release diff, public API/docs sync, CI-command drift, tag target and release checklist</td>
+<td>main merge/tag</td>
+</tr>
+</tbody>
+</table>
+<p>For CV1-CV3, a single verifier may perform the first focused review when the
+change is small, but the other verifier must independently review before T10.
+CV0, CV4, and CV5 require both reviewers because they guard irreversible API or
+release decisions. Every checkpoint produces a short ledger of accepted,
+rejected, and deferred findings with evidence. Accepted findings require a
+regression test and re-running the checkpoint's focused race tests.</p>
+<h3 id="completed-checkpoint-ledger">Completed checkpoint ledger</h3>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>Status</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CV0</td>
+<td>Complete</td>
+<td>Codex audited all 13 commits and Claude reviewed the locked semantics. Accepted: explicit error-returning trading-period accessor, deep-copy cache boundaries, eight auth paths, shared GET/JSON-POST primitive, and final <code>0f29c859</code> + <code>5c1f64e</code> split oracle. Corrected <code>43f3021</code> from docs-only to aggregation merge.</td>
+</tr>
+<tr>
+<td>CV1</td>
+<td>Complete</td>
+<td>Codex accepted decoding/coalescing and found JSON round-trip plus ClearCache/in-flight gaps; both were fixed with tests. Claude raised cached-shape, metadata-merge, and empty-result concerns; rejected because upstream <code>HistoryMetadata</code> also returns an existing key as-is, merges lazy periods into <code>_history_metadata</code>, and treats an existing empty sentinel as loaded.</td>
+</tr>
+<tr>
+<td>CV2</td>
+<td>Complete</td>
+<td>Codex found caller-supplied stale crumb and nil-response gaps; fixed by rejecting manual crumbs and returning typed invalid-response errors. All eight direct paths now use the shared primitive. Claude found no blocker; its suggestion that upstream does not retry all 400/404 responses was rejected because <code>data.py::_make_request</code> retries every <code>status_code &gt;= 400</code> once.</td>
+</tr>
+<tr>
+<td>CV3</td>
+<td>Complete</td>
+<td>Codex found interday gate, cutoff, adjusted-OHLC, local-volatility, and volume-spike suppression gaps; all were ported with regressions. Claude found no semantic blocker and identified Go half-away rounding; fixed with <code>math.RoundToEven</code> and an exact <code>.5</code> test. NRDY full and last-27 goldens pass.</td>
+</tr>
+<tr>
+<td>CV4</td>
+<td>Complete</td>
+<td>Codex caught and prompted repair of a duplicated progress block. Its split-volume blocker was rejected against final upstream control flow: all-zero volume exits before detection, while the later range-volume <code>continue</code> occurs in a non-mutating first loop and the second loop applies every mapped range. Claude found no code blocker; <code>686a031</code> was closed against Go's explicit positive-volume zero-repair test. Full network tests, vet, race, and both lint gates pass.</td>
+</tr>
+<tr>
+<td>CV5</td>
+<td>Complete</td>
+<td>Codex and Claude independently found no release blocker. Codex confirmed a clean candidate, README/docs sync, workflow-command alignment, public API documentation, no local or remote tag collision, and byte-identical regenerated API docs after normalizing expected branch source links. Both reviewers independently upheld the CV4 split-volume conclusion against exact upstream runtime control flow. Remaining work is limited to remote PR/CI, main merge, and tagging.</td>
+</tr>
+</tbody>
+</table>
+<p>Feature commits:</p>
+<ul>
+<li><code>1a6da9f</code> — typed/lazy trading-period metadata and cache immutability.</li>
+<li><code>c8489cd</code> — range-based split repair and upstream NRDY oracle fixtures.</li>
+<li><code>7042a4e</code> — crumb degradation, bounded retry, proxy regressions, and call-site migration.</li>
+</ul>
+<h2 id="acceptance-criteria">Acceptance Criteria</h2>
+<ul>
+<li>[x] Daily history and FastInfo gain no hidden intraday enrichment request.</li>
+<li>[x] First trading-period access performs one enrichment fetch; repeated and
+  concurrent successful access is cached.</li>
+<li>[x] Failed enrichment preserves base metadata and can be retried.</li>
+<li>[x] Auth tests cover cookie timeout, crumb 429, transient crumb failure,
+  target 429, SOCKS proxy preservation, and no proxy overwrite.</li>
+<li>[x] Auth tests cover non-transient propagation, alternate retry, no empty
+  crumb, caller parameter immutability, and concurrent callers.</li>
+<li>[x] Full and last-27-row NRDY inputs match expected fixed outputs.</li>
+<li>[x] Already-correct split inputs remain unchanged.</li>
+<li>[x] Existing history, auth, repair, WebSocket, cache, and integration tests
+  remain green.</li>
+</ul>
+<h2 id="verification-and-release-gates">Verification And Release Gates</h2>
+<p>Before merging to <code>main</code> or creating <code>v1.7.0</code>:</p>
+<ul>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go test ./...</code></li>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go vet ./...</code></li>
+<li>[x] <code>GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...</code></li>
+<li>[x] <code>make lint</code></li>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go test -v -race -coverprofile=coverage.out ./...</code></li>
+<li>[x] <code>GOMARKDOC=/tmp/gobin/gomarkdoc make docs</code></li>
+<li>[x] <code>cp README.md docs/index.md</code></li>
+<li>[x] <code>make docs-build</code></li>
+<li>[x] <code>git diff --check</code></li>
+<li>[x] Verify local commands match <code>.github/workflows/test.yml</code> and
+  <code>.github/workflows/docs.yml</code>.</li>
+<li>[x] Push the branch, verify the release PR is mergeable, and require remote
+  test/lint success.</li>
+<li>[ ] Merge to <code>main</code>, wait for the final main Tests and docs workflows, then
+  create annotated <code>v1.7.0</code> on the final intended release commit.</li>
+</ul>
+<h2 id="guardrails">Guardrails</h2>
+<ul>
+<li>Do not tag or publish from the parity branch.</li>
+<li>Do not move or recreate an existing release tag.</li>
+<li>Do not treat a crumb-endpoint 429 as proof that the target endpoint is rate
+  limited.</li>
+<li>Do not swallow non-transient authentication or target errors.</li>
+<li>Do not add an automatic intraday request to ordinary history or FastInfo.</li>
+<li>Do not broaden this release with Python-only packaging/CI changes or the
+  previously deferred timezone location cache.</li>
+<li>Keep unrelated dirty files out of parity and release commits.</li>
+</ul>
+<h2 id="status-legend">Status Legend</h2>
+<ul>
+<li><code>[x]</code> Done</li>
+<li><code>[ ]</code> Pending</li>
+<li>N/A: verified not applicable, with the reason recorded inline</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
