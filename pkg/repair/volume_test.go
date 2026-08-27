@@ -162,21 +162,21 @@ func TestRepairStockSplitsUnadjustedWithVolume(t *testing.T) {
 	}
 }
 
-func TestRepairStockSplitsSkippedWithFlatVolume(t *testing.T) {
+func TestRepairStockSplitsFlatNonzeroVolumeDoesNotVeto(t *testing.T) {
 	repairer := New(DefaultOptions())
 
-	// Same price pattern, but volume is flat across the split date: without
-	// the volume signature the repair must not fire (upstream #2943).
+	// Final 1.7.0 semantics use volume to reject a concrete false-positive,
+	// but lack of a volume jump alone does not veto a clear price signal.
 	bars := unadjustedSplitBars([]int64{1200, 1150, 1250, 1180, 1220, 1210, 1190, 1230})
 
 	result := repairer.repairStockSplits(bars)
 
-	for i := range result {
-		if !closeTo(result[i].Close, bars[i].Close, 1e-12) {
-			t.Errorf("bar %d: Close changed %v -> %v", i, bars[i].Close, result[i].Close)
+	for i := 0; i < 5; i++ {
+		if !closeTo(result[i].Close, bars[i].Close/2, 1e-12) {
+			t.Errorf("bar %d: expected split correction, got %v", i, result[i].Close)
 		}
-		if result[i].Repaired {
-			t.Errorf("bar %d: expected no repair", i)
+		if !result[i].Repaired {
+			t.Errorf("bar %d: expected repair", i)
 		}
 	}
 }
@@ -202,5 +202,12 @@ func TestVolumeChangeThresholdScalesWithChange(t *testing.T) {
 	}
 	if math.IsNaN(t100) {
 		t.Error("threshold must not be NaN")
+	}
+}
+
+func TestVolumeChangeThresholdUsesV170Coefficient(t *testing.T) {
+	vol := []float64{1000, 1000, 1000, 1000, 1000, 1000}
+	if got := volumeChangeThreshold(vol, 2, "1d"); !closeTo(got, 1.2, 1e-12) {
+		t.Fatalf("threshold = %v, want 1.2", got)
 	}
 }

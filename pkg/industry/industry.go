@@ -138,13 +138,7 @@ func (i *Industry) fetchData() error {
 	params.Set("lang", lang)
 	params.Set("region", i.region)
 
-	// Add crumb authentication
-	params, err := i.auth.AddCrumbToParams(params)
-	if err != nil {
-		return fmt.Errorf("failed to add crumb: %w", err)
-	}
-
-	resp, err := i.client.Get(queryURL, params)
+	resp, err := i.auth.GetWithCrumb(queryURL, params)
 	if err != nil {
 		return fmt.Errorf("failed to fetch industry data: %w", err)
 	}

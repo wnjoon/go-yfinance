@@ -2,6 +2,7 @@ package repair
 
 import (
 	"encoding/csv"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -45,13 +46,15 @@ func loadBarsCSV(t *testing.T, name string) []models.Bar {
 			t.Fatalf("fixture %s: bad datetime %q: %v", name, row[0], err)
 		}
 		bars = append(bars, models.Bar{
-			Date:      date,
-			Open:      parseF(row[1]),
-			High:      parseF(row[2]),
-			Low:       parseF(row[3]),
-			Close:     parseF(row[4]),
-			AdjClose:  parseF(row[5]),
-			Volume:    int64(parseF(row[6])),
+			Date:     date,
+			Open:     parseF(row[1]),
+			High:     parseF(row[2]),
+			Low:      parseF(row[3]),
+			Close:    parseF(row[4]),
+			AdjClose: parseF(row[5]),
+			// pandas finishes repair with round().astype(int64); Go's model is
+			// already integral, so preserve that final semantic at ingestion.
+			Volume:    int64(math.RoundToEven(parseF(row[6]))),
 			Dividends: parseF(row[7]),
 			Splits:    parseF(row[8]),
 		})

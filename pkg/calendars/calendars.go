@@ -212,19 +212,13 @@ func (c *Calendars) fetchCalendar(calType models.CalendarType, q query, opts *mo
 	params.Set("lang", lang)
 	params.Set("region", region)
 
-	// Add crumb authentication
-	params, err := c.auth.AddCrumbToParams(params)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to add crumb: %w", err)
-	}
-
 	// Marshal body to JSON
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal request body: %w", err)
 	}
 
-	resp, err := c.client.PostJSON(endpoints.CalendarURL, params, bodyBytes)
+	resp, err := c.auth.PostJSONWithCrumb(endpoints.CalendarURL, params, bodyBytes)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to fetch calendar data: %w", err)
 	}

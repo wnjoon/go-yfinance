@@ -19,12 +19,14 @@ type scriptedAuthResponse struct {
 	headers map[string]string
 	cookies map[string]string
 	err     error
+	nilResp bool
 }
 
 type scriptedAuthClient struct {
 	t          *testing.T
 	steps      []scriptedAuthResponse
 	calls      []string
+	params     []url.Values
 	cookies    []string
 	cookieSets []map[string]string
 }
@@ -36,12 +38,17 @@ func newScriptedAuthClient(t *testing.T, steps ...scriptedAuthResponse) *scripte
 
 func (c *scriptedAuthClient) Get(rawURL string, params url.Values) (*Response, error) {
 	c.t.Helper()
-	return c.next("GET", rawURL)
+	return c.next("GET", rawURL, params)
 }
 
 func (c *scriptedAuthClient) Post(rawURL string, params url.Values, body map[string]string) (*Response, error) {
 	c.t.Helper()
-	return c.next("POST", rawURL)
+	return c.next("POST", rawURL, params)
+}
+
+func (c *scriptedAuthClient) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error) {
+	c.t.Helper()
+	return c.next("POSTJSON", rawURL, params)
 }
 
 func (c *scriptedAuthClient) SetCookie(cookie string) {
@@ -56,13 +63,14 @@ func (c *scriptedAuthClient) SetCookies(cookies map[string]string) {
 	c.cookieSets = append(c.cookieSets, stored)
 }
 
-func (c *scriptedAuthClient) next(method, rawURL string) (*Response, error) {
+func (c *scriptedAuthClient) next(method, rawURL string, params url.Values) (*Response, error) {
 	if len(c.steps) == 0 {
 		c.t.Fatalf("unexpected %s %s", method, rawURL)
 	}
 	step := c.steps[0]
 	c.steps = c.steps[1:]
 	c.calls = append(c.calls, method+" "+rawURL)
+	c.params = append(c.params, cloneURLValues(params))
 	if step.method != method {
 		c.t.Fatalf("expected method %s, got %s for %s", step.method, method, rawURL)
 	}
@@ -71,6 +79,9 @@ func (c *scriptedAuthClient) next(method, rawURL string) (*Response, error) {
 	}
 	if step.err != nil {
 		return nil, step.err
+	}
+	if step.nilResp {
+		return nil, nil
 	}
 	return &Response{
 		StatusCode: step.status,
@@ -100,6 +111,145 @@ func newScriptedAuthManager(client *scriptedAuthClient, strategy AuthStrategy) *
 		client:   client,
 		strategy: strategy,
 	}
+}
+
+func TestGetWithCrumbClonesParamsAndUsesCachedCrumb(t *testing.T) {
+	const targetURL = "https://example.test/chart"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "GET", rawURL: targetURL, status: 200},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.crumb = "cached-crumb"
+	auth.expiry = time.Now().Add(time.Hour)
+	params := url.Values{"range": {"5d"}}
+
+	resp, err := auth.GetWithCrumb(targetURL, params)
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("GetWithCrumb() = (%v, %v)", resp, err)
+	}
+	if params.Get("crumb") != "" {
+		t.Fatalf("caller params mutated: %v", params)
+	}
+	if got := fakeClient.params[0].Get("crumb"); got != "cached-crumb" {
+		t.Fatalf("target crumb = %q, want cached-crumb", got)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestGetWithCrumbRejectsCallerSuppliedCrumb(t *testing.T) {
+	fakeClient := newScriptedAuthClient(t)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	params := url.Values{"crumb": {"stale"}}
+
+	resp, err := auth.GetWithCrumb("https://example.test/chart", params)
+	if resp != nil || err == nil {
+		t.Fatalf("GetWithCrumb() = (%v, %v), want manual-crumb error", resp, err)
+	}
+	if params.Get("crumb") != "stale" {
+		t.Fatalf("caller params mutated: %v", params)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestGetWithCrumbRejectsNilTargetResponse(t *testing.T) {
+	const targetURL = "https://example.test/chart"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "GET", rawURL: targetURL, nilResp: true},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.crumb = "cached-crumb"
+	auth.expiry = time.Now().Add(time.Hour)
+
+	resp, err := auth.GetWithCrumb(targetURL, nil)
+	if resp != nil || !errors.Is(err, ErrInvalidResponse) {
+		t.Fatalf("GetWithCrumb() = (%v, %v), want invalid response", resp, err)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestGetWithCrumbDegradesTransientAcquisitionFailure(t *testing.T) {
+	const targetURL = "https://example.test/chart"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CookieURL, status: 404},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbURL, status: 429},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.ConsentURL, err: errors.New("timeout")},
+		scriptedAuthResponse{method: "GET", rawURL: targetURL, status: 200},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+
+	resp, err := auth.GetWithCrumb(targetURL, url.Values{"range": {"5d"}})
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("GetWithCrumb() = (%v, %v)", resp, err)
+	}
+	if got := fakeClient.params[len(fakeClient.params)-1].Get("crumb"); got != "" {
+		t.Fatalf("crumb-less target contained crumb %q", got)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestGetWithCrumbPropagatesNonTransientAcquisitionFailure(t *testing.T) {
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CookieURL, status: 404},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbURL, status: 200, body: "<html>bad</html>"},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.ConsentURL, status: 403},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+
+	resp, err := auth.GetWithCrumb("https://example.test/chart", nil)
+	if resp != nil || err == nil {
+		t.Fatalf("GetWithCrumb() = (%v, %v), want fatal auth error", resp, err)
+	}
+	if !errors.Is(err, ErrInvalidResponse) {
+		t.Fatalf("error = %v, want invalid-response cause", err)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestGetWithCrumbRetriesHTTPErrorOnceWithAlternateStrategy(t *testing.T) {
+	const targetURL = "https://example.test/chart"
+	const sessionID = "retry-session"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "GET", rawURL: targetURL, status: 401},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.ConsentURL, status: 200, body: hiddenConsentHTML("csrf", sessionID)},
+		scriptedAuthResponse{method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, status: 200},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CopyConsentURL + "?sessionId=" + sessionID, status: 204},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbCSRFURL, status: 200, body: "alternate-crumb"},
+		scriptedAuthResponse{method: "GET", rawURL: targetURL, status: 200},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.crumb = "stale-crumb"
+	auth.expiry = time.Now().Add(time.Hour)
+
+	resp, err := auth.GetWithCrumb(targetURL, nil)
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("GetWithCrumb() = (%v, %v)", resp, err)
+	}
+	if fakeClient.params[0].Get("crumb") != "stale-crumb" {
+		t.Fatalf("first target did not use cached crumb")
+	}
+	if got := fakeClient.params[len(fakeClient.params)-1].Get("crumb"); got != "alternate-crumb" {
+		t.Fatalf("retry crumb = %q", got)
+	}
+	fakeClient.assertDrained(t)
+}
+
+func TestPostJSONWithCrumbUsesSharedRequestBehavior(t *testing.T) {
+	const targetURL = "https://example.test/calendar"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{method: "POSTJSON", rawURL: targetURL, status: 200},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.crumb = "post-crumb"
+	auth.expiry = time.Now().Add(time.Hour)
+
+	resp, err := auth.PostJSONWithCrumb(targetURL, nil, []byte(`{"query":"x"}`))
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("PostJSONWithCrumb() = (%v, %v)", resp, err)
+	}
+	if got := fakeClient.params[0].Get("crumb"); got != "post-crumb" {
+		t.Fatalf("POST crumb = %q", got)
+	}
+	fakeClient.assertDrained(t)
 }
 
 func TestExtractInputValue(t *testing.T) {

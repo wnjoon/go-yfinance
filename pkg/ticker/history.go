@@ -147,6 +147,15 @@ func (t *Ticker) fetchChartResult(params models.HistoryParams) (*models.ChartRes
 // A Yahoo-reported error is returned as [client.ChartAPIError], carrying the
 // ticker symbol plus Yahoo's error code and description.
 func (t *Ticker) decodeChartResponse(body string) (*models.ChartResult, error) {
+	result, err := t.decodeChartResponseWithoutCache(body)
+	if err != nil {
+		return nil, err
+	}
+	t.setHistoryMetadata(&result.Meta)
+	return result, nil
+}
+
+func (t *Ticker) decodeChartResponseWithoutCache(body string) (*models.ChartResult, error) {
 	var chartResp models.ChartResponse
 	if err := json.Unmarshal([]byte(body), &chartResp); err != nil {
 		return nil, client.WrapInvalidResponseError(err)
@@ -161,12 +170,78 @@ func (t *Ticker) decodeChartResponse(body string) (*models.ChartResult, error) {
 		return nil, client.WrapNotFoundError(t.symbol)
 	}
 
-	result := chartResp.Chart.Result[0]
+	return &chartResp.Chart.Result[0], nil
+}
 
-	// Cache metadata
-	t.setHistoryMetadata(&result.Meta)
+// GetTradingPeriods returns exchange sessions from cached intraday metadata,
+// fetching only the minimal intraday chart request when they are not cached.
+func (t *Ticker) GetTradingPeriods() ([]models.TradingPeriod, error) {
+	t.mu.Lock()
+	observedLoadSeq := t.tradingPeriodsLoadSeq
+	for t.tradingPeriodsLoading {
+		t.tradingPeriodsCond.Wait()
+	}
+	if t.historyMeta != nil && t.historyMeta.HasTradingPeriods() {
+		periods := cloneTradingPeriods(t.historyMeta.TradingPeriods)
+		t.mu.Unlock()
+		return periods, nil
+	}
+	if t.tradingPeriodsLoadSeq != observedLoadSeq && t.tradingPeriodsLastErr != nil {
+		err := t.tradingPeriodsLastErr
+		t.mu.Unlock()
+		return nil, err
+	}
+	t.tradingPeriodsLoading = true
+	generation := t.cacheGeneration
+	t.mu.Unlock()
 
-	return &result, nil
+	meta, err := t.fetchTradingPeriodsMetadata()
+	if err == nil && (meta == nil || !meta.HasTradingPeriods()) {
+		err = fmt.Errorf("history metadata did not include tradingPeriods")
+	}
+
+	t.mu.Lock()
+	if err == nil && generation != t.cacheGeneration {
+		err = fmt.Errorf("trading periods cache was cleared during fetch")
+	}
+	if err == nil && generation == t.cacheGeneration {
+		if t.historyMeta == nil {
+			t.historyMeta = cloneChartMeta(meta)
+		} else {
+			merged := t.historyMeta.WithTradingPeriods(cloneTradingPeriods(meta.TradingPeriods))
+			t.historyMeta = &merged
+		}
+	}
+	t.tradingPeriodsLoading = false
+	t.tradingPeriodsLoadSeq++
+	t.tradingPeriodsLastErr = err
+	t.tradingPeriodsCond.Broadcast()
+	var periods []models.TradingPeriod
+	if err == nil {
+		periods = cloneTradingPeriods(meta.TradingPeriods)
+	}
+	t.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
+	return periods, nil
+}
+
+func (t *Ticker) fetchTradingPeriodsMetadata() (*models.ChartMeta, error) {
+	if t.tradingPeriodsFetcher != nil {
+		return t.tradingPeriodsFetcher()
+	}
+	params := models.HistoryParams{Period: "5d", Interval: "1h", PrePost: true}
+	urlParams := buildHistoryURLParams(params)
+	resp, err := t.getWithCrumb(t.chartURL(), urlParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch trading periods: %w", err)
+	}
+	result, err := t.decodeChartResponseWithoutCache(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &result.Meta, nil
 }
 
 // parseChartData converts chart API response to Bar slice.

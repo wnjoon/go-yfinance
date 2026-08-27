@@ -135,7 +135,7 @@ market.summary          | m.Summary()
 
 
 <a name="Market"></a>
-## type Market
+## type [Market](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L20-L31>)
 
 Market provides access to market status and summary information.
 
@@ -148,7 +148,7 @@ type Market struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L64>)
 
 ```go
 func New(market string, opts ...Option) (*Market, error)
@@ -179,7 +179,7 @@ fmt.Printf("Market opens at: %s\n", status.Open.Format("15:04"))
 ```
 
 <a name="NewWithPredefined"></a>
-### func NewWithPredefined
+### func [NewWithPredefined](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L101>)
 
 ```go
 func NewWithPredefined(market models.PredefinedMarket, opts ...Option) (*Market, error)
@@ -197,7 +197,7 @@ if err != nil {
 ```
 
 <a name="NewWithRegion"></a>
-### func NewWithRegion
+### func [NewWithRegion](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L106>)
 
 ```go
 func NewWithRegion(region models.MarketRegion, opts ...Option) (*Market, error)
@@ -206,7 +206,7 @@ func NewWithRegion(region models.MarketRegion, opts ...Option) (*Market, error)
 NewWithRegion creates a new Market instance using a Yahoo market region.
 
 <a name="Market.ClearCache"></a>
-### func \(\*Market\) ClearCache
+### func \(\*Market\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L340>)
 
 ```go
 func (m *Market) ClearCache()
@@ -215,7 +215,7 @@ func (m *Market) ClearCache()
 ClearCache clears the cached market data. The next call to Status\(\) or Summary\(\) will fetch fresh data.
 
 <a name="Market.Close"></a>
-### func \(\*Market\) Close
+### func \(\*Market\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L111>)
 
 ```go
 func (m *Market) Close()
@@ -224,7 +224,7 @@ func (m *Market) Close()
 Close releases resources used by the Market instance.
 
 <a name="Market.IsOpen"></a>
-### func \(\*Market\) IsOpen
+### func \(\*Market\) [IsOpen](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L350>)
 
 ```go
 func (m *Market) IsOpen() (bool, error)
@@ -233,7 +233,7 @@ func (m *Market) IsOpen() (bool, error)
 IsOpen returns true if the market is currently open. This is determined by checking if the current time is between open and close times.
 
 <a name="Market.Market"></a>
-### func \(\*Market\) Market
+### func \(\*Market\) [Market](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L118>)
 
 ```go
 func (m *Market) Market() string
@@ -242,7 +242,7 @@ func (m *Market) Market() string
 Market returns the market identifier string.
 
 <a name="Market.Status"></a>
-### func \(\*Market\) Status
+### func \(\*Market\) [Status](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L301>)
 
 ```go
 func (m *Market) Status() (*models.MarketStatus, error)
@@ -266,7 +266,7 @@ if status.Timezone != nil {
 ```
 
 <a name="Market.Summary"></a>
-### func \(\*Market\) Summary
+### func \(\*Market\) [Summary](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L328>)
 
 ```go
 func (m *Market) Summary() (models.MarketSummary, error)
@@ -292,7 +292,7 @@ for exchange, item := range summary {
 ```
 
 <a name="Option"></a>
-## type Option
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L34>)
 
 Option is a function that configures a Market instance.
 
@@ -301,7 +301,7 @@ type Option func(*Market)
 ```
 
 <a name="WithClient"></a>
-### func WithClient
+### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/market/market.go#L37>)
 
 ```go
 func WithClient(c *client.Client) Option

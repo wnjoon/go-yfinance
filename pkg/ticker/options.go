@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
+	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
@@ -82,14 +83,16 @@ func (t *Ticker) fetchOptions(dateParam string) (*models.OptionChainResponse, er
 		params.Set("date", dateParam)
 	}
 
-	params, err := t.auth.AddCrumbToParams(params)
+	rawResp, err := t.auth.GetWithCrumb(apiURL, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to add crumb: %w", err)
+		return nil, fmt.Errorf("failed to fetch options: %w", err)
+	}
+	if rawResp.StatusCode >= 400 {
+		return nil, client.HTTPStatusToError(rawResp.StatusCode, rawResp.Body)
 	}
 
 	var resp models.OptionChainResponse
-	err = t.client.GetJSON(apiURL, params, &resp)
-	if err != nil {
+	if err := json.Unmarshal([]byte(rawResp.Body), &resp); err != nil {
 		return nil, fmt.Errorf("failed to fetch options: %w", err)
 	}
 

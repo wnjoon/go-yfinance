@@ -40,6 +40,7 @@ type authResponseGetter func(rawURL string, params url.Values) (*Response, error
 type authClient interface {
 	Get(rawURL string, params url.Values) (*Response, error)
 	Post(rawURL string, params url.Values, body map[string]string) (*Response, error)
+	PostJSON(rawURL string, params url.Values, body []byte) (*Response, error)
 	SetCookie(cookie string)
 	SetCookies(cookies map[string]string)
 }
@@ -534,11 +535,119 @@ func (a *AuthManager) AddCrumbToParams(params url.Values) (url.Values, error) {
 		return params, err
 	}
 
-	if params == nil {
-		params = url.Values{}
+	cloned := cloneURLValues(params)
+	cloned.Set("crumb", crumb)
+	return cloned, nil
+}
+
+// GetWithCrumb performs a GET request with Yahoo crumb authentication.
+// Transient crumb acquisition failures degrade to a crumb-less target request,
+// and an HTTP error response is retried once with the alternate auth strategy.
+func (a *AuthManager) GetWithCrumb(rawURL string, params url.Values) (*Response, error) {
+	return a.requestWithCrumb(params, func(requestParams url.Values) (*Response, error) {
+		return a.client.Get(rawURL, requestParams)
+	})
+}
+
+// PostJSONWithCrumb performs a JSON POST with the same crumb degradation and
+// bounded alternate-strategy retry behavior as GetWithCrumb.
+func (a *AuthManager) PostJSONWithCrumb(rawURL string, params url.Values, body []byte) (*Response, error) {
+	return a.requestWithCrumb(params, func(requestParams url.Values) (*Response, error) {
+		return a.client.PostJSON(rawURL, requestParams, body)
+	})
+}
+
+func (a *AuthManager) requestWithCrumb(params url.Values, request func(url.Values) (*Response, error)) (*Response, error) {
+	if params.Has("crumb") {
+		return nil, fmt.Errorf("do not add crumb manually; AuthManager manages it")
 	}
-	params.Set("crumb", crumb)
-	return params, nil
+	requestParams := cloneURLValues(params)
+	crumb, err := a.GetCrumb()
+	if err != nil {
+		if !isDegradableAuthError(err) {
+			return nil, err
+		}
+	} else if crumb != "" {
+		requestParams.Set("crumb", crumb)
+	}
+
+	resp, err := request(requestParams)
+	if err != nil {
+		return resp, err
+	}
+	if resp == nil {
+		return nil, WrapInvalidResponseError(errors.New("target request returned nil response"))
+	}
+	if resp.StatusCode < 400 {
+		return resp, nil
+	}
+
+	// Upstream retries an HTTP error exactly once after switching cookie
+	// strategy. SwitchStrategy also clears a stale crumb before reacquisition.
+	a.SwitchStrategy()
+	retryParams := cloneURLValues(params)
+	crumb, err = a.GetCrumb()
+	if err != nil {
+		if !isDegradableAuthError(err) {
+			return nil, err
+		}
+	} else if crumb != "" {
+		retryParams.Set("crumb", crumb)
+	}
+	resp, err = request(retryParams)
+	if err != nil {
+		return resp, err
+	}
+	if resp == nil {
+		return nil, WrapInvalidResponseError(errors.New("target retry returned nil response"))
+	}
+	return resp, nil
+}
+
+func cloneURLValues(values url.Values) url.Values {
+	if values == nil {
+		return url.Values{}
+	}
+	cloned := make(url.Values, len(values))
+	for key, entries := range values {
+		cloned[key] = append([]string(nil), entries...)
+	}
+	return cloned
+}
+
+// isDegradableAuthError only accepts error trees whose leaves are transient.
+// Auth wrappers are transparent, while mixed transient/non-transient joined
+// failures remain fatal.
+func isDegradableAuthError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if joined, ok := err.(interface{ Unwrap() []error }); ok {
+		children := joined.Unwrap()
+		if len(children) == 0 {
+			return false
+		}
+		for _, child := range children {
+			if !isDegradableAuthError(child) {
+				return false
+			}
+		}
+		return true
+	}
+	if yfErr, ok := err.(*YFError); ok {
+		switch yfErr.Code {
+		case ErrCodeNetwork, ErrCodeRateLimit, ErrCodeTimeout:
+			return true
+		case ErrCodeAuth:
+			return yfErr.Cause != nil && isDegradableAuthError(yfErr.Cause)
+		default:
+			return false
+		}
+	}
+	if unwrapped := errors.Unwrap(err); unwrapped != nil {
+		return isDegradableAuthError(unwrapped)
+	}
+	return false
 }
 
 // Reset clears the authentication state.

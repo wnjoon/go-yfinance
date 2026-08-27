@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 // Bar represents a single OHLCV bar (candlestick).
 type Bar struct {
@@ -121,7 +125,131 @@ type ChartMeta struct {
 	DataGranularity      string   `json:"dataGranularity"`
 	Range                string   `json:"range"`
 	ValidRanges          []string `json:"validRanges"`
+	// TradingPeriods contains the exchange's regular sessions and, when Yahoo
+	// supplies them, the corresponding pre- and post-market sessions.
+	TradingPeriods []TradingPeriod `json:"tradingPeriods,omitempty"`
 }
+
+// TradingPeriod represents one exchange trading session. Start and End are
+// Unix seconds. PreStart/PreEnd and PostStart/PostEnd are nil when Yahoo does
+// not provide extended-hours sessions for that day.
+type TradingPeriod struct {
+	Start     int64  `json:"start"`
+	End       int64  `json:"end"`
+	PreStart  *int64 `json:"preStart,omitempty"`
+	PreEnd    *int64 `json:"preEnd,omitempty"`
+	PostStart *int64 `json:"postStart,omitempty"`
+	PostEnd   *int64 `json:"postEnd,omitempty"`
+}
+
+// HasTradingPeriods reports whether Yahoo included a decodable
+// tradingPeriods value, including an explicitly empty value.
+func (m ChartMeta) HasTradingPeriods() bool { return m.TradingPeriods != nil }
+
+// WithTradingPeriods returns a metadata copy with trading periods populated.
+func (m ChartMeta) WithTradingPeriods(periods []TradingPeriod) ChartMeta {
+	m.TradingPeriods = periods
+	if periods == nil {
+		m.TradingPeriods = []TradingPeriod{}
+	}
+	return m
+}
+
+// UnmarshalJSON accepts both Yahoo tradingPeriods encodings: regular-only
+// list-of-lists and grouped pre/regular/post list-of-lists.
+func (m *ChartMeta) UnmarshalJSON(data []byte) error {
+	type chartMetaAlias ChartMeta
+	var wire struct {
+		chartMetaAlias
+		TradingPeriods json.RawMessage `json:"tradingPeriods"`
+	}
+	if err := json.Unmarshal(data, &wire); err != nil {
+		return err
+	}
+	*m = ChartMeta(wire.chartMetaAlias)
+	if len(wire.TradingPeriods) == 0 || string(wire.TradingPeriods) == "null" {
+		return nil
+	}
+	periods, err := decodeTradingPeriods(wire.TradingPeriods)
+	if err != nil {
+		return fmt.Errorf("decode tradingPeriods: %w", err)
+	}
+	m.TradingPeriods = periods
+	return nil
+}
+
+// MarshalJSON emits the normalized flat Go representation. UnmarshalJSON also
+// accepts this representation so populated metadata round-trips without loss.
+func (m ChartMeta) MarshalJSON() ([]byte, error) {
+	type chartMetaAlias ChartMeta
+	return json.Marshal(chartMetaAlias(m))
+}
+
+type yahooTradingPeriod struct {
+	Start int64 `json:"start"`
+	End   int64 `json:"end"`
+}
+
+func decodeTradingPeriods(raw json.RawMessage) ([]TradingPeriod, error) {
+	var normalized []TradingPeriod
+	if err := json.Unmarshal(raw, &normalized); err == nil {
+		return normalized, nil
+	}
+
+	var regularOnly [][]yahooTradingPeriod
+	if err := json.Unmarshal(raw, &regularOnly); err == nil {
+		flat := flattenYahooPeriods(regularOnly)
+		out := make([]TradingPeriod, 0, len(flat))
+		for _, p := range flat {
+			if p.Start == 0 && p.End == 0 {
+				continue
+			}
+			out = append(out, TradingPeriod{Start: p.Start, End: p.End})
+		}
+		return out, nil
+	}
+
+	var grouped map[string][][]yahooTradingPeriod
+	if err := json.Unmarshal(raw, &grouped); err != nil {
+		return nil, err
+	}
+	regularGroups := grouped["regular"]
+	out := make([]TradingPeriod, 0, len(flattenYahooPeriods(regularGroups)))
+	for groupIndex, regularGroup := range regularGroups {
+		for periodIndex, p := range regularGroup {
+			if p.Start == 0 && p.End == 0 {
+				continue
+			}
+			tp := TradingPeriod{Start: p.Start, End: p.End}
+			if pre, ok := yahooPeriodAt(grouped["pre"], groupIndex, periodIndex); ok {
+				tp.PreStart, tp.PreEnd = int64Ptr(pre.Start), int64Ptr(pre.End)
+			}
+			if post, ok := yahooPeriodAt(grouped["post"], groupIndex, periodIndex); ok {
+				tp.PostStart, tp.PostEnd = int64Ptr(post.Start), int64Ptr(post.End)
+			}
+			out = append(out, tp)
+		}
+	}
+	return out, nil
+}
+
+func yahooPeriodAt(groups [][]yahooTradingPeriod, groupIndex, periodIndex int) (yahooTradingPeriod, bool) {
+	if groupIndex >= len(groups) || periodIndex >= len(groups[groupIndex]) {
+		return yahooTradingPeriod{}, false
+	}
+	period := groups[groupIndex][periodIndex]
+	return period, period.Start != 0 || period.End != 0
+}
+
+func flattenYahooPeriods(groups [][]yahooTradingPeriod) []yahooTradingPeriod {
+	var out []yahooTradingPeriod
+	for _, group := range groups {
+		out = append(out, group...)
+	}
+	return out
+}
+
+func int64Ptr(v int64) *int64 { return &v }
 
 // Dividend represents a dividend payment.
 type Dividend struct {

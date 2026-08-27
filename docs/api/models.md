@@ -134,6 +134,10 @@ Use [ValidPeriods](<#ValidPeriods>) and [ValidIntervals](<#ValidIntervals>) to g
 - [type ChartEvents](<#ChartEvents>)
 - [type ChartIndicators](<#ChartIndicators>)
 - [type ChartMeta](<#ChartMeta>)
+  - [func \(m ChartMeta\) HasTradingPeriods\(\) bool](<#ChartMeta.HasTradingPeriods>)
+  - [func \(m ChartMeta\) MarshalJSON\(\) \(\[\]byte, error\)](<#ChartMeta.MarshalJSON>)
+  - [func \(m \*ChartMeta\) UnmarshalJSON\(data \[\]byte\) error](<#ChartMeta.UnmarshalJSON>)
+  - [func \(m ChartMeta\) WithTradingPeriods\(periods \[\]TradingPeriod\) ChartMeta](<#ChartMeta.WithTradingPeriods>)
 - [type ChartQuote](<#ChartQuote>)
 - [type ChartResponse](<#ChartResponse>)
 - [type ChartResult](<#ChartResult>)
@@ -281,6 +285,7 @@ Use [ValidPeriods](<#ValidPeriods>) and [ValidIntervals](<#ValidIntervals>) to g
 - [type TimeseriesDataPoint](<#TimeseriesDataPoint>)
 - [type TimeseriesResponse](<#TimeseriesResponse>)
 - [type TimeseriesResult](<#TimeseriesResult>)
+- [type TradingPeriod](<#TradingPeriod>)
 - [type TransactionStats](<#TransactionStats>)
 - [type ValuationMeasureRow](<#ValuationMeasureRow>)
   - [func \(r \*ValuationMeasureRow\) SetValue\(column string, value \*float64\)](<#ValuationMeasureRow.SetValue>)
@@ -867,7 +872,7 @@ var SectorIndustryMapping = map[string][]string{
 ```
 
 <a name="IsValidInterval"></a>
-## func IsValidInterval
+## func [IsValidInterval](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L303>)
 
 ```go
 func IsValidInterval(interval string) bool
@@ -876,7 +881,7 @@ func IsValidInterval(interval string) bool
 IsValidInterval checks if an interval string is valid.
 
 <a name="IsValidPeriod"></a>
-## func IsValidPeriod
+## func [IsValidPeriod](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L293>)
 
 ```go
 func IsValidPeriod(period string) bool
@@ -885,7 +890,7 @@ func IsValidPeriod(period string) bool
 IsValidPeriod checks if a period string is valid.
 
 <a name="ValidIntervals"></a>
-## func ValidIntervals
+## func [ValidIntervals](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L288>)
 
 ```go
 func ValidIntervals() []string
@@ -894,7 +899,7 @@ func ValidIntervals() []string
 ValidIntervals returns all valid interval values.
 
 <a name="ValidPeriods"></a>
-## func ValidPeriods
+## func [ValidPeriods](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L283>)
 
 ```go
 func ValidPeriods() []string
@@ -903,7 +908,7 @@ func ValidPeriods() []string
 ValidPeriods returns all valid period values.
 
 <a name="Actions"></a>
-## type Actions
+## type [Actions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L276-L280>)
 
 Actions represents dividend and split actions.
 
@@ -916,7 +921,7 @@ type Actions struct {
 ```
 
 <a name="AnalysisData"></a>
-## type AnalysisData
+## type [AnalysisData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L110-L119>)
 
 AnalysisData holds all analysis data for a ticker.
 
@@ -934,7 +939,7 @@ type AnalysisData struct {
 ```
 
 <a name="Bar"></a>
-## type Bar
+## type [Bar](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L10-L24>)
 
 Bar represents a single OHLCV bar \(candlestick\).
 
@@ -957,7 +962,7 @@ type Bar struct {
 ```
 
 <a name="Calendar"></a>
-## type Calendar
+## type [Calendar](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendar.go#L21-L49>)
 
 Calendar represents upcoming calendar events for a ticker.
 
@@ -1011,7 +1016,7 @@ type Calendar struct {
 ```
 
 <a name="Calendar.HasDividend"></a>
-### func \(\*Calendar\) HasDividend
+### func \(\*Calendar\) [HasDividend](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendar.go#L60>)
 
 ```go
 func (c *Calendar) HasDividend() bool
@@ -1020,7 +1025,7 @@ func (c *Calendar) HasDividend() bool
 HasDividend returns true if dividend data is available.
 
 <a name="Calendar.HasEarnings"></a>
-### func \(\*Calendar\) HasEarnings
+### func \(\*Calendar\) [HasEarnings](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendar.go#L52>)
 
 ```go
 func (c *Calendar) HasEarnings() bool
@@ -1029,7 +1034,7 @@ func (c *Calendar) HasEarnings() bool
 HasEarnings returns true if earnings data is available.
 
 <a name="Calendar.NextEarningsDate"></a>
-### func \(\*Calendar\) NextEarningsDate
+### func \(\*Calendar\) [NextEarningsDate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendar.go#L65>)
 
 ```go
 func (c *Calendar) NextEarningsDate() *time.Time
@@ -1038,7 +1043,7 @@ func (c *Calendar) NextEarningsDate() *time.Time
 NextEarningsDate returns the earliest earnings date, or nil if none.
 
 <a name="CalendarOptions"></a>
-## type CalendarOptions
+## type [CalendarOptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L162-L174>)
 
 CalendarOptions contains options for calendar queries.
 
@@ -1059,7 +1064,7 @@ type CalendarOptions struct {
 ```
 
 <a name="DefaultCalendarOptions"></a>
-### func DefaultCalendarOptions
+### func [DefaultCalendarOptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L178>)
 
 ```go
 func DefaultCalendarOptions() CalendarOptions
@@ -1068,7 +1073,7 @@ func DefaultCalendarOptions() CalendarOptions
 DefaultCalendarOptions returns default calendar options. Default range is today to 7 days from now, limit 12.
 
 <a name="CalendarResponse"></a>
-## type CalendarResponse
+## type [CalendarResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L143-L159>)
 
 CalendarResponse represents the raw API response for calendar data.
 
@@ -1093,7 +1098,7 @@ type CalendarResponse struct {
 ```
 
 <a name="CalendarSplitEvent"></a>
-## type CalendarSplitEvent
+## type [CalendarSplitEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L119-L140>)
 
 CalendarSplitEvent represents a stock split calendar event.
 
@@ -1123,7 +1128,7 @@ type CalendarSplitEvent struct {
 ```
 
 <a name="CalendarType"></a>
-## type CalendarType
+## type [CalendarType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L6>)
 
 CalendarType represents the type of calendar.
 
@@ -1150,7 +1155,7 @@ const (
 ```
 
 <a name="CapitalGain"></a>
-## type CapitalGain
+## type [CapitalGain](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L270-L273>)
 
 CapitalGain represents a capital gain distribution.
 
@@ -1162,7 +1167,7 @@ type CapitalGain struct {
 ```
 
 <a name="CapitalGainEvent"></a>
-## type CapitalGainEvent
+## type [CapitalGainEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L48-L51>)
 
 CapitalGainEvent represents a capital gain distribution event.
 
@@ -1174,7 +1179,7 @@ type CapitalGainEvent struct {
 ```
 
 <a name="ChartAdjClose"></a>
-## type ChartAdjClose
+## type [ChartAdjClose](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L69-L71>)
 
 ChartAdjClose contains adjusted close prices.
 
@@ -1185,7 +1190,7 @@ type ChartAdjClose struct {
 ```
 
 <a name="ChartError"></a>
-## type ChartError
+## type [ChartError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L20-L23>)
 
 ChartError represents an error from the chart API.
 
@@ -1197,7 +1202,7 @@ type ChartError struct {
 ```
 
 <a name="ChartEvents"></a>
-## type ChartEvents
+## type [ChartEvents](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L26-L30>)
 
 ChartEvents contains dividend and split events.
 
@@ -1210,7 +1215,7 @@ type ChartEvents struct {
 ```
 
 <a name="ChartIndicators"></a>
-## type ChartIndicators
+## type [ChartIndicators](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L54-L57>)
 
 ChartIndicators contains OHLCV data.
 
@@ -1222,7 +1227,7 @@ type ChartIndicators struct {
 ```
 
 <a name="ChartMeta"></a>
-## type ChartMeta
+## type [ChartMeta](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L110-L131>)
 
 ChartMeta represents metadata from chart API response.
 
@@ -1245,11 +1250,50 @@ type ChartMeta struct {
     DataGranularity      string   `json:"dataGranularity"`
     Range                string   `json:"range"`
     ValidRanges          []string `json:"validRanges"`
+    // TradingPeriods contains the exchange's regular sessions and, when Yahoo
+    // supplies them, the corresponding pre- and post-market sessions.
+    TradingPeriods []TradingPeriod `json:"tradingPeriods,omitempty"`
 }
 ```
 
+<a name="ChartMeta.HasTradingPeriods"></a>
+### func \(ChartMeta\) [HasTradingPeriods](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L147>)
+
+```go
+func (m ChartMeta) HasTradingPeriods() bool
+```
+
+HasTradingPeriods reports whether Yahoo included a decodable tradingPeriods value, including an explicitly empty value.
+
+<a name="ChartMeta.MarshalJSON"></a>
+### func \(ChartMeta\) [MarshalJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L183>)
+
+```go
+func (m ChartMeta) MarshalJSON() ([]byte, error)
+```
+
+MarshalJSON emits the normalized flat Go representation. UnmarshalJSON also accepts this representation so populated metadata round\-trips without loss.
+
+<a name="ChartMeta.UnmarshalJSON"></a>
+### func \(\*ChartMeta\) [UnmarshalJSON](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L160>)
+
+```go
+func (m *ChartMeta) UnmarshalJSON(data []byte) error
+```
+
+UnmarshalJSON accepts both Yahoo tradingPeriods encodings: regular\-only list\-of\-lists and grouped pre/regular/post list\-of\-lists.
+
+<a name="ChartMeta.WithTradingPeriods"></a>
+### func \(ChartMeta\) [WithTradingPeriods](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L150>)
+
+```go
+func (m ChartMeta) WithTradingPeriods(periods []TradingPeriod) ChartMeta
+```
+
+WithTradingPeriods returns a metadata copy with trading periods populated.
+
 <a name="ChartQuote"></a>
-## type ChartQuote
+## type [ChartQuote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L60-L66>)
 
 ChartQuote contains OHLCV arrays.
 
@@ -1264,7 +1308,7 @@ type ChartQuote struct {
 ```
 
 <a name="ChartResponse"></a>
-## type ChartResponse
+## type [ChartResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L4-L9>)
 
 ChartResponse represents the response from Yahoo Finance chart API.
 
@@ -1278,7 +1322,7 @@ type ChartResponse struct {
 ```
 
 <a name="ChartResult"></a>
-## type ChartResult
+## type [ChartResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L12-L17>)
 
 ChartResult represents a single chart result.
 
@@ -1292,7 +1336,7 @@ type ChartResult struct {
 ```
 
 <a name="Dividend"></a>
-## type Dividend
+## type [Dividend](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L255-L259>)
 
 Dividend represents a dividend payment.
 
@@ -1305,7 +1349,7 @@ type Dividend struct {
 ```
 
 <a name="DividendEvent"></a>
-## type DividendEvent
+## type [DividendEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L33-L37>)
 
 DividendEvent represents a dividend event in chart response.
 
@@ -1318,7 +1362,7 @@ type DividendEvent struct {
 ```
 
 <a name="DownloadParams"></a>
-## type DownloadParams
+## type [DownloadParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L14-L46>)
 
 DownloadParams represents parameters for downloading multiple tickers.
 
@@ -1369,7 +1413,7 @@ type DownloadParams struct {
 ```
 
 <a name="DefaultDownloadParams"></a>
-### func DefaultDownloadParams
+### func [DefaultDownloadParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L49>)
 
 ```go
 func DefaultDownloadParams() DownloadParams
@@ -1378,7 +1422,7 @@ func DefaultDownloadParams() DownloadParams
 DefaultDownloadParams returns default download parameters.
 
 <a name="EPSRevision"></a>
-## type EPSRevision
+## type [EPSRevision](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L76-L83>)
 
 EPSRevision represents EPS revision data for a period.
 
@@ -1394,7 +1438,7 @@ type EPSRevision struct {
 ```
 
 <a name="EPSTrend"></a>
-## type EPSTrend
+## type [EPSTrend](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L65-L73>)
 
 EPSTrend represents EPS trend data for a period.
 
@@ -1411,7 +1455,7 @@ type EPSTrend struct {
 ```
 
 <a name="ETFQuery"></a>
-## type ETFQuery
+## type [ETFQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L36-L38>)
 
 ETFQuery represents a validated ETF screener query.
 
@@ -1422,7 +1466,7 @@ type ETFQuery struct {
 ```
 
 <a name="NewETFQuery"></a>
-### func NewETFQuery
+### func [NewETFQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L72>)
 
 ```go
 func NewETFQuery(operator string, operands []any) (*ETFQuery, error)
@@ -1431,7 +1475,7 @@ func NewETFQuery(operator string, operands []any) (*ETFQuery, error)
 NewETFQuery creates a new validated ETF screener query. Same operator rules as NewEquityQuery.
 
 <a name="ETFQuery.QuoteType"></a>
-### func \(\*ETFQuery\) QuoteType
+### func \(\*ETFQuery\) [QuoteType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L88>)
 
 ```go
 func (q *ETFQuery) QuoteType() string
@@ -1440,7 +1484,7 @@ func (q *ETFQuery) QuoteType() string
 QuoteType returns "ETF".
 
 <a name="ETFQuery.String"></a>
-### func \(\*ETFQuery\) String
+### func \(\*ETFQuery\) [String](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L358>)
 
 ```go
 func (q *ETFQuery) String() string
@@ -1449,7 +1493,7 @@ func (q *ETFQuery) String() string
 String returns a human\-readable representation of the query.
 
 <a name="ETFQuery.ToDict"></a>
-### func \(\*ETFQuery\) ToDict
+### func \(\*ETFQuery\) [ToDict](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L306>)
 
 ```go
 func (q *ETFQuery) ToDict() map[string]any
@@ -1458,7 +1502,7 @@ func (q *ETFQuery) ToDict() map[string]any
 ToDict serializes the ETFQuery to a map for JSON encoding.
 
 <a name="EarningsEstimate"></a>
-## type EarningsEstimate
+## type [EarningsEstimate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L39-L49>)
 
 EarningsEstimate represents earnings estimates for a period.
 
@@ -1477,7 +1521,7 @@ type EarningsEstimate struct {
 ```
 
 <a name="EarningsEvent"></a>
-## type EarningsEvent
+## type [EarningsEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L23-L50>)
 
 EarningsEvent represents an earnings calendar event.
 
@@ -1513,7 +1557,7 @@ type EarningsEvent struct {
 ```
 
 <a name="EarningsHistory"></a>
-## type EarningsHistory
+## type [EarningsHistory](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L86-L88>)
 
 EarningsHistory represents historical earnings data.
 
@@ -1524,7 +1568,7 @@ type EarningsHistory struct {
 ```
 
 <a name="EarningsHistoryItem"></a>
-## type EarningsHistoryItem
+## type [EarningsHistoryItem](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L91-L98>)
 
 EarningsHistoryItem represents a single earnings report.
 
@@ -1540,7 +1584,7 @@ type EarningsHistoryItem struct {
 ```
 
 <a name="EconomicEvent"></a>
-## type EconomicEvent
+## type [EconomicEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L92-L116>)
 
 EconomicEvent represents an economic calendar event.
 
@@ -1573,7 +1617,7 @@ type EconomicEvent struct {
 ```
 
 <a name="EquityQuery"></a>
-## type EquityQuery
+## type [EquityQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L26-L28>)
 
 EquityQuery represents a validated equity screener query.
 
@@ -1584,7 +1628,7 @@ type EquityQuery struct {
 ```
 
 <a name="NewEquityQuery"></a>
-### func NewEquityQuery
+### func [NewEquityQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L50>)
 
 ```go
 func NewEquityQuery(operator string, operands []any) (*EquityQuery, error)
@@ -1602,7 +1646,7 @@ q, err := models.NewEquityQuery("and", []any{
 ```
 
 <a name="EquityQuery.QuoteType"></a>
-### func \(\*EquityQuery\) QuoteType
+### func \(\*EquityQuery\) [QuoteType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L82>)
 
 ```go
 func (q *EquityQuery) QuoteType() string
@@ -1611,7 +1655,7 @@ func (q *EquityQuery) QuoteType() string
 QuoteType returns "EQUITY".
 
 <a name="EquityQuery.String"></a>
-### func \(\*EquityQuery\) String
+### func \(\*EquityQuery\) [String](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L348>)
 
 ```go
 func (q *EquityQuery) String() string
@@ -1620,7 +1664,7 @@ func (q *EquityQuery) String() string
 String returns a human\-readable representation of the query.
 
 <a name="EquityQuery.ToDict"></a>
-### func \(\*EquityQuery\) ToDict
+### func \(\*EquityQuery\) [ToDict](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L290>)
 
 ```go
 func (q *EquityQuery) ToDict() map[string]any
@@ -1629,7 +1673,7 @@ func (q *EquityQuery) ToDict() map[string]any
 ToDict serializes the EquityQuery to a map for JSON encoding. IS\-IN is expanded to OR of EQ queries.
 
 <a name="FastInfo"></a>
-## type FastInfo
+## type [FastInfo](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/quote.go#L90-L111>)
 
 FastInfo represents a subset of quote data that can be fetched quickly.
 
@@ -1659,7 +1703,7 @@ type FastInfo struct {
 ```
 
 <a name="FinancialItem"></a>
-## type FinancialItem
+## type [FinancialItem](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L15-L21>)
 
 FinancialItem represents a single financial data point.
 
@@ -1674,7 +1718,7 @@ type FinancialItem struct {
 ```
 
 <a name="FinancialStatement"></a>
-## type FinancialStatement
+## type [FinancialStatement](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L25-L35>)
 
 FinancialStatement represents a financial statement \(income, balance sheet, or cash flow\). It maps field names to their historical values.
 
@@ -1693,7 +1737,7 @@ type FinancialStatement struct {
 ```
 
 <a name="NewFinancialStatement"></a>
-### func NewFinancialStatement
+### func [NewFinancialStatement](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L38>)
 
 ```go
 func NewFinancialStatement() *FinancialStatement
@@ -1702,7 +1746,7 @@ func NewFinancialStatement() *FinancialStatement
 NewFinancialStatement creates an empty FinancialStatement.
 
 <a name="FinancialStatement.Fields"></a>
-### func \(\*FinancialStatement\) Fields
+### func \(\*FinancialStatement\) [Fields](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L72>)
 
 ```go
 func (fs *FinancialStatement) Fields() []string
@@ -1711,7 +1755,7 @@ func (fs *FinancialStatement) Fields() []string
 Fields returns all available field names in the statement.
 
 <a name="FinancialStatement.Get"></a>
-### func \(\*FinancialStatement\) Get
+### func \(\*FinancialStatement\) [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L47>)
 
 ```go
 func (fs *FinancialStatement) Get(field string, date time.Time) (float64, bool)
@@ -1720,7 +1764,7 @@ func (fs *FinancialStatement) Get(field string, date time.Time) (float64, bool)
 Get returns the value for a specific field and date. Returns 0 and false if not found.
 
 <a name="FinancialStatement.GetLatest"></a>
-### func \(\*FinancialStatement\) GetLatest
+### func \(\*FinancialStatement\) [GetLatest](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L63>)
 
 ```go
 func (fs *FinancialStatement) GetLatest(field string) (float64, bool)
@@ -1729,7 +1773,7 @@ func (fs *FinancialStatement) GetLatest(field string) (float64, bool)
 GetLatest returns the most recent value for a field. Returns 0 and false if not found.
 
 <a name="Financials"></a>
-## type Financials
+## type [Financials](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L81-L93>)
 
 Financials holds all financial statements for a ticker.
 
@@ -1750,7 +1794,7 @@ type Financials struct {
 ```
 
 <a name="Frequency"></a>
-## type Frequency
+## type [Frequency](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L6>)
 
 Frequency represents the time frequency for financial data.
 
@@ -1769,7 +1813,7 @@ const (
 ```
 
 <a name="FundQuery"></a>
-## type FundQuery
+## type [FundQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L31-L33>)
 
 FundQuery represents a validated fund screener query.
 
@@ -1780,7 +1824,7 @@ type FundQuery struct {
 ```
 
 <a name="NewFundQuery"></a>
-### func NewFundQuery
+### func [NewFundQuery](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L61>)
 
 ```go
 func NewFundQuery(operator string, operands []any) (*FundQuery, error)
@@ -1789,7 +1833,7 @@ func NewFundQuery(operator string, operands []any) (*FundQuery, error)
 NewFundQuery creates a new validated fund screener query. Same operator rules as NewEquityQuery.
 
 <a name="FundQuery.QuoteType"></a>
-### func \(\*FundQuery\) QuoteType
+### func \(\*FundQuery\) [QuoteType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L85>)
 
 ```go
 func (q *FundQuery) QuoteType() string
@@ -1798,7 +1842,7 @@ func (q *FundQuery) QuoteType() string
 QuoteType returns "MUTUALFUND".
 
 <a name="FundQuery.String"></a>
-### func \(\*FundQuery\) String
+### func \(\*FundQuery\) [String](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L353>)
 
 ```go
 func (q *FundQuery) String() string
@@ -1807,7 +1851,7 @@ func (q *FundQuery) String() string
 String returns a human\-readable representation of the query.
 
 <a name="FundQuery.ToDict"></a>
-### func \(\*FundQuery\) ToDict
+### func \(\*FundQuery\) [ToDict](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L298>)
 
 ```go
 func (q *FundQuery) ToDict() map[string]any
@@ -1816,7 +1860,7 @@ func (q *FundQuery) ToDict() map[string]any
 ToDict serializes the FundQuery to a map for JSON encoding.
 
 <a name="GrowthCompany"></a>
-## type GrowthCompany
+## type [GrowthCompany](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L58-L70>)
 
 GrowthCompany represents a top growth company in the industry.
 
@@ -1837,7 +1881,7 @@ type GrowthCompany struct {
 ```
 
 <a name="GrowthEstimate"></a>
-## type GrowthEstimate
+## type [GrowthEstimate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L101-L107>)
 
 GrowthEstimate represents growth estimates from various sources.
 
@@ -1852,7 +1896,7 @@ type GrowthEstimate struct {
 ```
 
 <a name="History"></a>
-## type History
+## type [History](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L27-L31>)
 
 History represents historical price data.
 
@@ -1865,7 +1909,7 @@ type History struct {
 ```
 
 <a name="HistoryParams"></a>
-## type HistoryParams
+## type [HistoryParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L34-L65>)
 
 HistoryParams represents parameters for fetching historical data.
 
@@ -1905,7 +1949,7 @@ type HistoryParams struct {
 ```
 
 <a name="DefaultHistoryParams"></a>
-### func DefaultHistoryParams
+### func [DefaultHistoryParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L97>)
 
 ```go
 func DefaultHistoryParams() HistoryParams
@@ -1914,7 +1958,7 @@ func DefaultHistoryParams() HistoryParams
 DefaultHistoryParams returns default history parameters.
 
 <a name="Holder"></a>
-## type Holder
+## type [Holder](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L35-L53>)
 
 Holder represents an institutional or mutual fund holder.
 
@@ -1943,7 +1987,7 @@ type Holder struct {
 ```
 
 <a name="HoldersData"></a>
-## type HoldersData
+## type [HoldersData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L160-L178>)
 
 HoldersData contains all holder\-related data for a ticker.
 
@@ -1970,7 +2014,7 @@ type HoldersData struct {
 ```
 
 <a name="IPOEvent"></a>
-## type IPOEvent
+## type [IPOEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/calendars.go#L53-L89>)
 
 IPOEvent represents an IPO calendar event.
 
@@ -2015,7 +2059,7 @@ type IPOEvent struct {
 ```
 
 <a name="IndustryData"></a>
-## type IndustryData
+## type [IndustryData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L85-L115>)
 
 IndustryData contains all data for an industry.
 
@@ -2067,7 +2111,7 @@ type IndustryData struct {
 ```
 
 <a name="IndustryOverview"></a>
-## type IndustryOverview
+## type [IndustryOverview](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L4-L22>)
 
 IndustryOverview contains overview information for an industry.
 
@@ -2094,7 +2138,7 @@ type IndustryOverview struct {
 ```
 
 <a name="IndustryResponse"></a>
-## type IndustryResponse
+## type [IndustryResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L118-L134>)
 
 IndustryResponse represents the raw API response for industry data.
 
@@ -2119,7 +2163,7 @@ type IndustryResponse struct {
 ```
 
 <a name="IndustryTopCompany"></a>
-## type IndustryTopCompany
+## type [IndustryTopCompany](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L25-L37>)
 
 IndustryTopCompany represents a top company within an industry.
 
@@ -2140,7 +2184,7 @@ type IndustryTopCompany struct {
 ```
 
 <a name="Info"></a>
-## type Info
+## type [Info](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/info.go#L4-L148>)
 
 Info represents comprehensive company information from quoteSummary API.
 
@@ -2293,7 +2337,7 @@ type Info struct {
 ```
 
 <a name="InsiderHolder"></a>
-## type InsiderHolder
+## type [InsiderHolder](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L90-L114>)
 
 InsiderHolder represents an insider on the company's roster.
 
@@ -2328,7 +2372,7 @@ type InsiderHolder struct {
 ```
 
 <a name="InsiderHolder.TotalShares"></a>
-### func \(\*InsiderHolder\) TotalShares
+### func \(\*InsiderHolder\) [TotalShares](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L117>)
 
 ```go
 func (h *InsiderHolder) TotalShares() int64
@@ -2337,7 +2381,7 @@ func (h *InsiderHolder) TotalShares() int64
 TotalShares returns the total shares owned \(direct \+ indirect\).
 
 <a name="InsiderPurchases"></a>
-## type InsiderPurchases
+## type [InsiderPurchases](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L124-L148>)
 
 InsiderPurchases represents net share purchase activity by insiders.
 
@@ -2372,7 +2416,7 @@ type InsiderPurchases struct {
 ```
 
 <a name="InsiderTransaction"></a>
-## type InsiderTransaction
+## type [InsiderTransaction](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L58-L85>)
 
 InsiderTransaction represents a single insider transaction.
 
@@ -2410,7 +2454,7 @@ type InsiderTransaction struct {
 ```
 
 <a name="LookupDocument"></a>
-## type LookupDocument
+## type [LookupDocument](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L58-L129>)
 
 LookupDocument represents a single financial instrument from lookup results.
 
@@ -2490,7 +2534,7 @@ type LookupDocument struct {
 ```
 
 <a name="LookupParams"></a>
-## type LookupParams
+## type [LookupParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L132-L144>)
 
 LookupParams represents parameters for the Lookup function.
 
@@ -2511,7 +2555,7 @@ type LookupParams struct {
 ```
 
 <a name="DefaultLookupParams"></a>
-### func DefaultLookupParams
+### func [DefaultLookupParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L153>)
 
 ```go
 func DefaultLookupParams() LookupParams
@@ -2527,7 +2571,7 @@ Default values:
 - FetchPricingData: true
 
 <a name="LookupResponse"></a>
-## type LookupResponse
+## type [LookupResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L163-L176>)
 
 LookupResponse represents the raw API response from Yahoo Finance lookup.
 
@@ -2549,7 +2593,7 @@ type LookupResponse struct {
 ```
 
 <a name="LookupResult"></a>
-## type LookupResult
+## type [LookupResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L46-L52>)
 
 LookupResult represents the result of a lookup query.
 
@@ -2579,7 +2623,7 @@ type LookupResult struct {
 ```
 
 <a name="LookupType"></a>
-## type LookupType
+## type [LookupType](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/lookup.go#L4>)
 
 LookupType represents the type of financial instrument for lookup queries.
 
@@ -2618,7 +2662,7 @@ const (
 ```
 
 <a name="MajorHolders"></a>
-## type MajorHolders
+## type [MajorHolders](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L18-L30>)
 
 MajorHolders represents the breakdown of major shareholders.
 
@@ -2652,7 +2696,7 @@ type MajorHolders struct {
 ```
 
 <a name="MarketRegion"></a>
-## type MarketRegion
+## type [MarketRegion](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L147>)
 
 MarketRegion represents Yahoo market regions accepted by the market summary endpoint.
 
@@ -2691,7 +2735,7 @@ const (
 ```
 
 <a name="MarketState"></a>
-## type MarketState
+## type [MarketState](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L139>)
 
 MarketState represents the market hours state.
 
@@ -2715,7 +2759,7 @@ const (
 ```
 
 <a name="MarketState.String"></a>
-### func \(MarketState\) String
+### func \(MarketState\) [String](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L153>)
 
 ```go
 func (m MarketState) String() string
@@ -2724,7 +2768,7 @@ func (m MarketState) String() string
 String returns the string representation of MarketState.
 
 <a name="MarketStatus"></a>
-## type MarketStatus
+## type [MarketStatus](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L18-L39>)
 
 MarketStatus represents the status and trading hours of a market.
 
@@ -2767,7 +2811,7 @@ type MarketStatus struct {
 ```
 
 <a name="MarketSummary"></a>
-## type MarketSummary
+## type [MarketSummary](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L113>)
 
 MarketSummary represents the summary of all market indices.
 
@@ -2792,7 +2836,7 @@ type MarketSummary map[string]MarketSummaryItem
 ```
 
 <a name="MarketSummaryItem"></a>
-## type MarketSummaryItem
+## type [MarketSummaryItem](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L56-L95>)
 
 MarketSummaryItem represents a single market index or asset in the summary.
 
@@ -2842,7 +2886,7 @@ type MarketSummaryItem struct {
 ```
 
 <a name="MarketSummaryResponse"></a>
-## type MarketSummaryResponse
+## type [MarketSummaryResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L116-L124>)
 
 MarketSummaryResponse represents the raw API response for market summary.
 
@@ -2859,7 +2903,7 @@ type MarketSummaryResponse struct {
 ```
 
 <a name="MarketTimeResponse"></a>
-## type MarketTimeResponse
+## type [MarketTimeResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L127-L144>)
 
 MarketTimeResponse represents the raw API response for market time.
 
@@ -2885,7 +2929,7 @@ type MarketTimeResponse struct {
 ```
 
 <a name="MarketTimezone"></a>
-## type MarketTimezone
+## type [MarketTimezone](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L42-L51>)
 
 MarketTimezone represents timezone information for a market.
 
@@ -2903,7 +2947,7 @@ type MarketTimezone struct {
 ```
 
 <a name="MultiTickerResult"></a>
-## type MultiTickerResult
+## type [MultiTickerResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L60-L71>)
 
 MultiTickerResult represents the result of downloading multiple tickers.
 
@@ -2923,7 +2967,7 @@ type MultiTickerResult struct {
 ```
 
 <a name="MultiTickerResult.ErrorCount"></a>
-### func \(\*MultiTickerResult\) ErrorCount
+### func \(\*MultiTickerResult\) [ErrorCount](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L92>)
 
 ```go
 func (r *MultiTickerResult) ErrorCount() int
@@ -2932,7 +2976,7 @@ func (r *MultiTickerResult) ErrorCount() int
 ErrorCount returns the number of tickers that had errors.
 
 <a name="MultiTickerResult.Get"></a>
-### func \(\*MultiTickerResult\) Get
+### func \(\*MultiTickerResult\) [Get](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L74>)
 
 ```go
 func (r *MultiTickerResult) Get(symbol string) []Bar
@@ -2941,7 +2985,7 @@ func (r *MultiTickerResult) Get(symbol string) []Bar
 Get returns the history data for a specific ticker.
 
 <a name="MultiTickerResult.HasErrors"></a>
-### func \(\*MultiTickerResult\) HasErrors
+### func \(\*MultiTickerResult\) [HasErrors](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L82>)
 
 ```go
 func (r *MultiTickerResult) HasErrors() bool
@@ -2950,7 +2994,7 @@ func (r *MultiTickerResult) HasErrors() bool
 HasErrors returns true if any ticker had an error.
 
 <a name="MultiTickerResult.SuccessCount"></a>
-### func \(\*MultiTickerResult\) SuccessCount
+### func \(\*MultiTickerResult\) [SuccessCount](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/multi.go#L87>)
 
 ```go
 func (r *MultiTickerResult) SuccessCount() int
@@ -2959,7 +3003,7 @@ func (r *MultiTickerResult) SuccessCount() int
 SuccessCount returns the number of successfully downloaded tickers.
 
 <a name="NewsArticle"></a>
-## type NewsArticle
+## type [NewsArticle](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L6-L30>)
 
 NewsArticle represents a single news article from Yahoo Finance.
 
@@ -2992,7 +3036,7 @@ type NewsArticle struct {
 ```
 
 <a name="NewsArticle.PublishedAt"></a>
-### func \(\*NewsArticle\) PublishedAt
+### func \(\*NewsArticle\) [PublishedAt](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L40>)
 
 ```go
 func (n *NewsArticle) PublishedAt() time.Time
@@ -3001,7 +3045,7 @@ func (n *NewsArticle) PublishedAt() time.Time
 PublishedAt returns the publish time as a time.Time value.
 
 <a name="NewsParams"></a>
-## type NewsParams
+## type [NewsParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L76-L82>)
 
 NewsParams contains parameters for fetching news articles.
 
@@ -3016,7 +3060,7 @@ type NewsParams struct {
 ```
 
 <a name="NewsTab"></a>
-## type NewsTab
+## type [NewsTab](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L45>)
 
 NewsTab represents the type of news to fetch.
 
@@ -3040,7 +3084,7 @@ const (
 ```
 
 <a name="NewsTab.QueryRef"></a>
-### func \(NewsTab\) QueryRef
+### func \(NewsTab\) [QueryRef](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L64>)
 
 ```go
 func (t NewsTab) QueryRef() string
@@ -3049,7 +3093,7 @@ func (t NewsTab) QueryRef() string
 QueryRef returns the Yahoo Finance API query reference for this tab.
 
 <a name="NewsTab.String"></a>
-### func \(NewsTab\) String
+### func \(NewsTab\) [String](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L59>)
 
 ```go
 func (t NewsTab) String() string
@@ -3058,7 +3102,7 @@ func (t NewsTab) String() string
 String returns the string representation of the NewsTab.
 
 <a name="NewsThumbnail"></a>
-## type NewsThumbnail
+## type [NewsThumbnail](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/news.go#L34-L37>)
 
 NewsThumbnail contains thumbnail image information for a news article. It reuses ThumbnailResolution from the search package.
 
@@ -3070,7 +3114,7 @@ type NewsThumbnail struct {
 ```
 
 <a name="Officer"></a>
-## type Officer
+## type [Officer](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/info.go#L151-L161>)
 
 Officer represents a company officer.
 
@@ -3089,7 +3133,7 @@ type Officer struct {
 ```
 
 <a name="Option"></a>
-## type Option
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L6-L22>)
 
 Option represents a single option contract \(call or put\).
 
@@ -3114,7 +3158,7 @@ type Option struct {
 ```
 
 <a name="Option.ExpirationDatetime"></a>
-### func \(\*Option\) ExpirationDatetime
+### func \(\*Option\) [ExpirationDatetime](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L30>)
 
 ```go
 func (o *Option) ExpirationDatetime() time.Time
@@ -3123,7 +3167,7 @@ func (o *Option) ExpirationDatetime() time.Time
 ExpirationDatetime returns the expiration date as time.Time.
 
 <a name="Option.LastTradeDatetime"></a>
-### func \(\*Option\) LastTradeDatetime
+### func \(\*Option\) [LastTradeDatetime](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L25>)
 
 ```go
 func (o *Option) LastTradeDatetime() time.Time
@@ -3132,7 +3176,7 @@ func (o *Option) LastTradeDatetime() time.Time
 LastTradeDatetime returns the last trade date as time.Time.
 
 <a name="OptionChain"></a>
-## type OptionChain
+## type [OptionChain](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L62-L67>)
 
 OptionChain represents the complete option chain for a symbol.
 
@@ -3146,7 +3190,7 @@ type OptionChain struct {
 ```
 
 <a name="OptionChainResponse"></a>
-## type OptionChainResponse
+## type [OptionChainResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L78-L98>)
 
 OptionChainResponse represents the API response for options data.
 
@@ -3175,7 +3219,7 @@ type OptionChainResponse struct {
 ```
 
 <a name="OptionQuote"></a>
-## type OptionQuote
+## type [OptionQuote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L36-L59>)
 
 OptionQuote represents quote data within options API response. Uses int64 for timestamps since options API returns Unix timestamps.
 
@@ -3207,7 +3251,7 @@ type OptionQuote struct {
 ```
 
 <a name="OptionsData"></a>
-## type OptionsData
+## type [OptionsData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/option.go#L70-L75>)
 
 OptionsData holds all expiration dates and the current option chain.
 
@@ -3221,7 +3265,7 @@ type OptionsData struct {
 ```
 
 <a name="PerformingCompany"></a>
-## type PerformingCompany
+## type [PerformingCompany](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L40-L55>)
 
 PerformingCompany represents a top performing company in the industry.
 
@@ -3245,7 +3289,7 @@ type PerformingCompany struct {
 ```
 
 <a name="PredefinedIndustry"></a>
-## type PredefinedIndustry
+## type [PredefinedIndustry](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L137>)
 
 PredefinedIndustry represents commonly used industry identifiers.
 
@@ -3389,7 +3433,7 @@ const (
 ```
 
 <a name="AllIndustries"></a>
-### func AllIndustries
+### func [AllIndustries](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/industry.go#L258>)
 
 ```go
 func AllIndustries() []PredefinedIndustry
@@ -3398,7 +3442,7 @@ func AllIndustries() []PredefinedIndustry
 AllIndustries returns a list of common predefined industry identifiers. Note: This is not exhaustive \- there are many more industries available.
 
 <a name="PredefinedMarket"></a>
-## type PredefinedMarket
+## type [PredefinedMarket](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/market.go#L177>)
 
 PredefinedMarket represents legacy market identifiers. New code can use MarketRegion with market.NewWithRegion for Python v1.4.0 parity.
 
@@ -3449,7 +3493,7 @@ const (
 ```
 
 <a name="PredefinedScreener"></a>
-## type PredefinedScreener
+## type [PredefinedScreener](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L149>)
 
 PredefinedScreener represents a predefined screener query name.
 
@@ -3489,7 +3533,7 @@ const (
 ```
 
 <a name="AllPredefinedScreeners"></a>
-### func AllPredefinedScreeners
+### func [AllPredefinedScreeners](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L179>)
 
 ```go
 func AllPredefinedScreeners() []PredefinedScreener
@@ -3498,7 +3542,7 @@ func AllPredefinedScreeners() []PredefinedScreener
 AllPredefinedScreeners returns all available predefined screener names.
 
 <a name="PredefinedSector"></a>
-## type PredefinedSector
+## type [PredefinedSector](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L136>)
 
 PredefinedSector represents commonly used sector identifiers.
 
@@ -3546,7 +3590,7 @@ const (
 ```
 
 <a name="AllSectors"></a>
-### func AllSectors
+### func [AllSectors](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L174>)
 
 ```go
 func AllSectors() []PredefinedSector
@@ -3555,7 +3599,7 @@ func AllSectors() []PredefinedSector
 AllSectors returns a list of all predefined sector identifiers.
 
 <a name="PriceTarget"></a>
-## type PriceTarget
+## type [PriceTarget](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L26-L36>)
 
 PriceTarget represents analyst price targets.
 
@@ -3574,7 +3618,7 @@ type PriceTarget struct {
 ```
 
 <a name="PricingData"></a>
-## type PricingData
+## type [PricingData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L9-L108>)
 
 PricingData represents real\-time pricing data from Yahoo Finance WebSocket.
 
@@ -3684,7 +3728,7 @@ type PricingData struct {
 ```
 
 <a name="PricingData.ExpireTime"></a>
-### func \(\*PricingData\) ExpireTime
+### func \(\*PricingData\) [ExpireTime](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L116>)
 
 ```go
 func (p *PricingData) ExpireTime() time.Time
@@ -3693,7 +3737,7 @@ func (p *PricingData) ExpireTime() time.Time
 ExpireTime returns the option expiration date as time.Time.
 
 <a name="PricingData.IsPostMarket"></a>
-### func \(\*PricingData\) IsPostMarket
+### func \(\*PricingData\) [IsPostMarket](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L134>)
 
 ```go
 func (p *PricingData) IsPostMarket() bool
@@ -3702,7 +3746,7 @@ func (p *PricingData) IsPostMarket() bool
 IsPostMarket returns true if trading during post\-market hours.
 
 <a name="PricingData.IsPreMarket"></a>
-### func \(\*PricingData\) IsPreMarket
+### func \(\*PricingData\) [IsPreMarket](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L129>)
 
 ```go
 func (p *PricingData) IsPreMarket() bool
@@ -3711,7 +3755,7 @@ func (p *PricingData) IsPreMarket() bool
 IsPreMarket returns true if trading during pre\-market hours.
 
 <a name="PricingData.IsRegularMarket"></a>
-### func \(\*PricingData\) IsRegularMarket
+### func \(\*PricingData\) [IsRegularMarket](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L124>)
 
 ```go
 func (p *PricingData) IsRegularMarket() bool
@@ -3720,7 +3764,7 @@ func (p *PricingData) IsRegularMarket() bool
 IsRegularMarket returns true if trading during regular market hours.
 
 <a name="PricingData.Timestamp"></a>
-### func \(\*PricingData\) Timestamp
+### func \(\*PricingData\) [Timestamp](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/live.go#L111>)
 
 ```go
 func (p *PricingData) Timestamp() time.Time
@@ -3729,7 +3773,7 @@ func (p *PricingData) Timestamp() time.Time
 Timestamp returns the quote time as time.Time.
 
 <a name="Quote"></a>
-## type Quote
+## type [Quote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/quote.go#L6-L87>)
 
 Quote represents current quote data for a ticker.
 
@@ -3819,7 +3863,7 @@ type Quote struct {
 ```
 
 <a name="QuoteError"></a>
-## type QuoteError
+## type [QuoteError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L193-L196>)
 
 QuoteError represents an error from quote API.
 
@@ -3831,7 +3875,7 @@ type QuoteError struct {
 ```
 
 <a name="QuoteResponse"></a>
-## type QuoteResponse
+## type [QuoteResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L99-L104>)
 
 QuoteResponse represents the response from quote API \(v7\).
 
@@ -3845,7 +3889,7 @@ type QuoteResponse struct {
 ```
 
 <a name="QuoteResult"></a>
-## type QuoteResult
+## type [QuoteResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L107-L190>)
 
 QuoteResult represents a single quote result.
 
@@ -3937,7 +3981,7 @@ type QuoteResult struct {
 ```
 
 <a name="QuoteSummaryError"></a>
-## type QuoteSummaryError
+## type [QuoteSummaryError](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L93-L96>)
 
 QuoteSummaryError represents an error from quoteSummary API.
 
@@ -3949,7 +3993,7 @@ type QuoteSummaryError struct {
 ```
 
 <a name="QuoteSummaryResponse"></a>
-## type QuoteSummaryResponse
+## type [QuoteSummaryResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L74-L79>)
 
 QuoteSummaryResponse represents the response from quoteSummary API.
 
@@ -3963,7 +4007,7 @@ type QuoteSummaryResponse struct {
 ```
 
 <a name="QuoteSummaryResult"></a>
-## type QuoteSummaryResult
+## type [QuoteSummaryResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L82-L90>)
 
 QuoteSummaryResult contains all module data.
 
@@ -3980,7 +4024,7 @@ type QuoteSummaryResult struct {
 ```
 
 <a name="Recommendation"></a>
-## type Recommendation
+## type [Recommendation](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L11-L18>)
 
 Recommendation represents analyst recommendation counts for a period.
 
@@ -3996,7 +4040,7 @@ type Recommendation struct {
 ```
 
 <a name="Recommendation.Total"></a>
-### func \(\*Recommendation\) Total
+### func \(\*Recommendation\) [Total](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L21>)
 
 ```go
 func (r *Recommendation) Total() int
@@ -4005,7 +4049,7 @@ func (r *Recommendation) Total() int
 Total returns total number of recommendations.
 
 <a name="RecommendationTrend"></a>
-## type RecommendationTrend
+## type [RecommendationTrend](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L6-L8>)
 
 RecommendationTrend represents analyst recommendations over time.
 
@@ -4016,7 +4060,7 @@ type RecommendationTrend struct {
 ```
 
 <a name="RepairOptions"></a>
-## type RepairOptions
+## type [RepairOptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L68-L83>)
 
 RepairOptions provides fine\-grained control over which repairs to apply.
 
@@ -4040,7 +4084,7 @@ type RepairOptions struct {
 ```
 
 <a name="DefaultRepairOptions"></a>
-### func DefaultRepairOptions
+### func [DefaultRepairOptions](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L86>)
 
 ```go
 func DefaultRepairOptions() RepairOptions
@@ -4049,7 +4093,7 @@ func DefaultRepairOptions() RepairOptions
 DefaultRepairOptions returns options with all repairs enabled.
 
 <a name="ResearchReport"></a>
-## type ResearchReport
+## type [ResearchReport](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L58-L73>)
 
 ResearchReport represents a research report.
 
@@ -4073,7 +4117,7 @@ type ResearchReport struct {
 ```
 
 <a name="RevenueEstimate"></a>
-## type RevenueEstimate
+## type [RevenueEstimate](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/analysis.go#L52-L62>)
 
 RevenueEstimate represents revenue estimates for a period.
 
@@ -4092,7 +4136,7 @@ type RevenueEstimate struct {
 ```
 
 <a name="ScreenerParams"></a>
-## type ScreenerParams
+## type [ScreenerParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L204-L222>)
 
 ScreenerParams represents parameters for the Screen function.
 
@@ -4119,7 +4163,7 @@ type ScreenerParams struct {
 ```
 
 <a name="DefaultScreenerParams"></a>
-### func DefaultScreenerParams
+### func [DefaultScreenerParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L225>)
 
 ```go
 func DefaultScreenerParams() ScreenerParams
@@ -4128,7 +4172,7 @@ func DefaultScreenerParams() ScreenerParams
 DefaultScreenerParams returns default screener parameters.
 
 <a name="ScreenerQueryBuilder"></a>
-## type ScreenerQueryBuilder
+## type [ScreenerQueryBuilder](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener_query.go#L10-L17>)
 
 ScreenerQueryBuilder is the interface for EquityQuery, FundQuery, and ETFQuery. It provides methods for serializing queries and identifying the quote type.
 
@@ -4144,7 +4188,7 @@ type ScreenerQueryBuilder interface {
 ```
 
 <a name="ScreenerQuote"></a>
-## type ScreenerQuote
+## type [ScreenerQuote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L30-L146>)
 
 ScreenerQuote represents a single stock from screener results.
 
@@ -4267,7 +4311,7 @@ type ScreenerQuote struct {
 ```
 
 <a name="ScreenerResponse"></a>
-## type ScreenerResponse
+## type [ScreenerResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L254-L266>)
 
 ScreenerResponse represents the raw API response from Yahoo Finance screener.
 
@@ -4288,7 +4332,7 @@ type ScreenerResponse struct {
 ```
 
 <a name="ScreenerResult"></a>
-## type ScreenerResult
+## type [ScreenerResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/screener.go#L15-L27>)
 
 ScreenerResult represents the result from a stock screener query.
 
@@ -4322,7 +4366,7 @@ type ScreenerResult struct {
 ```
 
 <a name="SearchList"></a>
-## type SearchList
+## type [SearchList](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L113-L128>)
 
 SearchList represents a Yahoo Finance list from search results.
 
@@ -4346,7 +4390,7 @@ type SearchList struct {
 ```
 
 <a name="SearchNav"></a>
-## type SearchNav
+## type [SearchNav](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L149-L155>)
 
 SearchNav represents a navigation link from search results.
 
@@ -4361,7 +4405,7 @@ type SearchNav struct {
 ```
 
 <a name="SearchNews"></a>
-## type SearchNews
+## type [SearchNews](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L73-L97>)
 
 SearchNews represents a news article from search results.
 
@@ -4394,7 +4438,7 @@ type SearchNews struct {
 ```
 
 <a name="SearchParams"></a>
-## type SearchParams
+## type [SearchParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L158-L179>)
 
 SearchParams represents parameters for the Search function.
 
@@ -4424,7 +4468,7 @@ type SearchParams struct {
 ```
 
 <a name="DefaultSearchParams"></a>
-### func DefaultSearchParams
+### func [DefaultSearchParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L182>)
 
 ```go
 func DefaultSearchParams() SearchParams
@@ -4433,7 +4477,7 @@ func DefaultSearchParams() SearchParams
 DefaultSearchParams returns default search parameters.
 
 <a name="SearchQuote"></a>
-## type SearchQuote
+## type [SearchQuote](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L37-L70>)
 
 SearchQuote represents a single quote result from search.
 
@@ -4475,7 +4519,7 @@ type SearchQuote struct {
 ```
 
 <a name="SearchResearch"></a>
-## type SearchResearch
+## type [SearchResearch](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L131-L146>)
 
 SearchResearch represents a research report from search results.
 
@@ -4499,7 +4543,7 @@ type SearchResearch struct {
 ```
 
 <a name="SearchResponse"></a>
-## type SearchResponse
+## type [SearchResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L191-L198>)
 
 SearchResponse represents the raw API response from Yahoo Finance search.
 
@@ -4515,7 +4559,7 @@ type SearchResponse struct {
 ```
 
 <a name="SearchResult"></a>
-## type SearchResult
+## type [SearchResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L16-L34>)
 
 SearchResult represents the complete search response from Yahoo Finance.
 
@@ -4556,7 +4600,7 @@ type SearchResult struct {
 ```
 
 <a name="SearchThumbnail"></a>
-## type SearchThumbnail
+## type [SearchThumbnail](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L100-L102>)
 
 SearchThumbnail represents thumbnail image information.
 
@@ -4567,7 +4611,7 @@ type SearchThumbnail struct {
 ```
 
 <a name="SectorData"></a>
-## type SectorData
+## type [SectorData](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L88-L115>)
 
 SectorData contains all data for a sector.
 
@@ -4616,7 +4660,7 @@ type SectorData struct {
 ```
 
 <a name="SectorIndustry"></a>
-## type SectorIndustry
+## type [SectorIndustry](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L43-L55>)
 
 SectorIndustry represents an industry within a sector.
 
@@ -4637,7 +4681,7 @@ type SectorIndustry struct {
 ```
 
 <a name="SectorOverview"></a>
-## type SectorOverview
+## type [SectorOverview](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L4-L25>)
 
 SectorOverview contains overview information for a sector.
 
@@ -4667,7 +4711,7 @@ type SectorOverview struct {
 ```
 
 <a name="SectorResponse"></a>
-## type SectorResponse
+## type [SectorResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L118-L133>)
 
 SectorResponse represents the raw API response for sector data.
 
@@ -4691,7 +4735,7 @@ type SectorResponse struct {
 ```
 
 <a name="SectorTopCompany"></a>
-## type SectorTopCompany
+## type [SectorTopCompany](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/sector.go#L28-L40>)
 
 SectorTopCompany represents a top company within a sector.
 
@@ -4712,7 +4756,7 @@ type SectorTopCompany struct {
 ```
 
 <a name="Split"></a>
-## type Split
+## type [Split](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L262-L267>)
 
 Split represents a stock split.
 
@@ -4726,7 +4770,7 @@ type Split struct {
 ```
 
 <a name="SplitEvent"></a>
-## type SplitEvent
+## type [SplitEvent](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/response.go#L40-L45>)
 
 SplitEvent represents a stock split event in chart response.
 
@@ -4740,7 +4784,7 @@ type SplitEvent struct {
 ```
 
 <a name="ThumbnailResolution"></a>
-## type ThumbnailResolution
+## type [ThumbnailResolution](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/search.go#L105-L110>)
 
 ThumbnailResolution represents a single thumbnail resolution.
 
@@ -4754,7 +4798,7 @@ type ThumbnailResolution struct {
 ```
 
 <a name="TimeseriesDataPoint"></a>
-## type TimeseriesDataPoint
+## type [TimeseriesDataPoint](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L120-L129>)
 
 TimeseriesDataPoint represents a single data point in the timeseries.
 
@@ -4772,7 +4816,7 @@ type TimeseriesDataPoint struct {
 ```
 
 <a name="TimeseriesResponse"></a>
-## type TimeseriesResponse
+## type [TimeseriesResponse](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L96-L104>)
 
 TimeseriesResponse represents the API response from fundamentals\-timeseries endpoint.
 
@@ -4789,7 +4833,7 @@ type TimeseriesResponse struct {
 ```
 
 <a name="TimeseriesResult"></a>
-## type TimeseriesResult
+## type [TimeseriesResult](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/financials.go#L108-L117>)
 
 TimeseriesResult represents a single result item in the timeseries response. The actual data is in a dynamically named field matching the type \(e.g., "annualTotalRevenue"\).
 
@@ -4806,8 +4850,24 @@ type TimeseriesResult struct {
 }
 ```
 
+<a name="TradingPeriod"></a>
+## type [TradingPeriod](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/history.go#L136-L143>)
+
+TradingPeriod represents one exchange trading session. Start and End are Unix seconds. PreStart/PreEnd and PostStart/PostEnd are nil when Yahoo does not provide extended\-hours sessions for that day.
+
+```go
+type TradingPeriod struct {
+    Start     int64  `json:"start"`
+    End       int64  `json:"end"`
+    PreStart  *int64 `json:"preStart,omitempty"`
+    PreEnd    *int64 `json:"preEnd,omitempty"`
+    PostStart *int64 `json:"postStart,omitempty"`
+    PostEnd   *int64 `json:"postEnd,omitempty"`
+}
+```
+
 <a name="TransactionStats"></a>
-## type TransactionStats
+## type [TransactionStats](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/holders.go#L151-L157>)
 
 TransactionStats represents statistics for a type of transaction.
 
@@ -4822,7 +4882,7 @@ type TransactionStats struct {
 ```
 
 <a name="ValuationMeasureRow"></a>
-## type ValuationMeasureRow
+## type [ValuationMeasureRow](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L15-L28>)
 
 ValuationMeasureRow represents one row in the valuation measures table.
 
@@ -4844,7 +4904,7 @@ type ValuationMeasureRow struct {
 ```
 
 <a name="ValuationMeasureRow.SetValue"></a>
-### func \(\*ValuationMeasureRow\) SetValue
+### func \(\*ValuationMeasureRow\) [SetValue](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L70>)
 
 ```go
 func (r *ValuationMeasureRow) SetValue(column string, value *float64)
@@ -4853,7 +4913,7 @@ func (r *ValuationMeasureRow) SetValue(column string, value *float64)
 SetValue stores a raw numeric valuation cell while maintaining the compatibility string map.
 
 <a name="ValuationMeasures"></a>
-## type ValuationMeasures
+## type [ValuationMeasures](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L6-L12>)
 
 ValuationMeasures represents Yahoo Finance's key\-statistics valuation table.
 
@@ -4868,7 +4928,7 @@ type ValuationMeasures struct {
 ```
 
 <a name="ValuationMeasures.Empty"></a>
-### func \(\*ValuationMeasures\) Empty
+### func \(\*ValuationMeasures\) [Empty](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L31>)
 
 ```go
 func (v *ValuationMeasures) Empty() bool
@@ -4877,7 +4937,7 @@ func (v *ValuationMeasures) Empty() bool
 Empty reports whether the valuation table has no rows.
 
 <a name="ValuationMeasures.FloatValue"></a>
-### func \(\*ValuationMeasures\) FloatValue
+### func \(\*ValuationMeasures\) [FloatValue](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L51>)
 
 ```go
 func (v *ValuationMeasures) FloatValue(rowName, columnName string) (float64, bool)
@@ -4886,7 +4946,7 @@ func (v *ValuationMeasures) FloatValue(rowName, columnName string) (float64, boo
 FloatValue returns the raw numeric value by row name and column name. It returns false when the row/column is missing or the cell has no value.
 
 <a name="ValuationMeasures.Value"></a>
-### func \(\*ValuationMeasures\) Value
+### func \(\*ValuationMeasures\) [Value](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/models/valuation.go#L36>)
 
 ```go
 func (v *ValuationMeasures) Value(rowName, columnName string) (string, bool)

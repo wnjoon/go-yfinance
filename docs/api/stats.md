@@ -73,7 +73,7 @@ These functions are designed to match the behavior of numpy and scipy functions 
 
 
 <a name="Abs"></a>
-## func Abs
+## func [Abs](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L140>)
 
 ```go
 func Abs(data []float64) []float64
@@ -82,7 +82,7 @@ func Abs(data []float64) []float64
 Abs returns absolute values of the data.
 
 <a name="All"></a>
-## func All
+## func [All](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L255>)
 
 ```go
 func All(mask []bool) bool
@@ -91,7 +91,7 @@ func All(mask []bool) bool
 All returns true if all values in the mask are true.
 
 <a name="Any"></a>
-## func Any
+## func [Any](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L265>)
 
 ```go
 func Any(mask []bool) bool
@@ -100,7 +100,7 @@ func Any(mask []bool) bool
 Any returns true if any value in the mask is true.
 
 <a name="ClipOutliers"></a>
-## func ClipOutliers
+## func [ClipOutliers](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L146>)
 
 ```go
 func ClipOutliers(data []float64, multiplier float64) []float64
@@ -109,7 +109,7 @@ func ClipOutliers(data []float64, multiplier float64) []float64
 ClipOutliers replaces outliers with boundary values.
 
 <a name="CountTrue"></a>
-## func CountTrue
+## func [CountTrue](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L244>)
 
 ```go
 func CountTrue(mask []bool) int
@@ -118,7 +118,7 @@ func CountTrue(mask []bool) int
 CountTrue counts the number of true values in a boolean slice.
 
 <a name="DetectOutliersByZScore"></a>
-## func DetectOutliersByZScore
+## func [DetectOutliersByZScore](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L49>)
 
 ```go
 func DetectOutliersByZScore(data []float64, threshold float64) []bool
@@ -132,7 +132,7 @@ Parameters:
 - threshold: z\-score threshold \(typically 2.0 or 3.0\)
 
 <a name="Diff"></a>
-## func Diff
+## func [Diff](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L164>)
 
 ```go
 func Diff(data []float64) []float64
@@ -141,7 +141,7 @@ func Diff(data []float64) []float64
 Diff calculates the difference between consecutive elements. Returns slice of length n\-1.
 
 <a name="FilterByMask"></a>
-## func FilterByMask
+## func [FilterByMask](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L129>)
 
 ```go
 func FilterByMask(data []float64, mask []bool) []float64
@@ -150,7 +150,7 @@ func FilterByMask(data []float64, mask []bool) []float64
 FilterByMask returns elements where mask is true.
 
 <a name="FindBlocks"></a>
-## func FindBlocks
+## func [FindBlocks](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L196>)
 
 ```go
 func FindBlocks(mask []bool) [][2]int
@@ -159,7 +159,7 @@ func FindBlocks(mask []bool) [][2]int
 FindBlocks identifies contiguous blocks of True values in a boolean mask. Returns slice of \[start, end\) pairs.
 
 <a name="IQR"></a>
-## func IQR
+## func [IQR](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L50>)
 
 ```go
 func IQR(data []float64) (q1, q3, iqr float64)
@@ -173,7 +173,7 @@ The interquartile range is used for outlier detection:
 - Upper bound: Q3 \+ 1.5 \* IQR
 
 <a name="InlierMask"></a>
-## func InlierMask
+## func [InlierMask](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L137>)
 
 ```go
 func InlierMask(data []float64, multiplier float64) []bool
@@ -182,7 +182,7 @@ func InlierMask(data []float64, multiplier float64) []bool
 InlierMask creates a boolean mask for inliers \(non\-outliers\). Returns true for values that are NOT outliers.
 
 <a name="Mean"></a>
-## func Mean
+## func [Mean](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L79>)
 
 ```go
 func Mean(data []float64) float64
@@ -191,7 +191,7 @@ func Mean(data []float64) float64
 Mean calculates the arithmetic mean of the data. Returns NaN for empty data.
 
 <a name="Median"></a>
-## func Median
+## func [Median](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L113>)
 
 ```go
 func Median(data []float64) float64
@@ -200,7 +200,7 @@ func Median(data []float64) float64
 Median calculates the median \(50th percentile\) of the data.
 
 <a name="MedianFilter"></a>
-## func MedianFilter
+## func [MedianFilter](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L17>)
 
 ```go
 func MedianFilter(data []float64, windowSize int) []float64
@@ -216,7 +216,7 @@ Parameters:
 Returns filtered data with same length as input. Edge values use smaller windows.
 
 <a name="MedianFilter2D"></a>
-## func MedianFilter2D
+## func [MedianFilter2D](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L64>)
 
 ```go
 func MedianFilter2D(data [][]float64, windowSize int) [][]float64
@@ -232,7 +232,7 @@ Parameters:
 Returns filtered 2D data.
 
 <a name="MedianOfSlice"></a>
-## func MedianOfSlice
+## func [MedianOfSlice](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L220>)
 
 ```go
 func MedianOfSlice(data []float64) float64
@@ -241,7 +241,7 @@ func MedianOfSlice(data []float64) float64
 MedianOfSlice calculates the median without sorting the original slice.
 
 <a name="OHLCMedian"></a>
-## func OHLCMedian
+## func [OHLCMedian](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L238>)
 
 ```go
 func OHLCMedian(open, high, low, close float64) float64
@@ -250,7 +250,7 @@ func OHLCMedian(open, high, low, close float64) float64
 OHLC calculates the median of Open, High, Low, Close values. This provides a robust estimate of the "typical" price.
 
 <a name="OutlierBounds"></a>
-## func OutlierBounds
+## func [OutlierBounds](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L70>)
 
 ```go
 func OutlierBounds(data []float64, multiplier float64) (lower, upper float64)
@@ -266,7 +266,7 @@ Parameters:
 Returns lower bound, upper bound.
 
 <a name="OutlierMask"></a>
-## func OutlierMask
+## func [OutlierMask](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L125>)
 
 ```go
 func OutlierMask(data []float64, multiplier float64) []bool
@@ -280,7 +280,7 @@ Parameters:
 - multiplier: IQR multiplier \(typically 1.5\)
 
 <a name="PctChange"></a>
-## func PctChange
+## func [PctChange](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/filter.go#L178>)
 
 ```go
 func PctChange(data []float64) []float64
@@ -289,7 +289,7 @@ func PctChange(data []float64) []float64
 PctChange calculates the percentage change between consecutive elements. Returns slice of length n\-1.
 
 <a name="Percentile"></a>
-## func Percentile
+## func [Percentile](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L16>)
 
 ```go
 func Percentile(data []float64, p float64) float64
@@ -305,7 +305,7 @@ Parameters:
 Returns the percentile value. Returns NaN for empty data.
 
 <a name="RemoveNaN"></a>
-## func RemoveNaN
+## func [RemoveNaN](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L118>)
 
 ```go
 func RemoveNaN(data []float64) []float64
@@ -314,7 +314,7 @@ func RemoveNaN(data []float64) []float64
 RemoveNaN returns a new slice with NaN values removed.
 
 <a name="RollingMean"></a>
-## func RollingMean
+## func [RollingMean](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L83>)
 
 ```go
 func RollingMean(data []float64, windowSize int) []float64
@@ -323,7 +323,7 @@ func RollingMean(data []float64, windowSize int) []float64
 RollingMean calculates a rolling \(moving\) mean with the specified window size. Uses center alignment. Returns NaN for positions where window is incomplete.
 
 <a name="RollingStd"></a>
-## func RollingStd
+## func [RollingStd](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L119>)
 
 ```go
 func RollingStd(data []float64, windowSize int) []float64
@@ -332,7 +332,7 @@ func RollingStd(data []float64, windowSize int) []float64
 RollingStd calculates a rolling \(moving\) standard deviation. Uses center alignment and sample std \(ddof=1\).
 
 <a name="Std"></a>
-## func Std
+## func [Std](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/percentile.go#L97>)
 
 ```go
 func Std(data []float64, ddof int) float64
@@ -346,7 +346,7 @@ Parameters:
 - ddof: delta degrees of freedom \(0 for population, 1 for sample\)
 
 <a name="WeightedMean"></a>
-## func WeightedMean
+## func [WeightedMean](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L61>)
 
 ```go
 func WeightedMean(data, weights []float64) float64
@@ -355,7 +355,7 @@ func WeightedMean(data, weights []float64) float64
 WeightedMean calculates the weighted arithmetic mean. Returns NaN if weights sum to zero or if slices have different lengths.
 
 <a name="ZScore"></a>
-## func ZScore
+## func [ZScore](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L10>)
 
 ```go
 func ZScore(value, mean, std float64) float64
@@ -368,7 +368,7 @@ Z\-score = \(value \- mean\) / std
 Returns NaN if std is zero or NaN.
 
 <a name="ZScoreSlice"></a>
-## func ZScoreSlice
+## func [ZScoreSlice](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L19>)
 
 ```go
 func ZScoreSlice(data []float64) []float64
@@ -377,7 +377,7 @@ func ZScoreSlice(data []float64) []float64
 ZScoreSlice calculates z\-scores for all values in the data. Uses sample standard deviation \(ddof=1\).
 
 <a name="ZScoreWithParams"></a>
-## func ZScoreWithParams
+## func [ZScoreWithParams](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/stats/zscore.go#L35>)
 
 ```go
 func ZScoreWithParams(data []float64, mean, std float64) []float64

@@ -227,3 +227,123 @@ func TestReverseSplitCorrection(t *testing.T) {
 		t.Errorf("Expected Volume=1000, got %d", result[0].Volume)
 	}
 }
+
+// TestRepairStockSplitsNRDYGolden ports the Python yfinance 1.7.0 NRDY
+// regression fixture added by ranaroussi/yfinance#2958 (0f29c859 plus the
+// 5c1f64e follow-up). It exercises multiple alternating corrupt/good ranges.
+func TestRepairStockSplitsNRDYGolden(t *testing.T) {
+	for _, last := range []int{0, 27} {
+		bad := loadBarsCSV(t, "NRDY-1d-bad-stock-split.csv")
+		fixed := loadBarsCSV(t, "NRDY-1d-bad-stock-split-fixed.csv")
+		if last > 0 {
+			bad, fixed = bad[len(bad)-last:], fixed[len(fixed)-last:]
+		}
+		opts := DefaultOptions()
+		opts.Interval = "1d"
+		got := New(opts).repairStockSplits(bad)
+		for i := range got {
+			for _, c := range []struct {
+				name      string
+				got, want float64
+			}{
+				{"Open", got[i].Open, fixed[i].Open}, {"High", got[i].High, fixed[i].High},
+				{"Low", got[i].Low, fixed[i].Low}, {"Close", got[i].Close, fixed[i].Close},
+				{"AdjClose", got[i].AdjClose, fixed[i].AdjClose},
+			} {
+				if !closeTo(c.got, c.want, 5e-5) {
+					t.Fatalf("last=%d row=%d %s: got %v want %v", last, i, c.name, c.got, c.want)
+				}
+			}
+			if got[i].Volume != fixed[i].Volume {
+				t.Fatalf("last=%d row=%d Volume: got %d want %d", last, i, got[i].Volume, fixed[i].Volume)
+			}
+		}
+	}
+}
+
+func TestRepairStockSplitsAllZeroVolumeIsNotRepaired(t *testing.T) {
+	bars := make([]models.Bar, 8)
+	for i := range bars {
+		bars[i] = models.Bar{Date: time.Date(2024, 1, i+1, 0, 0, 0, 0, time.UTC), Open: 100, High: 100, Low: 100, Close: 100, AdjClose: 100}
+	}
+	bars[4].Open, bars[4].High, bars[4].Low, bars[4].Close, bars[4].AdjClose, bars[4].Splits = 50, 50, 50, 50, 50, 2
+	got := New(DefaultOptions()).repairStockSplits(bars)
+	if CountRepaired(got) != 0 {
+		t.Fatalf("all-zero volume must veto split repair")
+	}
+}
+
+func TestApplySplitRangesUsesPythonBankersRounding(t *testing.T) {
+	bars := []models.Bar{{Open: 1, High: 1, Low: 1, Close: 1, AdjClose: 1, Volume: 5}}
+	got := applySplitRanges(bars, 1, 2, []bool{false}, []bool{true})
+	if got[0].Volume != 2 {
+		t.Fatalf("2.5 volume rounded to %d, want Python/NumPy half-even 2", got[0].Volume)
+	}
+}
+
+func TestRepairStockSplitsOnlyInterdayIntervals(t *testing.T) {
+	bars := unadjustedSplitBars([]int64{1200, 1150, 1250, 1180, 1220, 2400, 2500, 2450})
+	opts := DefaultOptions()
+	opts.Interval = "1h"
+	got := New(opts).repairStockSplits(bars)
+	if CountRepaired(got) != 0 {
+		t.Fatal("intraday split repair must be disabled")
+	}
+}
+
+func TestRepairSplitDailyLookAheadStopsAfterFiveRows(t *testing.T) {
+	bars := make([]models.Bar, 14)
+	for i := range bars {
+		p := 100.0
+		if i >= 12 {
+			p = 50
+		}
+		bars[i] = models.Bar{Date: time.Date(2024, 1, i+1, 0, 0, 0, 0, time.UTC), Open: p, High: p, Low: p, Close: p, AdjClose: p, Volume: 1000}
+	}
+	bars[5].Splits = 2
+	got := repairSplitAtIndex(bars, 5, 2, "1d")
+	if CountRepaired(got) != 0 {
+		t.Fatal("signal beyond upstream's five-row look-ahead was used")
+	}
+}
+
+func TestRepairSplitUsesAdjustedPricesForDividendDrop(t *testing.T) {
+	bars := make([]models.Bar, 9)
+	for i := range bars {
+		close, adj := 100.0, 50.0
+		if i >= 5 {
+			close, adj = 50, 50
+		}
+		bars[i] = models.Bar{Date: time.Date(2024, 1, i+1, 0, 0, 0, 0, time.UTC), Open: close, High: close, Low: close, Close: close, AdjClose: adj, Volume: 1000}
+	}
+	bars[5].Splits = 2
+	got := New(DefaultOptions()).repairStockSplits(bars)
+	if CountRepaired(got) != 0 {
+		t.Fatal("dividend-adjusted continuous prices must not be treated as a split error")
+	}
+}
+
+func TestSuppressLocalSplitVolatility(t *testing.T) {
+	ratio := []float64{1, 0.8, 1.8, 1.8, 0.8, 1.8}
+	up, down := make([]bool, len(ratio)), make([]bool, len(ratio))
+	up[3] = true
+	suppressLocalVolatility(ratio, up, down, 2, "1d")
+	if up[3] {
+		t.Fatal("locally ordinary candidate should be suppressed")
+	}
+}
+
+func TestSuppressSplitVolumeSpikeFalsePositive(t *testing.T) {
+	bars := make([]models.Bar, 20)
+	for i := range bars {
+		bars[i].Volume = int64(950 + (i%5)*25)
+	}
+	// Descending candidate idx=6 refers to the actual drop row at desc idx=5.
+	bars[len(bars)-1-5].Volume = 10000
+	up, down := make([]bool, len(bars)), make([]bool, len(bars))
+	up[6] = true
+	suppressSplitVolumeSpikes(bars, up, down)
+	if up[6] {
+		t.Fatal("catastrophic move on exceptional volume should be suppressed")
+	}
+}

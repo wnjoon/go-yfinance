@@ -23,6 +23,9 @@ func (r *Repairer) repairStockSplits(bars []models.Bar) []models.Bar {
 	if len(bars) < 2 {
 		return bars
 	}
+	if r.opts.Interval != "1d" && r.opts.Interval != "1wk" && r.opts.Interval != "1mo" && r.opts.Interval != "3mo" {
+		return bars
+	}
 
 	// Find split events
 	splitIndices := findSplitIndices(bars)
@@ -66,31 +69,45 @@ func findSplitIndices(bars []models.Bar) []int {
 
 // repairSplitAtIndex repairs data around a specific split event.
 func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, interval string) []models.Bar {
-	if splitIdx == 0 {
+	if splitIdx == 0 || splitRatio <= 0 || (splitRatio > 0.8 && splitRatio < 1.25) {
 		return bars
 	}
 
 	result := make([]models.Bar, len(bars))
 	copy(result, bars)
 
-	// Calculate price changes leading up to the split
-	// Look at a window of data before the split
-	windowSize := minInt(splitIdx, 20) // Look at up to 20 days before split
-	if windowSize < 3 {
-		return bars // Not enough data
+	// Match upstream's per-split scope: all older data plus a short look-ahead.
+	// The look-ahead is essential when corruption starts or stops near a split.
+	lookAhead := 5
+	if interval == "1wk" || interval == "1mo" || interval == "3mo" {
+		lookAhead = 1
 	}
-
-	startIdx := splitIdx - windowSize
-
-	// Calculate daily percentage changes using median of OHLC
-	pctChanges := splitWindowChanges(result, startIdx, splitIdx, windowSize)
-	if len(pctChanges) < 3 {
+	cutoff := minInt(len(result), splitIdx+lookAhead+1)
+	work := result[:cutoff]
+	if len(work) < 3 {
+		return bars
+	}
+	if splitVolumesAllZero(work) {
 		return bars
 	}
 
+	// Upstream scans newest -> oldest. A signal marks a boundary between ranges,
+	// rather than implying that every row before the split needs correction.
+	ratio := make([]float64, len(work))
+	ratio[0] = 1
+	for i := 1; i < len(work); i++ {
+		newer := adjustedOHLCMedian(work[len(work)-i])
+		older := adjustedOHLCMedian(work[len(work)-1-i])
+		if newer == 0 || older == 0 {
+			ratio[i] = 1
+		} else {
+			ratio[i] = older / newer
+		}
+	}
+
 	// Use IQR to estimate normal volatility
-	q1, q3, iqr := stats.IQR(pctChanges)
-	if math.IsNaN(iqr) || iqr == 0 {
+	q1, q3, iqr := stats.IQR(ratio)
+	if math.IsNaN(iqr) {
 		return bars
 	}
 
@@ -98,16 +115,17 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, int
 	lowerBound := q1 - 1.5*iqr
 	upperBound := q3 + 1.5*iqr
 
-	normalChanges := absBoundedChanges(pctChanges, lowerBound, upperBound)
+	normalChanges := splitBoundedChanges(ratio, lowerBound, upperBound)
 	if len(normalChanges) == 0 {
 		return bars
 	}
 
 	// Calculate standard deviation of normal changes (population std,
 	// matching upstream np.std's ddof=0 default).
+	mean := stats.Mean(normalChanges)
 	stdDev := stats.Std(normalChanges, 0)
-	if math.IsNaN(stdDev) {
-		stdDev = stats.Mean(normalChanges)
+	if math.IsNaN(stdDev) || mean == 0 {
+		return bars
 	}
 
 	// Split repair shares its detection formula with unit-switch repair
@@ -116,55 +134,183 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, int
 	// compared against the ratio observed on the split date — not a
 	// symmetric distance band around a single expected value.
 	splitMax := math.Max(splitRatio, 1.0/splitRatio)
-	largestNormalChange := 5 * stdDev
+	largestNormalChange := 5 * stdDev / mean
+	if interval != "1d" {
+		largestNormalChange *= 3
+	}
+	if interval == "1mo" || interval == "3mo" {
+		largestNormalChange *= 2
+	}
+	if splitMax < 1+largestNormalChange {
+		return bars
+	}
 	threshold := 1 + (splitMax-1+largestNormalChange)*0.6
-
-	// Ratio observed on the split date (splitDateChange returns 0, a safe
-	// no-op ratio of 1, when prevPrice is unusable).
-	dayChangeRatio := 1 + splitDateChange(result, splitIdx)
-
-	var unadjusted bool
-	if splitRatio > 1 {
-		// Forward split: unadjusted data shows a big price drop.
-		unadjusted = dayChangeRatio <= 1.0/threshold
-	} else {
-		// Reverse split: unadjusted data shows a big price jump.
-		unadjusted = dayChangeRatio >= threshold
+	up, down := make([]bool, len(ratio)), make([]bool, len(ratio))
+	for i, v := range ratio {
+		up[i] = v > threshold
+		down[i] = v < 1/threshold
 	}
-
-	if unadjusted {
-		// Volume cross-check (upstream #2943): a genuinely unadjusted split
-		// shows the mirror-image jump in volume at the split date.
-		if !splitVolumeConfirms(result, splitIdx, splitRatio, interval) {
-			return bars
-		}
-		// Data appears to be unadjusted - apply correction
-		result = applySplitCorrection(result, splitIdx, splitRatio)
-	}
+	up[0], down[0] = false, false
+	suppressSplitVolumeSpikes(work, up, down)
+	suppressLocalVolatility(ratio, up, down, splitMax, interval)
+	result = applySplitRanges(result, cutoff, splitRatio, up, down)
 
 	return result
 }
 
-func splitWindowChanges(bars []models.Bar, startIdx, splitIdx, windowSize int) []float64 {
-	pctChanges := make([]float64, 0, windowSize)
-	for i := startIdx + 1; i <= splitIdx; i++ {
-		prevPrice := ohlcMedian(bars[i-1])
-		currPrice := ohlcMedian(bars[i])
-		if prevPrice != 0 {
-			pctChanges = append(pctChanges, (currPrice-prevPrice)/prevPrice)
-		}
+func adjustedOHLCMedian(bar models.Bar) float64 {
+	if bar.Close == 0 {
+		return ohlcMedian(bar)
 	}
-	return pctChanges
+	adj := bar.AdjClose / bar.Close
+	if math.IsNaN(adj) || math.IsInf(adj, 0) || adj == 0 {
+		adj = 1
+	}
+	return stats.OHLCMedian(bar.Open*adj, bar.High*adj, bar.Low*adj, bar.Close*adj)
 }
 
-func absBoundedChanges(changes []float64, lowerBound, upperBound float64) []float64 {
-	var normalChanges []float64
-	for _, pct := range changes {
-		if pct >= lowerBound && pct <= upperBound {
-			normalChanges = append(normalChanges, math.Abs(pct))
+// suppressLocalVolatility applies upstream's second, candidate-local 0.5
+// threshold. This prevents a globally unusual but locally ordinary move from
+// being mistaken for a missing split adjustment.
+func suppressLocalVolatility(ratio []float64, up, down []bool, splitMax float64, interval string) {
+	for idx := range ratio {
+		if !up[idx] && !down[idx] {
+			continue
+		}
+		lookback := 3
+		if len(interval) > 0 && interval[len(interval)-1] == 'd' {
+			lookback = 10
+		} else if len(interval) > 0 && interval[len(interval)-1] == 'm' {
+			lookback = 100
+		}
+		start, end := maxInt(0, idx-lookback), minInt(len(ratio), idx+2)
+		clean := make([]float64, 0, end-start)
+		for j := start; j < end; j++ {
+			if !up[j] && !down[j] {
+				clean = append(clean, ratio[j])
+			}
+		}
+		if len(clean) == 0 {
+			continue
+		}
+		avg, sd := stats.Mean(clean), stats.Std(clean, 0)
+		if avg == 0 || math.IsNaN(sd) {
+			continue
+		}
+		localThreshold := 1 + (splitMax-1+5*sd/avg*intervalNoiseMultiplier(interval))*0.5
+		if ratio[idx] < localThreshold && ratio[idx] > 1/localThreshold {
+			up[idx], down[idx] = false, false
 		}
 	}
-	return normalChanges
+}
+
+// suppressSplitVolumeSpikes ports the practical false-positive guard in
+// Python 1.7.0: a catastrophic price drop on abnormally high volume is likely
+// a real market event. Signals are newest-first, matching upstream df2.
+func suppressSplitVolumeSpikes(work []models.Bar, up, down []bool) {
+	n := len(work)
+	vol := make([]float64, n)
+	for i := range work {
+		vol[i] = float64(work[n-1-i].Volume)
+	}
+	for idx := range up {
+		if !up[idx] || idx == 0 {
+			continue
+		}
+		dropIdx := idx - 1
+		block := make([]float64, 0, 30)
+		firstAfter := math.NaN()
+		// Stop at the nearest newer down-signal, matching upstream's
+		// block.loc[dt+1 : next_down_dt-1] exclusion.
+		newerDown := -1
+		for j := idx - 1; j >= 0; j-- {
+			if down[j] {
+				newerDown = j
+				break
+			}
+		}
+		for j := dropIdx - 1; j > newerDown && len(block) < 30; j-- {
+			if up[j] || down[j] || vol[j] <= 0 {
+				continue
+			}
+			if math.IsNaN(firstAfter) {
+				firstAfter = vol[j]
+			}
+			block = append(block, vol[j])
+		}
+		if len(block) < 2 {
+			continue
+		}
+		z := splitVolumeZScore(vol[dropIdx], block)
+		zFirst := splitVolumeZScore(firstAfter, block)
+		if math.Max(z, zFirst) > 2 {
+			up[idx] = false
+		}
+	}
+}
+
+func splitVolumeZScore(v float64, sample []float64) float64 {
+	if len(sample) < 2 || math.IsNaN(v) {
+		return 0
+	}
+	mean, sd := stats.Mean(sample), stats.Std(sample, 1)
+	if sd == 0 || math.IsNaN(sd) {
+		return 0
+	}
+	return (v - mean) / sd
+}
+
+func splitVolumesAllZero(bars []models.Bar) bool {
+	for _, b := range bars {
+		if b.Volume != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func splitBoundedChanges(changes []float64, lower, upper float64) []float64 {
+	var out []float64
+	for _, v := range changes {
+		if v >= lower && v <= upper {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+// applySplitRanges ports upstream's map_signals_to_ranges. Signal indexes are
+// newest-first; only alternating ranges are corrected, preserving already-good
+// islands (the NRDY regression contains several such islands).
+func applySplitRanges(bars []models.Bar, cutoff int, split float64, up, down []bool) []models.Bar {
+	indices := make([]int, 0)
+	for i := range up {
+		if up[i] || down[i] {
+			indices = append(indices, i)
+		}
+	}
+	for pair := 0; pair < len(indices); pair += 2 {
+		start, end := indices[pair], len(up)
+		if pair+1 < len(indices) {
+			end = indices[pair+1]
+		}
+		factor := split
+		if (split > 1 && up[start]) || (split < 1 && down[start]) {
+			factor = 1 / split
+		}
+		for di := start; di < end; di++ {
+			i := cutoff - 1 - di
+			bars[i].Open *= factor
+			bars[i].High *= factor
+			bars[i].Low *= factor
+			bars[i].Close *= factor
+			bars[i].AdjClose *= factor
+			bars[i].Dividends *= factor
+			bars[i].Volume = int64(math.RoundToEven(float64(bars[i].Volume) / factor))
+			bars[i].Repaired = true
+		}
+	}
+	return bars
 }
 
 // expectedSplitChange returns the signed price change an UNADJUSTED split
@@ -175,18 +321,6 @@ func expectedSplitChange(splitRatio float64) float64 {
 		return -(1.0 - 1.0/splitRatio)
 	}
 	return 1.0/splitRatio - 1.0
-}
-
-func splitDateChange(bars []models.Bar, splitIdx int) float64 {
-	if splitIdx == 0 {
-		return 0
-	}
-	prevPrice := ohlcMedian(bars[splitIdx-1])
-	currPrice := ohlcMedian(bars[splitIdx])
-	if prevPrice == 0 {
-		return 0
-	}
-	return (currPrice - prevPrice) / prevPrice
 }
 
 // applySplitCorrection adjusts historical prices, dividends, and volume for a

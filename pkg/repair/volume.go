@@ -93,7 +93,7 @@ func denoiseVolume(vol []float64) []float64 {
 
 // volumeChangeThreshold returns the ratio above which a one-bar volume change
 // counts as abnormal, scaled to the candidate price-change size (upstream
-// threshold_volUnitChg = 1 + (split_max - 1 + largest_volChg_pct) * 0.333).
+// threshold_volUnitChg = 1 + (split_max - 1 + largest_volChg_pct) * 0.2).
 func volumeChangeThreshold(vol []float64, changeMax float64, interval string) float64 {
 	denoised := denoiseVolume(vol)
 
@@ -123,7 +123,7 @@ func volumeChangeThreshold(vol []float64, changeMax float64, interval string) fl
 
 	largestVolChgPct *= intervalNoiseMultiplier(interval)
 
-	return 1 + (changeMax-1+largestVolChgPct)*0.333
+	return 1 + (changeMax-1+largestVolChgPct)*0.2
 }
 
 // boundaryVolumeChange returns the denoised volume just after a boundary

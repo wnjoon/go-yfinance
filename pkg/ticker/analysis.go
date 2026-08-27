@@ -236,12 +236,7 @@ func (t *Ticker) fetchQuoteSummary(modules []string) (map[string]interface{}, er
 	params.Set("lang", lang)
 	params.Set("region", region)
 
-	params, err := t.auth.AddCrumbToParams(params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add crumb: %w", err)
-	}
-
-	resp, err := t.client.Get(apiURL, params)
+	resp, err := t.auth.GetWithCrumb(apiURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch quoteSummary: %w", err)
 	}
