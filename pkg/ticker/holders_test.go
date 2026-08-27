@@ -201,6 +201,49 @@ func TestClearCacheIncludesHolders(t *testing.T) {
 	}
 }
 
+func TestHoldersCacheResultsAreIndependent(t *testing.T) {
+	tkr, err := New("AAPL")
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	date := time.Date(2026, time.August, 27, 0, 0, 0, 0, time.UTC)
+	tkr.holdersCache = &holdersCache{
+		major:         &models.MajorHolders{InstitutionsCount: 42},
+		institutional: []models.Holder{{Holder: "Vanguard"}},
+		insiderRoster: []models.InsiderHolder{{Name: "Director", LatestTransDate: &date}},
+		insiderPurchases: &models.InsiderPurchases{
+			Period: "6m",
+		},
+	}
+
+	major, _ := tkr.MajorHolders()
+	major.InstitutionsCount = 0
+	institutional, _ := tkr.InstitutionalHolders()
+	institutional[0].Holder = "mutated"
+	roster, _ := tkr.InsiderRosterHolders()
+	roster[0].Name = "mutated"
+	*roster[0].LatestTransDate = date.AddDate(1, 0, 0)
+	purchases, _ := tkr.InsiderPurchases()
+	purchases.Period = "mutated"
+
+	majorAgain, _ := tkr.MajorHolders()
+	institutionalAgain, _ := tkr.InstitutionalHolders()
+	rosterAgain, _ := tkr.InsiderRosterHolders()
+	purchasesAgain, _ := tkr.InsiderPurchases()
+	if majorAgain.InstitutionsCount != 42 {
+		t.Fatalf("major cache mutated: %+v", majorAgain)
+	}
+	if institutionalAgain[0].Holder != "Vanguard" {
+		t.Fatalf("institutional cache mutated: %+v", institutionalAgain)
+	}
+	if rosterAgain[0].Name != "Director" || !rosterAgain[0].LatestTransDate.Equal(date) {
+		t.Fatalf("insider roster cache mutated: %+v", rosterAgain)
+	}
+	if purchasesAgain.Period != "6m" {
+		t.Fatalf("insider purchases cache mutated: %+v", purchasesAgain)
+	}
+}
+
 // Integration test - commented out for CI, run manually
 // func TestHoldersLive(t *testing.T) {
 // 	tkr, err := New("AAPL")

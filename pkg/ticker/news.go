@@ -58,7 +58,7 @@ func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, erro
 	// Check cache first
 	t.mu.RLock()
 	if t.newsCache != nil {
-		cached := t.newsCache
+		cached := cloneNewsArticles(t.newsCache)
 		t.mu.RUnlock()
 		return cached, nil
 	}
@@ -141,7 +141,27 @@ func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, erro
 	t.newsCache = articles
 	t.mu.Unlock()
 
-	return articles, nil
+	return cloneNewsArticles(articles), nil
+}
+
+func cloneNewsArticles(articles []models.NewsArticle) []models.NewsArticle {
+	if articles == nil {
+		return nil
+	}
+	result := make([]models.NewsArticle, len(articles))
+	for i, article := range articles {
+		result[i] = article
+		result[i].RelatedTickers = append([]string(nil), article.RelatedTickers...)
+		if article.Thumbnail != nil {
+			thumbnail := *article.Thumbnail
+			thumbnail.Resolutions = append(
+				[]models.ThumbnailResolution(nil),
+				article.Thumbnail.Resolutions...,
+			)
+			result[i].Thumbnail = &thumbnail
+		}
+	}
+	return result
 }
 
 // GetNews is an alias for News with default parameters.

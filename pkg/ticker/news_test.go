@@ -62,6 +62,39 @@ func TestNewsTabString(t *testing.T) {
 	}
 }
 
+func TestNewsCacheResultsAreDeepCopies(t *testing.T) {
+	tkr, err := New("AAPL")
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	tkr.newsCache = []models.NewsArticle{{
+		Title:          "original",
+		RelatedTickers: []string{"AAPL"},
+		Thumbnail: &models.NewsThumbnail{Resolutions: []models.ThumbnailResolution{{
+			URL: "https://example.test/original.jpg",
+		}}},
+	}}
+
+	first, err := tkr.News(10, models.NewsTabNews)
+	if err != nil {
+		t.Fatalf("News() error: %v", err)
+	}
+	first[0].Title = "mutated"
+	first[0].RelatedTickers[0] = "MSFT"
+	first[0].Thumbnail.Resolutions[0].URL = "https://example.test/mutated.jpg"
+
+	second, err := tkr.News(10, models.NewsTabNews)
+	if err != nil {
+		t.Fatalf("second News() error: %v", err)
+	}
+	if second[0].Title != "original" || second[0].RelatedTickers[0] != "AAPL" {
+		t.Fatalf("news cache mutated: %+v", second[0])
+	}
+	if got := second[0].Thumbnail.Resolutions[0].URL; got != "https://example.test/original.jpg" {
+		t.Fatalf("nested resolution cache mutated: %q", got)
+	}
+}
+
 // Integration test - requires network access
 // func TestNewsIntegration(t *testing.T) {
 // 	if testing.Short() {
