@@ -161,7 +161,7 @@ cal.splits_calendar                     | cal.Splits(nil)
 
 
 <a name="Calendars"></a>
-## type Calendars
+## type [Calendars](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L60-L71>)
 
 Calendars provides access to Yahoo Finance economic calendars.
 
@@ -174,7 +174,7 @@ type Calendars struct {
 ```
 
 <a name="New"></a>
-### func New
+### func [New](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L108>)
 
 ```go
 func New(opts ...Option) (*Calendars, error)
@@ -200,7 +200,7 @@ for _, e := range earnings {
 ```
 
 <a name="Calendars.ClearCache"></a>
-### func \(\*Calendars\) ClearCache
+### func \(\*Calendars\) [ClearCache](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L543>)
 
 ```go
 func (c *Calendars) ClearCache()
@@ -209,7 +209,7 @@ func (c *Calendars) ClearCache()
 ClearCache clears all cached calendar data.
 
 <a name="Calendars.Close"></a>
-### func \(\*Calendars\) Close
+### func \(\*Calendars\) [Close](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L135>)
 
 ```go
 func (c *Calendars) Close()
@@ -218,7 +218,7 @@ func (c *Calendars) Close()
 Close releases resources used by the Calendars instance.
 
 <a name="Calendars.Earnings"></a>
-### func \(\*Calendars\) Earnings
+### func \(\*Calendars\) [Earnings](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L275>)
 
 ```go
 func (c *Calendars) Earnings(opts *models.CalendarOptions) ([]models.EarningsEvent, error)
@@ -242,7 +242,7 @@ for _, e := range earnings {
 ```
 
 <a name="Calendars.EconomicEvents"></a>
-### func \(\*Calendars\) EconomicEvents
+### func \(\*Calendars\) [EconomicEvents](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L436>)
 
 ```go
 func (c *Calendars) EconomicEvents(opts *models.CalendarOptions) ([]models.EconomicEvent, error)
@@ -266,7 +266,7 @@ for _, e := range events {
 ```
 
 <a name="Calendars.IPOs"></a>
-### func \(\*Calendars\) IPOs
+### func \(\*Calendars\) [IPOs](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L347>)
 
 ```go
 func (c *Calendars) IPOs(opts *models.CalendarOptions) ([]models.IPOEvent, error)
@@ -290,7 +290,7 @@ for _, ipo := range ipos {
 ```
 
 <a name="Calendars.Splits"></a>
-### func \(\*Calendars\) Splits
+### func \(\*Calendars\) [Splits](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L492>)
 
 ```go
 func (c *Calendars) Splits(opts *models.CalendarOptions) ([]models.CalendarSplitEvent, error)
@@ -314,7 +314,7 @@ for _, s := range splits {
 ```
 
 <a name="Option"></a>
-## type Option
+## type [Option](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L74>)
 
 Option is a function that configures a Calendars instance.
 
@@ -323,7 +323,7 @@ type Option func(*Calendars)
 ```
 
 <a name="WithClient"></a>
-### func WithClient
+### func [WithClient](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L77>)
 
 ```go
 func WithClient(c *client.Client) Option
@@ -332,7 +332,7 @@ func WithClient(c *client.Client) Option
 WithClient sets a custom HTTP client for the Calendars instance.
 
 <a name="WithDateRange"></a>
-### func WithDateRange
+### func [WithDateRange](<https://github.com/wnjoon/go-yfinance/blob/main/pkg/calendars/calendars.go#L85>)
 
 ```go
 func WithDateRange(start, end time.Time) Option

@@ -3,11 +3,13 @@ package live
 import (
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"math"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -48,6 +50,12 @@ func TestNewWithOptions(t *testing.T) {
 
 	if ws.heartbeatInterval != customInterval {
 		t.Errorf("Expected heartbeat interval %v, got %v", customInterval, ws.heartbeatInterval)
+	}
+}
+
+func TestNewRejectsNonPositiveHeartbeatInterval(t *testing.T) {
+	if _, err := New(WithHeartbeatInterval(0)); err == nil {
+		t.Fatal("New() unexpectedly accepted zero heartbeat interval")
 	}
 }
 
@@ -227,6 +235,14 @@ func TestDecodeBase64MessageInvalid(t *testing.T) {
 	}
 }
 
+func TestDecodeProtobufRejectsKnownFieldWithWrongWireType(t *testing.T) {
+	// Field 2 (price) must be fixed32/wire type 5, not length-delimited/type 2.
+	_, err := decodeProtobuf([]byte{(2 << 3) | 2, 4, 0, 0, 0, 0})
+	if err == nil || !strings.Contains(err.Error(), "wire type") {
+		t.Fatalf("decodeProtobuf() error = %v, want wire-type error", err)
+	}
+}
+
 // TestProtoReaderVarint tests varint reading.
 func TestProtoReaderVarint(t *testing.T) {
 	tests := []struct {
@@ -250,6 +266,51 @@ func TestProtoReaderVarint(t *testing.T) {
 		if got != tt.expected {
 			t.Errorf("readVarint(%v) = %d, want %d", tt.data, got, tt.expected)
 		}
+	}
+}
+
+func TestProtoReaderRejectsVarintOverflow(t *testing.T) {
+	tests := [][]byte{
+		{0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02},
+		{0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00},
+	}
+	for _, data := range tests {
+		r := &protoReader{data: data}
+		if _, err := r.readVarint(); err == nil {
+			t.Fatalf("readVarint(%x) unexpectedly succeeded", data)
+		}
+	}
+}
+
+func TestProtoReaderRejectsOversizedLengthWithoutPanic(t *testing.T) {
+	// MaxUint64 encoded as a protobuf varint. Converting this length to int
+	// before checking the remaining buffer used to permit integer overflow.
+	length := []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}
+
+	t.Run("read string", func(t *testing.T) {
+		r := &protoReader{data: append(append([]byte(nil), length...), 'x')}
+		if _, err := r.readString(); err == nil {
+			t.Fatal("readString unexpectedly accepted oversized length")
+		}
+	})
+
+	t.Run("skip field", func(t *testing.T) {
+		r := &protoReader{data: append(append([]byte(nil), length...), 'x')}
+		if err := r.skipField(2); err == nil {
+			t.Fatal("skipField unexpectedly accepted oversized length")
+		}
+	})
+}
+
+func TestProtoReaderAcceptsMaximumUint64Varint(t *testing.T) {
+	data := []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}
+	r := &protoReader{data: data}
+	got, err := r.readVarint()
+	if err != nil {
+		t.Fatalf("readVarint() error: %v", err)
+	}
+	if got != math.MaxUint64 {
+		t.Fatalf("readVarint() = %d, want %d", got, uint64(math.MaxUint64))
 	}
 }
 
@@ -421,4 +482,111 @@ func TestSendSubscribeConcurrent(t *testing.T) {
 	for p := range panicCh {
 		t.Errorf("sendSubscribe panicked: %v", p)
 	}
+}
+
+func TestListenCloseIsNormalAndIdempotent(t *testing.T) {
+	srv, url := newTestWSServer(t)
+	defer srv.Close()
+
+	var handlerCalls atomic.Int32
+	ws, err := New(
+		WithURL(url),
+		WithErrorHandler(func(error) { handlerCalls.Add(1) }),
+	)
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+
+	listenDone := make(chan error, 1)
+	go func() { listenDone <- ws.Listen(nil) }()
+	waitForWebSocketState(t, ws, func(ws *WebSocket) bool { return ws.isListening })
+
+	if err := ws.Close(); err != nil {
+		t.Fatalf("Close() error: %v", err)
+	}
+	if err := ws.Close(); err != nil {
+		t.Fatalf("second Close() error: %v", err)
+	}
+
+	select {
+	case err := <-listenDone:
+		if err != nil {
+			t.Fatalf("Listen() after normal Close() = %v, want nil", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Listen() did not stop after Close()")
+	}
+	if got := handlerCalls.Load(); got != 0 {
+		t.Fatalf("error handler called %d times during normal close", got)
+	}
+	if err := ws.Connect(); !errors.Is(err, errWebSocketClosed) {
+		t.Fatalf("Connect() after Close() = %v, want errWebSocketClosed", err)
+	}
+}
+
+func TestCloseCancelsReconnect(t *testing.T) {
+	var connections atomic.Int32
+	closedFirst := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			return
+		}
+		connections.Add(1)
+		_ = conn.Close()
+		select {
+		case <-closedFirst:
+		default:
+			close(closedFirst)
+		}
+	}))
+	defer srv.Close()
+
+	ws, err := New(
+		WithURL("ws"+strings.TrimPrefix(srv.URL, "http")),
+		WithReconnectDelay(5*time.Second),
+	)
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	listenDone := make(chan error, 1)
+	go func() { listenDone <- ws.Listen(nil) }()
+
+	select {
+	case <-closedFirst:
+	case <-time.After(time.Second):
+		t.Fatal("server did not close the initial connection")
+	}
+	// Allow Listen to enter reconnect's cancellable delay.
+	time.Sleep(20 * time.Millisecond)
+	if err := ws.Close(); err != nil {
+		t.Fatalf("Close() error: %v", err)
+	}
+
+	select {
+	case err := <-listenDone:
+		if err != nil {
+			t.Fatalf("Listen() after closing during reconnect = %v, want nil", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Close() did not cancel reconnect promptly")
+	}
+	if got := connections.Load(); got != 1 {
+		t.Fatalf("connection count = %d, want 1", got)
+	}
+}
+
+func waitForWebSocketState(t *testing.T, ws *WebSocket, predicate func(*WebSocket) bool) {
+	t.Helper()
+	deadline := time.Now().Add(time.Second)
+	for time.Now().Before(deadline) {
+		ws.mu.RLock()
+		ready := predicate(ws)
+		ws.mu.RUnlock()
+		if ready {
+			return
+		}
+		time.Sleep(time.Millisecond)
+	}
+	t.Fatal("timed out waiting for websocket state")
 }

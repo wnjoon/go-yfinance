@@ -55,22 +55,22 @@ type newsStreamItem struct {
 //	    fmt.Printf("%s: %s\n", article.Publisher, article.Title)
 //	}
 func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error) {
-	// Check cache first
-	t.mu.RLock()
-	if t.newsCache != nil {
-		cached := t.newsCache
-		t.mu.RUnlock()
-		return cached, nil
-	}
-	t.mu.RUnlock()
-
-	// Set defaults
+	// Set defaults before comparing the cache key.
 	if count <= 0 {
 		count = 10
 	}
 	if tab == "" {
 		tab = models.NewsTabNews
 	}
+
+	// Check cache first
+	t.mu.RLock()
+	if t.newsCacheMatches(count, tab) {
+		cached := cloneNewsArticles(t.newsCache)
+		t.mu.RUnlock()
+		return cached, nil
+	}
+	t.mu.RUnlock()
 
 	// Build request URL
 	url := fmt.Sprintf("%s?queryRef=%s&serviceKey=ncp_fin",
@@ -139,9 +139,37 @@ func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, erro
 	// Cache the results
 	t.mu.Lock()
 	t.newsCache = articles
+	t.newsCacheCount = count
+	t.newsCacheTab = tab
 	t.mu.Unlock()
 
-	return articles, nil
+	return cloneNewsArticles(articles), nil
+}
+
+// newsCacheMatches reports whether the cached response belongs to the request.
+// The caller must hold at least t.mu.RLock.
+func (t *Ticker) newsCacheMatches(count int, tab models.NewsTab) bool {
+	return t.newsCache != nil && t.newsCacheCount == count && t.newsCacheTab == tab
+}
+
+func cloneNewsArticles(articles []models.NewsArticle) []models.NewsArticle {
+	if articles == nil {
+		return nil
+	}
+	result := make([]models.NewsArticle, len(articles))
+	for i, article := range articles {
+		result[i] = article
+		result[i].RelatedTickers = append([]string(nil), article.RelatedTickers...)
+		if article.Thumbnail != nil {
+			thumbnail := *article.Thumbnail
+			thumbnail.Resolutions = append(
+				[]models.ThumbnailResolution(nil),
+				article.Thumbnail.Resolutions...,
+			)
+			result[i].Thumbnail = &thumbnail
+		}
+	}
+	return result
 }
 
 // GetNews is an alias for News with default parameters.

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -110,6 +111,33 @@ func TestClientCookieMerge(t *testing.T) {
 	want := "A3=crumb-cookie; T=cookie-t; Y=cookie-y"
 	if got != want {
 		t.Errorf("Expected %q, got %q", want, got)
+	}
+}
+
+func TestClientEmptyCookieValueDeletesCookie(t *testing.T) {
+	c, err := New()
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	c.SetCookies(map[string]string{"A1": "first", "A3": "second"})
+	c.SetCookie("A1=")
+	if got := c.GetCookie(); got != "A3=second" {
+		t.Fatalf("GetCookie() after SetCookie deletion = %q", got)
+	}
+	c.SetCookies(map[string]string{"A3": ""})
+	if got := c.GetCookie(); got != "" {
+		t.Fatalf("GetCookie() after SetCookies deletion = %q", got)
+	}
+}
+
+func TestResponseCookiesPreservesAllParsedCookies(t *testing.T) {
+	got := responseCookies([]*http.Cookie{
+		{Name: "A1", Value: "first"},
+		nil,
+		{Name: "A3", Value: "second"},
+	})
+	if got["A1"] != "first" || got["A3"] != "second" || len(got) != 2 {
+		t.Fatalf("responseCookies() = %v", got)
 	}
 }
 

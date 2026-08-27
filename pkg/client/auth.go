@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -288,7 +289,7 @@ func (a *AuthManager) fetchBasic() error {
 	}
 
 	// Extract cookies from response headers
-	a.extractCookies(resp.Headers)
+	a.extractCookies(resp)
 
 	// Step 2: Get crumb
 	resp, err = a.client.Get(endpoints.CrumbURL, nil)
@@ -299,6 +300,7 @@ func (a *AuthManager) fetchBasic() error {
 	if err := validateCrumbResponse("basic crumb", resp); err != nil {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
+	a.extractCookies(resp)
 
 	a.crumb = strings.TrimSpace(resp.Body)
 	a.expiry = time.Now().Add(1 * time.Hour) // Crumb typically valid for ~1 hour
@@ -317,6 +319,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf consent", resp); err != nil {
 		return fmt.Errorf("failed to get consent page: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Extract CSRF token and session ID from HTML
 	csrfToken := extractInputValue(resp.Body, "csrfToken")
@@ -344,6 +347,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf collect consent", resp); err != nil {
 		return fmt.Errorf("failed to submit consent: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Step 3: Copy consent
 	copyURL := fmt.Sprintf("%s?sessionId=%s", endpoints.CopyConsentURL, sessionID)
@@ -354,6 +358,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateAuthHTTPResponse("csrf copy consent", resp); err != nil {
 		return fmt.Errorf("failed to copy consent: %w", err)
 	}
+	a.extractCookies(resp)
 
 	// Step 4: Get crumb
 	resp, err = a.client.Get(endpoints.CrumbCSRFURL, nil)
@@ -364,6 +369,7 @@ func (a *AuthManager) fetchCSRF() error {
 	if err := validateCrumbResponse("csrf crumb", resp); err != nil {
 		return fmt.Errorf("failed to get crumb: %w", err)
 	}
+	a.extractCookies(resp)
 
 	a.crumb = strings.TrimSpace(resp.Body)
 	a.expiry = time.Now().Add(1 * time.Hour)
@@ -448,20 +454,55 @@ func sanitizedHTTPStatusError(statusCode int) error {
 	}
 }
 
-// extractCookies extracts and stores cookies from response headers.
-func (a *AuthManager) extractCookies(headers map[string]string) {
-	for key, value := range headers {
-		if strings.ToLower(key) == "set-cookie" {
-			// Extract just the cookie name=value part (before any attributes like Expires, Path, etc.)
-			parts := strings.Split(value, ";")
-			if len(parts) > 0 {
-				a.cookie = strings.TrimSpace(parts[0])
-				// Set cookie on the client for subsequent requests
-				a.client.SetCookie(a.cookie)
+// extractCookies stores every cookie parsed by CycleTLS. The header fallback
+// supports scripted responses and CycleTLS's documented "/,/" join delimiter;
+// it deliberately does not split on commas because Expires attributes contain
+// them.
+func (a *AuthManager) extractCookies(resp *Response) {
+	if resp == nil {
+		return
+	}
+	if len(resp.Cookies) > 0 {
+		cookies := make(map[string]string, len(resp.Cookies))
+		for name, value := range resp.Cookies {
+			if strings.TrimSpace(name) != "" {
+				cookies[name] = value
 			}
-			break
+		}
+		if len(cookies) > 0 {
+			a.client.SetCookies(cookies)
+			a.cookie = cookieSummary(cookies)
+			return
 		}
 	}
+
+	for key, value := range resp.Headers {
+		if !strings.EqualFold(key, "set-cookie") {
+			continue
+		}
+		lines := strings.FieldsFunc(value, func(r rune) bool { return r == '\n' || r == '\r' })
+		for _, line := range lines {
+			for _, rawCookie := range strings.Split(line, "/,/") {
+				cookie, _, _ := strings.Cut(strings.TrimSpace(rawCookie), ";")
+				cookie = strings.TrimSpace(cookie)
+				if cookie == "" {
+					continue
+				}
+				a.client.SetCookie(cookie)
+				a.cookie = cookie
+			}
+		}
+		return
+	}
+}
+
+func cookieSummary(cookies map[string]string) string {
+	names := make([]string, 0, len(cookies))
+	for name := range cookies {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return strings.Join(names, ",")
 }
 
 // extractInputValue extracts value from HTML input element by name.

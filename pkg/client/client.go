@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"sort"
 	"strings"
@@ -110,6 +111,7 @@ type Response struct {
 	StatusCode int
 	Body       string
 	Headers    map[string]string
+	Cookies    map[string]string
 }
 
 // Get performs an HTTP GET request.
@@ -149,6 +151,7 @@ func (c *Client) Get(rawURL string, params url.Values) (*Response, error) {
 		StatusCode: resp.Status,
 		Body:       resp.Body,
 		Headers:    resp.Headers,
+		Cookies:    responseCookies(resp.Cookies),
 	}, nil
 }
 
@@ -168,7 +171,13 @@ func (c *Client) SetCookie(cookie string) {
 	if !ok || strings.TrimSpace(name) == "" {
 		return
 	}
-	c.cookies[strings.TrimSpace(name)] = strings.TrimSpace(value)
+	name = strings.TrimSpace(name)
+	value = strings.TrimSpace(value)
+	if value == "" {
+		delete(c.cookies, name)
+		return
+	}
+	c.cookies[name] = value
 }
 
 // SetCookies sets or replaces named cookies for subsequent requests.
@@ -183,7 +192,12 @@ func (c *Client) SetCookies(cookies map[string]string) {
 		if name == "" {
 			continue
 		}
-		c.cookies[name] = strings.TrimSpace(value)
+		value = strings.TrimSpace(value)
+		if value == "" {
+			delete(c.cookies, name)
+			continue
+		}
+		c.cookies[name] = value
 	}
 }
 
@@ -268,6 +282,7 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 		StatusCode: resp.Status,
 		Body:       resp.Body,
 		Headers:    resp.Headers,
+		Cookies:    responseCookies(resp.Cookies),
 	}, nil
 }
 
@@ -310,7 +325,25 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 		StatusCode: resp.Status,
 		Body:       resp.Body,
 		Headers:    resp.Headers,
+		Cookies:    responseCookies(resp.Cookies),
 	}, nil
+}
+
+func responseCookies(cookies []*http.Cookie) map[string]string {
+	if len(cookies) == 0 {
+		return nil
+	}
+	result := make(map[string]string, len(cookies))
+	for _, cookie := range cookies {
+		if cookie == nil || strings.TrimSpace(cookie.Name) == "" {
+			continue
+		}
+		result[cookie.Name] = cookie.Value
+	}
+	if len(result) == 0 {
+		return nil
+	}
+	return result
 }
 
 // Close closes the CycleTLS client.

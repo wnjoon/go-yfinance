@@ -148,8 +148,18 @@ var pricingFieldDecoders = map[int]func(*models.PricingData, *protoReader) error
 	},
 }
 
+var pricingFieldWireTypes = map[int]int{
+	1: 2, 2: 5, 3: 0, 4: 2, 5: 2, 6: 0, 7: 0, 8: 5, 9: 0,
+	10: 5, 11: 5, 12: 5, 13: 2, 14: 0, 15: 5, 16: 5, 17: 5,
+	18: 2, 19: 0, 20: 0, 21: 0, 22: 0, 23: 5, 24: 0, 25: 5,
+	26: 0, 27: 0, 28: 0, 29: 0, 30: 2, 31: 2, 32: 1, 33: 1,
+}
+
 func decodePricingField(pd *models.PricingData, reader *protoReader, fieldTag, wireType int) error {
 	if decode, ok := pricingFieldDecoders[fieldTag]; ok {
+		if expected := pricingFieldWireTypes[fieldTag]; wireType != expected {
+			return fmt.Errorf("field %d has wire type %d, want %d", fieldTag, wireType, expected)
+		}
 		return decode(pd, reader)
 	}
 	return reader.skipField(wireType)
@@ -180,24 +190,23 @@ func (r *protoReader) readTag() (fieldTag int, wireType int, err error) {
 // readVarint reads a varint from the buffer.
 func (r *protoReader) readVarint() (uint64, error) {
 	var result uint64
-	var shift uint
 
-	for {
+	for i := 0; i < 10; i++ {
 		if r.pos >= len(r.data) {
 			return 0, io.ErrUnexpectedEOF
 		}
 
 		b := r.data[r.pos]
 		r.pos++
-
-		result |= uint64(b&0x7F) << shift
-		if b&0x80 == 0 {
-			break
+		if i == 9 && b > 1 {
+			return 0, fmt.Errorf("varint overflows uint64")
 		}
-		shift += 7
+		result |= uint64(b&0x7F) << (7 * i)
+		if b&0x80 == 0 {
+			return result, nil
+		}
 	}
-
-	return result, nil
+	return 0, fmt.Errorf("varint overflows uint64")
 }
 
 // readSint64 reads a signed varint (zigzag encoded).
@@ -217,12 +226,14 @@ func (r *protoReader) readString() (string, error) {
 		return "", err
 	}
 
-	if r.pos+int(length) > len(r.data) {
+	remaining := len(r.data) - r.pos
+	if length > uint64(remaining) {
 		return "", io.ErrUnexpectedEOF
 	}
 
-	s := string(r.data[r.pos : r.pos+int(length)])
-	r.pos += int(length)
+	end := r.pos + int(length)
+	s := string(r.data[r.pos:end])
+	r.pos = end
 	return s, nil
 }
 
@@ -265,7 +276,8 @@ func (r *protoReader) skipField(wireType int) error {
 		if err != nil {
 			return err
 		}
-		if r.pos+int(length) > len(r.data) {
+		remaining := len(r.data) - r.pos
+		if length > uint64(remaining) {
 			return io.ErrUnexpectedEOF
 		}
 		r.pos += int(length)

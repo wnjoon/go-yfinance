@@ -52,7 +52,8 @@ func (t *Ticker) MajorHolders() (*models.MajorHolders, error) {
 		return nil, fmt.Errorf("major holders data not available")
 	}
 
-	return t.holdersCache.major, nil
+	result := *t.holdersCache.major
+	return &result, nil
 }
 
 // InstitutionalHolders returns the list of institutional holders.
@@ -80,7 +81,7 @@ func (t *Ticker) InstitutionalHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.institutional, nil
+	return append([]models.Holder(nil), t.holdersCache.institutional...), nil
 }
 
 // MutualFundHolders returns the list of mutual fund holders.
@@ -108,7 +109,7 @@ func (t *Ticker) MutualFundHolders() ([]models.Holder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.mutualFund, nil
+	return append([]models.Holder(nil), t.holdersCache.mutualFund...), nil
 }
 
 // InsiderTransactions returns the list of insider transactions.
@@ -137,7 +138,7 @@ func (t *Ticker) InsiderTransactions() ([]models.InsiderTransaction, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderTransactions, nil
+	return append([]models.InsiderTransaction(nil), t.holdersCache.insiderTransactions...), nil
 }
 
 // InsiderRosterHolders returns the list of company insiders.
@@ -166,7 +167,7 @@ func (t *Ticker) InsiderRosterHolders() ([]models.InsiderHolder, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderRoster, nil
+	return cloneInsiderHolders(t.holdersCache.insiderRoster), nil
 }
 
 // InsiderRoster returns the list of company insiders.
@@ -199,7 +200,27 @@ func (t *Ticker) InsiderPurchases() (*models.InsiderPurchases, error) {
 		return nil, nil
 	}
 
-	return t.holdersCache.insiderPurchases, nil
+	result := *t.holdersCache.insiderPurchases
+	return &result, nil
+}
+
+func cloneInsiderHolders(holders []models.InsiderHolder) []models.InsiderHolder {
+	if holders == nil {
+		return nil
+	}
+	result := make([]models.InsiderHolder, len(holders))
+	for i, holder := range holders {
+		result[i] = holder
+		if holder.LatestTransDate != nil {
+			value := *holder.LatestTransDate
+			result[i].LatestTransDate = &value
+		}
+		if holder.PositionDirectDate != nil {
+			value := *holder.PositionDirectDate
+			result[i].PositionDirectDate = &value
+		}
+	}
+	return result
 }
 
 // ensureHoldersCache fetches and caches all holders data.

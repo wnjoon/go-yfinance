@@ -17,14 +17,16 @@ type scriptedAuthResponse struct {
 	status  int
 	body    string
 	headers map[string]string
+	cookies map[string]string
 	err     error
 }
 
 type scriptedAuthClient struct {
-	t       *testing.T
-	steps   []scriptedAuthResponse
-	calls   []string
-	cookies []string
+	t          *testing.T
+	steps      []scriptedAuthResponse
+	calls      []string
+	cookies    []string
+	cookieSets []map[string]string
 }
 
 func newScriptedAuthClient(t *testing.T, steps ...scriptedAuthResponse) *scriptedAuthClient {
@@ -46,7 +48,13 @@ func (c *scriptedAuthClient) SetCookie(cookie string) {
 	c.cookies = append(c.cookies, cookie)
 }
 
-func (c *scriptedAuthClient) SetCookies(cookies map[string]string) {}
+func (c *scriptedAuthClient) SetCookies(cookies map[string]string) {
+	stored := make(map[string]string, len(cookies))
+	for name, value := range cookies {
+		stored[name] = value
+	}
+	c.cookieSets = append(c.cookieSets, stored)
+}
 
 func (c *scriptedAuthClient) next(method, rawURL string) (*Response, error) {
 	if len(c.steps) == 0 {
@@ -68,6 +76,7 @@ func (c *scriptedAuthClient) next(method, rawURL string) (*Response, error) {
 		StatusCode: step.status,
 		Body:       step.body,
 		Headers:    step.headers,
+		Cookies:    step.cookies,
 	}, nil
 }
 
@@ -198,6 +207,50 @@ func TestAuthManagerBasicSuccessUsesQuery1(t *testing.T) {
 		t.Fatalf("expected A3 cookie to be stored, got %v", fakeClient.cookies)
 	}
 	fakeClient.assertDrained(t)
+}
+
+func TestAuthManagerBasicStoresAllStructuredCookies(t *testing.T) {
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{
+			method:  "GET",
+			rawURL:  endpoints.CookieURL,
+			status:  404,
+			cookies: map[string]string{"A1": "first", "A3": "second"},
+		},
+		scriptedAuthResponse{method: "GET", rawURL: endpoints.CrumbURL, status: 200, body: "crumb"},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+
+	if _, err := auth.GetCrumb(); err != nil {
+		t.Fatalf("GetCrumb() error: %v", err)
+	}
+	if len(fakeClient.cookieSets) != 1 {
+		t.Fatalf("SetCookies calls = %d, want 1", len(fakeClient.cookieSets))
+	}
+	if got := fakeClient.cookieSets[0]; got["A1"] != "first" || got["A3"] != "second" {
+		t.Fatalf("stored cookies = %v", got)
+	}
+	if auth.cookie != "A1,A3" {
+		t.Fatalf("cookie summary = %q, want %q", auth.cookie, "A1,A3")
+	}
+}
+
+func TestExtractCookiesCycleTLSHeaderFallback(t *testing.T) {
+	fakeClient := newScriptedAuthClient(t)
+	auth := newScriptedAuthManager(fakeClient, StrategyBasic)
+	auth.extractCookies(&Response{Headers: map[string]string{
+		"set-cookie": "A1=first; Expires=Wed, 27 Aug 2026 00:00:00 GMT; Path=//,/A3=second; Secure",
+	}})
+
+	want := []string{"A1=first", "A3=second"}
+	if len(fakeClient.cookies) != len(want) {
+		t.Fatalf("stored cookies = %v, want %v", fakeClient.cookies, want)
+	}
+	for i := range want {
+		if fakeClient.cookies[i] != want[i] {
+			t.Fatalf("stored cookies = %v, want %v", fakeClient.cookies, want)
+		}
+	}
 }
 
 func TestAuthManagerBasicFallbackToCSRFSuccess(t *testing.T) {
@@ -665,6 +718,41 @@ func TestAuthManagerCSRFSuccessUsesQuery2CrumbEndpoint(t *testing.T) {
 		t.Fatalf("expected CSRF crumb endpoint to use query2, got %s", endpoints.CrumbCSRFURL)
 	}
 	fakeClient.assertDrained(t)
+}
+
+func TestAuthManagerCSRFStoresCookiesFromEveryStage(t *testing.T) {
+	sessionID := "session"
+	fakeClient := newScriptedAuthClient(t,
+		scriptedAuthResponse{
+			method: "GET", rawURL: endpoints.ConsentURL, status: 200,
+			body: hiddenConsentHTML("csrf", sessionID), cookies: map[string]string{"A1": "consent"},
+		},
+		scriptedAuthResponse{
+			method: "POST", rawURL: endpoints.CollectConsentURL + "?sessionId=" + sessionID, status: 200,
+			cookies: map[string]string{"A2": "collect"},
+		},
+		scriptedAuthResponse{
+			method: "GET", rawURL: endpoints.CopyConsentURL + "?sessionId=" + sessionID, status: 200,
+			cookies: map[string]string{"A3": "copy"},
+		},
+		scriptedAuthResponse{
+			method: "GET", rawURL: endpoints.CrumbCSRFURL, status: 200, body: "crumb",
+			cookies: map[string]string{"A4": "crumb"},
+		},
+	)
+	auth := newScriptedAuthManager(fakeClient, StrategyCSRF)
+
+	if _, err := auth.GetCrumb(); err != nil {
+		t.Fatalf("GetCrumb() error: %v", err)
+	}
+	if len(fakeClient.cookieSets) != 4 {
+		t.Fatalf("SetCookies calls = %d, want 4", len(fakeClient.cookieSets))
+	}
+	for i, name := range []string{"A1", "A2", "A3", "A4"} {
+		if fakeClient.cookieSets[i][name] == "" {
+			t.Fatalf("stage %d did not preserve %s: %v", i, name, fakeClient.cookieSets[i])
+		}
+	}
 }
 
 func TestAuthManagerSwitchStrategy(t *testing.T) {

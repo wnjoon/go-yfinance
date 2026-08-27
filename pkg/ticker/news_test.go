@@ -62,6 +62,60 @@ func TestNewsTabString(t *testing.T) {
 	}
 }
 
+func TestNewsCacheResultsAreDeepCopies(t *testing.T) {
+	tkr, err := New("AAPL")
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	tkr.newsCache = []models.NewsArticle{{
+		Title:          "original",
+		RelatedTickers: []string{"AAPL"},
+		Thumbnail: &models.NewsThumbnail{Resolutions: []models.ThumbnailResolution{{
+			URL: "https://example.test/original.jpg",
+		}}},
+	}}
+	tkr.newsCacheCount = 10
+	tkr.newsCacheTab = models.NewsTabNews
+
+	first, err := tkr.News(10, models.NewsTabNews)
+	if err != nil {
+		t.Fatalf("News() error: %v", err)
+	}
+	first[0].Title = "mutated"
+	first[0].RelatedTickers[0] = "MSFT"
+	first[0].Thumbnail.Resolutions[0].URL = "https://example.test/mutated.jpg"
+
+	second, err := tkr.News(10, models.NewsTabNews)
+	if err != nil {
+		t.Fatalf("second News() error: %v", err)
+	}
+	if second[0].Title != "original" || second[0].RelatedTickers[0] != "AAPL" {
+		t.Fatalf("news cache mutated: %+v", second[0])
+	}
+	if got := second[0].Thumbnail.Resolutions[0].URL; got != "https://example.test/original.jpg" {
+		t.Fatalf("nested resolution cache mutated: %q", got)
+	}
+}
+
+func TestNewsCacheKeyIncludesCountAndTab(t *testing.T) {
+	tkr, err := New("AAPL")
+	if err != nil {
+		t.Fatalf("New() error: %v", err)
+	}
+	tkr.newsCache = []models.NewsArticle{{Title: "cached"}}
+	tkr.newsCacheCount = 5
+	tkr.newsCacheTab = models.NewsTabNews
+
+	tkr.mu.RLock()
+	matching := tkr.newsCacheMatches(5, models.NewsTabNews)
+	wrongCount := tkr.newsCacheMatches(50, models.NewsTabNews)
+	wrongTab := tkr.newsCacheMatches(5, models.NewsTabPressReleases)
+	tkr.mu.RUnlock()
+	if !matching || wrongCount || wrongTab {
+		t.Fatalf("cache key comparison: matching=%v wrongCount=%v wrongTab=%v", matching, wrongCount, wrongTab)
+	}
+}
+
 // Integration test - requires network access
 // func TestNewsIntegration(t *testing.T) {
 // 	if testing.Short() {
