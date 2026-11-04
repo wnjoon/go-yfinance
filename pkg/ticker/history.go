@@ -25,6 +25,13 @@ import (
 //   - PrePost: Include pre/post market data
 //   - AutoAdjust: Adjust prices for splits/dividends
 //   - Actions: Include dividend and split data in bars
+//   - Repair: Repair known Yahoo data errors (see package repair)
+//
+// With Repair on daily data, the unexplained-level-shift repair (Python
+// yfinance 1.8.0) may make one extra request for the last 729 days of 1h
+// data, only when a candidate shift is found. If that request is rate
+// limited, History returns the rate-limit error; other failures of it leave
+// the data unrepaired by that step.
 //
 // Example:
 //
@@ -52,7 +59,10 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 	}
 
 	if params.Repair {
-		repairer := repair.New(repairOptionsFromHistoryParams(t.symbol, params, result.Meta))
+		opts := repairOptionsFromHistoryParams(t.symbol, params, result.Meta)
+		opts.FetchHourly = t.repairHourlyFetcher()
+		opts.Now = t.now
+		repairer := repair.New(opts)
 		bars, err = repairer.Repair(bars)
 		if err != nil {
 			return nil, fmt.Errorf("failed to repair history: %w", err)
@@ -91,6 +101,7 @@ func repairOptionsFromHistoryParams(symbol string, params models.HistoryParams, 
 		opts.FixSplits = params.RepairOptions.FixSplits
 		opts.FixDividends = params.RepairOptions.FixDividends
 		opts.FixCapitalGains = params.RepairOptions.FixCapitalGains
+		opts.FixLevelShifts = params.RepairOptions.FixLevelShifts
 	}
 
 	return opts
@@ -134,12 +145,56 @@ func (t *Ticker) fetchChartResult(params models.HistoryParams) (*models.ChartRes
 	params = normalizeHistoryParams(params)
 	urlParams := buildHistoryURLParams(params)
 
-	resp, err := t.getWithCrumb(t.chartURL(), urlParams)
+	body, err := t.fetchChartBody(urlParams)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch history: %w", err)
 	}
 
-	return t.decodeChartResponse(resp.Body)
+	return t.decodeChartResponse(body)
+}
+
+// fetchChartBody performs a chart API request and returns the response body.
+func (t *Ticker) fetchChartBody(urlParams url.Values) (string, error) {
+	if t.chartBodyFetcher != nil {
+		return t.chartBodyFetcher(urlParams)
+	}
+	resp, err := t.getWithCrumb(t.chartURL(), urlParams)
+	if err != nil {
+		return "", err
+	}
+	return resp.Body, nil
+}
+
+// repairHourlyFetcher returns the [repair.HourlyFetcher] used by History's
+// unexplained-level-shift repair (Python yfinance 1.8.0). It requests raw 1h
+// bars (no pre/post market, no auto-adjust, no events) and never runs repair
+// itself. Like upstream, which restores its state after this request, it
+// does not update the cached history metadata.
+func (t *Ticker) repairHourlyFetcher() repair.HourlyFetcher {
+	return func(start, end time.Time) ([]models.Bar, error) {
+		params := models.HistoryParams{Start: &start, End: &end, Interval: "1h"}
+		body, err := t.fetchChartBody(buildHistoryURLParams(params))
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch 1h history for repair: %w", err)
+		}
+		result, err := t.decodeChartResponseWithoutCache(body)
+		if err != nil {
+			return nil, err
+		}
+		bars, err := t.parseChartData(result, false, false)
+		if err != nil {
+			return nil, err
+		}
+		return filterValidBars(bars), nil
+	}
+}
+
+// now returns the current time from the test clock, or time.Now.
+func (t *Ticker) now() time.Time {
+	if t.clock != nil {
+		return t.clock()
+	}
+	return time.Now()
 }
 
 // decodeChartResponse decodes a chart API response body.
