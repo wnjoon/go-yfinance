@@ -2658,12 +2658,25 @@
 <p>Dividend repair is <strong>only applied to 1d intervals</strong>. Weekly and monthly intervals are too volatile for reliable detection. For longer intervals, fetch daily data, repair, then resample.</p>
 <h2 id="stock-split-repair">Stock Split Repair</h2>
 <p>Detects when Yahoo fails to apply split adjustments to historical prices.</p>
+<p>Split, unit-switch and level-shift repair share one detector, a port of
+Python yfinance 1.8.0 <code>_detect_price_shifts</code> / <code>_fix_prices_sudden_change</code>
+that is differentially tested against the upstream code.</p>
 <h3 id="detection-algorithm_1">Detection Algorithm</h3>
+<p>For each split (oldest first), the rows up to five rows after it (one row for
+<code>1wk</code>/<code>1mo</code>/<code>3mo</code>) are scanned newest first:</p>
 <ol>
-<li>Identifies split events from data</li>
-<li>Uses IQR-based outlier detection for normal volatility</li>
-<li>Detects price changes matching split ratio</li>
-<li>Filters false positives using volume analysis</li>
+<li>Day-to-day changes are computed per price column on dividend-adjusted
+   prices, and their median taken (for <code>1wk</code>/<code>1mo</code>/<code>3mo</code>, the average of Open
+   and Close only, as High and Low are too volatile). Rows next to a zero Close
+   count as no change</li>
+<li>Normal volatility is estimated from changes inside the interquartile range;
+   the split must stand well clear of it</li>
+<li>Changes beyond <code>1 + (ratio - 1 + 5 sd%) x 0.6</code> (or its reciprocal) are
+   signals; a drop on abnormally high volume, or a change similar to the local
+   volatility, is discarded</li>
+<li>Signals pair into ranges; ranges more than a year older than the oldest
+   split are ignored, and the rest must be confirmed by a matching volume shift</li>
+<li>Prices, dividends and volume in confirmed ranges are rescaled</li>
 </ol>
 <h3 id="example_2">Example</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// Check for split repair</span>
@@ -2725,11 +2738,18 @@ makes network requests.</p>
 2. Calculate ratio of actual to median-filtered prices
 3. Round ratio to nearest 20, check if ~100
 4. Correct outliers by dividing/multiplying by 100</p>
-<p>For unit switch:
-1. Calculate daily percentage changes
-2. Use IQR to estimate normal volatility
-3. Detect changes ~100x larger than normal
-4. Apply correction to all preceding bars</p>
+<p>For unit switch, the shared price-shift detector (see Stock Split Repair) runs
+with a 100x change (1000x for KWF):
+1. Every range between a pair of 100x signals is corrected, so several
+   switches (or a temporary one) are all repaired; prices and dividends are
+   rescaled, volume is not
+2. A range whose volume moves inversely to the price is a corporate action
+   and is left alone
+3. If a row's high/low spread exceeds 50x, columns are corrected individually
+   and at least two columns must agree; Low/High are then recalculated
+4. A suspended stock (no volume on the newest rows) uses the latest active row
+   as its baseline
+5. A 100x repair is abandoned when a signal falls within 30 days after a split</p>
 <h3 id="example_3">Example</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Fix 100x currency errors</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>

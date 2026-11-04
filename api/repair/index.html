@@ -2592,7 +2592,7 @@
 <p>Detects when Yahoo fails to apply stock split adjustments to historical data:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>opts.FixSplits = true
 </code></pre></div>
-<p>Uses IQR-based outlier detection to identify suspicious price changes that match the split ratio, then applies corrections. Each candidate range must be confirmed by trading volume (volume moving inversely to price, or a shift of more than 15 standard deviations); unconfirmed ranges are left unchanged.</p>
+<p>Split, unit-switch (100x) and level-shift repair share one price-shift detector ported from Python yfinance 1.8.0 (_detect_price_shifts and _fix_prices_sudden_change) and differentially tested against it. The median of per-column day-to-day changes on dividend-adjusted prices is compared with a threshold derived from the split ratio and the interquartile volatility; signals on volume spikes or within local volatility are dropped, ranges more than a year older than the oldest split are ignored, and each remaining range must be confirmed by trading volume (volume moving inversely to price, or a shift of more than 15 standard deviations); unconfirmed ranges are left unchanged.</p>
 <h3 id="unexplained-level-shift-repair">Unexplained Level Shift Repair</h3>
 <p>Yahoo sometimes applies a split-like adjustment to daily data before a date with no split nearby: older prices are N times too large and volume N times too small, where N need not be a split ratio. Yahoo's 1h data is not affected, so N is measured from it:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>opts.FixLevelShifts = true
