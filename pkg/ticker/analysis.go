@@ -12,24 +12,105 @@ import (
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
+// epsMethodologyModuleSuffix maps an EPS methodology to the quoteSummary
+// module-name suffix Yahoo uses for it, e.g. "earningsTrendGaap" and
+// "earningsTrendNonGaap". The default methodology uses the unsuffixed module.
+var epsMethodologyModuleSuffix = map[models.EPSMethodology]string{
+	models.EPSMethodologyDefault:    "",
+	models.EPSMethodologyGAAP:       "Gaap",
+	models.EPSMethodologyNormalized: "NonGaap",
+}
+
 // analysisCache stores cached analysis data.
+//
+// All fields are guarded by Ticker.mu. EPS tables are cached per normalized
+// EPS methodology, mirroring Python yfinance's per-methodology dict caches.
 type analysisCache struct {
-	recommendations   *models.RecommendationTrend
-	priceTarget       *models.PriceTarget
-	earningsEstimates []models.EarningsEstimate
-	revenueEstimates  []models.RevenueEstimate
-	epsTrends         []models.EPSTrend
-	epsRevisions      []models.EPSRevision
-	earningsHistory   *models.EarningsHistory
-	growthEstimates   []models.GrowthEstimate
-	// Raw cached data from API
-	earningsTrendRaw map[string]interface{}
+	recommendations  *models.RecommendationTrend
+	priceTarget      *models.PriceTarget
+	revenueEstimates []models.RevenueEstimate
+	growthEstimates  []models.GrowthEstimate
+
+	earningsEstimates map[models.EPSMethodology][]models.EarningsEstimate
+	epsTrends         map[models.EPSMethodology][]models.EPSTrend
+	epsRevisions      map[models.EPSMethodology][]models.EPSRevision
+	earningsHistory   map[models.EPSMethodology]*models.EarningsHistory
+
+	// earningsTrend caches the whole earningsTrend{,Gaap,NonGaap} module
+	// (the "trend" list plus "defaultMethodology") per methodology.
+	earningsTrend map[models.EPSMethodology]map[string]interface{}
+}
+
+// readAnalysisCache runs read against the analysis cache (if any) under the
+// read lock and returns the cache generation observed at that moment.
+func (t *Ticker) readAnalysisCache(read func(c *analysisCache)) uint64 {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+	if t.analysisCache != nil {
+		read(t.analysisCache)
+	}
+	return t.cacheGeneration
+}
+
+// writeAnalysisCache runs write against the analysis cache under the write
+// lock, unless ClearCache ran since generation gen was observed.
+func (t *Ticker) writeAnalysisCache(gen uint64, write func(c *analysisCache)) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.cacheGeneration != gen {
+		return
+	}
+	if t.analysisCache == nil {
+		t.analysisCache = &analysisCache{}
+	}
+	write(t.analysisCache)
+}
+
+// cachedEPSTable returns the value cached for methodology in the map selected
+// by slot, building and caching it on a miss. The methodology is validated
+// (case-insensitively) before any cache lookup or request.
+func cachedEPSTable[T any](
+	t *Ticker,
+	methodology models.EPSMethodology,
+	slot func(c *analysisCache) *map[models.EPSMethodology]T,
+	build func(m models.EPSMethodology) (T, error),
+) (T, error) {
+	var zero T
+	m, err := models.ParseEPSMethodology(string(methodology))
+	if err != nil {
+		return zero, err
+	}
+
+	var cached T
+	var hit bool
+	gen := t.readAnalysisCache(func(c *analysisCache) {
+		cached, hit = (*slot(c))[m]
+	})
+	if hit {
+		return cached, nil
+	}
+
+	result, err := build(m)
+	if err != nil {
+		return zero, err
+	}
+
+	t.writeAnalysisCache(gen, func(c *analysisCache) {
+		tables := slot(c)
+		if *tables == nil {
+			*tables = make(map[models.EPSMethodology]T)
+		}
+		(*tables)[m] = result
+	})
+	return result, nil
 }
 
 // Recommendations returns analyst recommendation trends.
 func (t *Ticker) Recommendations() (*models.RecommendationTrend, error) {
-	if t.analysisCache != nil && t.analysisCache.recommendations != nil {
-		return t.analysisCache.recommendations, nil
+	var cached *models.RecommendationTrend
+	gen := t.readAnalysisCache(func(c *analysisCache) { cached = c.recommendations })
+	if cached != nil {
+		return cached, nil
 	}
 
 	data, err := t.fetchQuoteSummary([]string{"recommendationTrend"})
@@ -42,16 +123,17 @@ func (t *Ticker) Recommendations() (*models.RecommendationTrend, error) {
 		return nil, err
 	}
 
-	t.initAnalysisCache()
-	t.analysisCache.recommendations = result
+	t.writeAnalysisCache(gen, func(c *analysisCache) { c.recommendations = result })
 	return result, nil
 }
 
 // AnalystPriceTargets returns analyst price targets.
 // This method name matches Python yfinance's ticker.analyst_price_targets property.
 func (t *Ticker) AnalystPriceTargets() (*models.PriceTarget, error) {
-	if t.analysisCache != nil && t.analysisCache.priceTarget != nil {
-		return t.analysisCache.priceTarget, nil
+	var cached *models.PriceTarget
+	gen := t.readAnalysisCache(func(c *analysisCache) { cached = c.priceTarget })
+	if cached != nil {
+		return cached, nil
 	}
 
 	data, err := t.fetchQuoteSummary([]string{"financialData"})
@@ -64,8 +146,7 @@ func (t *Ticker) AnalystPriceTargets() (*models.PriceTarget, error) {
 		return nil, err
 	}
 
-	t.initAnalysisCache()
-	t.analysisCache.priceTarget = result
+	t.writeAnalysisCache(gen, func(c *analysisCache) { c.priceTarget = result })
 	return result, nil
 }
 
@@ -75,22 +156,35 @@ func (t *Ticker) PriceTarget() (*models.PriceTarget, error) {
 	return t.AnalystPriceTargets()
 }
 
-// EarningsEstimate returns earnings estimates for upcoming periods.
+// EarningsEstimate returns earnings estimates for upcoming periods using
+// Yahoo's default EPS methodology for the ticker.
 // This method name matches Python yfinance's ticker.earnings_estimate property.
+//
+// It is equivalent to EarningsEstimateWithMethodology(models.EPSMethodologyDefault).
 func (t *Ticker) EarningsEstimate() ([]models.EarningsEstimate, error) {
-	if t.analysisCache != nil && t.analysisCache.earningsEstimates != nil {
-		return t.analysisCache.earningsEstimates, nil
-	}
+	return t.EarningsEstimateWithMethodology(models.EPSMethodologyDefault)
+}
 
-	if err := t.ensureEarningsTrend(); err != nil {
-		return nil, err
-	}
-
-	result := t.parseEarningsEstimates()
-
-	t.initAnalysisCache()
-	t.analysisCache.earningsEstimates = result
-	return result, nil
+// EarningsEstimateWithMethodology returns earnings estimates for upcoming
+// periods using the given EPS methodology.
+// This matches Python yfinance's ticker.get_earnings_estimate(methodology=...).
+//
+// methodology is matched case-insensitively; an unknown value returns an error
+// wrapping [models.ErrInvalidEPSMethodology] without making a request. Each
+// row's Methodology is the requested methodology, or, for the default, the
+// one Yahoo reports for the ticker. Results are cached per methodology.
+func (t *Ticker) EarningsEstimateWithMethodology(methodology models.EPSMethodology) ([]models.EarningsEstimate, error) {
+	return cachedEPSTable(t, methodology,
+		func(c *analysisCache) *map[models.EPSMethodology][]models.EarningsEstimate {
+			return &c.earningsEstimates
+		},
+		func(m models.EPSMethodology) ([]models.EarningsEstimate, error) {
+			module, err := t.earningsTrendModule(m)
+			if err != nil {
+				return nil, err
+			}
+			return parseEarningsEstimates(module, m), nil
+		})
 }
 
 // EarningsEstimates is a deprecated alias for EarningsEstimate.
@@ -101,19 +195,24 @@ func (t *Ticker) EarningsEstimates() ([]models.EarningsEstimate, error) {
 
 // RevenueEstimate returns revenue estimates for upcoming periods.
 // This method name matches Python yfinance's ticker.revenue_estimate property.
+//
+// Revenue estimates have no EPS methodology; they always come from the
+// default earningsTrend module.
 func (t *Ticker) RevenueEstimate() ([]models.RevenueEstimate, error) {
-	if t.analysisCache != nil && t.analysisCache.revenueEstimates != nil {
-		return t.analysisCache.revenueEstimates, nil
+	var cached []models.RevenueEstimate
+	gen := t.readAnalysisCache(func(c *analysisCache) { cached = c.revenueEstimates })
+	if cached != nil {
+		return cached, nil
 	}
 
-	if err := t.ensureEarningsTrend(); err != nil {
+	module, err := t.earningsTrendModule(models.EPSMethodologyDefault)
+	if err != nil {
 		return nil, err
 	}
 
-	result := t.parseRevenueEstimates()
+	result := parseRevenueEstimates(module)
 
-	t.initAnalysisCache()
-	t.analysisCache.revenueEstimates = result
+	t.writeAnalysisCache(gen, func(c *analysisCache) { c.revenueEstimates = result })
 	return result, nil
 }
 
@@ -123,68 +222,94 @@ func (t *Ticker) RevenueEstimates() ([]models.RevenueEstimate, error) {
 	return t.RevenueEstimate()
 }
 
-// EPSTrend returns EPS trend data.
+// EPSTrend returns EPS trend data using Yahoo's default EPS methodology.
+//
+// It is equivalent to EPSTrendWithMethodology(models.EPSMethodologyDefault).
 func (t *Ticker) EPSTrend() ([]models.EPSTrend, error) {
-	if t.analysisCache != nil && t.analysisCache.epsTrends != nil {
-		return t.analysisCache.epsTrends, nil
-	}
-
-	if err := t.ensureEarningsTrend(); err != nil {
-		return nil, err
-	}
-
-	result := t.parseEPSTrends()
-
-	t.initAnalysisCache()
-	t.analysisCache.epsTrends = result
-	return result, nil
+	return t.EPSTrendWithMethodology(models.EPSMethodologyDefault)
 }
 
-// EPSRevisions returns EPS revision data.
+// EPSTrendWithMethodology returns EPS trend data using the given EPS
+// methodology.
+// This matches Python yfinance's ticker.get_eps_trend(methodology=...).
+//
+// See [Ticker.EarningsEstimateWithMethodology] for methodology handling.
+func (t *Ticker) EPSTrendWithMethodology(methodology models.EPSMethodology) ([]models.EPSTrend, error) {
+	return cachedEPSTable(t, methodology,
+		func(c *analysisCache) *map[models.EPSMethodology][]models.EPSTrend { return &c.epsTrends },
+		func(m models.EPSMethodology) ([]models.EPSTrend, error) {
+			module, err := t.earningsTrendModule(m)
+			if err != nil {
+				return nil, err
+			}
+			return parseEPSTrends(module, m), nil
+		})
+}
+
+// EPSRevisions returns EPS revision data using Yahoo's default EPS methodology.
+//
+// It is equivalent to EPSRevisionsWithMethodology(models.EPSMethodologyDefault).
 func (t *Ticker) EPSRevisions() ([]models.EPSRevision, error) {
-	if t.analysisCache != nil && t.analysisCache.epsRevisions != nil {
-		return t.analysisCache.epsRevisions, nil
-	}
-
-	if err := t.ensureEarningsTrend(); err != nil {
-		return nil, err
-	}
-
-	result := t.parseEPSRevisions()
-
-	t.initAnalysisCache()
-	t.analysisCache.epsRevisions = result
-	return result, nil
+	return t.EPSRevisionsWithMethodology(models.EPSMethodologyDefault)
 }
 
-// EarningsHistory returns historical earnings data.
+// EPSRevisionsWithMethodology returns EPS revision data using the given EPS
+// methodology.
+// This matches Python yfinance's ticker.get_eps_revisions(methodology=...).
+//
+// See [Ticker.EarningsEstimateWithMethodology] for methodology handling.
+func (t *Ticker) EPSRevisionsWithMethodology(methodology models.EPSMethodology) ([]models.EPSRevision, error) {
+	return cachedEPSTable(t, methodology,
+		func(c *analysisCache) *map[models.EPSMethodology][]models.EPSRevision { return &c.epsRevisions },
+		func(m models.EPSMethodology) ([]models.EPSRevision, error) {
+			module, err := t.earningsTrendModule(m)
+			if err != nil {
+				return nil, err
+			}
+			return parseEPSRevisions(module, m), nil
+		})
+}
+
+// EarningsHistory returns historical earnings data using Yahoo's default EPS
+// methodology.
+//
+// It is equivalent to EarningsHistoryWithMethodology(models.EPSMethodologyDefault).
 func (t *Ticker) EarningsHistory() (*models.EarningsHistory, error) {
-	if t.analysisCache != nil && t.analysisCache.earningsHistory != nil {
-		return t.analysisCache.earningsHistory, nil
-	}
+	return t.EarningsHistoryWithMethodology(models.EPSMethodologyDefault)
+}
 
-	data, err := t.fetchQuoteSummary([]string{"earningsHistory"})
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := t.parseEarningsHistory(data)
-	if err != nil {
-		return nil, err
-	}
-
-	t.initAnalysisCache()
-	t.analysisCache.earningsHistory = result
-	return result, nil
+// EarningsHistoryWithMethodology returns historical earnings data using the
+// given EPS methodology, fetched from the earningsHistory, earningsHistoryGaap,
+// or earningsHistoryNonGaap quoteSummary module.
+// This matches Python yfinance's ticker.get_earnings_history(methodology=...).
+//
+// See [Ticker.EarningsEstimateWithMethodology] for methodology handling.
+func (t *Ticker) EarningsHistoryWithMethodology(methodology models.EPSMethodology) (*models.EarningsHistory, error) {
+	return cachedEPSTable(t, methodology,
+		func(c *analysisCache) *map[models.EPSMethodology]*models.EarningsHistory { return &c.earningsHistory },
+		func(m models.EPSMethodology) (*models.EarningsHistory, error) {
+			module := epsModuleName("earningsHistory", m)
+			data, err := t.fetchQuoteSummary([]string{module})
+			if err != nil {
+				return nil, err
+			}
+			return parseEarningsHistory(data, module, m)
+		})
 }
 
 // GrowthEstimates returns growth estimates comparing stock to industry/sector/index.
+//
+// Growth estimates have no EPS methodology; the stock growth always comes
+// from the default earningsTrend module.
 func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error) {
-	if t.analysisCache != nil && t.analysisCache.growthEstimates != nil {
-		return t.analysisCache.growthEstimates, nil
+	var cached []models.GrowthEstimate
+	gen := t.readAnalysisCache(func(c *analysisCache) { cached = c.growthEstimates })
+	if cached != nil {
+		return cached, nil
 	}
 
-	if err := t.ensureEarningsTrend(); err != nil {
+	module, err := t.earningsTrendModule(models.EPSMethodologyDefault)
+	if err != nil {
 		return nil, err
 	}
 
@@ -194,34 +319,93 @@ func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error) {
 		return nil, err
 	}
 
-	result := t.parseGrowthEstimates(trendData)
+	result := parseGrowthEstimates(module, trendData)
 
-	t.initAnalysisCache()
-	t.analysisCache.growthEstimates = result
+	t.writeAnalysisCache(gen, func(c *analysisCache) { c.growthEstimates = result })
 	return result, nil
 }
 
-// initAnalysisCache initializes the analysis cache if nil.
-func (t *Ticker) initAnalysisCache() {
-	if t.analysisCache == nil {
-		t.analysisCache = &analysisCache{}
+// epsModuleName returns the quoteSummary module name for base
+// ("earningsTrend" or "earningsHistory") and a normalized methodology.
+func epsModuleName(base string, m models.EPSMethodology) string {
+	return base + epsMethodologyModuleSuffix[m]
+}
+
+// earningsTrendModule returns the cached earningsTrend module for a normalized
+// methodology, fetching earningsTrend, earningsTrendGaap, or
+// earningsTrendNonGaap on a miss. A response without the module is cached as
+// an empty module, so the EPS tables come back empty without refetching.
+func (t *Ticker) earningsTrendModule(m models.EPSMethodology) (map[string]interface{}, error) {
+	var module map[string]interface{}
+	var hit bool
+	gen := t.readAnalysisCache(func(c *analysisCache) { module, hit = c.earningsTrend[m] })
+	if hit {
+		return module, nil
+	}
+
+	name := epsModuleName("earningsTrend", m)
+	data, err := t.fetchQuoteSummary([]string{name})
+	if err != nil {
+		return nil, err
+	}
+
+	module, ok := data[name].(map[string]interface{})
+	if !ok {
+		module = map[string]interface{}{}
+	}
+
+	t.writeAnalysisCache(gen, func(c *analysisCache) {
+		if c.earningsTrend == nil {
+			c.earningsTrend = make(map[models.EPSMethodology]map[string]interface{})
+		}
+		c.earningsTrend[m] = module
+	})
+	return module, nil
+}
+
+// epsMethodologyLabel returns the methodology reported on EPS rows: the
+// requested methodology, else the module's defaultMethodology with Yahoo's
+// "nongaap" reported as "normalized". Unknown defaults pass through
+// unchanged; a missing or non-string default yields "".
+func epsMethodologyLabel(m models.EPSMethodology, module map[string]interface{}) string {
+	if m != models.EPSMethodologyDefault {
+		return string(m)
+	}
+	def, _ := module["defaultMethodology"].(string)
+	switch def {
+	case "nongaap":
+		return string(models.EPSMethodologyNormalized)
+	case "gaap":
+		return string(models.EPSMethodologyGAAP)
+	default:
+		return def
 	}
 }
 
-// ensureEarningsTrend fetches earningsTrend data if not cached.
-func (t *Ticker) ensureEarningsTrend() error {
-	t.initAnalysisCache()
-	if t.analysisCache.earningsTrendRaw != nil {
-		return nil
-	}
+// trendItems returns the "trend" list of an earningsTrend module, or nil.
+func trendItems(module map[string]interface{}) ([]interface{}, bool) {
+	trend, ok := module["trend"].([]interface{})
+	return trend, ok
+}
 
-	data, err := t.fetchQuoteSummary([]string{"earningsTrend"})
-	if err != nil {
-		return err
+// estimateHasData reports whether an earningsTrend sub-object carries at least
+// one value besides its currency key. Python yfinance only adds the
+// methodology column when the table has data columns.
+func estimateHasData(est map[string]interface{}, currencyKey string) bool {
+	for k, v := range est {
+		if k == currencyKey {
+			continue
+		}
+		switch val := v.(type) {
+		case map[string]interface{}:
+			if len(val) > 0 {
+				return true
+			}
+		case float64:
+			return true
+		}
 	}
-
-	t.analysisCache.earningsTrendRaw = data
-	return nil
+	return false
 }
 
 // fetchQuoteSummary fetches data from quoteSummary API.
@@ -236,7 +420,12 @@ func (t *Ticker) fetchQuoteSummary(modules []string) (map[string]interface{}, er
 	params.Set("lang", lang)
 	params.Set("region", region)
 
-	resp, err := t.auth.GetWithCrumb(apiURL, params)
+	get := t.auth.GetWithCrumb
+	if t.quoteSummaryGetter != nil {
+		get = t.quoteSummaryGetter
+	}
+
+	resp, err := get(apiURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch quoteSummary: %w", err)
 	}
@@ -323,23 +512,15 @@ func (t *Ticker) parsePriceTarget(data map[string]interface{}) (*models.PriceTar
 	}, nil
 }
 
-// parseEarningsEstimates parses earnings estimates from earningsTrend.
-func (t *Ticker) parseEarningsEstimates() []models.EarningsEstimate {
-	if t.analysisCache == nil || t.analysisCache.earningsTrendRaw == nil {
-		return nil
-	}
-
-	earningsTrend, ok := t.analysisCache.earningsTrendRaw["earningsTrend"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	trend, ok := earningsTrend["trend"].([]interface{})
+// parseEarningsEstimates parses earnings estimates from an earningsTrend module.
+func parseEarningsEstimates(module map[string]interface{}, m models.EPSMethodology) []models.EarningsEstimate {
+	trend, ok := trendItems(module)
 	if !ok {
 		return nil
 	}
 
 	result := make([]models.EarningsEstimate, 0)
+	hasData := false
 
 	for _, item := range trend {
 		itemMap, ok := item.(map[string]interface{})
@@ -351,6 +532,7 @@ func (t *Ticker) parseEarningsEstimates() []models.EarningsEstimate {
 		if !ok {
 			continue
 		}
+		hasData = hasData || estimateHasData(earningsEst, "earningsCurrency")
 
 		est := models.EarningsEstimate{
 			Period:           getString(itemMap, "period"),
@@ -366,21 +548,19 @@ func (t *Ticker) parseEarningsEstimates() []models.EarningsEstimate {
 		result = append(result, est)
 	}
 
+	if hasData {
+		label := epsMethodologyLabel(m, module)
+		for i := range result {
+			result[i].Methodology = label
+		}
+	}
+
 	return result
 }
 
-// parseRevenueEstimates parses revenue estimates from earningsTrend.
-func (t *Ticker) parseRevenueEstimates() []models.RevenueEstimate {
-	if t.analysisCache == nil || t.analysisCache.earningsTrendRaw == nil {
-		return nil
-	}
-
-	earningsTrend, ok := t.analysisCache.earningsTrendRaw["earningsTrend"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	trend, ok := earningsTrend["trend"].([]interface{})
+// parseRevenueEstimates parses revenue estimates from an earningsTrend module.
+func parseRevenueEstimates(module map[string]interface{}) []models.RevenueEstimate {
+	trend, ok := trendItems(module)
 	if !ok {
 		return nil
 	}
@@ -415,23 +595,15 @@ func (t *Ticker) parseRevenueEstimates() []models.RevenueEstimate {
 	return result
 }
 
-// parseEPSTrends parses EPS trends from earningsTrend.
-func (t *Ticker) parseEPSTrends() []models.EPSTrend {
-	if t.analysisCache == nil || t.analysisCache.earningsTrendRaw == nil {
-		return nil
-	}
-
-	earningsTrend, ok := t.analysisCache.earningsTrendRaw["earningsTrend"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	trend, ok := earningsTrend["trend"].([]interface{})
+// parseEPSTrends parses EPS trends from an earningsTrend module.
+func parseEPSTrends(module map[string]interface{}, m models.EPSMethodology) []models.EPSTrend {
+	trend, ok := trendItems(module)
 	if !ok {
 		return nil
 	}
 
 	result := make([]models.EPSTrend, 0)
+	hasData := false
 
 	for _, item := range trend {
 		itemMap, ok := item.(map[string]interface{})
@@ -443,6 +615,7 @@ func (t *Ticker) parseEPSTrends() []models.EPSTrend {
 		if !ok {
 			continue
 		}
+		hasData = hasData || estimateHasData(epsTrend, "epsTrendCurrency")
 
 		est := models.EPSTrend{
 			Period:     getString(itemMap, "period"),
@@ -456,26 +629,25 @@ func (t *Ticker) parseEPSTrends() []models.EPSTrend {
 		result = append(result, est)
 	}
 
+	if hasData {
+		label := epsMethodologyLabel(m, module)
+		for i := range result {
+			result[i].Methodology = label
+		}
+	}
+
 	return result
 }
 
-// parseEPSRevisions parses EPS revisions from earningsTrend.
-func (t *Ticker) parseEPSRevisions() []models.EPSRevision {
-	if t.analysisCache == nil || t.analysisCache.earningsTrendRaw == nil {
-		return nil
-	}
-
-	earningsTrend, ok := t.analysisCache.earningsTrendRaw["earningsTrend"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	trend, ok := earningsTrend["trend"].([]interface{})
+// parseEPSRevisions parses EPS revisions from an earningsTrend module.
+func parseEPSRevisions(module map[string]interface{}, m models.EPSMethodology) []models.EPSRevision {
+	trend, ok := trendItems(module)
 	if !ok {
 		return nil
 	}
 
 	result := make([]models.EPSRevision, 0)
+	hasData := false
 
 	for _, item := range trend {
 		itemMap, ok := item.(map[string]interface{})
@@ -487,6 +659,7 @@ func (t *Ticker) parseEPSRevisions() []models.EPSRevision {
 		if !ok {
 			continue
 		}
+		hasData = hasData || estimateHasData(epsRevisions, "epsRevisionsCurrency")
 
 		rev := models.EPSRevision{
 			Period:         getString(itemMap, "period"),
@@ -499,14 +672,21 @@ func (t *Ticker) parseEPSRevisions() []models.EPSRevision {
 		result = append(result, rev)
 	}
 
+	if hasData {
+		label := epsMethodologyLabel(m, module)
+		for i := range result {
+			result[i].Methodology = label
+		}
+	}
+
 	return result
 }
 
-// parseEarningsHistory parses earningsHistory data.
-func (t *Ticker) parseEarningsHistory(data map[string]interface{}) (*models.EarningsHistory, error) {
-	ehData, ok := data["earningsHistory"].(map[string]interface{})
+// parseEarningsHistory parses an earningsHistory{,Gaap,NonGaap} module.
+func parseEarningsHistory(data map[string]interface{}, moduleName string, m models.EPSMethodology) (*models.EarningsHistory, error) {
+	ehData, ok := data[moduleName].(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("earningsHistory not found")
+		return nil, fmt.Errorf("%s not found", moduleName)
 	}
 
 	history, ok := ehData["history"].([]interface{})
@@ -517,6 +697,7 @@ func (t *Ticker) parseEarningsHistory(data map[string]interface{}) (*models.Earn
 	result := &models.EarningsHistory{
 		History: make([]models.EarningsHistoryItem, 0, len(history)),
 	}
+	label := epsMethodologyLabel(m, ehData)
 
 	for _, item := range history {
 		itemMap, ok := item.(map[string]interface{})
@@ -539,6 +720,7 @@ func (t *Ticker) parseEarningsHistory(data map[string]interface{}) (*models.Earn
 			EPSEstimate:     getNestedFloat(itemMap, "epsEstimate"),
 			EPSDifference:   getNestedFloat(itemMap, "epsDifference"),
 			SurprisePercent: getNestedFloat(itemMap, "surprisePercent"),
+			Methodology:     label,
 		}
 		result.History = append(result.History, histItem)
 	}
@@ -546,18 +728,10 @@ func (t *Ticker) parseEarningsHistory(data map[string]interface{}) (*models.Earn
 	return result, nil
 }
 
-// parseGrowthEstimates parses growth estimates from multiple sources.
-func (t *Ticker) parseGrowthEstimates(trendData map[string]interface{}) []models.GrowthEstimate {
-	if t.analysisCache == nil || t.analysisCache.earningsTrendRaw == nil {
-		return nil
-	}
-
-	earningsTrend, ok := t.analysisCache.earningsTrendRaw["earningsTrend"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
-	trend, ok := earningsTrend["trend"].([]interface{})
+// parseGrowthEstimates parses growth estimates from the default earningsTrend
+// module and the industry/sector/index trend modules.
+func parseGrowthEstimates(module map[string]interface{}, trendData map[string]interface{}) []models.GrowthEstimate {
+	trend, ok := trendItems(module)
 	if !ok {
 		return nil
 	}

@@ -43,6 +43,10 @@ type Ticker struct {
 	// endpoints.NewsGraphQLURL.
 	newsURL string
 
+	// quoteSummaryGetter overrides the crumb-authenticated GET used by
+	// fetchQuoteSummary. It is a test hook and nil in production.
+	quoteSummaryGetter func(rawURL string, params url.Values) (*client.Response, error)
+
 	// Ownership tracking for cleanup
 	ownsClient bool
 }

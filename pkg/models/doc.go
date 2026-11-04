@@ -35,6 +35,7 @@
 //   - [EPSRevision]: EPS revision counts
 //   - [EarningsHistory]: Historical earnings vs estimates
 //   - [GrowthEstimate]: Growth estimates from various sources
+//   - [EPSMethodology]: GAAP / Normalized EPS selector ([ParseEPSMethodology])
 //
 // Holders:
 //   - [MajorHolders]: Major shareholders breakdown (insiders, institutions)
