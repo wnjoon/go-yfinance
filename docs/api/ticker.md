@@ -669,12 +669,16 @@ for _, h := range holders {
 func (t *Ticker) News(count int, tab models.NewsTab) ([]models.NewsArticle, error)
 ```
 
-News fetches news articles for the ticker.
+News fetches the latest news articles for the ticker, newest first.
+
+News is loaded from Yahoo's news GraphQL API \(the same request the finance.yahoo.com quote news page makes\), following the result cursor until count articles are collected or Yahoo has no more. The request follows the locale set with config.SetLocale; Yahoo only has news for some locales and returns an empty slice for the others.
 
 Parameters:
 
-- count: Number of articles to fetch \(default: 10\)
-- tab: Type of news to fetch \(default: NewsTabNews\)
+- count: Maximum number of articles to return \(default: 10 when \<= 0\)
+- tab: Type of news to fetch \(default: NewsTabNews when empty\); matched case\-insensitively
+
+An unknown tab returns an error wrapping models.ErrInvalidNewsTab. HTTP failures return the pkg/client error types \(for example a rate\-limit error for HTTP 429\). GraphQL errors or a response without data return an empty, non\-nil slice. Results, including empty ones, are cached per count, tab and locale until ClearCache is called.
 
 Example:
 

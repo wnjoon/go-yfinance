@@ -83,6 +83,7 @@ See [ErrorCode](<#ErrorCode>) for all available error types.
   - [func \(c \*Client\) GetJSON\(rawURL string, params url.Values, v interface\{\}\) error](<#Client.GetJSON>)
   - [func \(c \*Client\) Post\(rawURL string, params url.Values, body map\[string\]string\) \(\*Response, error\)](<#Client.Post>)
   - [func \(c \*Client\) PostJSON\(rawURL string, params url.Values, body \[\]byte\) \(\*Response, error\)](<#Client.PostJSON>)
+  - [func \(c \*Client\) PostJSONWithHeaders\(rawURL string, params url.Values, body \[\]byte, headers map\[string\]string\) \(\*Response, error\)](<#Client.PostJSONWithHeaders>)
   - [func \(c \*Client\) SetCookie\(cookie string\)](<#Client.SetCookie>)
   - [func \(c \*Client\) SetCookies\(cookies map\[string\]string\)](<#Client.SetCookies>)
 - [type ClientOption](<#ClientOption>)
@@ -452,6 +453,17 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 ```
 
 PostJSON performs an HTTP POST request with JSON body.
+
+<a name="Client.PostJSONWithHeaders"></a>
+### func \(\*Client\) PostJSONWithHeaders
+
+```go
+func (c *Client) PostJSONWithHeaders(rawURL string, params url.Values, body []byte, headers map[string]string) (*Response, error)
+```
+
+PostJSONWithHeaders performs an HTTP POST request with a JSON body and additional request headers.
+
+The extra headers are merged over the client's default JSON headers \(Accept, Accept\-Language, Content\-Type, Connection\) and the stored Cookie header. Header names are matched case\-insensitively, so an extra header replaces a default of the same name instead of being sent twice; an explicitly supplied Content\-Type therefore intentionally overrides "application/json". Entries with a blank name are ignored. The headers map is never modified, and a nil or empty map behaves exactly like PostJSON.
 
 <a name="Client.SetCookie"></a>
 ### func \(\*Client\) SetCookie

@@ -90,7 +90,8 @@ News:
 
 - [NewsArticle](<#NewsArticle>): News article with title, publisher, link, thumbnail
 - [NewsThumbnail](<#NewsThumbnail>): Thumbnail image with multiple resolutions
-- [NewsTab](<#NewsTab>): News type \(all/news/press releases\)
+- [NewsTab](<#NewsTab>): News type \(all/news/press releases\) and its Yahoo list slug
+- [ErrInvalidNewsTab](<#ErrInvalidNewsTab>): Error for an unknown news tab
 - [NewsParams](<#NewsParams>): News query parameters
 
 ### History Parameters
@@ -218,7 +219,9 @@ Use [ValidPeriods](<#ValidPeriods>) and [ValidIntervals](<#ValidIntervals>) to g
   - [func \(n \*NewsArticle\) PublishedAt\(\) time.Time](<#NewsArticle.PublishedAt>)
 - [type NewsParams](<#NewsParams>)
 - [type NewsTab](<#NewsTab>)
+  - [func \(t NewsTab\) ListName\(\) \(string, error\)](<#NewsTab.ListName>)
   - [func \(t NewsTab\) QueryRef\(\) string](<#NewsTab.QueryRef>)
+  - [func \(t NewsTab\) Slug\(lang, region string\) \(string, error\)](<#NewsTab.Slug>)
   - [func \(t NewsTab\) String\(\) string](<#NewsTab.String>)
 - [type NewsThumbnail](<#NewsThumbnail>)
 - [type Officer](<#Officer>)
@@ -712,6 +715,12 @@ var EquityScreenerSectors = []string{
     "Real Estate", "Technology", "Energy", "Utilities", "Financial Services",
     "Consumer Defensive", "Consumer Cyclical",
 }
+```
+
+<a name="ErrInvalidNewsTab"></a>ErrInvalidNewsTab is returned \(wrapped\) when a NewsTab is not one of NewsTabAll, NewsTabNews or NewsTabPressReleases.
+
+```go
+var ErrInvalidNewsTab = errors.New("invalid news tab")
 ```
 
 <a name="FundScreenerExchangeMap"></a>FundScreenerExchangeMap maps region codes to valid exchange codes for fund screener. Matches Python's FUND\_SCREENER\_EQ\_MAP\["exchange"\].
@@ -3018,13 +3027,15 @@ type NewsArticle struct {
     // Publisher is the source of the article.
     Publisher string `json:"publisher"`
 
-    // Link is the URL to the full article.
+    // Link is the URL to the full article. It is Yahoo's click-through URL,
+    // falling back to CanonicalURL when Yahoo does not provide one.
     Link string `json:"link"`
 
     // PublishTime is the Unix timestamp when the article was published.
+    // It is 0 when Yahoo does not report a parseable publish time.
     PublishTime int64 `json:"providerPublishTime"`
 
-    // Type is the content type (e.g., "STORY", "VIDEO").
+    // Type is the content type (e.g., "STORY", "VIDEO", "OUTLINK").
     Type string `json:"type"`
 
     // Thumbnail contains image URLs for the article.
@@ -3032,6 +3043,31 @@ type NewsArticle struct {
 
     // RelatedTickers lists ticker symbols related to this article.
     RelatedTickers []string `json:"relatedTickers,omitempty"`
+
+    // Summary is Yahoo's short summary of the article, when available.
+    Summary string `json:"summary,omitempty"`
+
+    // Description is the article description or teaser, when available.
+    Description string `json:"description,omitempty"`
+
+    // CanonicalURL is the publisher's canonical article URL, when available.
+    CanonicalURL string `json:"canonicalUrl,omitempty"`
+
+    // PreviewURL is Yahoo's preview URL for the article, when available.
+    PreviewURL string `json:"previewUrl,omitempty"`
+
+    // PublisherURL is the publisher's home page URL, when available.
+    PublisherURL string `json:"publisherUrl,omitempty"`
+
+    // DisplayTime is the Unix timestamp Yahoo displays for the article.
+    // It is 0 when Yahoo does not report a parseable display time.
+    DisplayTime int64 `json:"displayTime,omitempty"`
+
+    // IsHosted reports whether the article is hosted on Yahoo Finance.
+    IsHosted bool `json:"isHosted,omitempty"`
+
+    // IsPremium reports whether the article is Yahoo Finance premium news.
+    IsPremium bool `json:"isPremium,omitempty"`
 }
 ```
 
@@ -3083,6 +3119,17 @@ const (
 )
 ```
 
+<a name="NewsTab.ListName"></a>
+### func \(NewsTab\) ListName
+
+```go
+func (t NewsTab) ListName() (string, error)
+```
+
+ListName returns the Yahoo Finance news list name for this tab, as used in the ticker news list slug: "news", "all" or "pressrelease".
+
+Matching is case\-insensitive \(as in Python yfinance\), and the empty tab maps to the default "news" list. Any other value returns an error wrapping ErrInvalidNewsTab.
+
 <a name="NewsTab.QueryRef"></a>
 ### func \(NewsTab\) QueryRef
 
@@ -3091,6 +3138,19 @@ func (t NewsTab) QueryRef() string
 ```
 
 QueryRef returns the Yahoo Finance API query reference for this tab.
+
+Deprecated: QueryRef belongs to Yahoo's retired /xhr/ncp news endpoint and is no longer used by Ticker.News. Use ListName or Slug instead.
+
+<a name="NewsTab.Slug"></a>
+### func \(NewsTab\) Slug
+
+```go
+func (t NewsTab) Slug(lang, region string) (string, error)
+```
+
+Slug returns the Yahoo Finance news list slug for this tab and locale, for example "list=finance\-US\-en\-US\-ticker\-news".
+
+It returns an error wrapping ErrInvalidNewsTab for an unknown tab.
 
 <a name="NewsTab.String"></a>
 ### func \(NewsTab\) String
@@ -3108,7 +3168,18 @@ NewsThumbnail contains thumbnail image information for a news article. It reuses
 
 ```go
 type NewsThumbnail struct {
+    // OriginalURL is the URL of the original (unresized) image.
+    OriginalURL string `json:"originalUrl,omitempty"`
+
+    // OriginalWidth is the width of the original image in pixels.
+    OriginalWidth int `json:"originalWidth,omitempty"`
+
+    // OriginalHeight is the height of the original image in pixels.
+    OriginalHeight int `json:"originalHeight,omitempty"`
+
     // Resolutions contains different size versions of the thumbnail.
+    // The first entry is the original image (tag "original"), followed by
+    // resized versions tagged with Yahoo's transform label (e.g. "170x128").
     Resolutions []ThumbnailResolution `json:"resolutions,omitempty"`
 }
 ```
