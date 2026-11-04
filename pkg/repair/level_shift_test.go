@@ -249,7 +249,7 @@ func TestRepairLevelShiftFetchWindow(t *testing.T) {
 func TestLevelShiftCandidatesTooOld(t *testing.T) {
 	daily, _ := synthShift{badFactor: 15}.build()
 	active := levelShiftActiveRows(daily)
-	up, down := detectUnknownPriceShifts(daily, active, levelShiftMinChange)
+	up, down := detectLevelShiftSignals(daily, active, levelShiftMinChange)
 	windowStart := daily[18-levelShiftSideRows].Date
 
 	got := levelShiftCandidates(daily, active, up, down, windowStart)
@@ -277,7 +277,7 @@ func TestLevelShiftCandidatesSplitDistance(t *testing.T) {
 			daily[tc.splitRow].Volume = 0
 		}
 		active := levelShiftActiveRows(daily)
-		up, down := detectUnknownPriceShifts(daily, active, levelShiftMinChange)
+		up, down := detectLevelShiftSignals(daily, active, levelShiftMinChange)
 		got := levelShiftCandidates(daily, active, up, down, time.Time{})
 		if len(got) != tc.want {
 			t.Errorf("split row %d inactive=%v: %d candidates, want %d", tc.splitRow, tc.inactive, len(got), tc.want)
@@ -285,7 +285,7 @@ func TestLevelShiftCandidatesSplitDistance(t *testing.T) {
 	}
 }
 
-func TestDetectUnknownPriceShifts(t *testing.T) {
+func TestDetectPriceShiftsUnknownChange(t *testing.T) {
 	mk := func(closes ...float64) []models.Bar {
 		bars := make([]models.Bar, len(closes))
 		for i, c := range closes {
@@ -295,7 +295,7 @@ func TestDetectUnknownPriceShifts(t *testing.T) {
 	}
 	bars := mk(10, 10, 21, 20, 9.9, 10)
 	active := levelShiftActiveRows(bars)
-	up, down := detectUnknownPriceShifts(bars, active, 2)
+	up, down := detectLevelShiftSignals(bars, active, 2)
 	wantUp := []bool{false, false, true, false, false, false}
 	wantDown := []bool{false, false, false, false, true, false}
 	for i := range up {
@@ -304,27 +304,27 @@ func TestDetectUnknownPriceShifts(t *testing.T) {
 		}
 	}
 	// Exactly 2x is not a candidate (strict comparison).
-	if up, _ := detectUnknownPriceShifts(mk(10, 20, 20), []int{0, 1, 2}, 2); up != nil {
+	if up, _ := detectLevelShiftSignals(mk(10, 20, 20), []int{0, 1, 2}, 2); up != nil {
 		t.Fatal("exact 2x should not be a candidate")
 	}
 	// Dividend-adjusted prices are compared: a big drop in Close that the
 	// adjustment explains is no candidate.
 	adj := mk(10, 4, 4)
 	adj[0].AdjClose = 4
-	if up, _ := detectUnknownPriceShifts(adj, []int{0, 1, 2}, 2); up != nil {
+	if up, _ := detectLevelShiftSignals(adj, []int{0, 1, 2}, 2); up != nil {
 		t.Fatal("adjusted change should not be a candidate")
 	}
 	// The median of the four column changes is used: one wild column is not
 	// enough.
 	wild := mk(10, 10, 10)
 	wild[1].High = 100
-	if up, _ := detectUnknownPriceShifts(wild, []int{0, 1, 2}, 2); up != nil {
+	if up, _ := detectLevelShiftSignals(wild, []int{0, 1, 2}, 2); up != nil {
 		t.Fatal("single-column spike should not be a candidate")
 	}
 	// A NaN change counts as no change.
 	nan := mk(10, 30, 30)
 	nan[1].AdjClose = math.NaN()
-	if up, _ := detectUnknownPriceShifts(nan, []int{0, 1, 2}, 2); up != nil {
+	if up, _ := detectLevelShiftSignals(nan, []int{0, 1, 2}, 2); up != nil {
 		t.Fatal("NaN change should not be a candidate")
 	}
 }
@@ -444,7 +444,7 @@ func TestRepairLevelShiftKALAIsGenuine(t *testing.T) {
 	hourly := loadBarsCSV(t, "KALA-1h-no-bad-level-shift.csv")
 	ny := nyLocation()
 	active := levelShiftActiveRows(daily)
-	up, down := detectUnknownPriceShifts(daily, active, levelShiftMinChange)
+	up, down := detectLevelShiftSignals(daily, active, levelShiftMinChange)
 	candidates := levelShiftCandidates(daily, active, up, down, time.Time{})
 	if len(candidates) != 1 {
 		t.Fatalf("candidates = %+v, want 1", candidates)
@@ -467,12 +467,12 @@ func TestRepairLevelShiftKALAIsGenuine(t *testing.T) {
 			r[j] = prices[k][j] / h[j]
 		}
 		if k < c.idx {
-			before = append(before, medianNaN(r))
+			before = append(before, npMedian(r))
 		} else {
-			after = append(after, medianNaN(r))
+			after = append(after, npMedian(r))
 		}
 	}
-	m := medianNaN(before) / medianNaN(after)
+	m := npMedian(before) / npMedian(after)
 	if !(0.8 < m && m < 1.25) {
 		t.Fatalf("m = %v, want genuine", m)
 	}
@@ -481,21 +481,14 @@ func TestRepairLevelShiftKALAIsGenuine(t *testing.T) {
 	}
 }
 
-func TestLevelShiftStartMinPrune(t *testing.T) {
+func TestSubtractYearClamped(t *testing.T) {
 	ny := nyLocation()
-	at := func(y int, m time.Month, d int) models.Bar {
-		return models.Bar{Date: time.Date(y, m, d, 0, 0, 0, 0, ny)}
+	// relativedelta(years=1) clamps 29 February to 28 February.
+	if got := subtractYearClamped(time.Date(2024, 2, 29, 0, 0, 0, 0, ny)); !got.Equal(time.Date(2023, 2, 28, 0, 0, 0, 0, time.UTC)) {
+		t.Fatalf("got %v", got)
 	}
-	if levelShiftStartMinPrune([]models.Bar{at(2026, 1, 2)}, ny) != nil {
-		t.Fatal("no split should mean no pruning")
-	}
-	bars := []models.Bar{at(2023, 3, 1), at(2024, 2, 29), at(2025, 3, 3)}
-	bars[1].Splits = 2
-	bars[2].Splits = 3
-	prune := levelShiftStartMinPrune(bars, ny)
-	// Oldest split 2024-02-29 -> start_min 2023-02-28 (relativedelta clamps).
-	if !prune(at(2023, 2, 27)) || prune(at(2023, 2, 28)) || prune(at(2023, 3, 1)) {
-		t.Fatal("start_min boundary wrong")
+	if got := subtractYearClamped(time.Date(2025, 3, 3, 0, 0, 0, 0, ny)); !got.Equal(time.Date(2024, 3, 3, 0, 0, 0, 0, time.UTC)) {
+		t.Fatalf("got %v", got)
 	}
 }
 
@@ -509,12 +502,15 @@ func TestCleanLevelShiftMultiple(t *testing.T) {
 	}
 }
 
-// TestRepairPriceShiftWithoutSplit checks the generalized split-path repair
-// runs on a frame without a split, with cutoff = len (no look-ahead limit),
-// and leaves dividends alone unless asked.
-func TestRepairPriceShiftWithoutSplit(t *testing.T) {
+// TestFixPricesSuddenChangeWithoutSplit checks the shared repair runs on a
+// frame without a split, as the level-shift repair calls it, and leaves
+// dividends alone unless asked.
+func TestFixPricesSuddenChangeWithoutSplit(t *testing.T) {
 	daily, _ := synthShift{badFactor: 15, dividendRow: 10}.build()
-	got := repairPriceShift(daily, len(daily), 15, "1d", priceShiftRepair{})
+	opts := DefaultOptions()
+	opts.Timezone = "America/New_York"
+	r := New(opts)
+	got := r.fixPricesSuddenChange(daily, 15, priceShiftFix{correctVolume: true})
 	for i := range got {
 		repaired := i < 18
 		if got[i].Repaired != repaired {
@@ -531,15 +527,25 @@ func TestRepairPriceShiftWithoutSplit(t *testing.T) {
 	if got[10].Dividends != daily[10].Dividends {
 		t.Fatal("dividend changed without correctDividend")
 	}
-	withDiv := repairPriceShift(daily, len(daily), 15, "1d", priceShiftRepair{correctDividend: true})
+	withDiv := r.fixPricesSuddenChange(daily, 15, priceShiftFix{correctVolume: true, correctDividend: true})
 	if !closeTo(withDiv[10].Dividends, daily[10].Dividends/15, 1e-12) {
 		t.Fatal("dividend not rescaled with correctDividend")
 	}
-	pruned := repairPriceShift(daily, len(daily), 15, "1d", priceShiftRepair{prune: func(models.Bar) bool { return true }})
-	if CountRepaired(pruned) != 0 {
-		t.Fatal("prune should drop every range")
-	}
 	if CountRepaired(daily) != 0 {
-		t.Fatal("repairPriceShift mutated its input")
+		t.Fatal("fixPricesSuddenChange mutated its input")
 	}
+}
+
+// detectLevelShiftSignals runs the shared detector as repairLevelShifts does
+// (change=None) on the active rows, returning nil masks without candidates.
+func detectLevelShiftSignals(bars []models.Bar, active []int, minChange float64) (up, down []bool) {
+	rows := make([]models.Bar, len(active))
+	for k, i := range active {
+		rows[k] = bars[i]
+	}
+	det := detectPriceShifts(rows, "1d", 0, false, minChange)
+	if det == nil {
+		return nil, nil
+	}
+	return det.up[0], det.down[0]
 }

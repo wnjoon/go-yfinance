@@ -57,64 +57,6 @@ func TestMinInt(t *testing.T) {
 	}
 }
 
-func TestApplySplitCorrection(t *testing.T) {
-	// Create bars representing unadjusted data before a 2:1 split
-	bars := []models.Bar{
-		{
-			Date:     time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
-			Open:     100,
-			High:     110,
-			Low:      95,
-			Close:    105,
-			AdjClose: 105,
-			Volume:   1000,
-		},
-		{
-			Date:     time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
-			Open:     106,
-			High:     112,
-			Low:      100,
-			Close:    108,
-			AdjClose: 108,
-			Volume:   1200,
-		},
-		{
-			Date:     time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC),
-			Open:     54, // After 2:1 split, price halved
-			High:     58,
-			Low:      50,
-			Close:    55,
-			AdjClose: 55,
-			Volume:   2400,
-			Splits:   2.0,
-		},
-	}
-
-	// Apply correction for 2:1 split at index 2
-	result := applySplitCorrection(bars, 2, 2.0)
-
-	// Pre-split bars should be divided by 2
-	if result[0].Close != 52.5 {
-		t.Errorf("Expected Close=52.5, got %.2f", result[0].Close)
-	}
-	if result[1].Close != 54 {
-		t.Errorf("Expected Close=54, got %.2f", result[1].Close)
-	}
-
-	// Volume should be multiplied by 2
-	if result[0].Volume != 2000 {
-		t.Errorf("Expected Volume=2000, got %d", result[0].Volume)
-	}
-
-	// Bars should be marked as repaired
-	if !result[0].Repaired || !result[1].Repaired {
-		t.Error("Pre-split bars should be marked as repaired")
-	}
-	if !result[2].Repaired {
-		t.Error("Split date bar should be marked as repaired")
-	}
-}
-
 func TestRepairStockSplitsNoSplits(t *testing.T) {
 	repairer := New(DefaultOptions())
 
@@ -191,44 +133,6 @@ func TestAnalyzeSplits(t *testing.T) {
 	}
 }
 
-func TestReverseSplitCorrection(t *testing.T) {
-	// Test reverse split (1:4 -> ratio = 0.25)
-	bars := []models.Bar{
-		{
-			Date:     time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
-			Open:     25,
-			High:     27,
-			Low:      23,
-			Close:    26,
-			AdjClose: 26,
-			Volume:   4000,
-		},
-		{
-			Date:     time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
-			Open:     100, // After 1:4 reverse split, price 4x
-			High:     108,
-			Low:      95,
-			Close:    104,
-			AdjClose: 104,
-			Volume:   1000,
-			Splits:   0.25, // 1:4 reverse split
-		},
-	}
-
-	// For reverse split with ratio 0.25, pre-split prices should be multiplied by 4
-	result := applySplitCorrection(bars, 1, 0.25)
-
-	// Pre-split bar should have price multiplied by 4
-	if result[0].Close != 104 { // 26 * 4 = 104
-		t.Errorf("Expected Close=104, got %.2f", result[0].Close)
-	}
-
-	// Volume should be divided by 4
-	if result[0].Volume != 1000 { // 4000 / 4 = 1000
-		t.Errorf("Expected Volume=1000, got %d", result[0].Volume)
-	}
-}
-
 // TestRepairStockSplitsNRDYGolden ports the Python yfinance 1.7.0 NRDY
 // regression fixture added by ranaroussi/yfinance#2958 (0f29c859 plus the
 // 5c1f64e follow-up). It exercises multiple alternating corrupt/good ranges.
@@ -289,14 +193,6 @@ func TestRepairStockSplitsAllZeroVolumeIsNotRepaired(t *testing.T) {
 	}
 }
 
-func TestApplyPriceShiftRangesUsesPythonBankersRounding(t *testing.T) {
-	bars := []models.Bar{{Open: 1, High: 1, Low: 1, Close: 1, AdjClose: 1, Volume: 5}}
-	applyPriceShiftRanges(bars, []int{0}, []priceShiftRange{{start: 0, end: 1, multiplier: 2, volumeMultiplier: 0.5}}, true, true)
-	if bars[0].Volume != 2 {
-		t.Fatalf("2.5 volume rounded to %d, want Python/NumPy half-even 2", bars[0].Volume)
-	}
-}
-
 func TestRepairStockSplitsOnlyInterdayIntervals(t *testing.T) {
 	bars := unadjustedSplitBars([]int64{1200, 1150, 1250, 1180, 1220, 2400, 2500, 2450})
 	opts := DefaultOptions()
@@ -317,7 +213,7 @@ func TestRepairSplitDailyLookAheadStopsAfterFiveRows(t *testing.T) {
 		bars[i] = models.Bar{Date: time.Date(2024, 1, i+1, 0, 0, 0, 0, time.UTC), Open: p, High: p, Low: p, Close: p, AdjClose: p, Volume: 1000}
 	}
 	bars[5].Splits = 2
-	got := repairSplitAtIndex(bars, 5, 2, "1d")
+	got := New(DefaultOptions()).repairSplitAtIndex(bars, 5, 2)
 	if CountRepaired(got) != 0 {
 		t.Fatal("signal beyond upstream's five-row look-ahead was used")
 	}
@@ -336,30 +232,5 @@ func TestRepairSplitUsesAdjustedPricesForDividendDrop(t *testing.T) {
 	got := New(DefaultOptions()).repairStockSplits(bars)
 	if CountRepaired(got) != 0 {
 		t.Fatal("dividend-adjusted continuous prices must not be treated as a split error")
-	}
-}
-
-func TestSuppressLocalSplitVolatility(t *testing.T) {
-	ratio := []float64{1, 0.8, 1.8, 1.8, 0.8, 1.8}
-	up, down := make([]bool, len(ratio)), make([]bool, len(ratio))
-	up[3] = true
-	suppressLocalVolatility(ratio, up, down, 2, "1d")
-	if up[3] {
-		t.Fatal("locally ordinary candidate should be suppressed")
-	}
-}
-
-func TestSuppressSplitVolumeSpikeFalsePositive(t *testing.T) {
-	bars := make([]models.Bar, 20)
-	for i := range bars {
-		bars[i].Volume = int64(950 + (i%5)*25)
-	}
-	// Descending candidate idx=6 refers to the actual drop row at desc idx=5.
-	bars[len(bars)-1-5].Volume = 10000
-	up, down := make([]bool, len(bars)), make([]bool, len(bars))
-	up[6] = true
-	suppressSplitVolumeSpikes(bars, up, down)
-	if up[6] {
-		t.Fatal("catastrophic move on exceptional volume should be suppressed")
 	}
 }

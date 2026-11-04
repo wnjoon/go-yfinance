@@ -141,12 +141,27 @@ Dividend repair is **only applied to 1d intervals**. Weekly and monthly interval
 
 Detects when Yahoo fails to apply split adjustments to historical prices.
 
+Split, unit-switch and level-shift repair share one detector, a port of
+Python yfinance 1.8.0 `_detect_price_shifts` / `_fix_prices_sudden_change`
+that is differentially tested against the upstream code.
+
 ### Detection Algorithm
 
-1. Identifies split events from data
-2. Uses IQR-based outlier detection for normal volatility
-3. Detects price changes matching split ratio
-4. Filters false positives using volume analysis
+For each split (oldest first), the rows up to five rows after it (one row for
+`1wk`/`1mo`/`3mo`) are scanned newest first:
+
+1. Day-to-day changes are computed per price column on dividend-adjusted
+   prices, and their median taken (for `1wk`/`1mo`/`3mo`, the average of Open
+   and Close only, as High and Low are too volatile). Rows next to a zero Close
+   count as no change
+2. Normal volatility is estimated from changes inside the interquartile range;
+   the split must stand well clear of it
+3. Changes beyond `1 + (ratio - 1 + 5 sd%) x 0.6` (or its reciprocal) are
+   signals; a drop on abnormally high volume, or a change similar to the local
+   volatility, is discarded
+4. Signals pair into ranges; ranges more than a year older than the oldest
+   split are ignored, and the rest must be confirmed by a matching volume shift
+5. Prices, dividends and volume in confirmed ranges are rescaled
 
 ### Example
 
@@ -221,11 +236,18 @@ For random errors:
 3. Round ratio to nearest 20, check if ~100
 4. Correct outliers by dividing/multiplying by 100
 
-For unit switch:
-1. Calculate daily percentage changes
-2. Use IQR to estimate normal volatility
-3. Detect changes ~100x larger than normal
-4. Apply correction to all preceding bars
+For unit switch, the shared price-shift detector (see Stock Split Repair) runs
+with a 100x change (1000x for KWF):
+1. Every range between a pair of 100x signals is corrected, so several
+   switches (or a temporary one) are all repaired; prices and dividends are
+   rescaled, volume is not
+2. A range whose volume moves inversely to the price is a corporate action
+   and is left alone
+3. If a row's high/low spread exceeds 50x, columns are corrected individually
+   and at least two columns must agree; Low/High are then recalculated
+4. A suspended stock (no volume on the newest rows) uses the latest active row
+   as its baseline
+5. A 100x repair is abandoned when a signal falls within 30 days after a split
 
 ### Example
 

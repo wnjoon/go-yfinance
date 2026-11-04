@@ -3,18 +3,8 @@ package repair
 import (
 	"math"
 
-	"github.com/wnjoon/go-yfinance/pkg/models"
 	"github.com/wnjoon/go-yfinance/pkg/stats"
 )
-
-// barVolumes extracts the volume series as floats.
-func barVolumes(bars []models.Bar) []float64 {
-	vol := make([]float64, len(bars))
-	for i, bar := range bars {
-		vol[i] = float64(bar.Volume)
-	}
-	return vol
-}
 
 func allVolumesZero(vol []float64) bool {
 	for _, v := range vol {
@@ -23,21 +13,6 @@ func allVolumesZero(vol []float64) bool {
 		}
 	}
 	return true
-}
-
-// intervalNoiseMultiplier scales an estimated "normal" volatility for coarser
-// intervals. Matches upstream's interday definition exactly:
-// interday = interval in {1d, 1wk, 1mo, 3mo} — note "5d" is NOT interday and
-// gets no multiplier — with an extra factor for monthly bars.
-func intervalNoiseMultiplier(interval string) float64 {
-	switch interval {
-	case "1wk":
-		return 3
-	case "1mo", "3mo":
-		return 6
-	default:
-		return 1
-	}
 }
 
 // denoiseVolume smooths a volume series for range comparison: zeros are

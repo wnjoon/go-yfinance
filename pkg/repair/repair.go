@@ -70,6 +70,13 @@ func DefaultOptions() Options {
 // Repairer handles price data repair operations.
 type Repairer struct {
 	opts Options
+
+	// currencyRepaired is upstream's history_metadata['currencyRepaired']:
+	// prices were standardised from a sub-unit currency during Repair.
+	currencyRepaired bool
+	// traceShift, when set by tests, receives each fixPricesSuddenChange
+	// trace.
+	traceShift func(*priceShiftTrace)
 }
 
 // New creates a new Repairer with the given options.
@@ -107,7 +114,11 @@ func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 	originalCurrency := r.opts.Currency
 	var pricesScaled bool
 	result, r.opts.Currency, pricesScaled = standardiseCurrency(result, originalCurrency)
-	defer func() { r.opts.Currency = originalCurrency }()
+	r.currencyRepaired = pricesScaled
+	defer func() {
+		r.opts.Currency = originalCurrency
+		r.currencyRepaired = false
+	}()
 
 	// Unit, split and level-shift repairs depend on volume, which is
 	// meaningless for FX tickers (upstream #2908: skipped when '=' is in the

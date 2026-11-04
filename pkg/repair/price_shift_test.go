@@ -378,7 +378,7 @@ func TestFixPricesSuddenChangeUnitSwitchVolume(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			bars := splitScenarioBars(30, 20, 0, tc.oldPrice, tc.newPrice, tc.oldVol, tc.newVol)
-			got := New(DefaultOptions()).fixPricesSuddenChange(bars, 100)
+			got := New(DefaultOptions()).repairUnitSwitch(bars)
 			if n := CountRepaired(got); (n == 20) != tc.wantRepaired || (n != 0 && n != 20) {
 				t.Fatalf("repaired %d rows, want repaired=%v", n, tc.wantRepaired)
 			}

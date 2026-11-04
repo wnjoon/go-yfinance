@@ -7,42 +7,26 @@ import (
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
-// TestApplyUnitSwitchCorrectionPreservesVolumeScalesDividend locks the
-// cross-verification finding (high): a currency-unit switch does not change
-// the share count, so Volume must stay untouched, while Dividends scales by
-// the same factor as prices (upstream passes correct_dividend=True but never
-// correct_volume=True for a unit switch).
-func TestApplyUnitSwitchCorrectionPreservesVolumeScalesDividend(t *testing.T) {
-	bars := []models.Bar{
-		{Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Dividends: 0.02, Volume: 12345},
+// TestScaleBarUnitSwitchVsSplit locks the correction flags: a currency-unit
+// switch does not change the share count, so Volume stays untouched while
+// Dividends scale with prices (upstream correct_dividend=True only); split
+// repair also rescales Volume, rounding half to even.
+func TestScaleBarUnitSwitchVsSplit(t *testing.T) {
+	unit := models.Bar{Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Dividends: 0.02, Volume: 12345}
+	scaleBar(&unit, 100, 0.01, priceShiftFix{unitSwitch: true, correctDividend: true})
+	if unit.Volume != 12345 || !closeTo(unit.Dividends, 2.0, 1e-9) || !closeTo(unit.Close, 100.0, 1e-9) {
+		t.Errorf("unit switch: %+v", unit)
 	}
 
-	applyUnitSwitchCorrection(bars, 100.0)
-
-	if bars[0].Volume != 12345 {
-		t.Errorf("expected Volume untouched by unit-switch correction, got %d", bars[0].Volume)
+	split := models.Bar{Open: 100, High: 105, Low: 95, Close: 102, AdjClose: 102, Dividends: 1.0, Volume: 1001}
+	scaleBar(&split, 0.5, 2, priceShiftFix{correctVolume: true, correctDividend: true})
+	if split.Volume != 2002 || !closeTo(split.Dividends, 0.5, 1e-9) {
+		t.Errorf("split: %+v", split)
 	}
-	if !closeTo(bars[0].Dividends, 2.0, 1e-9) {
-		t.Errorf("expected Dividends scaled to 2.0, got %v", bars[0].Dividends)
-	}
-	if !closeTo(bars[0].Close, 100.0, 1e-9) {
-		t.Errorf("expected Close scaled to 100.0, got %v", bars[0].Close)
-	}
-}
-
-// TestApplySplitCorrectionScalesDividend locks that split repair scales
-// Dividends by the same factor as prices, matching upstream's
-// correct_dividend=True on the shared split-repair call.
-func TestApplySplitCorrectionScalesDividend(t *testing.T) {
-	bars := []models.Bar{
-		{Open: 100, High: 105, Low: 95, Close: 102, AdjClose: 102, Dividends: 1.0, Volume: 1000},
-		{Open: 54, High: 58, Low: 50, Close: 55, AdjClose: 55, Volume: 2400, Splits: 2.0},
-	}
-
-	result := applySplitCorrection(bars, 1, 2.0)
-
-	if !closeTo(result[0].Dividends, 0.5, 1e-9) {
-		t.Errorf("expected pre-split Dividends halved to 0.5, got %v", result[0].Dividends)
+	half := models.Bar{Volume: 5}
+	scaleBar(&half, 2, 0.5, priceShiftFix{correctVolume: true})
+	if half.Volume != 2 {
+		t.Errorf("2.5 should round half to even, got %d", half.Volume)
 	}
 }
 
@@ -79,14 +63,14 @@ func TestSplitDetectionRejectsModeratePriceDrop(t *testing.T) {
 	}
 }
 
-// TestFixPricesSuddenChangeWeeklyNoiseMultiplier locks that the price-side
+// TestScaleLargestChangeIntervals locks that the price-side
 // noise tolerance widens for 1wk (x3) but NOT for 5d, matching upstream's
 // interday definition {1d, 1wk, 1mo, 3mo}.
-func TestFixPricesSuddenChangeWeeklyNoiseMultiplier(t *testing.T) {
-	weekly := intervalNoiseMultiplier("1wk")
-	fiveDay := intervalNoiseMultiplier("5d")
-	daily := intervalNoiseMultiplier("1d")
-	monthly := intervalNoiseMultiplier("1mo")
+func TestScaleLargestChangeIntervals(t *testing.T) {
+	weekly := scaleLargestChange(1, "1wk")
+	fiveDay := scaleLargestChange(1, "5d")
+	daily := scaleLargestChange(1, "1d")
+	monthly := scaleLargestChange(1, "1mo")
 
 	if weekly != 3 {
 		t.Errorf("expected 1wk multiplier 3, got %v", weekly)
@@ -113,7 +97,7 @@ func TestFixPricesSuddenChangeUsesPopulationStd(t *testing.T) {
 		bars[i] = volBar(i+1, p, 100000)
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 	for i, bar := range result {
 		if math.IsNaN(bar.Close) || math.IsInf(bar.Close, 0) {
 			t.Fatalf("bar %d: Close is NaN/Inf after repair", i)

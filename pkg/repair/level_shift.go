@@ -76,10 +76,15 @@ func (r *Repairer) repairLevelShifts(bars []models.Bar) ([]models.Bar, error) {
 		return bars, nil
 	}
 	prices := levelShiftPrices(bars, active)
-	up, down := detectUnknownPriceShifts(bars, active, levelShiftMinChange)
-	if up == nil {
+	activeBars := make([]models.Bar, len(active))
+	for k, i := range active {
+		activeBars[k] = bars[i]
+	}
+	det := detectPriceShifts(activeBars, r.opts.Interval, 0, false, levelShiftMinChange)
+	if det == nil {
 		return bars, nil
 	}
+	up, down := det.up[0], det.down[0]
 
 	now := r.now()
 	minDate := now.Add(-levelShiftHourlyDays * 24 * time.Hour)
@@ -127,9 +132,7 @@ func (r *Repairer) repairLevelShifts(bars []models.Bar) ([]models.Bar, error) {
 		// change with volume. Dividends are not touched: the dividend repair
 		// that runs next corrects the dividend adjustment.
 		nBefore := countRepairedBefore(result, dtShift)
-		repaired := repairPriceShift(result, len(result), mult, r.opts.Interval, priceShiftRepair{
-			prune: levelShiftStartMinPrune(result, loc),
-		})
+		repaired := r.fixPricesSuddenChange(result, mult, priceShiftFix{correctVolume: true})
 		if countRepairedBefore(repaired, dtShift) <= nBefore {
 			continue
 		}
@@ -180,59 +183,6 @@ func levelShiftPrices(bars []models.Bar, active []int) [][4]float64 {
 		prices[k] = [4]float64{b.Open, b.High, b.Low, b.Close}
 	}
 	return prices
-}
-
-// detectUnknownPriceShifts ports upstream _detect_price_shifts for interval
-// 1d with change=None: on dividend-adjusted OHLC, the day-to-day change of
-// each column is computed and its median compared with minChange. Masks are
-// indexed by active row, oldest first; row k compares with row k-1. It
-// returns nil masks when there is no candidate.
-func detectUnknownPriceShifts(bars []models.Bar, active []int, minChange float64) (up, down []bool) {
-	n := len(active)
-	adjusted := make([][4]float64, n)
-	for k, i := range active {
-		b := bars[i]
-		adj := b.AdjClose / b.Close
-		adjusted[k] = [4]float64{b.Open * adj, b.High * adj, b.Low * adj, b.Close * adj}
-	}
-	up, down = make([]bool, n), make([]bool, n)
-	found := false
-	for k := 1; k < n; k++ {
-		var chg [4]float64
-		for j := range chg {
-			chg[j] = adjusted[k][j] / adjusted[k-1][j]
-		}
-		x := medianNaN(chg[:])
-		if math.IsNaN(x) {
-			x = 1
-		}
-		up[k] = x > minChange
-		down[k] = x < 1/minChange
-		found = found || up[k] || down[k]
-	}
-	if !found {
-		return nil, nil
-	}
-	return up, down
-}
-
-// medianNaN is NumPy's np.median: NaN if any value is NaN.
-func medianNaN(values []float64) float64 {
-	for _, v := range values {
-		if math.IsNaN(v) {
-			return math.NaN()
-		}
-	}
-	s := append([]float64(nil), values...)
-	sort.Float64s(s)
-	n := len(s)
-	if n == 0 {
-		return math.NaN()
-	}
-	if n%2 == 0 {
-		return (s[n/2-1] + s[n/2]) / 2
-	}
-	return s[n/2]
 }
 
 // levelShiftCandidates filters the detected shifts, newest first: not within
@@ -288,7 +238,7 @@ func levelShiftPersists(prices [][4]float64, c levelShiftCandidate) bool {
 		}
 		return out
 	}
-	shift := medianNaN(closes(c.idx, c.i1)) / medianNaN(closes(c.i0, c.idx))
+	shift := npMedian(closes(c.idx, c.i1)) / npMedian(closes(c.i0, c.idx))
 	return !(1/levelShiftMinChange < shift && shift < levelShiftMinChange)
 }
 
@@ -334,7 +284,7 @@ func levelShiftMultiple(bars []models.Bar, active []int, prices [][4]float64, da
 		for j := range ratios {
 			ratios[j] = prices[k][j] / hourly[j]
 		}
-		ratio := medianNaN(ratios[:])
+		ratio := npMedian(ratios[:])
 		if k < c.idx {
 			before = append(before, ratio)
 		} else {
@@ -351,7 +301,7 @@ func levelShiftMultipleFromRatios(before, after []float64) (float64, bool) {
 	if len(before) < 2 || len(after) < 2 {
 		return 0, false
 	}
-	rBefore, rAfter := medianNaN(before), medianNaN(after)
+	rBefore, rAfter := npMedian(before), npMedian(after)
 	tol := math.Log(1 + levelShiftRatioTolerance)
 	for _, side := range []struct {
 		ratios []float64
@@ -392,28 +342,6 @@ func countRepairedBefore(bars []models.Bar, t time.Time) int {
 		}
 	}
 	return n
-}
-
-// levelShiftStartMinPrune ports upstream's start_min for a frame with
-// splits: ranges whose newest row is dated before one year before the oldest
-// split are pruned. It returns nil (no pruning) when there is no split.
-func levelShiftStartMinPrune(bars []models.Bar, loc *time.Location) func(models.Bar) bool {
-	var oldest time.Time
-	found := false
-	for _, b := range bars {
-		if b.Splits != 0 && !math.IsNaN(b.Splits) {
-			oldest = b.Date
-			found = true
-			break
-		}
-	}
-	if !found {
-		return nil
-	}
-	startMin := subtractYearClamped(oldest.In(loc))
-	return func(newest models.Bar) bool {
-		return localDate(newest.Date.In(loc)).Before(startMin)
-	}
 }
 
 // subtractYearClamped is dateutil's relativedelta(years=1) subtraction,

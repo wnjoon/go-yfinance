@@ -206,7 +206,7 @@ func TestFixPricesSuddenChange(t *testing.T) {
 		{Date: time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC), Open: 110, High: 115, Low: 108, Close: 112, AdjClose: 112, Volume: 1400},
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 
 	// First two bars should be repaired (multiplied by 100)
 	if !result[0].Repaired || !result[1].Repaired {
@@ -219,7 +219,11 @@ func TestFixPricesSuddenChange(t *testing.T) {
 	}
 }
 
-func TestFixPricesSuddenChangeStopsAfterFirstUnitSwitch(t *testing.T) {
+// TestRepairUnitSwitchLeavesOneRowSpike: a single 100x row whose volume
+// collapses is not a unit switch for upstream _fix_unit_switch (checked
+// against Python yfinance 1.8.0), so nothing changes. Go previously repaired
+// the rows before the first switch only.
+func TestRepairUnitSwitchLeavesOneRowSpike(t *testing.T) {
 	repairer := New(DefaultOptions())
 	bars := []models.Bar{
 		{Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
@@ -229,13 +233,12 @@ func TestFixPricesSuddenChangeStopsAfterFirstUnitSwitch(t *testing.T) {
 		{Date: time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC), Open: 1.0, High: 1.05, Low: 0.98, Close: 1.0, AdjClose: 1.0, Volume: 1000},
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 
-	if math.Abs(result[0].Close-100) > 0.001 || math.Abs(result[1].Close-100) > 0.001 {
-		t.Fatalf("Expected first switch correction to remain applied once, got closes %.2f %.2f", result[0].Close, result[1].Close)
-	}
-	if math.Abs(result[2].Close-100) > 0.001 {
-		t.Fatalf("Expected bars at and after switch to remain unchanged by unit-switch correction, got %.2f", result[2].Close)
+	for i := range bars {
+		if result[i] != bars[i] {
+			t.Fatalf("bar %d changed: %+v", i, result[i])
+		}
 	}
 }
 
