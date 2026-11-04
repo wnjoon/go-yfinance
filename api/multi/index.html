@@ -518,6 +518,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#func-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -536,6 +558,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-attroption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type AttrOption
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type AttrOption">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withworkers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithWorkers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -602,6 +652,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#func-tickers-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Tickers) Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#func-tickers-close" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -650,6 +711,17 @@
     <span class="md-ellipsis">
       
         func (*Tickers) History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-tickers-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Tickers) Info
       
     </span>
   </a>
@@ -2041,6 +2113,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#func-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2059,6 +2153,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-attroption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        type AttrOption
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type AttrOption">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#func-withworkers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func WithWorkers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2125,6 +2247,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#func-tickers-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Tickers) Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#func-tickers-close" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2173,6 +2306,17 @@
     <span class="md-ellipsis">
       
         func (*Tickers) History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#func-tickers-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        func (*Tickers) Info
       
     </span>
   </a>
@@ -2253,122 +2397,189 @@
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>// Download history for all
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>result, _ := tickers.History(nil)
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>// Fetch info and calendar for all, in parallel (up to 4 at once)
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>infos, _ := tickers.Info()
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>calendars, _ := tickers.Calendar(multi.WithWorkers(2))
 </code></pre></div>
 <h3 id="thread-safety">Thread Safety</h3>
 <p>All multi package functions are safe for concurrent use.</p>
 <h2 id="index">Index</h2>
 <ul>
+<li><a href="#constants">Constants</a></li>
+<li><a href="#variables">Variables</a></li>
 <li><a href="#Download">func Download(symbols []string, params *models.DownloadParams) (*models.MultiTickerResult, error)</a></li>
 <li><a href="#DownloadString">func DownloadString(tickerStr string, params *models.DownloadParams) (*models.MultiTickerResult, error)</a></li>
+<li><a href="#AttrOption">type AttrOption</a></li>
+<li><a href="#WithWorkers">func WithWorkers(n int) AttrOption</a></li>
 <li><a href="#Option">type Option</a></li>
 <li><a href="#WithClient">func WithClient(c *client.Client) Option</a></li>
 <li><a href="#Tickers">type Tickers</a></li>
 <li><a href="#NewTickers">func NewTickers(symbols []string, opts ...Option) (*Tickers, error)</a></li>
 <li><a href="#NewTickersFromString">func NewTickersFromString(tickerStr string, opts ...Option) (*Tickers, error)</a></li>
+<li><a href="#Tickers.Calendar">func (t *Tickers) Calendar(opts ...AttrOption) (*models.TickersCalendarResult, error)</a></li>
 <li><a href="#Tickers.Close">func (t *Tickers) Close()</a></li>
 <li><a href="#Tickers.Count">func (t *Tickers) Count() int</a></li>
 <li><a href="#Tickers.Download">func (t *Tickers) Download() (*models.MultiTickerResult, error)</a></li>
 <li><a href="#Tickers.Get">func (t *Tickers) Get(symbol string) *ticker.Ticker</a></li>
 <li><a href="#Tickers.History">func (t *Tickers) History(params *models.DownloadParams) (*models.MultiTickerResult, error)</a></li>
+<li><a href="#Tickers.Info">func (t *Tickers) Info(opts ...AttrOption) (*models.TickersInfoResult, error)</a></li>
 <li><a href="#Tickers.Symbols">func (t *Tickers) Symbols() []string</a></li>
 </ul>
+<h2 id="constants">Constants</h2>
+<p><a name="DefaultAttrWorkers"></a>DefaultAttrWorkers is the default maximum number of symbols fetched in parallel by Tickers.Info and Tickers.Calendar.</p>
+<p>Attributes such as Info cost several requests per ticker, so the default is lower than a typical history download to stay under Yahoo's rate limit (Python yfinance _ATTR_MAX_THREADS).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">DefaultAttrWorkers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+</code></pre></div>
+<h2 id="variables">Variables</h2>
+<p><a name="ErrSkippedRateLimited"></a>ErrSkippedRateLimited is reported for every symbol that Tickers.Info or Tickers.Calendar did not request because Yahoo rate-limited an earlier request in the same call. Use errors.Is to detect it.</p>
+<p>Values that were fetched successfully stay cached on each Ticker, so calling the method again later only requests the skipped and failed symbols.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">var</span><span class="w"> </span><span class="nx">ErrSkippedRateLimited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">"skipped because Yahoo rate-limited an earlier request"</span><span class="p">)</span>
+</code></pre></div>
 <p><a name="Download"></a></p>
 <h2 id="func-download">func Download</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Download</span><span class="p">(</span><span class="nx">symbols</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Download</span><span class="p">(</span><span class="nx">symbols</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Download is a convenience function to download data for multiple tickers.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>result, err := multi.Download([]string{"AAPL", "MSFT"}, nil)
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>if err != nil {
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    log.Fatal(err)
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>}
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>for symbol, bars := range result.Data {
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    fmt.Printf("%s: %d bars\n", symbol, len(bars))
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>result, err := multi.Download([]string{"AAPL", "MSFT"}, nil)
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>if err != nil {
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    log.Fatal(err)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>}
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>for symbol, bars := range result.Data {
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    fmt.Printf("%s: %d bars\n", symbol, len(bars))
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>}
 </code></pre></div>
 <p><a name="DownloadString"></a></p>
 <h2 id="func-downloadstring">func DownloadString</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DownloadString</span><span class="p">(</span><span class="nx">tickerStr</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">DownloadString</span><span class="p">(</span><span class="nx">tickerStr</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>DownloadString is like Download but accepts a space/comma separated string.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>result, err := multi.DownloadString("AAPL MSFT GOOGL", nil)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>result, err := multi.DownloadString("AAPL MSFT GOOGL", nil)
 </code></pre></div>
+<p><a name="AttrOption"></a></p>
+<h2 id="type-attroption">type AttrOption</h2>
+<p>AttrOption configures Tickers.Info and Tickers.Calendar.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">AttrOption</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">attrConfig</span><span class="p">)</span>
+</code></pre></div>
+<p><a name="WithWorkers"></a></p>
+<h3 id="func-withworkers">func WithWorkers</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WithWorkers</span><span class="p">(</span><span class="nx">n</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="nx">AttrOption</span>
+</code></pre></div>
+<p>WithWorkers sets how many symbols are fetched in parallel.</p>
+<p>Values \&lt;= 0 select the default, min(DefaultAttrWorkers, number of symbols). Use 1 to fetch sequentially in Tickers order. Fewer workers are gentler on Yahoo's rate limit.</p>
 <p><a name="Option"></a></p>
 <h2 id="type-option">type Option</h2>
 <p>Option is a function that configures Tickers.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Option</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Option</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span>
 </code></pre></div>
 <p><a name="WithClient"></a></p>
 <h3 id="func-withclient">func WithClient</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WithClient</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">client</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span><span class="w"> </span><span class="nx">Option</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">WithClient</span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">client</span><span class="p">.</span><span class="nx">Client</span><span class="p">)</span><span class="w"> </span><span class="nx">Option</span>
 </code></pre></div>
 <p>WithClient sets a custom HTTP client.</p>
 <p><a name="Tickers"></a></p>
 <h2 id="type-tickers">type Tickers</h2>
 <p>Tickers represents a collection of multiple ticker symbols.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Tickers</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="c1">// contains filtered or unexported fields</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Tickers</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="c1">// contains filtered or unexported fields</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="NewTickers"></a></p>
 <h3 id="func-newtickers">func NewTickers</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">NewTickers</span><span class="p">(</span><span class="nx">symbols</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">NewTickers</span><span class="p">(</span><span class="nx">symbols</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>NewTickers creates a new Tickers instance for multiple symbols.</p>
 <p>Symbols can be provided as a slice of strings.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>tickers, err := multi.NewTickers([]string{"AAPL", "MSFT", "GOOGL"})
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>if err != nil {
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    log.Fatal(err)
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>}
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>defer tickers.Close()
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>tickers, err := multi.NewTickers([]string{"AAPL", "MSFT", "GOOGL"})
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>if err != nil {
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    log.Fatal(err)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>}
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>defer tickers.Close()
 </code></pre></div>
 <p><a name="NewTickersFromString"></a></p>
 <h3 id="func-newtickersfromstring">func NewTickersFromString</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">NewTickersFromString</span><span class="p">(</span><span class="nx">tickerStr</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">NewTickersFromString</span><span class="p">(</span><span class="nx">tickerStr</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">Option</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Tickers</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>NewTickersFromString creates Tickers from a space or comma separated string.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>tickers, err := multi.NewTickersFromString("AAPL MSFT GOOGL")
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>// or
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>tickers, err := multi.NewTickersFromString("AAPL,MSFT,GOOGL")
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>tickers, err := multi.NewTickersFromString("AAPL MSFT GOOGL")
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>// or
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>tickers, err := multi.NewTickersFromString("AAPL,MSFT,GOOGL")
+</code></pre></div>
+<p><a name="Tickers.Calendar"></a></p>
+<h3 id="func-tickers-calendar">func (*Tickers) Calendar</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Calendar</span><span class="p">(</span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">AttrOption</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">TickersCalendarResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Calendar fetches upcoming calendar events for every symbol in parallel (Python yfinance Tickers.calendar / get_calendar).</p>
+<p>Concurrency, caching, rate-limit and error semantics are the same as Info. Where Python returns a NaN row for a failed ticker, Go reports the symbol in the result's Errors map instead.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>result, _ := tickers.Calendar()
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>for _, symbol := range result.Symbols {
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    cal := result.Data[symbol]
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>    if cal.HasEarnings() {
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>        fmt.Println(symbol, cal.EarningsDate[0].Format("2006-01-02"))
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>    }
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>}
 </code></pre></div>
 <p><a name="Tickers.Close"></a></p>
 <h3 id="func-tickers-close">func (*Tickers) Close</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Close</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Close</span><span class="p">()</span>
 </code></pre></div>
 <p>Close releases all resources used by Tickers.</p>
 <p><a name="Tickers.Count"></a></p>
 <h3 id="func-tickers-count">func (*Tickers) Count</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Count</span><span class="p">()</span><span class="w"> </span><span class="kt">int</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Count</span><span class="p">()</span><span class="w"> </span><span class="kt">int</span>
 </code></pre></div>
 <p>Count returns the number of tickers.</p>
 <p><a name="Tickers.Download"></a></p>
 <h3 id="func-tickers-download">func (*Tickers) Download</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Download</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Download</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>Download downloads historical data for all tickers with default parameters.</p>
 <p><a name="Tickers.Get"></a></p>
 <h3 id="func-tickers-get">func (*Tickers) Get</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Get</span><span class="p">(</span><span class="nx">symbol</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">ticker</span><span class="p">.</span><span class="nx">Ticker</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Get</span><span class="p">(</span><span class="nx">symbol</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">ticker</span><span class="p">.</span><span class="nx">Ticker</span>
 </code></pre></div>
 <p>Get returns the Ticker instance for a specific symbol.</p>
 <p>Returns nil if the symbol is not found.</p>
 <p><a name="Tickers.History"></a></p>
 <h3 id="func-tickers-history">func (*Tickers) History</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">History</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">History</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">DownloadParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">MultiTickerResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
 <p>History downloads historical data for all tickers.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>result, err := tickers.History(&amp;models.DownloadParams{
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    Period:   "1mo",
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    Interval: "1d",
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>})
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>result, err := tickers.History(&amp;models.DownloadParams{
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>    Period:   "1mo",
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>    Interval: "1d",
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>})
+</code></pre></div>
+<p><a name="Tickers.Info"></a></p>
+<h3 id="func-tickers-info">func (*Tickers) Info</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Info</span><span class="p">(</span><span class="nx">opts</span><span class="w"> </span><span class="p">...</span><span class="nx">AttrOption</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">TickersInfoResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+</code></pre></div>
+<p>Info fetches company information for every symbol in parallel (Python yfinance Tickers.info / get_info).</p>
+<p>Each symbol is fetched through the Tickers' own Ticker, so successful values stay cached and a later call only requests symbols that are still missing. At most min(DefaultAttrWorkers, Count()) symbols are fetched at once unless WithWorkers is given. Once Yahoo returns a rate-limit error, symbols that have not started yet are not requested and report ErrSkippedRateLimited; requests already in flight complete and their results are kept.</p>
+<p>Per-symbol failures are reported in the result's Errors map; like History, the returned error is nil even when every symbol fails.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>result, err := tickers.Info(multi.WithWorkers(2))
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>if err != nil {
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>    log.Fatal(err)
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>}
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>for _, symbol := range result.Symbols {
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>    fmt.Println(symbol, result.Data[symbol].Currency)
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>}
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>for symbol, err := range result.Errors {
+<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>    if errors.Is(err, multi.ErrSkippedRateLimited) {
+<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>        fmt.Println(symbol, "skipped; call Info again later")
+<a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>    }
+<a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>}
 </code></pre></div>
 <p><a name="Tickers.Symbols"></a></p>
 <h3 id="func-tickers-symbols">func (*Tickers) Symbols</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Symbols</span><span class="p">()</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Tickers</span><span class="p">)</span><span class="w"> </span><span class="nx">Symbols</span><span class="p">()</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span>
 </code></pre></div>
 <p>Symbols returns the list of ticker symbols.</p>
 
