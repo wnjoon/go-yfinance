@@ -34,6 +34,10 @@ names that do not match the actual upstream parity target.
   cache-immutability, and cookie-preservation fixes before the Python
   yfinance `1.7.0` parity branch begins; it does not claim a Python yfinance
   `1.6.1` release or parity target.
+- Python yfinance `1.8.0` is a normal release; the Go tag `v1.8.0` matches it
+  directly. Its work was split into one branch and PR per behavior (#18–#27),
+  each rebased onto `main` and verified before merge; the release PR only adds
+  the audit and release documentation. Itemized in `v1.8.0-progress.md`.
 
 ## 2. Upstream Parity Audit
 
