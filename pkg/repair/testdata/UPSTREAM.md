@@ -35,3 +35,9 @@ not be repaired. They are exercised by `TestRepairLevelShiftSOXSGolden`,
 `TestRepairLevelShiftKALAGenuineCrash` and related tests (with the clock set
 one week after the last row, instead of upstream's moving of the fixtures to
 recent dates), and by the `pkg/ticker` History wiring tests.
+
+`oracle/fixtures.json` embeds the price data of every upstream 1.8.0
+`tests/data` split, 100x-error and level-shift fixture (4063-T, ALPHA-PA,
+AV-L, CNE-L, DEX-AX, LA-V, MOB-ST, NFE, NRDY, SPM-MI, AET-L, SSW-JO, ASAI-L,
+SOXS, KALA), with the output of the upstream repair functions on it, also
+subject to the Apache-2.0 license. See `oracle/README.md`.
