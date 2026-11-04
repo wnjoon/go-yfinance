@@ -228,6 +228,70 @@ func deref(p *float64) any {
 	return *p
 }
 
+// TestHistoryPipelineMatchesUpstream runs History over the Repair x Actions
+// x AutoAdjust x KeepNA matrix and compares it with upstream history().
+//
+// Go-specific exception: upstream tries to reconstruct rows with a null
+// price from 1h data (unavailable here: too old) and otherwise keeps NaN,
+// whereas Go's FixZeroes interpolates such bars from their neighbours. The
+// fully null row (with KeepNA) and the null-Open row are therefore checked
+// separately with Repair.
+func TestHistoryPipelineMatchesUpstream(t *testing.T) {
+	var chart models.ChartResponse
+	if err := json.Unmarshal(readPipelineFile(t, "chart.json"), &chart); err != nil {
+		t.Fatal(err)
+	}
+	ts := chart.Chart.Result[0].Timestamp
+	for _, c := range loadPipelineCases(t) {
+		c := c
+		t.Run(c.name(), func(t *testing.T) {
+			got := pipelineHistory(t, c)
+			want := c.Want
+			if c.Repair {
+				for _, row := range []int{pipelineOpenNullRow, pipelineNullRow} {
+					i := indexOfTime(got, ts[row])
+					if i < 0 {
+						continue // dropped without KeepNA, as upstream
+					}
+					b := got[i]
+					if !b.Repaired || !(b.Low > 0 && b.Low <= math.Min(b.Open, b.Close) && b.High >= math.Max(b.Open, b.Close)) {
+						t.Errorf("row %d not interpolated by FixZeroes: %+v", row, b)
+					}
+					got = append(append([]models.Bar(nil), got[:i]...), got[i+1:]...)
+					want = dropPipelineRow(want, i)
+				}
+			}
+			if d := diffPipeline(got, want); d != "" {
+				t.Errorf("%s", d)
+			}
+		})
+	}
+}
+
+// dropPipelineRow removes row i from an upstream frame.
+func dropPipelineRow(w pipelineWant, i int) pipelineWant {
+	cut := func(s []*float64) []*float64 {
+		if s == nil {
+			return nil
+		}
+		return append(append([]*float64(nil), s[:i]...), s[i+1:]...)
+	}
+	out := w
+	out.T = append(append([]int64(nil), w.T[:i]...), w.T[i+1:]...)
+	out.V = append(append([]int64(nil), w.V[:i]...), w.V[i+1:]...)
+	out.O, out.H, out.L, out.C, out.A, out.D, out.S = cut(w.O), cut(w.H), cut(w.L), cut(w.C), cut(w.A), cut(w.D), cut(w.S)
+	out.Rep = nil
+	for _, r := range w.Rep {
+		switch {
+		case r < i:
+			out.Rep = append(out.Rep, r)
+		case r > i:
+			out.Rep = append(out.Rep, r-1)
+		}
+	}
+	return out
+}
+
 // TestHistoryWithoutRepairUnchanged pins History output without Repair to
 // what main produced before the repair pipeline was reordered
 // (no_repair_main.json), byte for byte.
@@ -340,5 +404,46 @@ func TestHistoryRepairWithoutActionsUsesEvents(t *testing.T) {
 	}
 	if i := indexOfTime(ref, ts[45]); ref[i].Splits != 2 {
 		t.Errorf("split event missing with Actions: %+v", ref[i])
+	}
+}
+
+// TestHistoryRepairBeforeAutoAdjust pins issue #4 with a dividend missing
+// from Adj Close: repair adds it to Adj Close, and AutoAdjust must use the
+// repaired Adj Close. Adjusting first made repair see Close == Adj Close
+// and left the auto-adjusted prices without the dividend adjustment.
+func TestHistoryRepairBeforeAutoAdjust(t *testing.T) {
+	const chart = "chart_missing_div_adj.json"
+	cases := loadPipelineFile(t, "expected_missing_div_adj.json")
+	if len(cases) != 4 {
+		t.Fatalf("%d cases", len(cases))
+	}
+	// FixZeroes off: Go interpolates the null-Open row, upstream keeps NaN.
+	noZeroes := models.DefaultRepairOptions()
+	noZeroes.FixZeroes = false
+	for _, c := range cases {
+		p := c.params()
+		if p.Repair {
+			p.RepairOptions = &noZeroes
+		}
+		got := pipelineHistoryFrom(t, chart, p)
+		if d := diffPipeline(got, c.Want); d != "" {
+			t.Errorf("%s: %s", c.name(), d)
+		}
+	}
+
+	// AutoAdjust is exactly the repaired bars scaled by AdjClose / Close.
+	params := models.HistoryParams{Period: "1y", Interval: "1d", Repair: true, Actions: true}
+	raw := pipelineHistoryFrom(t, chart, params)
+	params.AutoAdjust = true
+	adj := pipelineHistoryFrom(t, chart, params)
+	for i := range raw {
+		want := raw[i]
+		applyAutoAdjust(&want, true)
+		if adj[i] != want {
+			t.Fatalf("row %d: AutoAdjust %+v, want %+v", i, adj[i], want)
+		}
+	}
+	if raw[0].AdjClose >= raw[0].Close*0.99 {
+		t.Errorf("dividend adjustment not repaired: %+v", raw[0])
 	}
 }

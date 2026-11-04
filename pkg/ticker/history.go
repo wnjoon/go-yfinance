@@ -30,11 +30,12 @@ import (
 //
 // Prices Yahoo reports as null are returned as 0.
 //
-// As in Python yfinance, Repair runs with the dividend, split and
-// capital-gain events available, even when Actions is false (the event
-// fields are cleared afterwards). Null prices are NaN while repairing, as
-// upstream sees them, and become 0 again afterwards unless a repair filled
-// them.
+// As in Python yfinance, Repair runs on the raw (unadjusted) prices with the
+// dividend, split and capital-gain events available, even when Actions is
+// false (the event fields are cleared afterwards). Null prices are NaN while
+// repairing, as upstream sees them, and become 0 again afterwards unless a
+// repair filled them. AutoAdjust is applied last, from the repaired Close and
+// Adj Close.
 //
 // With Repair on daily data, the unexplained-level-shift repair (Python
 // yfinance 1.8.0) may make one extra request for the last 729 days of 1h
@@ -59,9 +60,8 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 	// Parse OHLCV data. Repair needs the events whether or not the caller
 	// asked for them, and sees null prices as NaN.
 	bars, err := t.parseChartData(result, chartParseOptions{
-		autoAdjust: params.AutoAdjust,
-		actions:    params.Actions || params.Repair,
-		nullAsNaN:  params.Repair,
+		actions:   params.Actions || params.Repair,
+		nullAsNaN: params.Repair,
 	})
 	if err != nil {
 		return nil, err
@@ -84,6 +84,14 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		restoreMissingPrices(bars)
 		if !params.Actions {
 			clearActions(bars)
+		}
+	}
+
+	// Like upstream, adjust after repair so the repaired Close and Adj
+	// Close are used.
+	if params.AutoAdjust {
+		for i := range bars {
+			applyAutoAdjust(&bars[i], true)
 		}
 	}
 
@@ -319,8 +327,6 @@ func (t *Ticker) fetchTradingPeriodsMetadata() (*models.ChartMeta, error) {
 
 // chartParseOptions controls parseChartData.
 type chartParseOptions struct {
-	// autoAdjust scales Open, High, Low and Close by Adj Close / Close.
-	autoAdjust bool
 	// actions fills the dividend, split and capital-gain fields.
 	actions bool
 	// nullAsNaN reports null Open/High/Low/Close (and the Adj Close of a
@@ -353,7 +359,6 @@ func (t *Ticker) parseChartData(result *models.ChartResult, opts chartParseOptio
 			markNullPrices(&bar, i, quote)
 		}
 		applyChartActions(&bar, ts, actions)
-		applyAutoAdjust(&bar, opts.autoAdjust)
 		bars = append(bars, bar)
 	}
 
