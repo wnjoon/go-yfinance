@@ -327,7 +327,9 @@ func fixDivTooLarge(bars []models.Bar, divIdx int, currencyDivide float64) []mod
 	// Recalculate adjustment
 	div := result[divIdx].Dividends
 	prevClose := result[divIdx-1].Close
-	if prevClose > 0 {
+	// An unset (0) or missing (NaN) Adj Close gives no present adjustment
+	// to correct.
+	if validPrice(prevClose) && validPrice(result[divIdx-1].AdjClose) {
 		trueAdj := 1.0 - div/prevClose
 		currentAdj := result[divIdx-1].AdjClose / prevClose
 
@@ -350,9 +352,9 @@ func removePhantomDiv(bars []models.Bar, divIdx int) []models.Bar {
 	copy(result, bars)
 
 	// Remove the adjustment for this dividend
-	prevClose := result[divIdx-1].Close
-	if prevClose > 0 {
-		presentAdj := (result[divIdx-1].AdjClose / prevClose) / (result[divIdx].AdjClose / result[divIdx].Close)
+	prev, cur := result[divIdx-1], result[divIdx]
+	if validPrice(prev.Close) && validPrice(prev.AdjClose) && validPrice(cur.Close) && validPrice(cur.AdjClose) {
+		presentAdj := (prev.AdjClose / prev.Close) / (cur.AdjClose / cur.Close)
 
 		// Reverse the adjustment
 		for i := 0; i < divIdx; i++ {

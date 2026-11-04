@@ -120,9 +120,12 @@ func nonZeroMatrixRows(data [][]float64) []int {
 	return indices
 }
 
+// rowHasZero reports whether a row has a zero or missing (NaN) price. Such
+// rows are set aside, as upstream sets aside zero rows; a missing price is
+// excluded too, so it cannot thin out its neighbours' median window.
 func rowHasZero(row []float64) bool {
 	for _, value := range row {
-		if value == 0 {
+		if value == 0 || math.IsNaN(value) {
 			return true
 		}
 	}

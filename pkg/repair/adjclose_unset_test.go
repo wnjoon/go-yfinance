@@ -134,3 +134,84 @@ func TestRandomUnitMixupsUnsetAdjClose(t *testing.T) {
 		t.Errorf("DetectUnitMixups with AdjClose unset = %v, want [3]", idx)
 	}
 }
+
+// TestDividendFixesKeepMissingValues checks the dividend and capital-gains
+// fixes never turn an unset (0) or missing (NaN) price into NaN/Inf
+// adjustments of other rows.
+func TestDividendFixesKeepMissingValues(t *testing.T) {
+	mk := func() []models.Bar {
+		bars := make([]models.Bar, 4)
+		for i := range bars {
+			bars[i] = models.Bar{Date: time.Date(2024, 1, 1+i, 0, 0, 0, 0, time.UTC), Open: 100, High: 101, Low: 99, Close: 100}
+		}
+		bars[2].Dividends = 500
+		bars[2].CapitalGains = 1
+		return bars
+	}
+	finite := func(t *testing.T, label string, bars []models.Bar) {
+		t.Helper()
+		for i, b := range bars {
+			if math.IsNaN(b.AdjClose) || math.IsInf(b.AdjClose, 0) {
+				t.Errorf("%s: row %d AdjClose = %v", label, i, b.AdjClose)
+			}
+		}
+	}
+	// Unset AdjClose.
+	finite(t, "fixDivTooLarge", fixDivTooLarge(mk(), 2, 100))
+	finite(t, "fixDivTooSmall", fixDivTooSmall(mk(), 2, 100))
+	finite(t, "removePhantomDiv", removePhantomDiv(mk(), 2))
+	finite(t, "applyCapitalGainsRepair", applyCapitalGainsRepair(mk(), []int{2}))
+
+	// Null (NaN) Close on the event row or the row before it, Adj Close set.
+	for _, row := range []int{1, 2} {
+		bars := mk()
+		for i := range bars {
+			bars[i].AdjClose = 99
+		}
+		bars[row].Open, bars[row].High, bars[row].Low, bars[row].Close = math.NaN(), math.NaN(), math.NaN(), math.NaN()
+		bars[row].AdjClose = math.NaN()
+		check := func(label string, got []models.Bar) {
+			t.Helper()
+			for i, b := range got {
+				if i != row && (math.IsNaN(b.AdjClose) || math.IsInf(b.AdjClose, 0)) {
+					t.Errorf("%s (NaN row %d): row %d AdjClose = %v", label, row, i, b.AdjClose)
+				}
+			}
+		}
+		check("fixDivTooLarge", fixDivTooLarge(bars, 2, 100))
+		check("removePhantomDiv", removePhantomDiv(bars, 2))
+		check("applyCapitalGainsRepair", applyCapitalGainsRepair(bars, []int{2}))
+	}
+}
+
+// TestRandomUnitMixupsMissingRow checks a row with missing (NaN) prices is
+// set aside like a row with zero prices: it is neither used as a neighbour
+// nor repaired, and the 100x row is still found.
+func TestRandomUnitMixupsMissingRow(t *testing.T) {
+	mk := func(missing float64) []models.Bar {
+		closes := []float64{10, 11, 10.5, 1050, 10.8, 11.2, 10.9}
+		bars := make([]models.Bar, len(closes))
+		for i, c := range closes {
+			bars[i] = models.Bar{Open: c * 0.99, High: c * 1.02, Low: c * 0.98, Close: c, AdjClose: c, Volume: 1000}
+		}
+		bars[4] = models.Bar{Open: missing, High: missing, Low: missing, Close: missing, AdjClose: missing}
+		return bars
+	}
+	r := New(DefaultOptions())
+	zero := r.repairRandomUnitMixups(mk(0))
+	nan := r.repairRandomUnitMixups(mk(math.NaN()))
+	if !zero[3].Repaired {
+		t.Fatalf("baseline not repaired: %+v", zero[3])
+	}
+	for i := range zero {
+		if i == 4 {
+			if nan[4].Repaired || !math.IsNaN(nan[4].Close) {
+				t.Errorf("missing row changed: %+v", nan[4])
+			}
+			continue
+		}
+		if nan[i] != zero[i] {
+			t.Errorf("row %d: NaN gap %+v, zero gap %+v", i, nan[i], zero[i])
+		}
+	}
+}
