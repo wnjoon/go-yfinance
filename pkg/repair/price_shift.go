@@ -2,9 +2,6 @@ package repair
 
 import (
 	"math"
-
-	"github.com/wnjoon/go-yfinance/pkg/models"
-	"github.com/wnjoon/go-yfinance/pkg/stats"
 )
 
 // This file holds the range-based price-shift helpers shared by split repair
@@ -112,11 +109,17 @@ func estimateVolumeShiftThreshold(vol []float64, up, down []bool, change float64
 		}
 	}
 
-	q1, q3, iqr := stats.IQR(ratios)
-	normal := boundedChanges(ratios, q1-1.5*iqr, q3+1.5*iqr)
-	sdPct := stats.Std(normal, 0) / stats.Mean(normal)
-	largestVolChgPct := 5 * sdPct * intervalNoiseMultiplier(interval)
-	changeMax := math.Max(change, 1/change)
+	q1, q3 := npPercentile(ratios, 25), npPercentile(ratios, 75)
+	iqr := q3 - q1
+	normal := make([]float64, 0, n)
+	for _, v := range ratios {
+		if v >= q1-1.5*iqr && v <= q3+1.5*iqr {
+			normal = append(normal, v)
+		}
+	}
+	sdPct := npStd(normal, 0) / npMean(normal)
+	largestVolChgPct := scaleLargestChange(5*sdPct, interval)
+	changeMax := pyMax(change, 1/change)
 	return 1 + (changeMax-1+largestVolChgPct)*0.2, true
 }
 
@@ -202,7 +205,7 @@ func rangeVolumeSamples(vol []float64, ranges []priceShiftRange, i int) (during,
 // rangeVolumeConfirms is the per-range decision of
 // reconcilePriceShiftsWithVolume, given non-empty denoised samples.
 func rangeVolumeConfirms(during, outside []float64, up, down bool, threshold float64, unitSwitch bool) bool {
-	duringMean, outsideMean := stats.Mean(during), stats.Mean(outside)
+	duringMean, outsideMean := npMean(during), npMean(outside)
 	change := duringMean / outsideMean
 	inverseMove := (change < 1/threshold && up) || (change > threshold && down)
 	if unitSwitch {
@@ -227,37 +230,7 @@ func volumeStdDevMultiple(during, outside []float64, duringMean, outsideMean flo
 		return 1
 	}
 	diff := math.Abs(duringMean - outsideMean)
-	multiple := diff / stats.Std(during, 0)
-	if alt := diff / stats.Std(outside, 0); alt > multiple {
-		multiple = alt
-	}
-	return multiple
-}
-
-// applyPriceShiftRanges rescales the bars behind each newest-first range.
-// rows maps a newest-first position to its index in bars. Prices, adjusted
-// close and (when correctDividend) dividends are multiplied by the range
-// multiplier; when correctVolume, volume is multiplied by the range's volume
-// multiplier with NumPy's half-to-even rounding.
-func applyPriceShiftRanges(bars []models.Bar, rows []int, ranges []priceShiftRange, correctVolume, correctDividend bool) {
-	for _, r := range ranges {
-		m, mRcp := r.multiplier, r.volumeMultiplier
-		for k := r.start; k < r.end; k++ {
-			b := &bars[rows[k]]
-			b.Open *= m
-			b.High *= m
-			b.Low *= m
-			b.Close *= m
-			b.AdjClose *= m
-			if correctDividend {
-				b.Dividends *= m
-			}
-			if correctVolume {
-				b.Volume = int64(math.RoundToEven(float64(b.Volume) * mRcp))
-			}
-			b.Repaired = true
-		}
-	}
+	return pyMax(diff/npStd(during, 0), diff/npStd(outside, 0))
 }
 
 // volumeSegment copies vol[lo:hi], returning an empty slice when the bounds

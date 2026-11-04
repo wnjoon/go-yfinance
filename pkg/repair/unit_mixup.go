@@ -35,14 +35,12 @@ func (r *Repairer) repairUnitMixups(bars []models.Bar) []models.Bar {
 	return result
 }
 
-// repairUnitSwitch fixes a sudden permanent switch between currency units.
-// For example, when Yahoo suddenly starts returning prices in cents instead of dollars.
+// repairUnitSwitch fixes sudden switches between currency units, e.g. when
+// Yahoo starts returning prices in cents instead of dollars. It ports
+// upstream _fix_unit_switch: fixPricesSuddenChange with change = 100 (1000
+// for KWF), rescaling prices and dividends but not volume.
 func (r *Repairer) repairUnitSwitch(bars []models.Bar) []models.Bar {
-	if len(bars) < 3 {
-		return bars
-	}
-
-	return r.fixPricesSuddenChange(bars, currencySubUnitDivisor(r.opts.Currency))
+	return r.fixPricesSuddenChange(bars, currencySubUnitDivisor(r.opts.Currency), priceShiftFix{unitSwitch: true, correctDividend: true})
 }
 
 // repairRandomUnitMixups fixes sporadic 100x errors scattered through the data.
@@ -237,175 +235,6 @@ func rowHasCorrection(corrections []float64) bool {
 		}
 	}
 	return false
-}
-
-// fixPricesSuddenChange detects and fixes a sudden permanent change in price level.
-// This handles the case where Yahoo switches currency units at some date.
-func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []models.Bar {
-	if len(bars) < 3 {
-		return bars
-	}
-
-	// Skip if change ratio is too close to 1.0
-	if change > 0.8 && change < 1.25 {
-		return bars
-	}
-
-	// Volume is required to tell a unit switch from a real corporate action
-	// (upstream #2908: "No Volume data, cannot repair").
-	vol := barVolumes(bars)
-	if allVolumesZero(vol) {
-		return bars
-	}
-
-	result := make([]models.Bar, len(bars))
-	copy(result, bars)
-
-	changeRcp := 1.0 / change
-
-	// Calculate daily percentage changes using median of OHLC
-	pctChanges := dailyOHLCChanges(bars)
-
-	// Use IQR to estimate normal volatility
-	q1, q3, iqr := stats.IQR(pctChanges)
-	if math.IsNaN(iqr) || iqr == 0 {
-		return bars
-	}
-
-	// Filter outliers
-	lowerBound := q1 - 1.5*iqr
-	upperBound := q3 + 1.5*iqr
-
-	normalChanges := boundedChanges(pctChanges, lowerBound, upperBound)
-
-	if len(normalChanges) == 0 {
-		return bars
-	}
-
-	// Calculate mean and std of normal changes (population std, matching
-	// upstream np.std's ddof=0 default).
-	avg := stats.Mean(normalChanges)
-	sd := stats.Std(normalChanges, 0)
-	if math.IsNaN(sd) {
-		sd = 0.01
-	}
-
-	// SD as percentage of mean
-	sdPct := sd / avg
-
-	// Only proceed if change far exceeds normal volatility. Coarser
-	// intervals aggregate more price noise (upstream: x3 for interday
-	// above 1d, x2 more for months — 5d is NOT interday upstream).
-	largestChangePct := 5 * sdPct
-	largestChangePct *= intervalNoiseMultiplier(r.opts.Interval)
-	changeMax := math.Max(change, changeRcp)
-	if changeMax < 1.0+largestChangePct {
-		return bars
-	}
-
-	// Detect change points (upstream 8b85f90:
-	// threshold = 1 + (split_max - 1 + largest_change_pct) * 0.6)
-	threshold := 1 + (changeMax-1+largestChangePct)*0.6
-
-	// Upstream screens candidates with volume in reverse date order: newest
-	// first, position k comparing the older row with the newer one. A price
-	// rise in time (dayChange >= threshold) is therefore an upstream "down"
-	// signal (older side too low), and a fall an "up" signal.
-	n := len(bars)
-	volRev := make([]float64, n)
-	upRev, downRev := make([]bool, n), make([]bool, n)
-	for i := 0; i < n; i++ {
-		volRev[n-1-i] = vol[i]
-	}
-	for i := 1; i < n; i++ {
-		prev := ohlcMedian(bars[i-1])
-		if prev == 0 {
-			continue
-		}
-		dayChange := ohlcMedian(bars[i]) / prev
-		downRev[n-i] = dayChange >= threshold
-		upRev[n-i] = dayChange <= 1.0/threshold
-	}
-	volThreshold, volThresholdOK := estimateVolumeShiftThreshold(volRev, upRev, downRev, change, r.opts.Interval)
-
-	// Find where sudden change occurs
-	for i := 1; i < len(bars); i++ {
-		prev := ohlcMedian(result[i-1])
-		curr := ohlcMedian(result[i])
-		if prev == 0 {
-			continue
-		}
-
-		dayChange := curr / prev
-
-		// Check if this looks like a unit switch
-		if dayChange >= threshold || dayChange <= 1.0/threshold {
-			// Go repairs a single switch: everything older than i, which is
-			// the newest-first range [n-i, n). Upstream's unit-switch
-			// reconcile drops it when volume moves inversely to price.
-			candidate := []priceShiftRange{{start: n - i, end: n}}
-			if volThresholdOK && len(reconcilePriceShiftsWithVolume(volRev, candidate, upRev, downRev, volThreshold, true)) == 0 {
-				// Volume says this is a real corporate action, not a unit
-				// switch — keep scanning for a genuine switch point.
-				continue
-			}
-			correction := switchCorrection(dayChange, threshold, change, changeRcp)
-			applyUnitSwitchCorrection(result[:i], correction)
-			break
-		}
-	}
-
-	return result
-}
-
-func dailyOHLCChanges(bars []models.Bar) []float64 {
-	pctChanges := make([]float64, len(bars)-1)
-	for i := 1; i < len(bars); i++ {
-		prev := ohlcMedian(bars[i-1])
-		curr := ohlcMedian(bars[i])
-		if prev != 0 {
-			pctChanges[i-1] = curr / prev
-		} else {
-			pctChanges[i-1] = 1.0
-		}
-	}
-	return pctChanges
-}
-
-func boundedChanges(changes []float64, lowerBound, upperBound float64) []float64 {
-	var normalChanges []float64
-	for _, pct := range changes {
-		if pct >= lowerBound && pct <= upperBound {
-			normalChanges = append(normalChanges, pct)
-		}
-	}
-	return normalChanges
-}
-
-func switchCorrection(dayChange, threshold, change, changeRcp float64) float64 {
-	if dayChange >= threshold {
-		return change
-	}
-	return changeRcp
-}
-
-// applyUnitSwitchCorrection rescales prices and dividends by the same factor
-// (upstream unit-switch call passes correct_dividend=True but does NOT pass
-// correct_volume: a currency-unit switch does not change the share count, so
-// Volume must stay untouched — unlike a genuine stock split).
-func applyUnitSwitchCorrection(bars []models.Bar, correction float64) {
-	if !validPrice(correction) {
-		return
-	}
-	for j := range bars {
-		bars[j].Open *= correction
-		bars[j].High *= correction
-		bars[j].Low *= correction
-		bars[j].Close *= correction
-		bars[j].AdjClose *= correction
-		bars[j].Dividends *= correction
-		bars[j].Repaired = true
-	}
 }
 
 // UnitMixupStats contains statistics about unit mixup repairs.

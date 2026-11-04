@@ -56,11 +56,16 @@
 //
 //	opts.FixSplits = true
 //
-// Uses IQR-based outlier detection to identify suspicious price changes that
-// match the split ratio, then applies corrections. Each candidate range must
-// be confirmed by trading volume (volume moving inversely to price, or a
-// shift of more than 15 standard deviations); unconfirmed ranges are left
-// unchanged.
+// Split, unit-switch (100x) and level-shift repair share one price-shift
+// detector ported from Python yfinance 1.8.0 (_detect_price_shifts and
+// _fix_prices_sudden_change) and differentially tested against it. The
+// median of per-column day-to-day changes on dividend-adjusted prices is
+// compared with a threshold derived from the split ratio and the
+// interquartile volatility; signals on volume spikes or within local
+// volatility are dropped, ranges more than a year older than the oldest
+// split are ignored, and each remaining range must be confirmed by trading
+// volume (volume moving inversely to price, or a shift of more than 15
+// standard deviations); unconfirmed ranges are left unchanged.
 //
 // # Unexplained Level Shift Repair
 //

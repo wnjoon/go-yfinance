@@ -47,7 +47,7 @@ func TestUnitSwitchRepairedWithFlatVolume(t *testing.T) {
 		bars[i] = volBar(i+1, p, 100000)
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 
 	for i := 0; i < 5; i++ {
 		if !result[i].Repaired {
@@ -74,7 +74,7 @@ func TestUnitSwitchSkippedWhenVolumeMirrorsPrice(t *testing.T) {
 		bars[i] = volBar(i+1, p, volume)
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 
 	for i := range result {
 		if result[i].Repaired {
@@ -95,7 +95,7 @@ func TestFixPricesSuddenChangeAllZeroVolume(t *testing.T) {
 		bars[i] = volBar(i+1, p, 0)
 	}
 
-	result := repairer.fixPricesSuddenChange(bars, 100.0)
+	result := repairer.repairUnitSwitch(bars)
 
 	for i := range result {
 		if result[i].Repaired {
@@ -176,14 +176,5 @@ func TestRepairStockSplitsFlatNonzeroVolumeVetoes(t *testing.T) {
 		if result[i] != bars[i] {
 			t.Errorf("bar %d: expected no change, got %+v", i, result[i])
 		}
-	}
-}
-
-func TestExpectedSplitChangeSigns(t *testing.T) {
-	if got := expectedSplitChange(2.0); !closeTo(got, -0.5, 1e-12) {
-		t.Errorf("2:1 split: expected -0.5, got %v", got)
-	}
-	if got := expectedSplitChange(0.25); !closeTo(got, 3.0, 1e-12) {
-		t.Errorf("1:4 reverse split: expected 3.0, got %v", got)
 	}
 }
