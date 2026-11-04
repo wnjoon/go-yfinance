@@ -11,7 +11,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 ## Features
 
 - **TLS Fingerprint Spoofing**: Uses CycleTLS to bypass Yahoo's bot detection with Chrome JA3 fingerprint
-- **Python yfinance v1.7.0 Parity**: Lazy typed trading periods, degradable cookie/crumb acquisition, proxy resilience, and range-based stock-split repair with NRDY regressions
+- **Python yfinance v1.8.0 Parity**: News via Yahoo's GraphQL API, GAAP/Normalized EPS methodology, parallel `Tickers.Info`/`Calendar`, a working crumb-authenticated screener, and price repair that matches upstream on a Python-generated differential corpus (level shifts, split volume checks, repair-before-adjust History pipeline)
 - **Go Safety Baseline**: Hardened authentication, overflow-safe live protobuf decoding, race-safe WebSocket shutdown, immutable ticker cache results, and complete CycleTLS cookie preservation
 - **Automatic Authentication**: Cookie/Crumb management with CSRF fallback for EU users
 - **Thread-Safe**: Concurrent-safe client and configuration
@@ -20,7 +20,7 @@ This project is a Go implementation based on the logic of yfinance. It aims to p
 ## Installation
 
 ```bash
-go get github.com/wnjoon/go-yfinance@v1.7.0
+go get github.com/wnjoon/go-yfinance@v1.8.0
 ```
 
 ## Quick Start
