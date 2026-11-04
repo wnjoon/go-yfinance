@@ -13,7 +13,8 @@ import (
 )
 
 // loadBarsCSV reads an upstream python-yfinance price fixture
-// (Datetime,Open,High,Low,Close,Adj Close,Volume,Dividends,Stock Splits).
+// (Datetime,Open,High,Low,Close,Adj Close,Volume[,Dividends,Stock Splits]).
+// Missing action columns, as in intraday fixtures, read as zero.
 func loadBarsCSV(t *testing.T, name string) []models.Bar {
 	t.Helper()
 
@@ -59,11 +60,19 @@ func loadBarsCSV(t *testing.T, name string) []models.Bar {
 			// pandas finishes repair with round().astype(int64); Go's model is
 			// already integral, so preserve that final semantic at ingestion.
 			Volume:    int64(math.RoundToEven(parseF(row[6]))),
-			Dividends: parseF(row[7]),
-			Splits:    parseF(row[8]),
+			Dividends: optionalColumn(row, 7, parseF),
+			Splits:    optionalColumn(row, 8, parseF),
 		})
 	}
 	return bars
+}
+
+// optionalColumn parses row[i], or returns 0 when the column is absent.
+func optionalColumn(row []string, i int, parse func(string) float64) float64 {
+	if i >= len(row) {
+		return 0
+	}
+	return parse(row[i])
 }
 
 // TestRepairUnitMixupASAIGolden ports upstream test_repair_100x_random_1h:

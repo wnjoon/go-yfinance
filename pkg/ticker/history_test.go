@@ -189,4 +189,16 @@ func TestRepairOptionsFromHistoryParams(t *testing.T) {
 	if !opts.FixUnitMixups || opts.FixZeroes || !opts.FixSplits || opts.FixDividends || !opts.FixCapitalGains {
 		t.Errorf("Repair flags not propagated correctly: %+v", opts)
 	}
+	// FixLevelShifts was left false in the explicit RepairOptions.
+	if opts.FixLevelShifts {
+		t.Error("FixLevelShifts should follow explicit RepairOptions")
+	}
+	params.RepairOptions.FixLevelShifts = true
+	if !repairOptionsFromHistoryParams("SPY", params, meta).FixLevelShifts {
+		t.Error("FixLevelShifts not propagated")
+	}
+	params.RepairOptions = nil
+	if !repairOptionsFromHistoryParams("SPY", params, meta).FixLevelShifts {
+		t.Error("FixLevelShifts should default to enabled")
+	}
 }
