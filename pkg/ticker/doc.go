@@ -58,6 +58,19 @@
 //   - [Ticker.InsiderPurchases]: Insider purchase activity summary
 //   - [Ticker.Calendar]: Upcoming events (earnings, dividends)
 //
+// # EPS Methodology
+//
+// Earnings estimates, EPS trend, EPS revisions, and earnings history use
+// Yahoo's default EPS methodology for the ticker. To request GAAP or
+// Normalized (non-GAAP) figures, use the WithMethodology variants:
+//
+//	gaap, err := t.EarningsEstimateWithMethodology(models.EPSMethodologyGAAP)
+//	normalized, err := t.EarningsHistoryWithMethodology(models.EPSMethodologyNormalized)
+//
+// See [Ticker.EarningsEstimateWithMethodology], [Ticker.EPSTrendWithMethodology],
+// [Ticker.EPSRevisionsWithMethodology], and [Ticker.EarningsHistoryWithMethodology].
+// Each row reports the methodology in its Methodology field.
+//
 // # Caching
 //
 // The Ticker automatically caches API responses to minimize redundant requests.

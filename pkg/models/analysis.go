@@ -1,6 +1,48 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"fmt"
+	"strings"
+	"time"
+)
+
+// EPSMethodology selects which EPS methodology Yahoo Finance reports for
+// earnings estimates, EPS trend, EPS revisions, and earnings history.
+//
+// It mirrors the methodology argument of Python yfinance's
+// get_earnings_estimate, get_eps_trend, get_eps_revisions, and
+// get_earnings_history (added in yfinance 1.8.0).
+type EPSMethodology string
+
+const (
+	// EPSMethodologyDefault requests Yahoo's default methodology for the
+	// ticker (the unsuffixed quoteSummary module). The reported methodology
+	// is taken from the module's defaultMethodology field.
+	EPSMethodologyDefault EPSMethodology = ""
+	// EPSMethodologyGAAP requests GAAP EPS figures.
+	EPSMethodologyGAAP EPSMethodology = "gaap"
+	// EPSMethodologyNormalized requests Normalized (non-GAAP) EPS figures.
+	EPSMethodologyNormalized EPSMethodology = "normalized"
+)
+
+// ErrInvalidEPSMethodology is returned when an EPS methodology other than
+// "" (default), "gaap", or "normalized" (case-insensitive) is requested.
+var ErrInvalidEPSMethodology = errors.New("methodology must be empty (default), 'gaap' or 'normalized'")
+
+// ParseEPSMethodology validates and normalizes an EPS methodology.
+//
+// Matching is case-insensitive, so "GAAP" and "Normalized" are accepted. An
+// empty string returns [EPSMethodologyDefault]. Any other value returns an
+// error wrapping [ErrInvalidEPSMethodology].
+func ParseEPSMethodology(s string) (EPSMethodology, error) {
+	switch m := EPSMethodology(strings.ToLower(s)); m {
+	case EPSMethodologyDefault, EPSMethodologyGAAP, EPSMethodologyNormalized:
+		return m, nil
+	default:
+		return "", fmt.Errorf("%w, not %q", ErrInvalidEPSMethodology, s)
+	}
+}
 
 // RecommendationTrend represents analyst recommendations over time.
 type RecommendationTrend struct {
@@ -46,6 +88,10 @@ type EarningsEstimate struct {
 	High             float64 `json:"high"`
 	YearAgoEPS       float64 `json:"yearAgoEps"`
 	Growth           float64 `json:"growth"` // as decimal (0.15 = 15%)
+	// Methodology is the EPS methodology of the row: the requested one
+	// ("gaap" or "normalized"), else Yahoo's defaultMethodology for the
+	// ticker ("nongaap" is reported as "normalized"). Empty when unknown.
+	Methodology string `json:"methodology,omitempty"`
 }
 
 // RevenueEstimate represents revenue estimates for a period.
@@ -70,6 +116,9 @@ type EPSTrend struct {
 	ThirtyDays float64 `json:"30daysAgo"`
 	SixtyDays  float64 `json:"60daysAgo"`
 	NinetyDays float64 `json:"90daysAgo"`
+	// Methodology is the EPS methodology of the row; see
+	// [EarningsEstimate.Methodology].
+	Methodology string `json:"methodology,omitempty"`
 }
 
 // EPSRevision represents EPS revision data for a period.
@@ -80,6 +129,9 @@ type EPSRevision struct {
 	UpLast30Days   int    `json:"upLast30days"`
 	DownLast7Days  int    `json:"downLast7days"`
 	DownLast30Days int    `json:"downLast30days"`
+	// Methodology is the EPS methodology of the row; see
+	// [EarningsEstimate.Methodology].
+	Methodology string `json:"methodology,omitempty"`
 }
 
 // EarningsHistory represents historical earnings data.
@@ -95,6 +147,9 @@ type EarningsHistoryItem struct {
 	EPSEstimate     float64   `json:"epsEstimate"`
 	EPSDifference   float64   `json:"epsDifference"`
 	SurprisePercent float64   `json:"surprisePercent"` // as decimal
+	// Methodology is the EPS methodology of the row; see
+	// [EarningsEstimate.Methodology].
+	Methodology string `json:"methodology,omitempty"`
 }
 
 // GrowthEstimate represents growth estimates from various sources.

@@ -66,6 +66,17 @@ The Ticker type provides methods for:
 - [Ticker.InsiderPurchases](<#Ticker.InsiderPurchases>): Insider purchase activity summary
 - [Ticker.Calendar](<#Ticker.Calendar>): Upcoming events \(earnings, dividends\)
 
+### EPS Methodology
+
+Earnings estimates, EPS trend, EPS revisions, and earnings history use Yahoo's default EPS methodology for the ticker. To request GAAP or Normalized \(non\-GAAP\) figures, use the WithMethodology variants:
+
+```
+gaap, err := t.EarningsEstimateWithMethodology(models.EPSMethodologyGAAP)
+normalized, err := t.EarningsHistoryWithMethodology(models.EPSMethodologyNormalized)
+```
+
+See [Ticker.EarningsEstimateWithMethodology](<#Ticker.EarningsEstimateWithMethodology>), [Ticker.EPSTrendWithMethodology](<#Ticker.EPSTrendWithMethodology>), [Ticker.EPSRevisionsWithMethodology](<#Ticker.EPSRevisionsWithMethodology>), and [Ticker.EarningsHistoryWithMethodology](<#Ticker.EarningsHistoryWithMethodology>). Each row reports the methodology in its Methodology field.
+
 ### Caching
 
 The Ticker automatically caches API responses to minimize redundant requests. Use [Ticker.ClearCache](<#Ticker.ClearCache>) to force a refresh of cached data.
@@ -90,10 +101,14 @@ All Ticker methods are safe for concurrent use from multiple goroutines.
   - [func \(t \*Ticker\) Close\(\)](<#Ticker.Close>)
   - [func \(t \*Ticker\) Dividends\(\) \(\[\]models.Dividend, error\)](<#Ticker.Dividends>)
   - [func \(t \*Ticker\) EPSRevisions\(\) \(\[\]models.EPSRevision, error\)](<#Ticker.EPSRevisions>)
+  - [func \(t \*Ticker\) EPSRevisionsWithMethodology\(methodology models.EPSMethodology\) \(\[\]models.EPSRevision, error\)](<#Ticker.EPSRevisionsWithMethodology>)
   - [func \(t \*Ticker\) EPSTrend\(\) \(\[\]models.EPSTrend, error\)](<#Ticker.EPSTrend>)
+  - [func \(t \*Ticker\) EPSTrendWithMethodology\(methodology models.EPSMethodology\) \(\[\]models.EPSTrend, error\)](<#Ticker.EPSTrendWithMethodology>)
   - [func \(t \*Ticker\) EarningsEstimate\(\) \(\[\]models.EarningsEstimate, error\)](<#Ticker.EarningsEstimate>)
+  - [func \(t \*Ticker\) EarningsEstimateWithMethodology\(methodology models.EPSMethodology\) \(\[\]models.EarningsEstimate, error\)](<#Ticker.EarningsEstimateWithMethodology>)
   - [func \(t \*Ticker\) EarningsEstimates\(\) \(\[\]models.EarningsEstimate, error\)](<#Ticker.EarningsEstimates>)
   - [func \(t \*Ticker\) EarningsHistory\(\) \(\*models.EarningsHistory, error\)](<#Ticker.EarningsHistory>)
+  - [func \(t \*Ticker\) EarningsHistoryWithMethodology\(methodology models.EPSMethodology\) \(\*models.EarningsHistory, error\)](<#Ticker.EarningsHistoryWithMethodology>)
   - [func \(t \*Ticker\) FastInfo\(\) \(\*models.FastInfo, error\)](<#Ticker.FastInfo>)
   - [func \(t \*Ticker\) FinancialsJSON\(statementType, freq string\) \(\[\]byte, error\)](<#Ticker.FinancialsJSON>)
   - [func \(t \*Ticker\) GetHistoryMetadata\(\) \*models.ChartMeta](<#Ticker.GetHistoryMetadata>)
@@ -311,7 +326,20 @@ Returns all historical dividend payments with dates and amounts.
 func (t *Ticker) EPSRevisions() ([]models.EPSRevision, error)
 ```
 
-EPSRevisions returns EPS revision data.
+EPSRevisions returns EPS revision data using Yahoo's default EPS methodology.
+
+It is equivalent to EPSRevisionsWithMethodology\(models.EPSMethodologyDefault\).
+
+<a name="Ticker.EPSRevisionsWithMethodology"></a>
+### func \(\*Ticker\) EPSRevisionsWithMethodology
+
+```go
+func (t *Ticker) EPSRevisionsWithMethodology(methodology models.EPSMethodology) ([]models.EPSRevision, error)
+```
+
+EPSRevisionsWithMethodology returns EPS revision data using the given EPS methodology. This matches Python yfinance's ticker.get\_eps\_revisions\(methodology=...\).
+
+See [Ticker.EarningsEstimateWithMethodology](<#Ticker.EarningsEstimateWithMethodology>) for methodology handling.
 
 <a name="Ticker.EPSTrend"></a>
 ### func \(\*Ticker\) EPSTrend
@@ -320,7 +348,20 @@ EPSRevisions returns EPS revision data.
 func (t *Ticker) EPSTrend() ([]models.EPSTrend, error)
 ```
 
-EPSTrend returns EPS trend data.
+EPSTrend returns EPS trend data using Yahoo's default EPS methodology.
+
+It is equivalent to EPSTrendWithMethodology\(models.EPSMethodologyDefault\).
+
+<a name="Ticker.EPSTrendWithMethodology"></a>
+### func \(\*Ticker\) EPSTrendWithMethodology
+
+```go
+func (t *Ticker) EPSTrendWithMethodology(methodology models.EPSMethodology) ([]models.EPSTrend, error)
+```
+
+EPSTrendWithMethodology returns EPS trend data using the given EPS methodology. This matches Python yfinance's ticker.get\_eps\_trend\(methodology=...\).
+
+See [Ticker.EarningsEstimateWithMethodology](<#Ticker.EarningsEstimateWithMethodology>) for methodology handling.
 
 <a name="Ticker.EarningsEstimate"></a>
 ### func \(\*Ticker\) EarningsEstimate
@@ -329,7 +370,20 @@ EPSTrend returns EPS trend data.
 func (t *Ticker) EarningsEstimate() ([]models.EarningsEstimate, error)
 ```
 
-EarningsEstimate returns earnings estimates for upcoming periods. This method name matches Python yfinance's ticker.earnings\_estimate property.
+EarningsEstimate returns earnings estimates for upcoming periods using Yahoo's default EPS methodology for the ticker. This method name matches Python yfinance's ticker.earnings\_estimate property.
+
+It is equivalent to EarningsEstimateWithMethodology\(models.EPSMethodologyDefault\).
+
+<a name="Ticker.EarningsEstimateWithMethodology"></a>
+### func \(\*Ticker\) EarningsEstimateWithMethodology
+
+```go
+func (t *Ticker) EarningsEstimateWithMethodology(methodology models.EPSMethodology) ([]models.EarningsEstimate, error)
+```
+
+EarningsEstimateWithMethodology returns earnings estimates for upcoming periods using the given EPS methodology. This matches Python yfinance's ticker.get\_earnings\_estimate\(methodology=...\).
+
+methodology is matched case\-insensitively; an unknown value returns an error wrapping \[models.ErrInvalidEPSMethodology\] without making a request. Each row's Methodology is the requested methodology, or, for the default, the one Yahoo reports for the ticker. Results are cached per methodology.
 
 <a name="Ticker.EarningsEstimates"></a>
 ### func \(\*Ticker\) EarningsEstimates
@@ -347,7 +401,20 @@ EarningsEstimates is a deprecated alias for EarningsEstimate. Deprecated: Use Ea
 func (t *Ticker) EarningsHistory() (*models.EarningsHistory, error)
 ```
 
-EarningsHistory returns historical earnings data.
+EarningsHistory returns historical earnings data using Yahoo's default EPS methodology.
+
+It is equivalent to EarningsHistoryWithMethodology\(models.EPSMethodologyDefault\).
+
+<a name="Ticker.EarningsHistoryWithMethodology"></a>
+### func \(\*Ticker\) EarningsHistoryWithMethodology
+
+```go
+func (t *Ticker) EarningsHistoryWithMethodology(methodology models.EPSMethodology) (*models.EarningsHistory, error)
+```
+
+EarningsHistoryWithMethodology returns historical earnings data using the given EPS methodology, fetched from the earningsHistory, earningsHistoryGaap, or earningsHistoryNonGaap quoteSummary module. This matches Python yfinance's ticker.get\_earnings\_history\(methodology=...\).
+
+See [Ticker.EarningsEstimateWithMethodology](<#Ticker.EarningsEstimateWithMethodology>) for methodology handling.
 
 <a name="Ticker.FastInfo"></a>
 ### func \(\*Ticker\) FastInfo
@@ -419,6 +486,8 @@ func (t *Ticker) GrowthEstimates() ([]models.GrowthEstimate, error)
 ```
 
 GrowthEstimates returns growth estimates comparing stock to industry/sector/index.
+
+Growth estimates have no EPS methodology; the stock growth always comes from the default earningsTrend module.
 
 <a name="Ticker.History"></a>
 ### func \(\*Ticker\) History
@@ -763,6 +832,8 @@ func (t *Ticker) RevenueEstimate() ([]models.RevenueEstimate, error)
 ```
 
 RevenueEstimate returns revenue estimates for upcoming periods. This method name matches Python yfinance's ticker.revenue\_estimate property.
+
+Revenue estimates have no EPS methodology; they always come from the default earningsTrend module.
 
 <a name="Ticker.RevenueEstimates"></a>
 ### func \(\*Ticker\) RevenueEstimates
