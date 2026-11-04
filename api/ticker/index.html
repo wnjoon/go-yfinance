@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -3521,12 +3521,14 @@
 <h3 id="func-ticker-news">func (*Ticker) News</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">Ticker</span><span class="p">)</span><span class="w"> </span><span class="nx">News</span><span class="p">(</span><span class="nx">count</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="nx">tab</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsTab</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">NewsArticle</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
-<p>News fetches news articles for the ticker.</p>
+<p>News fetches the latest news articles for the ticker, newest first.</p>
+<p>News is loaded from Yahoo's news GraphQL API (the same request the finance.yahoo.com quote news page makes), following the result cursor until count articles are collected or Yahoo has no more. The request follows the locale set with config.SetLocale; Yahoo only has news for some locales and returns an empty slice for the others.</p>
 <p>Parameters:</p>
 <ul>
-<li>count: Number of articles to fetch (default: 10)</li>
-<li>tab: Type of news to fetch (default: NewsTabNews)</li>
+<li>count: Maximum number of articles to return (default: 10 when \&lt;= 0)</li>
+<li>tab: Type of news to fetch (default: NewsTabNews when empty); matched case-insensitively</li>
 </ul>
+<p>An unknown tab returns an error wrapping models.ErrInvalidNewsTab. HTTP failures return the pkg/client error types (for example a rate-limit error for HTTP 429). GraphQL errors or a response without data return an empty, non-nil slice. Results, including empty ones, are cached per count, tab and locale until ClearCache is called.</p>
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>news, err := ticker.News(10, models.NewsTabNews)
 <a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>if err != nil {
@@ -3662,10 +3664,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
