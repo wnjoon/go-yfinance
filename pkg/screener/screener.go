@@ -11,10 +11,31 @@ import (
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
 
+// maxScreenerResults is Yahoo's per-request limit for count and size.
+const maxScreenerResults = 250
+
+// httpDoer is the subset of *client.Client used by Screener. It exists so
+// tests can capture outgoing requests without network access.
+type httpDoer interface {
+	Get(rawURL string, params url.Values) (*client.Response, error)
+	PostJSON(rawURL string, params url.Values, body []byte) (*client.Response, error)
+}
+
 // Screener provides Yahoo Finance stock screener functionality.
 type Screener struct {
 	client     *client.Client
 	ownsClient bool
+
+	// http performs requests; nil means use client.
+	http httpDoer
+}
+
+// doer returns the request transport for this Screener.
+func (s *Screener) doer() httpDoer {
+	if s.http != nil {
+		return s.http
+	}
+	return s.client
 }
 
 // Option is a function that configures a Screener instance.
@@ -66,6 +87,24 @@ func (s *Screener) Close() {
 
 // Screen uses a predefined screener to find matching stocks.
 //
+// Without an offset, Screen calls Yahoo's predefined GET endpoint with the
+// count, offset, and sort parameters. That endpoint ignores offset, so when
+// params.Offset > 0 and the screener has an entry in PredefinedScreenerQueries,
+// Screen switches to the custom-query POST endpoint using the predefined query
+// (matching Python yfinance's screen()). In that case the predefined sort field
+// and direction are used unless params.SortField is set to something other than
+// "" or "ticker" (or params.SortAsc is true), and the number of results is sent
+// as Yahoo's "size" field: params.Size if set, otherwise params.Count.
+//
+// Python switches endpoints whenever offset is given, including offset=0. Go
+// cannot distinguish an explicit zero from an unset int, and an offset of 0
+// returns the first page on either endpoint, so Go switches only for Offset > 0.
+//
+// If params.Size is set on the GET path it takes precedence over params.Count,
+// mirroring Python's deprecated handling of size for predefined screens.
+// Count and Size must not exceed 250 (Yahoo's limit). The caller's params are
+// never modified.
+//
 // Example:
 //
 //	result, err := s.Screen(models.ScreenerDayGainers, nil)
@@ -76,57 +115,43 @@ func (s *Screener) Close() {
 //	    fmt.Printf("%s: %.2f%%\n", quote.Symbol, quote.RegularMarketChangePercent)
 //	}
 func (s *Screener) Screen(screener models.PredefinedScreener, params *models.ScreenerParams) (*models.ScreenerResult, error) {
-	if params == nil {
-		defaultParams := models.DefaultScreenerParams()
-		params = &defaultParams
+	p := models.DefaultScreenerParams()
+	if params != nil {
+		// Copy so the caller's params are never mutated.
+		p = *params
 	}
 
-	if params.Count > 250 {
-		return nil, fmt.Errorf("yahoo limits query count to 250, reduce count")
+	if err := validateLimits(&p); err != nil {
+		return nil, err
 	}
 
 	// If offset is specified, switch to POST endpoint with predefined query body
 	// (Yahoo's predefined GET endpoint ignores offset)
-	if params.Offset > 0 {
-		predefined, ok := PredefinedScreenerQueries[string(screener)]
-		if ok {
-			// Use predefined's sort settings as defaults
-			if params.SortField == "" || params.SortField == "ticker" {
-				params.SortField = predefined.SortField
-			}
-			if !params.SortAsc {
-				params.SortAsc = predefined.SortAsc
-			}
-			return s.ScreenWithQuery(predefined.Query, params)
+	if p.Offset > 0 {
+		if predefined, ok := PredefinedScreenerQueries[string(screener)]; ok {
+			return s.postQuery(buildPredefinedOffsetBody(predefined, &p), p.Offset)
 		}
 	}
 
 	// Build URL for predefined screener
 	screenerURL := fmt.Sprintf("%s/predefined/%s", endpoints.ScreenerURL, string(screener))
 
-	// Build query parameters
-	urlParams := url.Values{}
-	urlParams.Set("count", strconv.Itoa(params.Count))
-	urlParams.Set("offset", strconv.Itoa(params.Offset))
-	if params.SortField != "" {
-		urlParams.Set("sortField", params.SortField)
-	}
-	if params.SortAsc {
-		urlParams.Set("sortAsc", "true")
-	}
-
-	resp, err := s.client.Get(screenerURL, urlParams)
+	resp, err := s.doer().Get(screenerURL, buildPredefinedParams(&p))
 	if err != nil {
 		return nil, fmt.Errorf("screener request failed: %w", err)
 	}
 
-	return s.parseResponse(resp.Body, params.Offset)
+	return s.parseResponse(resp.Body, p.Offset)
 }
 
 // ScreenWithQuery uses a custom query to find matching stocks or funds.
-// Accepts both *models.EquityQuery and *models.FundQuery.
+// Accepts *models.EquityQuery, *models.FundQuery, and *models.ETFQuery.
 // The quoteType is automatically determined from the query type:
-// "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
+// "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery, "ETF" for ETFQuery.
+//
+// The request body always includes params.Count as "count"; params.Size is
+// sent as "size" only when it is greater than zero, matching Python yfinance.
+// Count and Size must not exceed 250 (Yahoo's limit).
 //
 // Example:
 //
@@ -140,44 +165,123 @@ func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *mo
 		return nil, fmt.Errorf("query is required")
 	}
 
-	if params == nil {
-		defaultParams := models.DefaultScreenerParams()
-		params = &defaultParams
+	p := models.DefaultScreenerParams()
+	if params != nil {
+		p = *params
 	}
 
-	if params.Count > 250 {
-		return nil, fmt.Errorf("yahoo limits query count to 250, reduce count")
+	if err := validateLimits(&p); err != nil {
+		return nil, err
 	}
 
-	// Determine sort type
-	sortType := "DESC"
-	if params.SortAsc {
-		sortType = "ASC"
+	return s.postQuery(buildCustomQueryBody(query, &p), p.Offset)
+}
+
+// validateLimits enforces Yahoo's 250-result cap on count and size.
+func validateLimits(p *models.ScreenerParams) error {
+	if p.Count > maxScreenerResults {
+		return fmt.Errorf("yahoo limits query count to %d, reduce count", maxScreenerResults)
+	}
+	if p.Size > maxScreenerResults {
+		return fmt.Errorf("yahoo limits query size to %d, reduce size", maxScreenerResults)
+	}
+	return nil
+}
+
+// sortType converts an ascending flag to Yahoo's sortType value.
+func sortType(asc bool) string {
+	if asc {
+		return "ASC"
+	}
+	return "DESC"
+}
+
+// buildPredefinedParams builds the query string for the predefined GET endpoint.
+func buildPredefinedParams(p *models.ScreenerParams) url.Values {
+	count := p.Count
+	if p.Size > 0 {
+		// Python treats size as a deprecated alias for count here.
+		count = p.Size
 	}
 
-	// Build request body matching Python's format
+	urlParams := url.Values{}
+	urlParams.Set("count", strconv.Itoa(count))
+	urlParams.Set("offset", strconv.Itoa(p.Offset))
+	if p.SortField != "" {
+		urlParams.Set("sortField", p.SortField)
+	}
+	if p.SortAsc {
+		urlParams.Set("sortAsc", "true")
+	}
+	return urlParams
+}
+
+// buildCustomQueryBody builds the POST body for a custom query.
+func buildCustomQueryBody(query models.ScreenerQueryBuilder, p *models.ScreenerParams) map[string]any {
 	body := map[string]any{
-		"offset":     params.Offset,
-		"count":      params.Count,
-		"sortField":  params.SortField,
-		"sortType":   sortType,
-		"userId":     params.UserID,
-		"userIdType": params.UserIDType,
+		"offset":     p.Offset,
+		"count":      p.Count,
+		"sortField":  p.SortField,
+		"sortType":   sortType(p.SortAsc),
+		"userId":     p.UserID,
+		"userIdType": p.UserIDType,
 		"quoteType":  query.QuoteType(),
 		"query":      query.ToDict(),
 	}
+	if p.Size > 0 {
+		body["size"] = p.Size
+	}
+	return body
+}
 
+// buildPredefinedOffsetBody builds the POST body used when a predefined
+// screener is switched to the custom-query endpoint to honour an offset.
+//
+// The POST endpoint takes "size", not "count" (Python yfinance #3006), so the
+// requested count is sent as size. If Size is set explicitly it is used as size
+// and a non-zero Count is passed through as count, as Python does.
+func buildPredefinedOffsetBody(predefined PredefinedQuery, p *models.ScreenerParams) map[string]any {
+	sortField := p.SortField
+	if sortField == "" || sortField == "ticker" {
+		sortField = predefined.SortField
+	}
+	sortAsc := p.SortAsc || predefined.SortAsc
+
+	body := map[string]any{
+		"offset":     p.Offset,
+		"sortField":  sortField,
+		"sortType":   sortType(sortAsc),
+		"userId":     p.UserID,
+		"userIdType": p.UserIDType,
+		"quoteType":  predefined.Query.QuoteType(),
+		"query":      predefined.Query.ToDict(),
+	}
+
+	switch {
+	case p.Size > 0:
+		body["size"] = p.Size
+		if p.Count > 0 {
+			body["count"] = p.Count
+		}
+	case p.Count > 0:
+		body["size"] = p.Count
+	}
+	return body
+}
+
+// postQuery sends a screener POST body and parses the response.
+func (s *Screener) postQuery(body map[string]any, offset int) (*models.ScreenerResult, error) {
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal query: %w", err)
 	}
 
-	resp, err := s.client.PostJSON(endpoints.ScreenerURL, nil, bodyBytes)
+	resp, err := s.doer().PostJSON(endpoints.ScreenerURL, nil, bodyBytes)
 	if err != nil {
 		return nil, fmt.Errorf("screener request failed: %w", err)
 	}
 
-	return s.parseResponse(resp.Body, params.Offset)
+	return s.parseResponse(resp.Body, offset)
 }
 
 // DayGainers returns stocks with the highest percentage gain today.
