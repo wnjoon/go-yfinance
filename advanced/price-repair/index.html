@@ -1139,6 +1139,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#unexplained-level-shift-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unexplained Level Shift Repair
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#unit-mixup-repair-100x-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2297,6 +2308,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#unexplained-level-shift-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unexplained Level Shift Repair
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#unit-mixup-repair-100x-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2517,6 +2539,11 @@
 <td>Pre-split prices not adjusted</td>
 </tr>
 <tr>
+<td><strong>Unexplained Level Shifts</strong></td>
+<td>Split-like shift with no split</td>
+<td>Older prices 15x too high</td>
+</tr>
+<tr>
 <td><strong>Dividend Errors</strong></td>
 <td>Dividend adjustment incorrect</td>
 <td>Adj Close miscalculated</td>
@@ -2565,8 +2592,9 @@
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="nx">FixDividends</span><span class="p">:</span><span class="w">    </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="c1">// Disable dividend repair</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="nx">FixUnitMixups</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// 100x errors</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nx">FixZeroes</span><span class="p">:</span><span class="w">       </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Missing values</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">})</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nx">FixLevelShifts</span><span class="p">:</span><span class="w">  </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Split-like shifts without a split (1h request)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="p">})</span>
 </code></pre></div>
 <h2 id="capital-gains-repair">Capital Gains Repair</h2>
 <p>For ETFs and Mutual Funds, Yahoo Finance sometimes double-counts capital gains in the Adjusted Close calculation.</p>
@@ -2648,6 +2676,42 @@
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">},</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">})</span>
 </code></pre></div>
+<h2 id="unexplained-level-shift-repair">Unexplained Level Shift Repair</h2>
+<p>Sometimes Yahoo applies a split-like adjustment to all daily data before a
+date although no split exists near it: older prices are N times too large and
+volume N times too small, and N need not be a split ratio (for example SOXS
+was 15x too high before 2026-05-26). Yahoo's 1h data is not affected, so it
+is used to measure N.</p>
+<p>This repair only runs for <code>Interval: "1d"</code> and non-FX tickers (no <code>=</code> in the
+symbol), before dividend repair. Like Python yfinance 1.8.0, it makes <strong>one
+extra request</strong> for the last 729 days of 1h data, and only when a candidate
+shift is found:</p>
+<ol>
+<li>Finds day-to-day changes of at least 2x that persist (median Close of the
+   five rows after vs. before), away from the ends of the data, more than five
+   rows from any split, and within the 1h data window</li>
+<li>Compares 1d prices with 1h prices aggregated to exchange-timezone days on
+   both sides of the shift. A multiple between 0.8 and 1.25 means the move is
+   genuine (the 1h data moved too) and nothing changes</li>
+<li>Requires a clean integer multiple (or reciprocal), within 3%</li>
+<li>Repairs with the split-repair logic, which also requires volume to confirm
+   the shift. Dividends are left unchanged</li>
+</ol>
+<p>If the 1h request fails the data is returned unchanged, except for a rate
+limit, which <code>History</code> returns as an error (check it with
+<code>client.IsRateLimitError</code>).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nx">Period</span><span class="p">:</span><span class="w">   </span><span class="s">"1y"</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nx">Interval</span><span class="p">:</span><span class="w"> </span><span class="s">"1d"</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">RepairOptions</span><span class="p">{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="nx">FixLevelShifts</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">})</span>
+</code></pre></div>
+<p>When using the <code>repair</code> package directly, the level-shift repair needs an
+<code>Options.FetchHourly</code> function; without one it is skipped and <code>Repair</code> never
+makes network requests.</p>
 <h2 id="unit-mixup-repair-100x-errors">Unit Mixup Repair (100x Errors)</h2>
 <p>Yahoo Finance sometimes returns prices in wrong currency units (e.g., dollars vs cents, pounds vs pence).</p>
 <h3 id="types-of-errors">Types of Errors</h3>
@@ -2667,15 +2731,15 @@
 3. Detect changes ~100x larger than normal
 4. Apply correction to all preceding bars</p>
 <h3 id="example_3">Example</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Fix 100x currency errors</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nx">Period</span><span class="p">:</span><span class="w">   </span><span class="s">"1y"</span><span class="p">,</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nx">Interval</span><span class="p">:</span><span class="w"> </span><span class="s">"1d"</span><span class="p">,</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">RepairOptions</span><span class="p">{</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="nx">FixUnitMixups</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">})</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Fix 100x currency errors</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nx">Period</span><span class="p">:</span><span class="w">   </span><span class="s">"1y"</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nx">Interval</span><span class="p">:</span><span class="w"> </span><span class="s">"1d"</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">RepairOptions</span><span class="p">{</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nx">FixUnitMixups</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">})</span>
 </code></pre></div>
 <h3 id="currency-specific-handling">Currency-Specific Handling</h3>
 <ul>
@@ -2697,15 +2761,15 @@
 <li><strong>Backward Fill</strong>: Use next bar's open if only next available</li>
 </ol>
 <h3 id="example_4">Example</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Fix zero/missing values</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nx">Period</span><span class="p">:</span><span class="w">   </span><span class="s">"1y"</span><span class="p">,</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nx">Interval</span><span class="p">:</span><span class="w"> </span><span class="s">"1d"</span><span class="p">,</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">RepairOptions</span><span class="p">{</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nx">FixZeroes</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">})</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// Fix zero/missing values</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nx">Period</span><span class="p">:</span><span class="w">   </span><span class="s">"1y"</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nx">Interval</span><span class="p">:</span><span class="w"> </span><span class="s">"1d"</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">RepairOptions</span><span class="p">{</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">        </span><span class="nx">FixZeroes</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">})</span>
 </code></pre></div>
 <h3 id="partial-zero-handling">Partial Zero Handling</h3>
 <p>When only some OHLC values are zero:
@@ -2714,19 +2778,19 @@
 - Ensure High &gt;= all prices, Low &lt;= all prices</p>
 <h2 id="data-fields">Data Fields</h2>
 <p>The <code>Bar</code> struct includes repair-related fields:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Bar</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="nx">Date</span><span class="w">         </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nx">Open</span><span class="w">         </span><span class="kt">float64</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nx">High</span><span class="w">         </span><span class="kt">float64</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nx">Low</span><span class="w">          </span><span class="kt">float64</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nx">Close</span><span class="w">        </span><span class="kt">float64</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="nx">AdjClose</span><span class="w">     </span><span class="kt">float64</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="nx">Volume</span><span class="w">       </span><span class="kt">int64</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="nx">Dividends</span><span class="w">    </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Dividend amount</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="nx">Splits</span><span class="w">       </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Split ratio</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="nx">CapitalGains</span><span class="w"> </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Capital gains (ETF/MutualFund)</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="nx">Repaired</span><span class="w">     </span><span class="kt">bool</span><span class="w">      </span><span class="c1">// True if this bar was repaired</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Bar</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="nx">Date</span><span class="w">         </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nx">Open</span><span class="w">         </span><span class="kt">float64</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nx">High</span><span class="w">         </span><span class="kt">float64</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nx">Low</span><span class="w">          </span><span class="kt">float64</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nx">Close</span><span class="w">        </span><span class="kt">float64</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="nx">AdjClose</span><span class="w">     </span><span class="kt">float64</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nx">Volume</span><span class="w">       </span><span class="kt">int64</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="nx">Dividends</span><span class="w">    </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Dividend amount</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="nx">Splits</span><span class="w">       </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Split ratio</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="nx">CapitalGains</span><span class="w"> </span><span class="kt">float64</span><span class="w">   </span><span class="c1">// Capital gains (ETF/MutualFund)</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="nx">Repaired</span><span class="w">     </span><span class="kt">bool</span><span class="w">      </span><span class="c1">// True if this bar was repaired</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="p">}</span>
 </code></pre></div>
 <h2 id="repair-order">Repair Order</h2>
 <p>The repair system applies fixes in a specific order:</p>

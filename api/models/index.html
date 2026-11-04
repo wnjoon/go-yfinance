@@ -10046,7 +10046,12 @@
 <a id="__codelineno-188-13" name="__codelineno-188-13" href="#__codelineno-188-13"></a>
 <a id="__codelineno-188-14" name="__codelineno-188-14" href="#__codelineno-188-14"></a><span class="w">    </span><span class="c1">// FixCapitalGains repairs capital gains double-counting (ETF/MutualFund only)</span>
 <a id="__codelineno-188-15" name="__codelineno-188-15" href="#__codelineno-188-15"></a><span class="w">    </span><span class="nx">FixCapitalGains</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"fixCapitalGains,omitempty"`</span>
-<a id="__codelineno-188-16" name="__codelineno-188-16" href="#__codelineno-188-16"></a><span class="p">}</span>
+<a id="__codelineno-188-16" name="__codelineno-188-16" href="#__codelineno-188-16"></a>
+<a id="__codelineno-188-17" name="__codelineno-188-17" href="#__codelineno-188-17"></a><span class="w">    </span><span class="c1">// FixLevelShifts repairs split-like level shifts in daily data that have</span>
+<a id="__codelineno-188-18" name="__codelineno-188-18" href="#__codelineno-188-18"></a><span class="w">    </span><span class="c1">// no matching split, using one extra request for 1h data (Python</span>
+<a id="__codelineno-188-19" name="__codelineno-188-19" href="#__codelineno-188-19"></a><span class="w">    </span><span class="c1">// yfinance 1.8.0). Only applies to interval 1d and non-FX tickers.</span>
+<a id="__codelineno-188-20" name="__codelineno-188-20" href="#__codelineno-188-20"></a><span class="w">    </span><span class="nx">FixLevelShifts</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"fixLevelShifts,omitempty"`</span>
+<a id="__codelineno-188-21" name="__codelineno-188-21" href="#__codelineno-188-21"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="DefaultRepairOptions"></a></p>
 <h3 id="func-defaultrepairoptions">func DefaultRepairOptions</h3>
