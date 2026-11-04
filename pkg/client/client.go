@@ -288,6 +288,20 @@ func (c *Client) Post(rawURL string, params url.Values, body map[string]string) 
 
 // PostJSON performs an HTTP POST request with JSON body.
 func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Response, error) {
+	return c.PostJSONWithHeaders(rawURL, params, body, nil)
+}
+
+// PostJSONWithHeaders performs an HTTP POST request with a JSON body and
+// additional request headers.
+//
+// The extra headers are merged over the client's default JSON headers
+// (Accept, Accept-Language, Content-Type, Connection) and the stored Cookie
+// header. Header names are matched case-insensitively, so an extra header
+// replaces a default of the same name instead of being sent twice; an
+// explicitly supplied Content-Type therefore intentionally overrides
+// "application/json". Entries with a blank name are ignored. The headers map
+// is never modified, and a nil or empty map behaves exactly like PostJSON.
+func (c *Client) PostJSONWithHeaders(rawURL string, params url.Values, body []byte, headers map[string]string) (*Response, error) {
 	c.init()
 
 	c.mu.RLock()
@@ -297,17 +311,7 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 		rawURL = fmt.Sprintf("%s?%s", rawURL, params.Encode())
 	}
 
-	headers := map[string]string{
-		"Accept":          "application/json",
-		"Accept-Language": "en-US,en;q=0.5",
-		"Content-Type":    "application/json",
-		"Connection":      "keep-alive",
-	}
-
-	// Add cookie if available
-	if cookie := c.cookieHeaderLocked(); cookie != "" {
-		headers["Cookie"] = cookie
-	}
+	requestHeaders := jsonPostHeaders(c.cookieHeaderLocked(), headers)
 
 	resp, err := c.cycleTLS.Do(rawURL, cycletls.Options{
 		Timeout:   c.timeout,
@@ -315,7 +319,7 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 		UserAgent: c.userAgent,
 		Proxy:     c.proxy,
 		Body:      string(body),
-		Headers:   headers,
+		Headers:   requestHeaders,
 	}, "POST")
 	if err != nil {
 		return nil, fmt.Errorf("POST request failed: %w", err)
@@ -327,6 +331,52 @@ func (c *Client) PostJSON(rawURL string, params url.Values, body []byte) (*Respo
 		Headers:    resp.Headers,
 		Cookies:    responseCookies(resp.Cookies),
 	}, nil
+}
+
+// jsonPostHeaders builds the request headers for a JSON POST: the default
+// JSON headers, the cookie header when present, then extra merged on top.
+func jsonPostHeaders(cookie string, extra map[string]string) map[string]string {
+	headers := map[string]string{
+		"Accept":          "application/json",
+		"Accept-Language": "en-US,en;q=0.5",
+		"Content-Type":    "application/json",
+		"Connection":      "keep-alive",
+	}
+
+	// Add cookie if available
+	if cookie != "" {
+		headers["Cookie"] = cookie
+	}
+
+	return mergeHeaders(headers, extra)
+}
+
+// mergeHeaders sets every extra header on base, replacing any existing header
+// whose name matches case-insensitively. Blank names are skipped. base is
+// modified in place and returned; extra is never modified.
+func mergeHeaders(base, extra map[string]string) map[string]string {
+	if len(extra) == 0 {
+		return base
+	}
+	names := make([]string, 0, len(extra))
+	for name := range extra {
+		names = append(names, name)
+	}
+	// Sorted so case-variant duplicates inside extra resolve deterministically.
+	sort.Strings(names)
+	for _, name := range names {
+		trimmed := strings.TrimSpace(name)
+		if trimmed == "" {
+			continue
+		}
+		for existing := range base {
+			if strings.EqualFold(existing, trimmed) {
+				delete(base, existing)
+			}
+		}
+		base[trimmed] = extra[name]
+	}
+	return base
 }
 
 func responseCookies(cookies []*http.Cookie) map[string]string {
