@@ -26,6 +26,12 @@ import (
 //   - AutoAdjust: Adjust prices for splits/dividends
 //   - Actions: Include dividend and split data in bars
 //   - Repair: Repair known Yahoo data errors (see package repair)
+//   - KeepNA: Keep bars whose Open, High, Low and Close are all missing
+//
+// Prices Yahoo reports as null are returned as 0.
+//
+// Null prices are NaN while repairing, as upstream sees them, and become 0
+// again afterwards unless a repair filled them.
 //
 // With Repair on daily data, the unexplained-level-shift repair (Python
 // yfinance 1.8.0) may make one extra request for the last 729 days of 1h
@@ -47,13 +53,17 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		return nil, err
 	}
 
-	// Parse OHLCV data
-	bars, err := t.parseChartData(result, params.AutoAdjust, params.Actions)
+	// Parse OHLCV data. Repair sees null prices as NaN.
+	bars, err := t.parseChartData(result, chartParseOptions{
+		autoAdjust: params.AutoAdjust,
+		actions:    params.Actions,
+		nullAsNaN:  params.Repair,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	// Remove NaN rows unless KeepNA is true
+	// Remove rows without any price unless KeepNA is true
 	if !params.KeepNA {
 		bars = filterValidBars(bars)
 	}
@@ -67,6 +77,7 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to repair history: %w", err)
 		}
+		restoreMissingPrices(bars)
 	}
 
 	return bars, nil
@@ -181,7 +192,7 @@ func (t *Ticker) repairHourlyFetcher() repair.HourlyFetcher {
 		if err != nil {
 			return nil, err
 		}
-		bars, err := t.parseChartData(result, false, false)
+		bars, err := t.parseChartData(result, chartParseOptions{})
 		if err != nil {
 			return nil, err
 		}
@@ -299,8 +310,20 @@ func (t *Ticker) fetchTradingPeriodsMetadata() (*models.ChartMeta, error) {
 	return &result.Meta, nil
 }
 
+// chartParseOptions controls parseChartData.
+type chartParseOptions struct {
+	// autoAdjust scales Open, High, Low and Close by Adj Close / Close.
+	autoAdjust bool
+	// actions fills the dividend, split and capital-gain fields.
+	actions bool
+	// nullAsNaN reports null Open/High/Low/Close (and the Adj Close of a
+	// row without Close) as NaN instead of 0, as upstream's DataFrame has
+	// them during repair.
+	nullAsNaN bool
+}
+
 // parseChartData converts chart API response to Bar slice.
-func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, includeActions bool) ([]models.Bar, error) {
+func (t *Ticker) parseChartData(result *models.ChartResult, opts chartParseOptions) ([]models.Bar, error) {
 	if len(result.Timestamp) == 0 {
 		return []models.Bar{}, nil
 	}
@@ -313,14 +336,17 @@ func (t *Ticker) parseChartData(result *models.ChartResult, autoAdjust bool, inc
 	timestamps := result.Timestamp
 
 	adjClose := chartAdjClose(result)
-	actions := chartActions(result, includeActions)
+	actions := chartActions(result, opts.actions)
 
 	bars := make([]models.Bar, 0, len(timestamps))
 
 	for i, ts := range timestamps {
 		bar := chartBarAt(i, ts, quote, adjClose)
+		if opts.nullAsNaN {
+			markNullPrices(&bar, i, quote)
+		}
 		applyChartActions(&bar, ts, actions)
-		applyAutoAdjust(&bar, autoAdjust)
+		applyAutoAdjust(&bar, opts.autoAdjust)
 		bars = append(bars, bar)
 	}
 
@@ -394,6 +420,40 @@ func chartBarAt(i int, ts int64, quote models.ChartQuote, adjClose []*float64) m
 	return bar
 }
 
+// markNullPrices sets the prices Yahoo reported as null to NaN. Adj Close is
+// NaN only when it cannot fall back to Close.
+func markNullPrices(bar *models.Bar, i int, quote models.ChartQuote) {
+	null := func(values []*float64) bool { return i >= len(values) || values[i] == nil }
+	if null(quote.Open) {
+		bar.Open = math.NaN()
+	}
+	if null(quote.High) {
+		bar.High = math.NaN()
+	}
+	if null(quote.Low) {
+		bar.Low = math.NaN()
+	}
+	if null(quote.Close) {
+		bar.Close = math.NaN()
+		if bar.AdjClose == 0 {
+			bar.AdjClose = math.NaN()
+		}
+	}
+}
+
+// restoreMissingPrices reports prices still missing (NaN) after repair as 0,
+// History's representation of a null price.
+func restoreMissingPrices(bars []models.Bar) {
+	for i := range bars {
+		b := &bars[i]
+		for _, p := range []*float64{&b.Open, &b.High, &b.Low, &b.Close, &b.AdjClose} {
+			if math.IsNaN(*p) {
+				*p = 0
+			}
+		}
+	}
+}
+
 func applyChartActions(bar *models.Bar, ts int64, actions chartActionMaps) {
 	if div, ok := actions.dividends[ts]; ok {
 		bar.Dividends = div
@@ -427,12 +487,13 @@ func isFinitePositive(value float64) bool {
 	return value > 0 && !math.IsNaN(value) && !math.IsInf(value, 0)
 }
 
-// filterValidBars removes bars with zero/NaN values.
+// filterValidBars removes bars whose Open, High, Low and Close are all
+// missing (0 or NaN).
 func filterValidBars(bars []models.Bar) []models.Bar {
+	missing := func(v float64) bool { return v == 0 || math.IsNaN(v) }
 	result := make([]models.Bar, 0, len(bars))
 	for _, bar := range bars {
-		// Skip bars where all OHLC values are zero
-		if bar.Open == 0 && bar.High == 0 && bar.Low == 0 && bar.Close == 0 {
+		if missing(bar.Open) && missing(bar.High) && missing(bar.Low) && missing(bar.Close) {
 			continue
 		}
 		result = append(result, bar)
