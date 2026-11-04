@@ -1,0 +1,2616 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wnjoon.github.io/go-yfinance/development/v1.8.0-progress/">
+      
+      
+        <link rel="prev" href="../issue-10-authentication/">
+      
+      
+        <link rel="next" href="../v1.7.0-progress/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>v1.8.0 Progress - go-yfinance Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#go-yfinance-v180-development-progress" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="go-yfinance Docs" class="md-header__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            go-yfinance Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              v1.8.0 Progress
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="go-yfinance Docs" class="md-nav__button md-logo" aria-label="go-yfinance Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    go-yfinance Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wnjoon/go-yfinance" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    wnjoon/go-yfinance
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/ticker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ticker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/multi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/screener/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    screener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/lookup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lookup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    market
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/sector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/industry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    industry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/calendars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calendars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/live/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    live
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/price-repair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Price Repair
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/mic-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIC Codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.8.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.8.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.7.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.6.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.6.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.5.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.4.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.3.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/RELEASE_NOTES_v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-readiness-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Readiness Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../issue-10-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Issue 10 Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.8.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.8.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pull-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pull Requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-parity-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Parity Audit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upstream Parity Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented-or-adapted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implemented or adapted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#already-satisfied-in-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Already satisfied in Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-applicable-to-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not applicable to Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#go-side-fixes-included-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Go-side Fixes Included in This Release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#per-pr-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-PR gates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-differential-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python differential testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-release-verification-on-main" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-release verification on main
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-gates-this-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release gates (this PR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-remaining-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Remaining Gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.7.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.7.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.6.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.6.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.6.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.2-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.5.1-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.1 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.4.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.4.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.3.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.2.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.2.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.1.0-progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0 Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pull-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pull Requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-parity-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream Parity Audit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upstream Parity Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented-or-adapted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implemented or adapted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#already-satisfied-in-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Already satisfied in Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-applicable-to-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not applicable to Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#go-side-fixes-included-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Go-side Fixes Included in This Release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#per-pr-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-PR gates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-differential-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python differential testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-release-verification-on-main" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-release verification on main
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-gates-this-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release gates (this PR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-remaining-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Remaining Gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="go-yfinance-v180-development-progress">go-yfinance v1.8.0 Development Progress</h1>
+<blockquote>
+<p>Last Updated: 2026-11-04</p>
+<p>Tracking: <a href="https://github.com/wnjoon/go-yfinance/issues/17">go-yfinance issue #17</a></p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>This document tracks Python yfinance v1.8.0 parity work. Python yfinance 1.8.0
+was released on 2026-11-03 from <code>e2f6104</code>. The audit baseline is the complete
+upstream <code>1.7.0...1.8.0</code> comparison (44 non-merge commits), not only the
+release notes.</p>
+<p>The Go work starts from <code>main</code> at <code>52a04e8</code> (v1.7.0 plus the generated API
+documentation commit). Unlike v1.7.0, each work item was developed on its own
+branch and merged to <code>main</code> through its own pull request, so the audit trail is
+one PR per behavior.</p>
+<h2 id="pull-requests">Pull Requests</h2>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>PR</th>
+<th>Branch</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/21">#21</a></td>
+<td><code>feature/parity-1.8.0-news-graphql</code></td>
+<td>News via Yahoo's GraphQL API, <code>PostJSONWithHeaders</code>, locale-aware news cache</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/18">#18</a></td>
+<td><code>feature/parity-1.8.0-screener-size</code></td>
+<td><code>size</code> for predefined offset POST, <code>ScreenerParams.Size</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/20">#20</a></td>
+<td><code>feature/parity-1.8.0-eps-methodology</code></td>
+<td>GAAP / Normalized EPS methodology</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/19">#19</a></td>
+<td><code>feature/parity-1.8.0-tickers-info-calendar</code></td>
+<td><code>Tickers.Info()</code> / <code>Tickers.Calendar()</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/22">#22</a></td>
+<td><code>feature/parity-1.8.0-split-volume-reconcile</code></td>
+<td>Split ranges dropped when volume disagrees</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/23">#23</a></td>
+<td><code>feature/parity-1.8.0-level-shift</code></td>
+<td>Unexplained level-shift repair using 1h data</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/24">#24</a></td>
+<td><code>fix/eps-revisions-down-last-7-days</code></td>
+<td><code>EPSRevision.DownLast7Days</code> key casing (Go-side bug)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/25">#25</a></td>
+<td><code>feature/parity-1.8.0-price-shift-detector</code></td>
+<td>Shared <code>_detect_price_shifts</code> port and Python differential corpus</td>
+</tr>
+<tr>
+<td>—</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/26">#26</a></td>
+<td><code>fix/screener-auth</code></td>
+<td>Screener endpoint + crumb auth (pre-existing live breakage found in verification)</td>
+</tr>
+<tr>
+<td>—</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/27">#27</a></td>
+<td><code>fix/repair-history-pipeline</code></td>
+<td>Repair pipeline parity (unset AdjClose, null OHLC, events, repair before auto-adjust)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>this release PR</td>
+<td><code>release/v1.8.0</code></td>
+<td>Parity audit, release notes, docs</td>
+</tr>
+</tbody>
+</table>
+<p>Steps 1–4 and 7 were independent; 5 → 6 → 8 were stacked and rebased onto
+<code>main</code> as their predecessors merged. #26 and #27 came out of the pre-release
+verification described below.</p>
+<h2 id="upstream-parity-audit">Upstream Parity Audit</h2>
+<p>Every upstream commit in <code>1.7.0...1.8.0</code> has one disposition.</p>
+<h3 id="implemented-or-adapted">Implemented or adapted</h3>
+<table>
+<thead>
+<tr>
+<th>Upstream</th>
+<th>Item</th>
+<th>Go disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>9a4cf3f</code> (#3018)</td>
+<td><code>get_news()</code> via Yahoo's news GraphQL API; <code>YfData.post(headers=)</code></td>
+<td>Implemented in #21. Verbatim query and variables, cursor paging with stalled-cursor guard, Story/Video/Outlink parsing, GraphQL errors → empty result, invalid tab → <code>models.ErrInvalidNewsTab</code>. New <code>Client.PostJSONWithHeaders</code>. No crumb (verified live).</td>
+</tr>
+<tr>
+<td><code>929557f</code> (#3003)</td>
+<td>Cache <code>get_news</code> per count and tab</td>
+<td>Implemented in #21: multi-entry cache keyed by count, list, lang and region; empty results cached; deep-copied results.</td>
+</tr>
+<tr>
+<td><code>e5e6ace</code> (#3006)</td>
+<td>Send count as <code>size</code> when a predefined screen switches to the offset POST</td>
+<td>Implemented in #18. Adapted: Go switches only for <code>Offset &gt; 0</code> (an <code>int</code> cannot distinguish explicit 0; offset 0 is the first page on either endpoint). New <code>ScreenerParams.Size</code>.</td>
+</tr>
+<tr>
+<td><code>4cc1713</code>, <code>c0f66c9</code> (#2999)</td>
+<td>EPS <code>methodology</code> (GAAP / Normalized) and methodology column</td>
+<td>Implemented in #20: <code>models.EPSMethodology</code>, <code>*WithMethodology</code> methods, four new quoteSummary modules, per-methodology caches, <code>Methodology</code> field from the request or Yahoo's <code>defaultMethodology</code>.</td>
+</tr>
+<tr>
+<td><code>4188a73</code> (#3015)</td>
+<td><code>Tickers.info</code> / <code>Tickers.calendar</code> fetched in parallel</td>
+<td>Implemented in #19: <code>Tickers.Info()</code> / <code>Calendar()</code>, <code>WithWorkers</code> (default <code>min(4, n)</code>), <code>ErrSkippedRateLimited</code> after a rate limit, per-symbol <code>Data</code> / <code>Errors</code>. Failures are reported in <code>Errors</code> instead of <code>{}</code> / NaN rows.</td>
+</tr>
+<tr>
+<td><code>905d82f</code>, <code>a3241e6</code> (#2990)</td>
+<td>Repair split-like level shifts with no matching split, using 1h data</td>
+<td>Implemented in #23: <code>Options.FixLevelShifts</code> / <code>FetchHourly</code> / <code>Now</code>, wired in <code>History</code>; at most one 1h request, only when a candidate persists; rate-limit errors propagate; SOXS / KALA goldens.</td>
+</tr>
+<tr>
+<td><code>aec8332</code>, <code>5b63983</code> (#2990)</td>
+<td>Split-repair volume reconcile now drops ranges; <code>idx_rev_latest_active</code> fix</td>
+<td>Implemented in #22 (reconcile) and #25 (suspended-stock baseline and <code>idx_rev_latest_active</code>). NFE golden.</td>
+</tr>
+<tr>
+<td><code>7c66783</code>, <code>d03fd37</code> (#2990)</td>
+<td>Shared <code>_detect_price_shifts</code> and helpers</td>
+<td>Implemented in #25: one Go port of <code>_fix_prices_sudden_change</code> and its stages used by split, unit-switch and level-shift repair. A Python-generated differential corpus of 472 cases matches 472/472 (166 diverged before).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="already-satisfied-in-go">Already satisfied in Go</h3>
+<table>
+<thead>
+<tr>
+<th>Upstream</th>
+<th>Item</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1a5b7d4</code> (#3019)</td>
+<td>Honour <code>download(threads=N)</code></td>
+<td><code>pkg/multi</code> already caps the worker pool at <code>min(Threads, len)</code>.</td>
+</tr>
+<tr>
+<td><code>044b907</code> (#3026)</td>
+<td>Drop the <code>multitasking</code> dependency</td>
+<td>Python packaging; Go uses goroutines.</td>
+</tr>
+<tr>
+<td><code>5dbef21</code> (#3029)</td>
+<td>Avoid caching failed ticker lookups</td>
+<td><code>pkg/lookup</code> returns parse errors before writing the cache.</td>
+</tr>
+<tr>
+<td><code>4dffb48</code> (#2977)</td>
+<td>dividends/splits/capital_gains <code>None</code> on fetch failure</td>
+<td>Go returns <code>(nil, err)</code>.</td>
+</tr>
+<tr>
+<td><code>f4ddf5c</code> (#2988)</td>
+<td>Calendar caches consistent after failed requests</td>
+<td>Go calendars never read or write a request cache.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="not-applicable-to-go">Not applicable to Go</h3>
+<table>
+<thead>
+<tr>
+<th>Upstream</th>
+<th>Item</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>72b9e84</code>, <code>2744a85</code> (#2962), <code>d44de6d</code> (#2985), <code>2b5d7dc</code></td>
+<td>Price-history index <code>freq</code></td>
+<td>pandas index metadata; Go returns <code>[]models.Bar</code>.</td>
+</tr>
+<tr>
+<td><code>c2c84ed</code> (#2980)</td>
+<td><code>1h</code> intraday in <code>safe_merge_dfs</code></td>
+<td>No <code>safe_merge_dfs</code>; events attach by timestamp.</td>
+</tr>
+<tr>
+<td><code>73847b7</code> (#3005)</td>
+<td>Keep merged dividends when intraday splits are out of range</td>
+<td>Same merge function, not present in Go.</td>
+</tr>
+<tr>
+<td><code>cdc872c</code> (#2979), <code>25386f0</code> (#3013)</td>
+<td>Live-row rescale for KWF; weekly live bars</td>
+<td>Go does not merge Yahoo's separate live row.</td>
+</tr>
+<tr>
+<td><code>3463830</code> (#2981), <code>2cf2220</code> (#3028)</td>
+<td>Dividend FX ticker; tz/session for FX history</td>
+<td>Dividend currency conversion is not implemented in Go (pre-existing gap).</td>
+</tr>
+<tr>
+<td><code>16e7c6a</code> (#2984), <code>c7b1f3d</code></td>
+<td>60m price reconstruction</td>
+<td>Reconstruction from finer intervals was ruled N/A in v1.6.0.</td>
+</tr>
+<tr>
+<td><code>03a18ae</code> (#2983), <code>104c23f</code> (#2982)</td>
+<td>Earnings dates cache and row alignment</td>
+<td><code>get_earnings_dates</code> is not ported.</td>
+</tr>
+<tr>
+<td><code>5b93927</code> (#3001)</td>
+<td>Shift dates in a DST gap</td>
+<td>Go takes caller-built <code>time.Time</code>.</td>
+</tr>
+<tr>
+<td><code>78b0567</code> (#3000)</td>
+<td>Round only price columns</td>
+<td>Go has no <code>rounding</code> option.</td>
+</tr>
+<tr>
+<td><code>b64eb6e</code> (#3020)</td>
+<td>Replace <code>inplace=True</code></td>
+<td>pandas only.</td>
+</tr>
+<tr>
+<td><code>9467eec</code></td>
+<td><code>inspect.iscoroutinefunction</code> for live handler</td>
+<td>Python asyncio only.</td>
+</tr>
+<tr>
+<td><code>7826e48</code> (#2965)</td>
+<td><code>option_chain</code> namedtuple hoist and type hints</td>
+<td>Python performance and typing only.</td>
+</tr>
+<tr>
+<td><code>d9f72aa</code></td>
+<td><code>curl_cffi &gt;= 0.17</code></td>
+<td>Python dependency; Go uses CycleTLS.</td>
+</tr>
+<tr>
+<td><code>cd66924</code>, <code>722dcc3</code>, <code>92079cc</code></td>
+<td>Documentation</td>
+<td>Python docs.</td>
+</tr>
+<tr>
+<td><code>5cae563</code>, <code>bec1afe</code>, <code>107598a</code></td>
+<td>GitHub Actions, funding</td>
+<td>Upstream CI/repository metadata.</td>
+</tr>
+<tr>
+<td><code>e2f6104</code></td>
+<td>Version 1.8.0</td>
+<td>Version bump.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="go-side-fixes-included-in-this-release">Go-side Fixes Included in This Release</h2>
+<p>These are not upstream changes, but were found while auditing or verifying the
+parity work and are needed for the 1.8.0 behavior to be correct.</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#24</td>
+<td>Yahoo sends <code>downLast7Days</code> (capital D); <code>EPSRevision.DownLast7Days</code> was always 0. Counts are now read case-insensitively.</td>
+</tr>
+<tr>
+<td>#19</td>
+<td>quoteSummary HTTP 429 now wraps <code>client.ErrRateLimit</code>, so <code>Tickers.Calendar</code> can stop after a rate limit.</td>
+</tr>
+<tr>
+<td>#18</td>
+<td><code>Screen</code> no longer writes predefined sort settings into the caller's <code>*ScreenerParams</code>.</td>
+</tr>
+<tr>
+<td>#26</td>
+<td>Every live screener call failed (old <code>/predefined/&lt;name&gt;</code> URL returned HTML; POST had no crumb). Now <code>/predefined/saved?scrIds=</code> with cookie + crumb and Python's query parameters; HTTP errors wrap typed client errors. A live integration test was added.</td>
+</tr>
+<tr>
+<td>#27</td>
+<td>Repair pipeline parity: unset <code>AdjClose</code> (0) no longer disables detection; History keeps null OHLC as NaN during repair; Repair always sees split/dividend events even with <code>Actions=false</code>; repair runs before AutoAdjust. Also fixes three dividend / zero-repair bugs exposed by the reorder (double adjustment of low-yield dividends, Adj Close drift in zero repair, per-dividend "too small" verdicts replaced by upstream's cluster vote). History without Repair is byte-identical to before.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verification">Verification</h2>
+<h3 id="per-pr-gates">Per-PR gates</h3>
+<p>Every PR was rebased on the latest <code>main</code> before merge and passed <code>gofmt</code>,
+<code>go vet</code>, <code>go test -race ./pkg/...</code>, <code>golangci-lint</code> (v2.15.0, matching CI's
+<code>latest</code>), <code>make docs</code>, <code>git diff --check</code>, and remote CI (test, lint).</p>
+<h3 id="python-differential-testing">Python differential testing</h3>
+<ul>
+<li><code>pkg/repair/testdata/oracle/gen_oracle.py</code> runs upstream 1.8.0 and records
+  detector masks, stage traces and repaired outputs for 472 split, unit-switch,
+  level-shift, fixture and mined edge cases, plus NumPy reduction goldens. Go
+  matches all of them (rtol 1e-9 for prices, exact for masks, volume, flags).</li>
+<li><code>pkg/ticker/testdata/history_repair/gen_history_oracle.py</code> runs upstream
+  <code>history()</code> with the network mocked. Go's <code>History</code> matches it across all 16
+  Repair × Actions × AutoAdjust × KeepNA combinations (documented exception:
+  Go's FixZeroes interpolates fully null rows that upstream leaves NaN).</li>
+</ul>
+<h3 id="pre-release-verification-on-main">Pre-release verification on <code>main</code></h3>
+<p>After steps 1–8 merged, an extra verification pass ran on <code>main</code> before this
+release PR:</p>
+<ul>
+<li>Coverage (<code>go test -race -coverprofile</code>): 70.4% overall; changed files
+  <code>news.go</code> 96%, <code>attrs.go</code> 96%, <code>screener.go</code> 92%, <code>analysis.go</code> 80%,
+  new repair files 97–99%.</li>
+<li>Live Yahoo checks: News (three tabs, invalid tab), EPS methodology (MSFT,
+  AAPL, NVDA), Tickers Info/Calendar, History repair on 15 tickers (1d and 1wk),
+  and <code>cmd/example</code>. The screener failed live on both <code>main</code> and v1.7.0 code,
+  which led to #26.</li>
+<li>Two independent code reviews (repair, and everything else). Confirmed
+  findings were fixed in #26 and #27; see the next section for the rest.</li>
+<li>Live comparison after #27 (captured Yahoo data replayed through old <code>main</code>,
+  the fix, and upstream 1.8.0): AAPL and NVDA match upstream exactly with
+  Repair; SOXS matches; VOD.L with AutoAdjust went from ~41% off upstream to
+  within 0.35%.</li>
+</ul>
+<h3 id="release-gates-this-pr">Release gates (this PR)</h3>
+<ul>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go test ./...</code></li>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go vet ./...</code></li>
+<li>[x] <code>GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...</code> (v2.15.0)</li>
+<li>[x] <code>make lint</code></li>
+<li>[x] <code>GOCACHE=/tmp/go-build-cache go test -v -race -coverprofile=coverage.out ./...</code></li>
+<li>[x] <code>GOMARKDOC=/tmp/gobin/gomarkdoc make docs</code> (no API drift)</li>
+<li>[x] <code>cp README.md docs/index.md</code></li>
+<li>[x] <code>make docs-build</code></li>
+<li>[x] <code>git diff --check</code></li>
+<li>[x] Local commands match <code>.github/workflows/test.yml</code> and <code>.github/workflows/docs.yml</code></li>
+<li>[ ] Push, verify the release PR is mergeable, require remote test/lint success</li>
+<li>[ ] Merge to <code>main</code>, wait for final-main Tests and docs workflows, then create
+  annotated <code>v1.8.0</code> on the merge commit</li>
+</ul>
+<h2 id="known-remaining-gaps">Known Remaining Gaps</h2>
+<p>Recorded for later releases; none is a 1.8.0 upstream change.</p>
+<ul>
+<li>Dividend currency conversion (<code>_dividends_convert_fx</code>) is not implemented.</li>
+<li>FixZeroes interpolates whole bars, including partly null bars, where upstream
+  rebuilds only bad cells from finer data or leaves NaN; <code>repairPartialZeroes</code>
+  is not called.</li>
+<li>Without <code>KeepNA</code>, History drops null-price rows before repair and looks only
+  at OHLC; upstream drops them after repair and also considers volume and
+  actions.</li>
+<li>Only the "too small" dividend cluster vote is ported; the too-big, phantom
+  and adjustment-exceeds-dividend votes are not.</li>
+<li>Reconstruction from finer intervals (15m/1h) is not implemented, so bars
+  upstream rebuilds (e.g. some FX rows) differ.</li>
+<li>Minor review items: quoteSummary 404s are untyped errors; analysis/info
+  caches return shared values callers can mutate; a <code>Repairer</code> is not safe for
+  concurrent use (History creates one per call); with AutoAdjust, Go has no
+  <code>back_adjust</code> or <code>rounding</code>.</li>
+</ul>
+<h2 id="guardrails">Guardrails</h2>
+<ul>
+<li>Do not tag from a feature or release branch; tag only the verified merge
+  commit on <code>main</code>.</li>
+<li>Do not move or recreate an existing release tag.</li>
+<li>Run <code>make docs</code> on a non-<code>main</code> branch: on <code>main</code>, gomarkdoc adds GitHub
+  source links to every <code>docs/api/*.md</code> page.</li>
+<li>Keep unrelated dirty files out of release commits.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.top", "search.suggest", "navigation.expand"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>
