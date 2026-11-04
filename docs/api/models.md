@@ -288,6 +288,16 @@ Use [ValidPeriods](<#ValidPeriods>) and [ValidIntervals](<#ValidIntervals>) to g
 - [type Split](<#Split>)
 - [type SplitEvent](<#SplitEvent>)
 - [type ThumbnailResolution](<#ThumbnailResolution>)
+- [type TickersCalendarResult](<#TickersCalendarResult>)
+  - [func \(r \*TickersCalendarResult\) ErrorCount\(\) int](<#TickersCalendarResult.ErrorCount>)
+  - [func \(r \*TickersCalendarResult\) Get\(symbol string\) \*Calendar](<#TickersCalendarResult.Get>)
+  - [func \(r \*TickersCalendarResult\) HasErrors\(\) bool](<#TickersCalendarResult.HasErrors>)
+  - [func \(r \*TickersCalendarResult\) SuccessCount\(\) int](<#TickersCalendarResult.SuccessCount>)
+- [type TickersInfoResult](<#TickersInfoResult>)
+  - [func \(r \*TickersInfoResult\) ErrorCount\(\) int](<#TickersInfoResult.ErrorCount>)
+  - [func \(r \*TickersInfoResult\) Get\(symbol string\) \*Info](<#TickersInfoResult.Get>)
+  - [func \(r \*TickersInfoResult\) HasErrors\(\) bool](<#TickersInfoResult.HasErrors>)
+  - [func \(r \*TickersInfoResult\) SuccessCount\(\) int](<#TickersInfoResult.SuccessCount>)
 - [type TimeseriesDataPoint](<#TimeseriesDataPoint>)
 - [type TimeseriesResponse](<#TimeseriesResponse>)
 - [type TimeseriesResult](<#TimeseriesResult>)
@@ -4935,6 +4945,118 @@ type ThumbnailResolution struct {
     Tag    string `json:"tag,omitempty"`
 }
 ```
+
+<a name="TickersCalendarResult"></a>
+## type TickersCalendarResult
+
+TickersCalendarResult is the result of fetching Calendar for every symbol of a multi.Tickers collection \(Python yfinance Tickers.calendar / get\_calendar\).
+
+Python returns one DataFrame row per ticker with a NaN row for failures; Go returns one Calendar per successful symbol and the error for the rest. Every requested symbol appears in exactly one of Data or Errors.
+
+```go
+type TickersCalendarResult struct {
+    // Data maps each successfully fetched symbol to its Calendar.
+    Data map[string]*Calendar
+
+    // Errors maps each failed or skipped symbol to its error.
+    Errors map[string]error
+
+    // Symbols lists the successfully fetched symbols in Tickers order.
+    Symbols []string
+}
+```
+
+<a name="TickersCalendarResult.ErrorCount"></a>
+### func \(\*TickersCalendarResult\) ErrorCount
+
+```go
+func (r *TickersCalendarResult) ErrorCount() int
+```
+
+ErrorCount returns the number of failed or skipped symbols.
+
+<a name="TickersCalendarResult.Get"></a>
+### func \(\*TickersCalendarResult\) Get
+
+```go
+func (r *TickersCalendarResult) Get(symbol string) *Calendar
+```
+
+Get returns the Calendar for a symbol, or nil if it was not fetched.
+
+<a name="TickersCalendarResult.HasErrors"></a>
+### func \(\*TickersCalendarResult\) HasErrors
+
+```go
+func (r *TickersCalendarResult) HasErrors() bool
+```
+
+HasErrors returns true if any symbol failed or was skipped.
+
+<a name="TickersCalendarResult.SuccessCount"></a>
+### func \(\*TickersCalendarResult\) SuccessCount
+
+```go
+func (r *TickersCalendarResult) SuccessCount() int
+```
+
+SuccessCount returns the number of successfully fetched symbols.
+
+<a name="TickersInfoResult"></a>
+## type TickersInfoResult
+
+TickersInfoResult is the result of fetching Info for every symbol of a multi.Tickers collection \(Python yfinance Tickers.info / get\_info\).
+
+Every requested symbol appears in exactly one of Data or Errors.
+
+```go
+type TickersInfoResult struct {
+    // Data maps each successfully fetched symbol to its Info.
+    Data map[string]*Info
+
+    // Errors maps each failed or skipped symbol to its error.
+    Errors map[string]error
+
+    // Symbols lists the successfully fetched symbols in Tickers order.
+    Symbols []string
+}
+```
+
+<a name="TickersInfoResult.ErrorCount"></a>
+### func \(\*TickersInfoResult\) ErrorCount
+
+```go
+func (r *TickersInfoResult) ErrorCount() int
+```
+
+ErrorCount returns the number of failed or skipped symbols.
+
+<a name="TickersInfoResult.Get"></a>
+### func \(\*TickersInfoResult\) Get
+
+```go
+func (r *TickersInfoResult) Get(symbol string) *Info
+```
+
+Get returns the Info for a symbol, or nil if it was not fetched.
+
+<a name="TickersInfoResult.HasErrors"></a>
+### func \(\*TickersInfoResult\) HasErrors
+
+```go
+func (r *TickersInfoResult) HasErrors() bool
+```
+
+HasErrors returns true if any symbol failed or was skipped.
+
+<a name="TickersInfoResult.SuccessCount"></a>
+### func \(\*TickersInfoResult\) SuccessCount
+
+```go
+func (r *TickersInfoResult) SuccessCount() int
+```
+
+SuccessCount returns the number of successfully fetched symbols.
 
 <a name="TimeseriesDataPoint"></a>
 ## type TimeseriesDataPoint

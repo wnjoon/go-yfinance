@@ -50,6 +50,10 @@ info, _ := aapl.Info()
 
 // Download history for all
 result, _ := tickers.History(nil)
+
+// Fetch info and calendar for all, in parallel (up to 4 at once)
+infos, _ := tickers.Info()
+calendars, _ := tickers.Calendar(multi.WithWorkers(2))
 ```
 
 ### Thread Safety
@@ -58,20 +62,46 @@ All multi package functions are safe for concurrent use.
 
 ## Index
 
+- [Constants](<#constants>)
+- [Variables](<#variables>)
 - [func Download\(symbols \[\]string, params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#Download>)
 - [func DownloadString\(tickerStr string, params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#DownloadString>)
+- [type AttrOption](<#AttrOption>)
+  - [func WithWorkers\(n int\) AttrOption](<#WithWorkers>)
 - [type Option](<#Option>)
   - [func WithClient\(c \*client.Client\) Option](<#WithClient>)
 - [type Tickers](<#Tickers>)
   - [func NewTickers\(symbols \[\]string, opts ...Option\) \(\*Tickers, error\)](<#NewTickers>)
   - [func NewTickersFromString\(tickerStr string, opts ...Option\) \(\*Tickers, error\)](<#NewTickersFromString>)
+  - [func \(t \*Tickers\) Calendar\(opts ...AttrOption\) \(\*models.TickersCalendarResult, error\)](<#Tickers.Calendar>)
   - [func \(t \*Tickers\) Close\(\)](<#Tickers.Close>)
   - [func \(t \*Tickers\) Count\(\) int](<#Tickers.Count>)
   - [func \(t \*Tickers\) Download\(\) \(\*models.MultiTickerResult, error\)](<#Tickers.Download>)
   - [func \(t \*Tickers\) Get\(symbol string\) \*ticker.Ticker](<#Tickers.Get>)
   - [func \(t \*Tickers\) History\(params \*models.DownloadParams\) \(\*models.MultiTickerResult, error\)](<#Tickers.History>)
+  - [func \(t \*Tickers\) Info\(opts ...AttrOption\) \(\*models.TickersInfoResult, error\)](<#Tickers.Info>)
   - [func \(t \*Tickers\) Symbols\(\) \[\]string](<#Tickers.Symbols>)
 
+
+## Constants
+
+<a name="DefaultAttrWorkers"></a>DefaultAttrWorkers is the default maximum number of symbols fetched in parallel by Tickers.Info and Tickers.Calendar.
+
+Attributes such as Info cost several requests per ticker, so the default is lower than a typical history download to stay under Yahoo's rate limit \(Python yfinance \_ATTR\_MAX\_THREADS\).
+
+```go
+const DefaultAttrWorkers = 4
+```
+
+## Variables
+
+<a name="ErrSkippedRateLimited"></a>ErrSkippedRateLimited is reported for every symbol that Tickers.Info or Tickers.Calendar did not request because Yahoo rate\-limited an earlier request in the same call. Use errors.Is to detect it.
+
+Values that were fetched successfully stay cached on each Ticker, so calling the method again later only requests the skipped and failed symbols.
+
+```go
+var ErrSkippedRateLimited = errors.New("skipped because Yahoo rate-limited an earlier request")
+```
 
 <a name="Download"></a>
 ## func Download
@@ -108,6 +138,26 @@ Example:
 ```
 result, err := multi.DownloadString("AAPL MSFT GOOGL", nil)
 ```
+
+<a name="AttrOption"></a>
+## type AttrOption
+
+AttrOption configures Tickers.Info and Tickers.Calendar.
+
+```go
+type AttrOption func(*attrConfig)
+```
+
+<a name="WithWorkers"></a>
+### func WithWorkers
+
+```go
+func WithWorkers(n int) AttrOption
+```
+
+WithWorkers sets how many symbols are fetched in parallel.
+
+Values \<= 0 select the default, min\(DefaultAttrWorkers, number of symbols\). Use 1 to fetch sequentially in Tickers order. Fewer workers are gentler on Yahoo's rate limit.
 
 <a name="Option"></a>
 ## type Option
@@ -176,6 +226,29 @@ tickers, err := multi.NewTickersFromString("AAPL MSFT GOOGL")
 tickers, err := multi.NewTickersFromString("AAPL,MSFT,GOOGL")
 ```
 
+<a name="Tickers.Calendar"></a>
+### func \(\*Tickers\) Calendar
+
+```go
+func (t *Tickers) Calendar(opts ...AttrOption) (*models.TickersCalendarResult, error)
+```
+
+Calendar fetches upcoming calendar events for every symbol in parallel \(Python yfinance Tickers.calendar / get\_calendar\).
+
+Concurrency, caching, rate\-limit and error semantics are the same as Info. Where Python returns a NaN row for a failed ticker, Go reports the symbol in the result's Errors map instead.
+
+Example:
+
+```
+result, _ := tickers.Calendar()
+for _, symbol := range result.Symbols {
+    cal := result.Data[symbol]
+    if cal.HasEarnings() {
+        fmt.Println(symbol, cal.EarningsDate[0].Format("2006-01-02"))
+    }
+}
+```
+
 <a name="Tickers.Close"></a>
 ### func \(\*Tickers\) Close
 
@@ -230,6 +303,36 @@ result, err := tickers.History(&models.DownloadParams{
     Period:   "1mo",
     Interval: "1d",
 })
+```
+
+<a name="Tickers.Info"></a>
+### func \(\*Tickers\) Info
+
+```go
+func (t *Tickers) Info(opts ...AttrOption) (*models.TickersInfoResult, error)
+```
+
+Info fetches company information for every symbol in parallel \(Python yfinance Tickers.info / get\_info\).
+
+Each symbol is fetched through the Tickers' own Ticker, so successful values stay cached and a later call only requests symbols that are still missing. At most min\(DefaultAttrWorkers, Count\(\)\) symbols are fetched at once unless WithWorkers is given. Once Yahoo returns a rate\-limit error, symbols that have not started yet are not requested and report ErrSkippedRateLimited; requests already in flight complete and their results are kept.
+
+Per\-symbol failures are reported in the result's Errors map; like History, the returned error is nil even when every symbol fails.
+
+Example:
+
+```
+result, err := tickers.Info(multi.WithWorkers(2))
+if err != nil {
+    log.Fatal(err)
+}
+for _, symbol := range result.Symbols {
+    fmt.Println(symbol, result.Data[symbol].Currency)
+}
+for symbol, err := range result.Errors {
+    if errors.Is(err, multi.ErrSkippedRateLimited) {
+        fmt.Println(symbol, "skipped; call Info again later")
+    }
+}
 ```
 
 <a name="Tickers.Symbols"></a>
