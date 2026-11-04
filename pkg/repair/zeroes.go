@@ -90,6 +90,7 @@ func repairInconsistentOHLC(bars []models.Bar) []models.Bar {
 		}
 
 		avg := stats.Mean(good)
+		oldClose := bar.Close
 		if suspectOpen {
 			bar.Open = avg
 		}
@@ -101,6 +102,10 @@ func repairInconsistentOHLC(bars []models.Bar) []models.Bar {
 		}
 		if suspectClose {
 			bar.Close = avg
+			// Adj Close is corrupted with Close: keep the bar's adjustment.
+			if validPrice(bar.AdjClose) {
+				bar.AdjClose *= avg / oldClose
+			}
 		}
 		normalizeOHLCBounds(bar)
 		bar.Repaired = true
@@ -183,7 +188,7 @@ func repairZeroBar(bars []models.Bar, idx int) models.Bar {
 		bar.Close = (prevBar.Close + nextBar.Open) / 2
 		bar.High = math.Max(prevBar.Close, nextBar.Open)
 		bar.Low = math.Min(prevBar.Close, nextBar.Open)
-		bar.AdjClose = bar.Close
+		bar.AdjClose = adjustedLike(bar.Close, *prevBar)
 		return bar
 	}
 
@@ -203,13 +208,26 @@ func repairZeroBar(bars []models.Bar, idx int) models.Bar {
 		bar.High = nextBar.Open
 		bar.Low = nextBar.Open
 		bar.Close = nextBar.Open
-		bar.AdjClose = nextBar.AdjClose
+		bar.AdjClose = adjustedLike(bar.Close, *nextBar)
 		return bar
 	}
 
 	// No neighbors, cannot repair
 	bar.Repaired = false
 	return bar
+}
+
+// adjustedLike returns the Adj Close for close with ref's adjustment factor
+// (Adj Close / Close): unset (0) when ref's Adj Close is unset, and
+// unadjusted when ref's prices are invalid.
+func adjustedLike(close float64, ref models.Bar) float64 {
+	if ref.AdjClose == 0 {
+		return 0
+	}
+	if !validPrice(ref.Close) || !validPrice(ref.AdjClose) {
+		return close
+	}
+	return close * ref.AdjClose / ref.Close
 }
 
 // repairPartialZeroes fixes bars where some but not all OHLC values are zero.

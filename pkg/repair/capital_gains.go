@@ -170,7 +170,8 @@ func applyCapitalGainsRepair(bars []models.Bar, cgIndices []int) []models.Bar {
 		bar := &result[idx]
 		prevBar := result[idx-1]
 
-		if bar.Close == 0 || prevBar.Close == 0 || bar.AdjClose == 0 || prevBar.AdjClose == 0 {
+		// Skip unset (0) and missing (NaN) prices.
+		if !validPrice(bar.Close) || !validPrice(prevBar.Close) || !validPrice(bar.AdjClose) || !validPrice(prevBar.AdjClose) {
 			continue
 		}
 

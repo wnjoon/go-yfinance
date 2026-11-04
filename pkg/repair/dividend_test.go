@@ -366,3 +366,26 @@ func TestRepairDividendsKWF(t *testing.T) {
 		t.Errorf("Expected 1 dividend, got %d", stats.TotalDividends)
 	}
 }
+
+// TestAnalyzeDividendSmallYieldAdjusted checks a correctly adjusted dividend
+// smaller than 0.1% of the price (e.g. AAPL, NVDA) is not reported as
+// missing from Adj Close. An absolute 0.001 tolerance on the adjustment
+// factor flagged every such dividend and adjusted Adj Close twice; upstream
+// compares the factors exactly.
+func TestAnalyzeDividendSmallYieldAdjusted(t *testing.T) {
+	const div, prevClose = 0.26, 270.0
+	factor := 1 - div/prevClose
+	bars := []models.Bar{
+		{Date: time.Date(2025, 11, 7, 0, 0, 0, 0, time.UTC), Open: 269, High: 271, Low: 268, Close: prevClose, AdjClose: prevClose * factor * 0.998},
+		{Date: time.Date(2025, 11, 10, 0, 0, 0, 0, time.UTC), Open: 269, High: 270, Low: 268, Close: 269, AdjClose: 269 * 0.998, Dividends: div},
+	}
+	status := analyzeDividend(bars, 1, 100)
+	if status.IsMissingAdj {
+		t.Fatalf("adjusted %.3f%% dividend flagged as missing: %+v", 100*div/prevClose, status)
+	}
+	// The same dividend really missing from Adj Close is still detected.
+	bars[0].AdjClose = prevClose * 0.998
+	if status := analyzeDividend(bars, 1, 100); !status.IsMissingAdj {
+		t.Fatalf("missing adjustment not detected: %+v", status)
+	}
+}

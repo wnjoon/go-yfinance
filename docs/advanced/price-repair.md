@@ -39,6 +39,22 @@ bars, err := t.History(models.HistoryParams{
 })
 ```
 
+### How History Runs Repair
+
+`History` follows Python yfinance's `history()` order:
+
+1. The chart response is parsed. With `Repair`, dividend, split and
+   capital-gain events are always parsed (repair needs them) and prices Yahoo
+   reports as null are NaN, as upstream's DataFrame holds them
+2. Without `KeepNA`, bars whose Open, High, Low and Close are all missing are
+   dropped
+3. The repairs below run on the raw, unadjusted prices
+4. Prices still missing are reported as 0 again (bars never contain NaN), and
+   the event fields are cleared unless `Actions` is set
+5. `AutoAdjust` is applied last, from the repaired Close and Adj Close
+
+Without `Repair`, `History` output is unchanged by these steps.
+
 ## Fine-Grained Control
 
 Use `RepairOptions` for specific repairs:
@@ -118,6 +134,9 @@ For each dividend:
 2. Compare with typical window volatility
 3. Check Adj Close ratio before/after dividend
 4. Identify anomalies exceeding normal volatility
+5. Cross-check "100x too small" verdicts across dividends of similar yield
+   (upstream's dividend clusters): a minority verdict is treated as price
+   noise and dropped, a clear majority applies to the whole cluster
 
 ### Example
 
@@ -331,13 +350,29 @@ type Bar struct {
 
 The repair system applies fixes in a specific order:
 
-1. **Dividend adjustments** - Must come first
-2. **100x unit errors** - Price level corrections
-3. **Stock split errors** - Split ratio corrections
-4. **Zero/missing values** - Gap filling
-5. **Capital gains** - Last (needs clean data)
+1. **Unexplained level shifts** - Daily data, before dividend repair
+2. **Dividend adjustments** - Before price-level errors
+3. **100x unit errors** - Price level corrections
+4. **Stock split errors** - Split ratio corrections
+5. **Zero/missing values** - Gap filling
+6. **Capital gains** - Last (needs clean data)
 
 This order ensures each repair has clean data to work with.
+
+## Using the Repair Package Directly
+
+`repair.New(opts).Repair(bars)` expects bars sorted oldest first and follows
+upstream's DataFrame conventions:
+
+- A missing Open/High/Low/Close should be `math.NaN()`. Price-shift repair
+  (split, unit switch, level shift) sets such rows aside. A `0` price is a real
+  zero, as in upstream, and can make unit-switch repair correct columns
+  individually
+- `AdjClose == 0` (a `Bar` built without Adj Close) means unadjusted: it is
+  treated as Adj Close = Close and left at 0. A NaN AdjClose behaves like
+  upstream's NaN Adj Close
+- `Splits`, `Dividends` and `CapitalGains` must be filled for split, dividend
+  and capital-gains repair
 
 ## Performance Considerations
 

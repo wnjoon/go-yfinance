@@ -25,6 +25,24 @@
 //	repairer := repair.New(opts)
 //	repairedBars, err := repairer.Repair(bars)
 //
+// # Input Bars
+//
+// Bars must be sorted oldest first. Repair follows upstream's DataFrame
+// conventions for missing data:
+//
+//   - A missing Open/High/Low/Close should be NaN, as upstream sees Yahoo's
+//     nulls. Price-shift repair (split, unit switch, level shift) sets such
+//     rows aside; a 0 price is a real zero, as upstream, and can make
+//     unit-switch repair correct columns individually.
+//   - AdjClose == 0 means "no Adj Close" (the zero value of a Bar built
+//     without it): it is treated as unadjusted (Adj Close = Close) and left
+//     at 0. A NaN AdjClose propagates as upstream's NaN Adj Close does.
+//   - Splits, Dividends and CapitalGains must be filled for split, dividend
+//     and capital-gains repair; without them those repairs see no events.
+//
+// [github.com/wnjoon/go-yfinance/pkg/ticker.Ticker.History] prepares bars
+// this way.
+//
 // # Repair Options
 //
 // Individual repair functions can be enabled/disabled:
