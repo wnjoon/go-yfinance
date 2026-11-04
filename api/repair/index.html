@@ -838,6 +838,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#input-bars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Bars
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#repair-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2162,6 +2173,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#input-bars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Bars
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#repair-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2570,6 +2592,14 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>repairer := repair.New(opts)
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>repairedBars, err := repairer.Repair(bars)
 </code></pre></div>
+<h3 id="input-bars">Input Bars</h3>
+<p>Bars must be sorted oldest first. Repair follows upstream's DataFrame conventions for missing data:</p>
+<ul>
+<li>A missing Open/High/Low/Close should be NaN, as upstream sees Yahoo's nulls. Price-shift repair (split, unit switch, level shift) sets such rows aside; a 0 price is a real zero, as upstream, and can make unit-switch repair correct columns individually.</li>
+<li>AdjClose == 0 means "no Adj Close" (the zero value of a Bar built without it): it is treated as unadjusted (Adj Close = Close) and left at 0. A NaN AdjClose propagates as upstream's NaN Adj Close does.</li>
+<li>Splits, Dividends and CapitalGains must be filled for split, dividend and capital-gains repair; without them those repairs see no events.</li>
+</ul>
+<p><a href="https://pkg.go.dev/github.com/wnjoon/go-yfinance/pkg/ticker/#Ticker.History">github.com/wnjoon/go\-yfinance/pkg/ticker.Ticker.History</a> prepares bars this way.</p>
 <h3 id="repair-options">Repair Options</h3>
 <p>Individual repair functions can be enabled/disabled:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>opts := repair.Options{
@@ -2718,6 +2748,7 @@
 <p><a name="Options"></a></p>
 <h2 id="type-options">type Options</h2>
 <p>Options configures the repair behavior.</p>
+<p>Repair expects bars prepared as described under "Input Bars" in the package documentation: missing prices as NaN, AdjClose 0 meaning unadjusted, and the dividend/split/capital-gain fields filled.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Options</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="c1">// Data context</span>
 <a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="nx">Ticker</span><span class="w">    </span><span class="kt">string</span><span class="w">    </span><span class="c1">// Ticker symbol</span>
@@ -2813,7 +2844,7 @@
 <h3 id="func-repairer-repair">func (*Repairer) Repair</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Repairer</span><span class="p">)</span><span class="w"> </span><span class="nx">Repair</span><span class="p">(</span><span class="nx">bars</span><span class="w"> </span><span class="p">[]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">models</span><span class="p">.</span><span class="nx">Bar</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 </code></pre></div>
-<p>Repair applies all enabled repair operations to the bar data, which must be sorted oldest first. The order of operations matters:</p>
+<p>Repair applies all enabled repair operations to the bar data, which must be sorted oldest first (see "Input Bars" in the package documentation). The order of operations matters:</p>
 <ol>
 <li>Fix unexplained level shifts (daily data, needs Options.FetchHourly)</li>
 <li>Fix dividend adjustments (must come before price-level errors)</li>

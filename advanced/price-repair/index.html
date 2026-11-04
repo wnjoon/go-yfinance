@@ -975,6 +975,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-history-runs-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How History Runs Repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1287,6 +1304,17 @@
     <span class="md-ellipsis">
       
         Repair Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-repair-package-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the Repair Package Directly
       
     </span>
   </a>
@@ -2144,6 +2172,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-history-runs-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How History Runs Repair
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2463,6 +2508,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#using-the-repair-package-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the Repair Package Directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#performance-considerations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2580,6 +2636,20 @@
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nx">Repair</span><span class="p">:</span><span class="w">   </span><span class="kc">true</span><span class="p">,</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="p">})</span>
 </code></pre></div>
+<h3 id="how-history-runs-repair">How History Runs Repair</h3>
+<p><code>History</code> follows Python yfinance's <code>history()</code> order:</p>
+<ol>
+<li>The chart response is parsed. With <code>Repair</code>, dividend, split and
+   capital-gain events are always parsed (repair needs them) and prices Yahoo
+   reports as null are NaN, as upstream's DataFrame holds them</li>
+<li>Without <code>KeepNA</code>, bars whose Open, High, Low and Close are all missing are
+   dropped</li>
+<li>The repairs below run on the raw, unadjusted prices</li>
+<li>Prices still missing are reported as 0 again (bars never contain NaN), and
+   the event fields are cleared unless <code>Actions</code> is set</li>
+<li><code>AutoAdjust</code> is applied last, from the repaired Close and Adj Close</li>
+</ol>
+<p>Without <code>Repair</code>, <code>History</code> output is unchanged by these steps.</p>
 <h2 id="fine-grained-control">Fine-Grained Control</h2>
 <p>Use <code>RepairOptions</code> for specific repairs:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
@@ -2642,7 +2712,10 @@
 1. Calculate expected price drop based on dividend yield
 2. Compare with typical window volatility
 3. Check Adj Close ratio before/after dividend
-4. Identify anomalies exceeding normal volatility</p>
+4. Identify anomalies exceeding normal volatility
+5. Cross-check "100x too small" verdicts across dividends of similar yield
+   (upstream's dividend clusters): a minority verdict is treated as price
+   noise and dropped, a clear majority applies to the whole cluster</p>
 <h3 id="example_1">Example</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// Fix dividend errors</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nx">bars</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">History</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">HistoryParams</span><span class="p">{</span>
@@ -2815,13 +2888,28 @@ with a 100x change (1000x for KWF):
 <h2 id="repair-order">Repair Order</h2>
 <p>The repair system applies fixes in a specific order:</p>
 <ol>
-<li><strong>Dividend adjustments</strong> - Must come first</li>
+<li><strong>Unexplained level shifts</strong> - Daily data, before dividend repair</li>
+<li><strong>Dividend adjustments</strong> - Before price-level errors</li>
 <li><strong>100x unit errors</strong> - Price level corrections</li>
 <li><strong>Stock split errors</strong> - Split ratio corrections</li>
 <li><strong>Zero/missing values</strong> - Gap filling</li>
 <li><strong>Capital gains</strong> - Last (needs clean data)</li>
 </ol>
 <p>This order ensures each repair has clean data to work with.</p>
+<h2 id="using-the-repair-package-directly">Using the Repair Package Directly</h2>
+<p><code>repair.New(opts).Repair(bars)</code> expects bars sorted oldest first and follows
+upstream's DataFrame conventions:</p>
+<ul>
+<li>A missing Open/High/Low/Close should be <code>math.NaN()</code>. Price-shift repair
+  (split, unit switch, level shift) sets such rows aside. A <code>0</code> price is a real
+  zero, as in upstream, and can make unit-switch repair correct columns
+  individually</li>
+<li><code>AdjClose == 0</code> (a <code>Bar</code> built without Adj Close) means unadjusted: it is
+  treated as Adj Close = Close and left at 0. A NaN AdjClose behaves like
+  upstream's NaN Adj Close</li>
+<li><code>Splits</code>, <code>Dividends</code> and <code>CapitalGains</code> must be filled for split, dividend
+  and capital-gains repair</li>
+</ul>
 <h2 id="performance-considerations">Performance Considerations</h2>
 <ul>
 <li>Repair operations add processing overhead</li>

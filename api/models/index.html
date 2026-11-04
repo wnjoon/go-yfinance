@@ -8211,22 +8211,31 @@
 <a id="__codelineno-93-14" name="__codelineno-93-14" href="#__codelineno-93-14"></a><span class="w">    </span><span class="c1">// Include pre/post market data</span>
 <a id="__codelineno-93-15" name="__codelineno-93-15" href="#__codelineno-93-15"></a><span class="w">    </span><span class="nx">PrePost</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"prepost,omitempty"`</span>
 <a id="__codelineno-93-16" name="__codelineno-93-16" href="#__codelineno-93-16"></a>
-<a id="__codelineno-93-17" name="__codelineno-93-17" href="#__codelineno-93-17"></a><span class="w">    </span><span class="c1">// Automatically adjust OHLC for splits/dividends</span>
-<a id="__codelineno-93-18" name="__codelineno-93-18" href="#__codelineno-93-18"></a><span class="w">    </span><span class="nx">AutoAdjust</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"autoAdjust,omitempty"`</span>
-<a id="__codelineno-93-19" name="__codelineno-93-19" href="#__codelineno-93-19"></a>
-<a id="__codelineno-93-20" name="__codelineno-93-20" href="#__codelineno-93-20"></a><span class="w">    </span><span class="c1">// Include dividend and split events</span>
-<a id="__codelineno-93-21" name="__codelineno-93-21" href="#__codelineno-93-21"></a><span class="w">    </span><span class="nx">Actions</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"actions,omitempty"`</span>
-<a id="__codelineno-93-22" name="__codelineno-93-22" href="#__codelineno-93-22"></a>
-<a id="__codelineno-93-23" name="__codelineno-93-23" href="#__codelineno-93-23"></a><span class="w">    </span><span class="c1">// Repair bad data (100x errors, missing data)</span>
-<a id="__codelineno-93-24" name="__codelineno-93-24" href="#__codelineno-93-24"></a><span class="w">    </span><span class="nx">Repair</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"repair,omitempty"`</span>
-<a id="__codelineno-93-25" name="__codelineno-93-25" href="#__codelineno-93-25"></a>
-<a id="__codelineno-93-26" name="__codelineno-93-26" href="#__codelineno-93-26"></a><span class="w">    </span><span class="c1">// RepairOptions provides fine-grained control over repair operations.</span>
-<a id="__codelineno-93-27" name="__codelineno-93-27" href="#__codelineno-93-27"></a><span class="w">    </span><span class="c1">// If nil, all repairs are enabled when Repair is true.</span>
-<a id="__codelineno-93-28" name="__codelineno-93-28" href="#__codelineno-93-28"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="w"> </span><span class="o">*</span><span class="nx">RepairOptions</span><span class="w"> </span><span class="s">`json:"repairOptions,omitempty"`</span>
-<a id="__codelineno-93-29" name="__codelineno-93-29" href="#__codelineno-93-29"></a>
-<a id="__codelineno-93-30" name="__codelineno-93-30" href="#__codelineno-93-30"></a><span class="w">    </span><span class="c1">// Keep NaN rows</span>
-<a id="__codelineno-93-31" name="__codelineno-93-31" href="#__codelineno-93-31"></a><span class="w">    </span><span class="nx">KeepNA</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"keepna,omitempty"`</span>
-<a id="__codelineno-93-32" name="__codelineno-93-32" href="#__codelineno-93-32"></a><span class="p">}</span>
+<a id="__codelineno-93-17" name="__codelineno-93-17" href="#__codelineno-93-17"></a><span class="w">    </span><span class="c1">// AutoAdjust scales Open, High and Low by Adj Close / Close and sets</span>
+<a id="__codelineno-93-18" name="__codelineno-93-18" href="#__codelineno-93-18"></a><span class="w">    </span><span class="c1">// Close to Adj Close. With Repair it is applied after repair, from the</span>
+<a id="__codelineno-93-19" name="__codelineno-93-19" href="#__codelineno-93-19"></a><span class="w">    </span><span class="c1">// repaired values.</span>
+<a id="__codelineno-93-20" name="__codelineno-93-20" href="#__codelineno-93-20"></a><span class="w">    </span><span class="nx">AutoAdjust</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"autoAdjust,omitempty"`</span>
+<a id="__codelineno-93-21" name="__codelineno-93-21" href="#__codelineno-93-21"></a>
+<a id="__codelineno-93-22" name="__codelineno-93-22" href="#__codelineno-93-22"></a><span class="w">    </span><span class="c1">// Actions fills the Dividends, DividendCurrency, Splits and</span>
+<a id="__codelineno-93-23" name="__codelineno-93-23" href="#__codelineno-93-23"></a><span class="w">    </span><span class="c1">// CapitalGains fields of each bar. Repair parses these events</span>
+<a id="__codelineno-93-24" name="__codelineno-93-24" href="#__codelineno-93-24"></a><span class="w">    </span><span class="c1">// regardless and clears them afterwards when Actions is false.</span>
+<a id="__codelineno-93-25" name="__codelineno-93-25" href="#__codelineno-93-25"></a><span class="w">    </span><span class="nx">Actions</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"actions,omitempty"`</span>
+<a id="__codelineno-93-26" name="__codelineno-93-26" href="#__codelineno-93-26"></a>
+<a id="__codelineno-93-27" name="__codelineno-93-27" href="#__codelineno-93-27"></a><span class="w">    </span><span class="c1">// Repair fixes known Yahoo data errors (100x errors, bad split and</span>
+<a id="__codelineno-93-28" name="__codelineno-93-28" href="#__codelineno-93-28"></a><span class="w">    </span><span class="c1">// dividend adjustments, level shifts, missing data) on the unadjusted</span>
+<a id="__codelineno-93-29" name="__codelineno-93-29" href="#__codelineno-93-29"></a><span class="w">    </span><span class="c1">// prices, before AutoAdjust; see package repair. Null prices are NaN</span>
+<a id="__codelineno-93-30" name="__codelineno-93-30" href="#__codelineno-93-30"></a><span class="w">    </span><span class="c1">// during repair and reported as 0 afterwards unless repaired.</span>
+<a id="__codelineno-93-31" name="__codelineno-93-31" href="#__codelineno-93-31"></a><span class="w">    </span><span class="nx">Repair</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"repair,omitempty"`</span>
+<a id="__codelineno-93-32" name="__codelineno-93-32" href="#__codelineno-93-32"></a>
+<a id="__codelineno-93-33" name="__codelineno-93-33" href="#__codelineno-93-33"></a><span class="w">    </span><span class="c1">// RepairOptions provides fine-grained control over repair operations.</span>
+<a id="__codelineno-93-34" name="__codelineno-93-34" href="#__codelineno-93-34"></a><span class="w">    </span><span class="c1">// If nil, all repairs are enabled when Repair is true.</span>
+<a id="__codelineno-93-35" name="__codelineno-93-35" href="#__codelineno-93-35"></a><span class="w">    </span><span class="nx">RepairOptions</span><span class="w"> </span><span class="o">*</span><span class="nx">RepairOptions</span><span class="w"> </span><span class="s">`json:"repairOptions,omitempty"`</span>
+<a id="__codelineno-93-36" name="__codelineno-93-36" href="#__codelineno-93-36"></a>
+<a id="__codelineno-93-37" name="__codelineno-93-37" href="#__codelineno-93-37"></a><span class="w">    </span><span class="c1">// KeepNA keeps bars whose Open, High, Low and Close are all missing</span>
+<a id="__codelineno-93-38" name="__codelineno-93-38" href="#__codelineno-93-38"></a><span class="w">    </span><span class="c1">// (null in Yahoo's response, reported as 0). Otherwise they are dropped</span>
+<a id="__codelineno-93-39" name="__codelineno-93-39" href="#__codelineno-93-39"></a><span class="w">    </span><span class="c1">// before repair.</span>
+<a id="__codelineno-93-40" name="__codelineno-93-40" href="#__codelineno-93-40"></a><span class="w">    </span><span class="nx">KeepNA</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="s">`json:"keepna,omitempty"`</span>
+<a id="__codelineno-93-41" name="__codelineno-93-41" href="#__codelineno-93-41"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="DefaultHistoryParams"></a></p>
 <h3 id="func-defaulthistoryparams">func DefaultHistoryParams</h3>
