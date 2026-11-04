@@ -2,6 +2,7 @@ package repair
 
 import (
 	"math"
+	"sort"
 	"time"
 
 	"github.com/wnjoon/go-yfinance/pkg/models"
@@ -50,13 +51,29 @@ func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
 	// Determine currency divisor
 	currencyDivide := currencySubUnitDivisor(r.opts.Currency)
 
-	// Analyze each dividend
+	// Analyze every dividend first, as upstream does, so the too-small
+	// verdicts can be cross-checked across similar dividends.
+	statuses := make(map[int]dividendStatus, len(divIndices))
+	var analyzed []dividendStatus
+	for _, idx := range divIndices {
+		if idx == 0 {
+			continue
+		}
+		st := analyzeDividendWithOptions(result, idx, currencyDivide, r.opts)
+		statuses[idx] = st
+		analyzed = append(analyzed, st)
+	}
+	for _, st := range voteTooSmallByCluster(analyzed) {
+		statuses[st.Index] = st
+	}
+
+	// Repair each dividend
 	for _, idx := range divIndices {
 		if idx == 0 {
 			continue
 		}
 
-		status := analyzeDividendWithOptions(result, idx, currencyDivide, r.opts)
+		status := statuses[idx]
 
 		// Apply repairs based on analysis
 		if status.IsMissingAdj && status.IsTooSmall {
@@ -77,6 +94,74 @@ func (r *Repairer) repairDividends(bars []models.Bar) []models.Bar {
 	}
 
 	return result
+}
+
+// voteTooSmallByCluster ports upstream's cluster check of div_too_small in
+// _fix_bad_div_adjust. Price volatility can make a small dividend look 100x
+// too small, so dividends are clustered by yield (cluster_dividends) and,
+// within a cluster where some but not all are flagged, the share flagged
+// decides for the whole cluster: at least 6/11 (1.0 if any present
+// adjustment exceeds its dividend) marks all too small, at most 1/2 (0.11)
+// clears all, anything between keeps the individual verdicts.
+func voteTooSmallByCluster(statuses []dividendStatus) []dividendStatus {
+	out := append([]dividendStatus(nil), statuses...)
+	if len(out) == 0 {
+		return out
+	}
+	for _, cluster := range clusterDividendsByYield(out) {
+		nFail, adjExceedsDiv := 0, false
+		for _, i := range cluster {
+			if out[i].IsTooSmall {
+				nFail++
+			}
+			adjExceedsDiv = adjExceedsDiv || out[i].AdjTooLarge
+		}
+		if nFail == 0 || nFail == len(cluster) {
+			continue
+		}
+		trueThreshold, falseThreshold := 1.0, 0.11
+		if !adjExceedsDiv {
+			// The adjustment confirms the dividends, so a too-small verdict
+			// is more likely a false positive.
+			trueThreshold, falseThreshold = 6.0/11, 0.5
+		}
+		pctFail := float64(nFail) / float64(len(cluster))
+		switch {
+		case pctFail >= trueThreshold:
+			for _, i := range cluster {
+				out[i].IsTooSmall = true
+			}
+		case pctFail <= falseThreshold:
+			for _, i := range cluster {
+				out[i].IsTooSmall = false
+			}
+		}
+	}
+	return out
+}
+
+// clusterDividendsByYield ports upstream's cluster_dividends on the '%'
+// column: sorted by yield, a dividend joins the current cluster while its
+// yield is less than 7x the cluster's mean. It returns index groups.
+func clusterDividendsByYield(statuses []dividendStatus) [][]int {
+	order := make([]int, len(statuses))
+	for i := range order {
+		order[i] = i
+	}
+	sort.SliceStable(order, func(a, b int) bool { return statuses[order[a]].DivPct < statuses[order[b]].DivPct })
+	var clusters [][]int
+	current := []int{order[0]}
+	sum := statuses[order[0]].DivPct
+	for _, i := range order[1:] {
+		if statuses[i].DivPct/(sum/float64(len(current))) < 7 {
+			current = append(current, i)
+			sum += statuses[i].DivPct
+			continue
+		}
+		clusters = append(clusters, current)
+		current, sum = []int{i}, statuses[i].DivPct
+	}
+	return append(clusters, current)
 }
 
 // dividendStatus contains analysis results for a dividend event.

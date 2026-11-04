@@ -134,6 +134,9 @@ For each dividend:
 2. Compare with typical window volatility
 3. Check Adj Close ratio before/after dividend
 4. Identify anomalies exceeding normal volatility
+5. Cross-check "100x too small" verdicts across dividends of similar yield
+   (upstream's dividend clusters): a minority verdict is treated as price
+   noise and dropped, a clear majority applies to the whole cluster
 
 ### Example
 

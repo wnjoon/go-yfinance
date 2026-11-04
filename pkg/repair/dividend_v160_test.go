@@ -96,3 +96,71 @@ func TestRepairDividendsTooSmallAndMissingAdj(t *testing.T) {
 		t.Error("expected repaired flags on the dividend bar and earlier bars")
 	}
 }
+
+// tinyDividendBars returns 380 flat daily bars with a correctly adjusted
+// 0.005 dividend every 30 rows (0.005% yield, like NVDA's). The dividends
+// listed in drops get a 0.6 ex-date drop, which on its own looks like a
+// 100x-too-small dividend.
+func tinyDividendBars(drops ...int) []models.Bar {
+	const n, div = 380, 0.005
+	bars := make([]models.Bar, n)
+	for i := range bars {
+		bars[i] = models.Bar{
+			Date: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i),
+			Open: 100, High: 100.05, Low: 99.95, Close: 100, Volume: 1000,
+		}
+	}
+	for k := 0; k < 12; k++ {
+		bars[10+30*k].Dividends = div
+	}
+	for _, k := range drops {
+		bars[10+30*k].Low = 99.4
+	}
+	factor := 1.0
+	for i := n - 1; i >= 0; i-- {
+		bars[i].AdjClose = bars[i].Close * factor
+		if bars[i].Dividends > 0 {
+			factor *= 1 - bars[i].Dividends/bars[i-1].Close
+		}
+	}
+	return bars
+}
+
+// TestRepairDividendsTooSmallClusterVote ports upstream's cluster check of
+// div_too_small: with small dividends, price volatility can make a few of
+// them look 100x too small (NVDA 2023-06/09), so a minority verdict within
+// a cluster of similar dividends is discarded, and a majority applies to
+// the whole cluster.
+func TestRepairDividendsTooSmallClusterVote(t *testing.T) {
+	r := New(DefaultOptions())
+	count := func(bars []models.Bar) (repaired, scaled int) {
+		for _, b := range bars {
+			if b.Repaired {
+				repaired++
+			}
+			if b.Dividends > 0.1 {
+				scaled++
+			}
+		}
+		return
+	}
+
+	// Sanity: each drop alone is flagged as too small.
+	in := tinyDividendBars(3, 8)
+	if st := analyzeDividend(in, 100, 100); !st.IsTooSmall || st.IsMissingAdj || st.AdjTooLarge {
+		t.Fatalf("fixture: dividend 3 status %+v, want too small only", st)
+	}
+
+	// 2 of 12 flagged: false positives, nothing changes.
+	if rep, scaled := count(r.repairDividends(in)); rep != 0 || scaled != 0 {
+		t.Errorf("2/12 too small: %d bars repaired, %d dividends scaled, want none", rep, scaled)
+	}
+	// 7 of 12 flagged (>= 6/11): the whole cluster is too small.
+	if _, scaled := count(r.repairDividends(tinyDividendBars(0, 1, 2, 3, 4, 5, 6))); scaled != 12 {
+		t.Errorf("7/12 too small: %d dividends scaled, want 12", scaled)
+	}
+	// All flagged: kept.
+	if _, scaled := count(r.repairDividends(tinyDividendBars(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))); scaled != 12 {
+		t.Errorf("12/12 too small: %d dividends scaled, want 12", scaled)
+	}
+}
