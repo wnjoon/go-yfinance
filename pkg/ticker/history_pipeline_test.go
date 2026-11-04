@@ -313,3 +313,32 @@ func TestHistoryRepairKeepsNullPricesMissing(t *testing.T) {
 		t.Errorf("bars do not marshal (NaN left?): %v", err)
 	}
 }
+
+// TestHistoryRepairWithoutActionsUsesEvents pins issue #3: Repair needs the
+// split and dividend events even when Actions is false; they are dropped
+// from the result afterwards, as upstream drops its action columns.
+func TestHistoryRepairWithoutActionsUsesEvents(t *testing.T) {
+	ts := pipelineTimestamps(t, "chart.json")
+	params := models.HistoryParams{Period: "1y", Interval: "1d", Repair: true}
+	got := pipelineHistoryFrom(t, "chart.json", params)
+	withActions := params
+	withActions.Actions = true
+	ref := pipelineHistoryFrom(t, "chart.json", withActions)
+	if len(got) != len(ref) {
+		t.Fatalf("%d bars, %d with Actions", len(got), len(ref))
+	}
+	for i := range got {
+		r := ref[i]
+		r.Dividends, r.Splits, r.CapitalGains, r.DividendCurrency = 0, 0, 0, ""
+		if got[i] != r {
+			t.Fatalf("row %d: %+v, with Actions (events cleared) %+v", i, got[i], r)
+		}
+	}
+	// The missing 2:1 adjustment before the split was repaired.
+	if b := got[0]; !b.Repaired || b.Close > 150 {
+		t.Errorf("row 0 not split-repaired: %+v", b)
+	}
+	if i := indexOfTime(ref, ts[45]); ref[i].Splits != 2 {
+		t.Errorf("split event missing with Actions: %+v", ref[i])
+	}
+}

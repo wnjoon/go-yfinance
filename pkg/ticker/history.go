@@ -30,8 +30,11 @@ import (
 //
 // Prices Yahoo reports as null are returned as 0.
 //
-// Null prices are NaN while repairing, as upstream sees them, and become 0
-// again afterwards unless a repair filled them.
+// As in Python yfinance, Repair runs with the dividend, split and
+// capital-gain events available, even when Actions is false (the event
+// fields are cleared afterwards). Null prices are NaN while repairing, as
+// upstream sees them, and become 0 again afterwards unless a repair filled
+// them.
 //
 // With Repair on daily data, the unexplained-level-shift repair (Python
 // yfinance 1.8.0) may make one extra request for the last 729 days of 1h
@@ -53,10 +56,11 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 		return nil, err
 	}
 
-	// Parse OHLCV data. Repair sees null prices as NaN.
+	// Parse OHLCV data. Repair needs the events whether or not the caller
+	// asked for them, and sees null prices as NaN.
 	bars, err := t.parseChartData(result, chartParseOptions{
 		autoAdjust: params.AutoAdjust,
-		actions:    params.Actions,
+		actions:    params.Actions || params.Repair,
 		nullAsNaN:  params.Repair,
 	})
 	if err != nil {
@@ -78,6 +82,9 @@ func (t *Ticker) History(params models.HistoryParams) ([]models.Bar, error) {
 			return nil, fmt.Errorf("failed to repair history: %w", err)
 		}
 		restoreMissingPrices(bars)
+		if !params.Actions {
+			clearActions(bars)
+		}
 	}
 
 	return bars, nil
@@ -451,6 +458,16 @@ func restoreMissingPrices(bars []models.Bar) {
 				*p = 0
 			}
 		}
+	}
+}
+
+// clearActions removes the event fields that were only parsed for repair.
+func clearActions(bars []models.Bar) {
+	for i := range bars {
+		bars[i].Dividends = 0
+		bars[i].DividendCurrency = ""
+		bars[i].Splits = 0
+		bars[i].CapitalGains = 0
 	}
 }
 
