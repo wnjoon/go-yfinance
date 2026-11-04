@@ -140,7 +140,7 @@ func analyzeDividendWithOptions(bars []models.Bar, idx int, currencyDivide float
 	status.Volatility = calculateWindowVolatility(bars, idx)
 
 	// Check if adjustment is missing
-	status.IsMissingAdj = hasMissingDividendAdjustment(bars, idx, prevClose)
+	status.IsMissingAdj = hasMissingDividendAdjustment(bars, idx, prevClose, status.DivPct)
 
 	// Check if dividend is too large (100x error)
 	status.IsTooLarge = isDividendTooLarge(status, currencyDivide)
@@ -164,14 +164,19 @@ func analyzeDividendWithOptions(bars []models.Bar, idx int, currencyDivide float
 	return status
 }
 
-func hasMissingDividendAdjustment(bars []models.Bar, idx int, prevClose float64) bool {
+// hasMissingDividendAdjustment reports whether Adj Close does not move
+// across the ex-dividend date. Upstream tests pre_adj == post_adj; to allow
+// for Yahoo's rounding, the factors may differ by less than a tenth of the
+// dividend yield divPct. (A fixed tolerance flagged every correctly adjusted
+// dividend below 0.1% of the price, so it was adjusted twice.)
+func hasMissingDividendAdjustment(bars []models.Bar, idx int, prevClose, divPct float64) bool {
 	if !validPrice(prevClose) || !validPrice(bars[idx].Close) ||
 		!validPrice(bars[idx-1].AdjClose) || !validPrice(bars[idx].AdjClose) {
 		return false
 	}
 	prevAdj := bars[idx-1].AdjClose / prevClose
 	postAdj := bars[idx].AdjClose / bars[idx].Close
-	return math.Abs(prevAdj-postAdj) < 0.001
+	return math.Abs(prevAdj/postAdj-1) < 0.1*divPct
 }
 
 func isDividendTooLarge(status dividendStatus, currencyDivide float64) bool {
