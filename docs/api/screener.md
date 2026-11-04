@@ -247,6 +247,12 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 
 Screen uses a predefined screener to find matching stocks.
 
+Without an offset, Screen calls Yahoo's predefined GET endpoint with the count, offset, and sort parameters. That endpoint ignores offset, so when params.Offset \> 0 and the screener has an entry in PredefinedScreenerQueries, Screen switches to the custom\-query POST endpoint using the predefined query \(matching Python yfinance's screen\(\)\). In that case the predefined sort field and direction are used unless params.SortField is set to something other than "" or "ticker" \(or params.SortAsc is true\), and the number of results is sent as Yahoo's "size" field: params.Size if set, otherwise params.Count.
+
+Python switches endpoints whenever offset is given, including offset=0. Go cannot distinguish an explicit zero from an unset int, and an offset of 0 returns the first page on either endpoint, so Go switches only for Offset \> 0.
+
+If params.Size is set on the GET path it takes precedence over params.Count, mirroring Python's deprecated handling of size for predefined screens. Count and Size must not exceed 250 \(Yahoo's limit\). The caller's params are never modified.
+
 Example:
 
 ```
@@ -266,7 +272,9 @@ for _, quote := range result.Quotes {
 func (s *Screener) ScreenWithQuery(query models.ScreenerQueryBuilder, params *models.ScreenerParams) (*models.ScreenerResult, error)
 ```
 
-ScreenWithQuery uses a custom query to find matching stocks or funds. Accepts both \*models.EquityQuery and \*models.FundQuery. The quoteType is automatically determined from the query type: "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery.
+ScreenWithQuery uses a custom query to find matching stocks or funds. Accepts \*models.EquityQuery, \*models.FundQuery, and \*models.ETFQuery. The quoteType is automatically determined from the query type: "EQUITY" for EquityQuery, "MUTUALFUND" for FundQuery, "ETF" for ETFQuery.
+
+The request body always includes params.Count as "count"; params.Size is sent as "size" only when it is greater than zero, matching Python yfinance. Count and Size must not exceed 250 \(Yahoo's limit\).
 
 Example:
 

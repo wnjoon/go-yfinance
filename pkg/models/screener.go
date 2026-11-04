@@ -203,10 +203,19 @@ func AllPredefinedScreeners() []PredefinedScreener {
 // ScreenerParams represents parameters for the Screen function.
 type ScreenerParams struct {
 	// Offset is the result offset for pagination (default 0).
+	// Screen switches predefined screeners to the POST endpoint when Offset > 0.
 	Offset int
 
 	// Count is the number of results to return (default 25, max 250).
 	Count int
+
+	// Size is Yahoo's "size" field for the screener POST endpoint (max 250).
+	// Zero means unset. For ScreenWithQuery it is sent as "size" in addition
+	// to "count". When Screen switches a predefined screener to the POST
+	// endpoint because Offset > 0, the result count is sent as "size": Size
+	// if set, otherwise Count. On the predefined GET endpoint a non-zero Size
+	// overrides Count, mirroring Python yfinance.
+	Size int
 
 	// SortField is the field to sort by (default "ticker").
 	SortField string
