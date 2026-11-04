@@ -1,6 +1,7 @@
 package repair
 
 import (
+	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -241,22 +242,37 @@ func TestRepairStockSplitsNRDYGolden(t *testing.T) {
 		opts := DefaultOptions()
 		opts.Interval = "1d"
 		got := New(opts).repairStockSplits(bad)
-		for i := range got {
-			for _, c := range []struct {
-				name      string
-				got, want float64
-			}{
-				{"Open", got[i].Open, fixed[i].Open}, {"High", got[i].High, fixed[i].High},
-				{"Low", got[i].Low, fixed[i].Low}, {"Close", got[i].Close, fixed[i].Close},
-				{"AdjClose", got[i].AdjClose, fixed[i].AdjClose},
-			} {
-				if !closeTo(c.got, c.want, 5e-5) {
-					t.Fatalf("last=%d row=%d %s: got %v want %v", last, i, c.name, c.got, c.want)
-				}
+		assertSplitGolden(t, fmt.Sprintf("NRDY last=%d", last), got, fixed)
+	}
+}
+
+// assertSplitGolden mirrors upstream test_repair_bad_stock_splits: every price
+// column must match with rtol=5e-5, with NaN equal to NaN (equal_nan=True,
+// added in Python 1.8.0 for the NFE fixture's missing split-day row). Volume
+// is integral in Go, so it must match exactly.
+func assertSplitGolden(t *testing.T, label string, got, fixed []models.Bar) {
+	t.Helper()
+	if len(got) != len(fixed) {
+		t.Fatalf("%s: got %d rows, want %d", label, len(got), len(fixed))
+	}
+	for i := range got {
+		for _, c := range []struct {
+			name      string
+			got, want float64
+		}{
+			{"Open", got[i].Open, fixed[i].Open}, {"High", got[i].High, fixed[i].High},
+			{"Low", got[i].Low, fixed[i].Low}, {"Close", got[i].Close, fixed[i].Close},
+			{"AdjClose", got[i].AdjClose, fixed[i].AdjClose},
+		} {
+			if math.IsNaN(c.got) && math.IsNaN(c.want) {
+				continue
 			}
-			if got[i].Volume != fixed[i].Volume {
-				t.Fatalf("last=%d row=%d Volume: got %d want %d", last, i, got[i].Volume, fixed[i].Volume)
+			if !closeTo(c.got, c.want, 5e-5) {
+				t.Fatalf("%s row=%d %s: got %v want %v", label, i, c.name, c.got, c.want)
 			}
+		}
+		if got[i].Volume != fixed[i].Volume {
+			t.Fatalf("%s row=%d Volume: got %d want %d", label, i, got[i].Volume, fixed[i].Volume)
 		}
 	}
 }
@@ -273,11 +289,11 @@ func TestRepairStockSplitsAllZeroVolumeIsNotRepaired(t *testing.T) {
 	}
 }
 
-func TestApplySplitRangesUsesPythonBankersRounding(t *testing.T) {
+func TestApplyPriceShiftRangesUsesPythonBankersRounding(t *testing.T) {
 	bars := []models.Bar{{Open: 1, High: 1, Low: 1, Close: 1, AdjClose: 1, Volume: 5}}
-	got := applySplitRanges(bars, 1, 2, []bool{false}, []bool{true})
-	if got[0].Volume != 2 {
-		t.Fatalf("2.5 volume rounded to %d, want Python/NumPy half-even 2", got[0].Volume)
+	applyPriceShiftRanges(bars, []int{0}, []priceShiftRange{{start: 0, end: 1, multiplier: 2, volumeMultiplier: 0.5}}, true, true)
+	if bars[0].Volume != 2 {
+		t.Fatalf("2.5 volume rounded to %d, want Python/NumPy half-even 2", bars[0].Volume)
 	}
 }
 

@@ -40,9 +40,10 @@ func intervalNoiseMultiplier(interval string) float64 {
 	}
 }
 
-// denoiseVolume smooths a volume series for boundary comparison: zeros are
-// backward- then forward-filled, then a sliding median with window <= 9 is
-// taken. Port of upstream _fix_prices_sudden_change's denoise_volume.
+// denoiseVolume smooths a volume series for range comparison: zeros are
+// backward- then forward-filled, then a centred sliding median with an odd
+// window of at most 9 rows is taken (edge windows are truncated, matching
+// upstream's NaN padding + nanmedian). Port of upstream _denoise_volume.
 func denoiseVolume(vol []float64) []float64 {
 	n := len(vol)
 	if n == 0 {
@@ -91,56 +92,6 @@ func denoiseVolume(vol []float64) []float64 {
 	return out
 }
 
-// volumeChangeThreshold returns the ratio above which a one-bar volume change
-// counts as abnormal, scaled to the candidate price-change size (upstream
-// threshold_volUnitChg = 1 + (split_max - 1 + largest_volChg_pct) * 0.2).
-func volumeChangeThreshold(vol []float64, changeMax float64, interval string) float64 {
-	denoised := denoiseVolume(vol)
-
-	changes := make([]float64, 0, len(denoised))
-	for i := 1; i < len(denoised); i++ {
-		if denoised[i-1] > 0 {
-			changes = append(changes, denoised[i]/denoised[i-1])
-		} else {
-			changes = append(changes, 1.0)
-		}
-	}
-
-	largestVolChgPct := 0.0
-	if len(changes) >= 3 {
-		q1, q3, iqr := stats.IQR(changes)
-		if !math.IsNaN(iqr) {
-			normal := boundedChanges(changes, q1-1.5*iqr, q3+1.5*iqr)
-			if len(normal) > 0 {
-				avg := stats.Mean(normal)
-				sd := stats.Std(normal, 0)
-				if !math.IsNaN(sd) && avg != 0 {
-					largestVolChgPct = 5 * sd / avg
-				}
-			}
-		}
-	}
-
-	largestVolChgPct *= intervalNoiseMultiplier(interval)
-
-	return 1 + (changeMax-1+largestVolChgPct)*0.2
-}
-
-// boundaryVolumeChange returns the denoised volume just after a boundary
-// divided by the denoised volume just before it, or NaN when either side has
-// no usable volume.
-func boundaryVolumeChange(vol []float64, boundary int) float64 {
-	if boundary <= 0 || boundary >= len(vol) {
-		return math.NaN()
-	}
-	before := positiveValues(denoiseVolume(vol[:boundary]))
-	during := positiveValues(denoiseVolume(vol[boundary:]))
-	if len(before) == 0 || len(during) == 0 {
-		return math.NaN()
-	}
-	return during[0] / before[len(before)-1]
-}
-
 func positiveValues(values []float64) []float64 {
 	out := make([]float64, 0, len(values))
 	for _, v := range values {
@@ -149,52 +100,4 @@ func positiveValues(values []float64) []float64 {
 		}
 	}
 	return out
-}
-
-// unitSwitchVolumeOK cross-checks a candidate unit switch against volume: a
-// genuine currency-unit switch leaves volume roughly unchanged, while a real
-// split or reverse split moves volume sharply opposite to price (upstream
-// #2943). Unusable volume (NaN change) does not veto.
-func unitSwitchVolumeOK(vol []float64, boundary int, priceUp bool, volThreshold float64) bool {
-	change := boundaryVolumeChange(vol, boundary)
-	if math.IsNaN(change) {
-		return true
-	}
-	if priceUp && change < 1/volThreshold {
-		// Price up ~100x while volume collapsed: a real reverse split.
-		return false
-	}
-	if !priceUp && change > volThreshold {
-		// Price down ~100x while volume surged: a real forward split.
-		return false
-	}
-	return true
-}
-
-// splitVolumeConfirms requires the mirror-image volume jump a genuinely
-// unadjusted split produces at the split date (upstream #2943: stock-split
-// repair REQUIRES a big volume change of matching sign).
-func splitVolumeConfirms(bars []models.Bar, splitIdx int, splitRatio float64, interval string) bool {
-	vol := barVolumes(bars)
-	if allVolumesZero(vol) {
-		return false
-	}
-
-	change := boundaryVolumeChange(vol, splitIdx)
-	if math.IsNaN(change) {
-		// Boundary volume unusable (e.g. no positive volume on one side):
-		// upstream only cross-checks when it CAN compute the change, and
-		// does not veto when it cannot.
-		return true
-	}
-
-	changeMax := math.Max(splitRatio, 1/splitRatio)
-	volThreshold := volumeChangeThreshold(vol, changeMax, interval)
-
-	if splitRatio > 1 {
-		// Unadjusted forward split: price drops, volume jumps.
-		return change > volThreshold
-	}
-	// Unadjusted reverse split: price jumps, volume collapses.
-	return change < 1/volThreshold
 }

@@ -14,11 +14,13 @@ import (
 // prices, or applies them incorrectly. This function detects and corrects these issues.
 //
 // Algorithm:
-// 1. Find all split events in the data
-// 2. For each split, analyze price changes around the split date
-// 3. Use IQR-based outlier detection to identify normal volatility
-// 4. Detect if the split ratio appears in the price changes (suggesting unadjusted data)
-// 5. Apply corrections by multiplying/dividing by the split ratio
+//  1. Find all split events in the data
+//  2. For each split, analyze price changes around the split date
+//  3. Use IQR-based outlier detection to identify normal volatility
+//  4. Detect if the split ratio appears in the price changes (suggesting unadjusted data)
+//  5. Pair the signals into alternating ranges and drop ranges whose trading
+//     volume does not confirm them (upstream 1.8.0 range reconcile)
+//  6. Apply corrections by multiplying/dividing by the split ratio
 func (r *Repairer) repairStockSplits(bars []models.Bar) []models.Bar {
 	if len(bars) < 2 {
 		return bars
@@ -83,7 +85,18 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, int
 		lookAhead = 1
 	}
 	cutoff := minInt(len(result), splitIdx+lookAhead+1)
-	work := result[:cutoff]
+	// Upstream drops rows with any missing OHLC before detection and adds
+	// them back untouched. rows maps newest-first positions to bar indices.
+	rows := make([]int, 0, cutoff)
+	for i := cutoff - 1; i >= 0; i-- {
+		if ohlcComplete(result[i]) {
+			rows = append(rows, i)
+		}
+	}
+	work := make([]models.Bar, len(rows))
+	for k, i := range rows {
+		work[len(rows)-1-k] = result[i]
+	}
 	if len(work) < 3 {
 		return bars
 	}
@@ -151,11 +164,30 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, int
 		down[i] = v < 1/threshold
 	}
 	up[0], down[0] = false, false
+
+	// The volume threshold is estimated from the unscreened candidates
+	// (upstream _estimate_volume_shift_threshold runs before both filters).
+	vol := make([]float64, len(rows))
+	for k, i := range rows {
+		vol[k] = float64(result[i].Volume)
+	}
+	volThreshold, volThresholdOK := estimateVolumeShiftThreshold(vol, up, down, splitRatio, interval)
+
 	suppressSplitVolumeSpikes(work, up, down)
 	suppressLocalVolatility(ratio, up, down, splitMax, interval)
-	result = applySplitRanges(result, cutoff, splitRatio, up, down)
+
+	ranges := mapSignalsToRanges(up, down, splitRatio)
+	if volThresholdOK {
+		ranges = reconcilePriceShiftsWithVolume(vol, ranges, up, down, volThreshold, false)
+	}
+	applyPriceShiftRanges(result, rows, ranges, true, true)
 
 	return result
+}
+
+// ohlcComplete reports whether a bar has no missing (NaN) OHLC value.
+func ohlcComplete(bar models.Bar) bool {
+	return !math.IsNaN(bar.Open) && !math.IsNaN(bar.High) && !math.IsNaN(bar.Low) && !math.IsNaN(bar.Close)
 }
 
 func adjustedOHLCMedian(bar models.Bar) float64 {
@@ -277,40 +309,6 @@ func splitBoundedChanges(changes []float64, lower, upper float64) []float64 {
 		}
 	}
 	return out
-}
-
-// applySplitRanges ports upstream's map_signals_to_ranges. Signal indexes are
-// newest-first; only alternating ranges are corrected, preserving already-good
-// islands (the NRDY regression contains several such islands).
-func applySplitRanges(bars []models.Bar, cutoff int, split float64, up, down []bool) []models.Bar {
-	indices := make([]int, 0)
-	for i := range up {
-		if up[i] || down[i] {
-			indices = append(indices, i)
-		}
-	}
-	for pair := 0; pair < len(indices); pair += 2 {
-		start, end := indices[pair], len(up)
-		if pair+1 < len(indices) {
-			end = indices[pair+1]
-		}
-		factor := split
-		if (split > 1 && up[start]) || (split < 1 && down[start]) {
-			factor = 1 / split
-		}
-		for di := start; di < end; di++ {
-			i := cutoff - 1 - di
-			bars[i].Open *= factor
-			bars[i].High *= factor
-			bars[i].Low *= factor
-			bars[i].Close *= factor
-			bars[i].AdjClose *= factor
-			bars[i].Dividends *= factor
-			bars[i].Volume = int64(math.RoundToEven(float64(bars[i].Volume) / factor))
-			bars[i].Repaired = true
-		}
-	}
-	return bars
 }
 
 // expectedSplitChange returns the signed price change an UNADJUSTED split

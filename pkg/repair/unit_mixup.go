@@ -307,8 +307,26 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 	// threshold = 1 + (split_max - 1 + largest_change_pct) * 0.6)
 	threshold := 1 + (changeMax-1+largestChangePct)*0.6
 
-	// Abnormal-volume threshold for the boundary cross-check
-	volThreshold := volumeChangeThreshold(vol, changeMax, r.opts.Interval)
+	// Upstream screens candidates with volume in reverse date order: newest
+	// first, position k comparing the older row with the newer one. A price
+	// rise in time (dayChange >= threshold) is therefore an upstream "down"
+	// signal (older side too low), and a fall an "up" signal.
+	n := len(bars)
+	volRev := make([]float64, n)
+	upRev, downRev := make([]bool, n), make([]bool, n)
+	for i := 0; i < n; i++ {
+		volRev[n-1-i] = vol[i]
+	}
+	for i := 1; i < n; i++ {
+		prev := ohlcMedian(bars[i-1])
+		if prev == 0 {
+			continue
+		}
+		dayChange := ohlcMedian(bars[i]) / prev
+		downRev[n-i] = dayChange >= threshold
+		upRev[n-i] = dayChange <= 1.0/threshold
+	}
+	volThreshold, volThresholdOK := estimateVolumeShiftThreshold(volRev, upRev, downRev, change, r.opts.Interval)
 
 	// Find where sudden change occurs
 	for i := 1; i < len(bars); i++ {
@@ -322,7 +340,11 @@ func (r *Repairer) fixPricesSuddenChange(bars []models.Bar, change float64) []mo
 
 		// Check if this looks like a unit switch
 		if dayChange >= threshold || dayChange <= 1.0/threshold {
-			if !unitSwitchVolumeOK(vol, i, dayChange >= threshold, volThreshold) {
+			// Go repairs a single switch: everything older than i, which is
+			// the newest-first range [n-i, n). Upstream's unit-switch
+			// reconcile drops it when volume moves inversely to price.
+			candidate := []priceShiftRange{{start: n - i, end: n}}
+			if volThresholdOK && len(reconcilePriceShiftsWithVolume(volRev, candidate, upRev, downRev, volThreshold, true)) == 0 {
 				// Volume says this is a real corporate action, not a unit
 				// switch — keep scanning for a genuine switch point.
 				continue

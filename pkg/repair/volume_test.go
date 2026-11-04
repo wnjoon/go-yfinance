@@ -1,7 +1,6 @@
 package repair
 
 import (
-	"math"
 	"testing"
 	"time"
 
@@ -162,21 +161,20 @@ func TestRepairStockSplitsUnadjustedWithVolume(t *testing.T) {
 	}
 }
 
-func TestRepairStockSplitsFlatNonzeroVolumeDoesNotVeto(t *testing.T) {
+func TestRepairStockSplitsFlatNonzeroVolumeVetoes(t *testing.T) {
 	repairer := New(DefaultOptions())
 
-	// Final 1.7.0 semantics use volume to reject a concrete false-positive,
-	// but lack of a volume jump alone does not veto a clear price signal.
+	// Python 1.8.0 (aec8332) made the split range-volume check effective: a
+	// clear price signal whose volume neither moves inversely nor shifts by
+	// >15 standard deviations is dropped. Verified against upstream
+	// _fix_bad_stock_splits on the same rows.
 	bars := unadjustedSplitBars([]int64{1200, 1150, 1250, 1180, 1220, 1210, 1190, 1230})
 
 	result := repairer.repairStockSplits(bars)
 
-	for i := 0; i < 5; i++ {
-		if !closeTo(result[i].Close, bars[i].Close/2, 1e-12) {
-			t.Errorf("bar %d: expected split correction, got %v", i, result[i].Close)
-		}
-		if !result[i].Repaired {
-			t.Errorf("bar %d: expected repair", i)
+	for i := range result {
+		if result[i] != bars[i] {
+			t.Errorf("bar %d: expected no change, got %+v", i, result[i])
 		}
 	}
 }
@@ -187,27 +185,5 @@ func TestExpectedSplitChangeSigns(t *testing.T) {
 	}
 	if got := expectedSplitChange(0.25); !closeTo(got, 3.0, 1e-12) {
 		t.Errorf("1:4 reverse split: expected 3.0, got %v", got)
-	}
-}
-
-func TestVolumeChangeThresholdScalesWithChange(t *testing.T) {
-	vol := []float64{1000, 1010, 990, 1020, 995, 1005}
-	t100 := volumeChangeThreshold(vol, 100, "1d")
-	t2 := volumeChangeThreshold(vol, 2, "1d")
-	if t100 <= t2 {
-		t.Errorf("threshold must grow with change size: t100=%v t2=%v", t100, t2)
-	}
-	if t2 <= 1 {
-		t.Errorf("threshold must exceed 1, got %v", t2)
-	}
-	if math.IsNaN(t100) {
-		t.Error("threshold must not be NaN")
-	}
-}
-
-func TestVolumeChangeThresholdUsesV170Coefficient(t *testing.T) {
-	vol := []float64{1000, 1000, 1000, 1000, 1000, 1000}
-	if got := volumeChangeThreshold(vol, 2, "1d"); !closeTo(got, 1.2, 1e-12) {
-		t.Fatalf("threshold = %v, want 1.2", got)
 	}
 }
