@@ -1660,6 +1660,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#release-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release Record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-remaining-gaps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2120,6 +2131,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#release-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release Record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-remaining-gaps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2248,7 +2270,7 @@ one PR per behavior.</p>
 </tr>
 <tr>
 <td>9</td>
-<td>this release PR</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/28">#28</a></td>
 <td><code>release/v1.8.0</code></td>
 <td>Parity audit, release notes, docs</td>
 </tr>
@@ -2519,10 +2541,49 @@ release PR:</p>
 <li>[x] <code>make docs-build</code></li>
 <li>[x] <code>git diff --check</code></li>
 <li>[x] Local commands match <code>.github/workflows/test.yml</code> and <code>.github/workflows/docs.yml</code></li>
-<li>[ ] Push, verify the release PR is mergeable, require remote test/lint success</li>
-<li>[ ] Merge to <code>main</code>, wait for final-main Tests and docs workflows, then create
+<li>[x] Push, verify the release PR is mergeable, require remote test/lint success</li>
+<li>[x] Merge to <code>main</code>, wait for final-main Tests and docs workflows, then create
   annotated <code>v1.8.0</code> on the merge commit</li>
 </ul>
+<h2 id="release-record">Release Record</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release PR</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/pull/28">#28</a>: remote test and lint passed, merged as <code>bd6bd50</code></td>
+</tr>
+<tr>
+<td>Final-main docs workflow</td>
+<td><code>Generate Documentation &amp; Deploy Site</code> succeeded on <code>bd6bd50</code>; no generated API-doc commit was needed</td>
+</tr>
+<tr>
+<td>Final-main Tests</td>
+<td>First attempt failed only in <code>pkg/lookup</code> <code>TestLookupCacheIntegration</code>: Yahoo returned HTTP 500 to a live lookup request. <code>pkg/lookup</code> is unchanged since v1.7.0, the same transient 500 had been seen once during step 1, and the test passed three times locally. The failed job was rerun and passed on <code>bd6bd50</code> (run 41790418939, attempt 2).</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Annotated <code>v1.8.0</code> created on <code>bd6bd501f94b659a00a9b0138e402a0243eace41</code> after both final-main workflows passed; no local or remote tag collision</td>
+</tr>
+<tr>
+<td>GitHub release</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/releases/tag/v1.8.0">v1.8.0</a>, published from <code>RELEASE_NOTES_v1.8.0.md</code> and marked Latest</td>
+</tr>
+<tr>
+<td>Go module proxy</td>
+<td><code>GOPROXY=https://proxy.golang.org go list -m github.com/wnjoon/go-yfinance@v1.8.0</code> resolves</td>
+</tr>
+<tr>
+<td>Tracking issue</td>
+<td><a href="https://github.com/wnjoon/go-yfinance/issues/17">#17</a> closed by #28</td>
+</tr>
+</tbody>
+</table>
 <h2 id="known-remaining-gaps">Known Remaining Gaps</h2>
 <p>Recorded for later releases; none is a 1.8.0 upstream change.</p>
 <ul>
