@@ -508,6 +508,9 @@ Parameters can be configured via \[models.HistoryParams\]:
 - PrePost: Include pre/post market data
 - AutoAdjust: Adjust prices for splits/dividends
 - Actions: Include dividend and split data in bars
+- Repair: Repair known Yahoo data errors \(see package repair\)
+
+With Repair on daily data, the unexplained\-level\-shift repair \(Python yfinance 1.8.0\) may make one extra request for the last 729 days of 1h data, only when a candidate shift is found. If that request is rate limited, History returns the rate\-limit error; other failures of it leave the data unrepaired by that step.
 
 Example:
 

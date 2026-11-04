@@ -4220,6 +4220,11 @@ type RepairOptions struct {
 
     // FixCapitalGains repairs capital gains double-counting (ETF/MutualFund only)
     FixCapitalGains bool `json:"fixCapitalGains,omitempty"`
+
+    // FixLevelShifts repairs split-like level shifts in daily data that have
+    // no matching split, using one extra request for 1h data (Python
+    // yfinance 1.8.0). Only applies to interval 1d and non-FX tickers.
+    FixLevelShifts bool `json:"fixLevelShifts,omitempty"`
 }
 ```
 
