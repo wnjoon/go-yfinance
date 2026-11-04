@@ -55,7 +55,10 @@
 //	opts.FixSplits = true
 //
 // Uses IQR-based outlier detection to identify suspicious price changes that
-// match the split ratio, then applies corrections.
+// match the split ratio, then applies corrections. Each candidate range must
+// be confirmed by trading volume (volume moving inversely to price, or a
+// shift of more than 15 standard deviations); unconfirmed ranges are left
+// unchanged.
 //
 // This package is designed to match the behavior of Python yfinance's
 // price repair functionality.

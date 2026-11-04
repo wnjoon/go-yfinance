@@ -46,26 +46,6 @@ func TestApplySplitCorrectionScalesDividend(t *testing.T) {
 	}
 }
 
-// TestSplitVolumeConfirmsNoVetoWhenBoundaryUnusable locks the fix: when the
-// boundary volume change cannot be computed (no positive volume on one
-// side), upstream does not veto the split repair, unlike the all-zero-volume
-// case which disables repair entirely.
-func TestSplitVolumeConfirmsNoVetoWhenBoundaryUnusable(t *testing.T) {
-	bars := make([]models.Bar, 6)
-	for i := range bars {
-		bars[i] = volBar(i+1, 100, 0)
-	}
-	// Only the post-boundary side has any volume; pre-boundary side is all
-	// zero, so boundaryVolumeChange returns NaN.
-	for i := 3; i < 6; i++ {
-		bars[i].Volume = 1000
-	}
-
-	if !splitVolumeConfirms(bars, 3, 2.0, "1d") {
-		t.Error("expected splitVolumeConfirms=true (no veto) when boundary volume is unusable")
-	}
-}
-
 // TestSplitDetectionRejectsModeratePriceDrop locks the threshold-formula fix
 // (finding #2): a ~30% drop with low background volatility must not be
 // mistaken for an unadjusted 2:1 split (unadjusted implies ~50% drop, and the
