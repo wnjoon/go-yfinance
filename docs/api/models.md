@@ -4291,7 +4291,10 @@ type ScreenerParams struct {
     // Screen switches predefined screeners to the POST endpoint when Offset > 0.
     Offset int
 
-    // Count is the number of results to return (default 25, max 250).
+    // Count is the number of results to return for predefined screeners
+    // (default 25, max 250). Yahoo's custom-query POST endpoint ignores
+    // "count" and returns 25 rows unless Size is set, so use Size with
+    // ScreenWithQuery (Python yfinance behaves the same).
     Count int
 
     // Size is Yahoo's "size" field for the screener POST endpoint (max 250).
