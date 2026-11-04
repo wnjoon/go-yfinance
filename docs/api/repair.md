@@ -8,7 +8,7 @@ import "github.com/wnjoon/go-yfinance/pkg/repair"
 
 Package repair provides price data repair functionality for financial time series.
 
-This package detects and corrects common data quality issues in Yahoo Finance data, including 100x currency errors, bad stock split adjustments, dividend double\-counting, capital gains double\-counting, and missing/zero values.
+This package detects and corrects common data quality issues in Yahoo Finance data, including 100x currency errors, bad stock split adjustments, split\-like level shifts with no matching split, dividend double\-counting, capital gains double\-counting, and missing/zero values.
 
 ### Overview
 
@@ -44,6 +44,7 @@ opts := repair.Options{
     FixSplits:       true,   // Fix stock split errors
     FixDividends:    true,   // Fix dividend adjustment errors
     FixCapitalGains: true,   // Fix capital gains double-counting
+    FixLevelShifts:  true,   // Fix split-like shifts with no split (needs FetchHourly)
 }
 ```
 
@@ -69,6 +70,19 @@ opts.FixSplits = true
 
 Uses IQR\-based outlier detection to identify suspicious price changes that match the split ratio, then applies corrections. Each candidate range must be confirmed by trading volume \(volume moving inversely to price, or a shift of more than 15 standard deviations\); unconfirmed ranges are left unchanged.
 
+### Unexplained Level Shift Repair
+
+Yahoo sometimes applies a split\-like adjustment to daily data before a date with no split nearby: older prices are N times too large and volume N times too small, where N need not be a split ratio. Yahoo's 1h data is not affected, so N is measured from it:
+
+```
+opts.FixLevelShifts = true
+opts.FetchHourly = func(start, end time.Time) ([]models.Bar, error) {
+    // return raw 1h bars in [start, end), without running repair
+}
+```
+
+It runs first \(before dividend repair\), only for interval "1d" and tickers without '='. Candidate 2x\+ day\-to\-day changes must persist, lie away from the data ends and more than five rows from any split, and fall within the last 729 days. FetchHourly is then called once; the 1d/1h price ratios on each side of the shift give the multiple, which must be outside \(0.8, 1.25\) \(otherwise the move is genuine\) and within 3% of an integer or integer reciprocal. The repair reuses split repair, including its volume confirmation, and leaves dividends unchanged. With a nil FetchHourly the step is skipped, so Repair never makes network requests by itself. A rate\-limit error from FetchHourly is returned by Repair; other errors skip the step. [github.com/wnjoon/go\\\-yfinance/pkg/ticker.Ticker.History](<https://pkg.go.dev/github.com/wnjoon/go-yfinance/pkg/ticker/#Ticker.History>) wires FetchHourly when repair is requested.
+
 This package is designed to match the behavior of Python yfinance's price repair functionality.
 
 ## Index
@@ -84,6 +98,7 @@ This package is designed to match the behavior of Python yfinance's price repair
 - [type CapitalGainsRepairStats](<#CapitalGainsRepairStats>)
 - [type DividendInfo](<#DividendInfo>)
 - [type DividendRepairStats](<#DividendRepairStats>)
+- [type HourlyFetcher](<#HourlyFetcher>)
 - [type Options](<#Options>)
   - [func DefaultOptions\(\) Options](<#DefaultOptions>)
 - [type QuoteType](<#QuoteType>)
@@ -222,6 +237,17 @@ type DividendRepairStats struct {
 }
 ```
 
+<a name="HourlyFetcher"></a>
+## type HourlyFetcher
+
+HourlyFetcher fetches raw hourly bars between start \(inclusive\) and end \(exclusive\) for the ticker being repaired.
+
+The unexplained\-level\-shift repair calls it at most once per [Repairer.Repair](<#Repairer.Repair>), with start and end at midnight in the exchange timezone. Implementations must return unadjusted bars \(no auto\-adjust\), without pre/post\-market rows, and must not run price repair themselves. Returning an error for which \[client.IsRateLimitError\] is true makes Repair fail with that error; any other error makes the repair skip the level\-shift step.
+
+```go
+type HourlyFetcher func(start, end time.Time) ([]models.Bar, error)
+```
+
 <a name="Options"></a>
 ## type Options
 
@@ -243,6 +269,23 @@ type Options struct {
     FixSplits       bool // Fix bad stock split adjustments
     FixDividends    bool // Fix bad dividend adjustments
     FixCapitalGains bool // Fix capital gains double-counting (ETF/MutualFund only)
+
+    // FixLevelShifts fixes split-like level shifts in daily data that have
+    // no matching split, measuring the multiple with 1h data fetched via
+    // FetchHourly. It only applies to interval "1d", tickers without '=',
+    // and needs FetchHourly; otherwise it is skipped.
+    FixLevelShifts bool
+
+    // FetchHourly fetches the 1h data used by FixLevelShifts. It is called
+    // at most once per Repair, and only when a candidate shift is found.
+    // nil disables the level-shift repair, so Repair never touches the
+    // network on its own. [github.com/wnjoon/go-yfinance/pkg/ticker.Ticker.History]
+    // sets it when Repair is requested.
+    FetchHourly HourlyFetcher
+
+    // Now returns the current time, used to limit level-shift checks to the
+    // last 729 days for which Yahoo serves 1h data. nil uses time.Now.
+    Now func() time.Time
 }
 ```
 
@@ -349,15 +392,16 @@ AnalyzeZeroes analyzes bars for zero/missing values without modifying.
 func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error)
 ```
 
-Repair applies all enabled repair operations to the bar data. The order of operations matters:
+Repair applies all enabled repair operations to the bar data, which must be sorted oldest first. The order of operations matters:
 
-1. Fix dividend adjustments \(must come before price\-level errors\)
-2. Fix 100x unit errors
-3. Fix stock split errors
-4. Fix zero/missing values
-5. Fix capital gains double\-counting \(last, needs clean adjustment data\)
+1. Fix unexplained level shifts \(daily data, needs Options.FetchHourly\)
+2. Fix dividend adjustments \(must come before price\-level errors\)
+3. Fix 100x unit errors
+4. Fix stock split errors
+5. Fix zero/missing values
+6. Fix capital gains double\-counting \(last, needs clean adjustment data\)
 
-Returns the repaired bars and any error encountered.
+Returns the repaired bars and any error encountered. The only error is a rate\-limit error from Options.FetchHourly \(see [HourlyFetcher](<#HourlyFetcher>)\), returned unchanged with nil bars; other fetch errors skip the level\-shift step.
 
 <a name="SplitInfo"></a>
 ## type SplitInfo

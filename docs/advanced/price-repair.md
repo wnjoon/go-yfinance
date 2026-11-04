@@ -10,6 +10,7 @@ Yahoo Finance data sometimes contains errors that can affect analysis:
 |------------|-------------|---------|
 | **100x Errors** | Price in wrong currency unit | $150 shown as $15000 (cents) |
 | **Stock Split Errors** | Split adjustment not applied | Pre-split prices not adjusted |
+| **Unexplained Level Shifts** | Split-like shift with no split | Older prices 15x too high |
 | **Dividend Errors** | Dividend adjustment incorrect | Adj Close miscalculated |
 | **Capital Gains Double-Count** | CG counted twice in Adj Close | ETF/MutualFund specific |
 | **Missing/Zero Values** | Price gaps or zeros | Trading halts, data errors |
@@ -53,6 +54,7 @@ bars, err := t.History(models.HistoryParams{
         FixDividends:    false, // Disable dividend repair
         FixUnitMixups:   true,  // 100x errors
         FixZeroes:       true,  // Missing values
+        FixLevelShifts:  true,  // Split-like shifts without a split (1h request)
     },
 })
 ```
@@ -159,6 +161,48 @@ bars, _ := t.History(models.HistoryParams{
     },
 })
 ```
+
+## Unexplained Level Shift Repair
+
+Sometimes Yahoo applies a split-like adjustment to all daily data before a
+date although no split exists near it: older prices are N times too large and
+volume N times too small, and N need not be a split ratio (for example SOXS
+was 15x too high before 2026-05-26). Yahoo's 1h data is not affected, so it
+is used to measure N.
+
+This repair only runs for `Interval: "1d"` and non-FX tickers (no `=` in the
+symbol), before dividend repair. Like Python yfinance 1.8.0, it makes **one
+extra request** for the last 729 days of 1h data, and only when a candidate
+shift is found:
+
+1. Finds day-to-day changes of at least 2x that persist (median Close of the
+   five rows after vs. before), away from the ends of the data, more than five
+   rows from any split, and within the 1h data window
+2. Compares 1d prices with 1h prices aggregated to exchange-timezone days on
+   both sides of the shift. A multiple between 0.8 and 1.25 means the move is
+   genuine (the 1h data moved too) and nothing changes
+3. Requires a clean integer multiple (or reciprocal), within 3%
+4. Repairs with the split-repair logic, which also requires volume to confirm
+   the shift. Dividends are left unchanged
+
+If the 1h request fails the data is returned unchanged, except for a rate
+limit, which `History` returns as an error (check it with
+`client.IsRateLimitError`).
+
+```go
+bars, _ := t.History(models.HistoryParams{
+    Period:   "1y",
+    Interval: "1d",
+    Repair:   true,
+    RepairOptions: &models.RepairOptions{
+        FixLevelShifts: true,
+    },
+})
+```
+
+When using the `repair` package directly, the level-shift repair needs an
+`Options.FetchHourly` function; without one it is skipped and `Repair` never
+makes network requests.
 
 ## Unit Mixup Repair (100x Errors)
 

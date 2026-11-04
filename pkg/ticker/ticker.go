@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
 	"github.com/wnjoon/go-yfinance/pkg/client"
@@ -30,6 +31,8 @@ type Ticker struct {
 	cacheGeneration       uint64
 	tradingPeriodsCond    *sync.Cond
 	tradingPeriodsFetcher func() (*models.ChartMeta, error)
+	chartBodyFetcher      func(url.Values) (string, error) // test seam for chart requests
+	clock                 func() time.Time                 // test seam for repair's clock
 	optionsCache          *optionsCache
 	financialsCache       *financialsCache
 	financialsChunked     bool

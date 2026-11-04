@@ -71,20 +71,44 @@ func findSplitIndices(bars []models.Bar) []int {
 
 // repairSplitAtIndex repairs data around a specific split event.
 func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, interval string) []models.Bar {
-	if splitIdx == 0 || splitRatio <= 0 || (splitRatio > 0.8 && splitRatio < 1.25) {
+	if splitIdx == 0 {
 		return bars
 	}
-
-	result := make([]models.Bar, len(bars))
-	copy(result, bars)
-
 	// Match upstream's per-split scope: all older data plus a short look-ahead.
 	// The look-ahead is essential when corruption starts or stops near a split.
 	lookAhead := 5
 	if interval == "1wk" || interval == "1mo" || interval == "3mo" {
 		lookAhead = 1
 	}
-	cutoff := minInt(len(result), splitIdx+lookAhead+1)
+	cutoff := minInt(len(bars), splitIdx+lookAhead+1)
+	return repairPriceShift(bars, cutoff, splitRatio, interval, priceShiftRepair{correctDividend: true})
+}
+
+// priceShiftRepair holds the options of repairPriceShift that differ between
+// its callers.
+type priceShiftRepair struct {
+	// correctDividend rescales dividends with prices (split repair only).
+	correctDividend bool
+	// prune, when non-nil, drops a candidate range before the volume
+	// reconcile if it returns true for the range's newest bar. It ports
+	// upstream's start_min pruning.
+	prune func(newest models.Bar) bool
+}
+
+// repairPriceShift ports the split path of upstream
+// _fix_prices_sudden_change(change, unit_switch=False, correct_volume=True):
+// it detects level shifts of size change among bars[:cutoff], keeps the
+// ranges that volume confirms and rescales them. Bars from cutoff onwards are
+// never modified. Split repair passes the split's look-ahead cutoff; the
+// unexplained-level-shift repair passes len(bars) and no split.
+func repairPriceShift(bars []models.Bar, cutoff int, splitRatio float64, interval string, opt priceShiftRepair) []models.Bar {
+	if splitRatio <= 0 || (splitRatio > 0.8 && splitRatio < 1.25) {
+		return bars
+	}
+
+	result := make([]models.Bar, len(bars))
+	copy(result, bars)
+	cutoff = minInt(len(result), cutoff)
 	// Upstream drops rows with any missing OHLC before detection and adds
 	// them back untouched. rows maps newest-first positions to bar indices.
 	rows := make([]int, 0, cutoff)
@@ -177,10 +201,19 @@ func repairSplitAtIndex(bars []models.Bar, splitIdx int, splitRatio float64, int
 	suppressLocalVolatility(ratio, up, down, splitMax, interval)
 
 	ranges := mapSignalsToRanges(up, down, splitRatio)
+	if opt.prune != nil {
+		kept := ranges[:0]
+		for _, rg := range ranges {
+			if !opt.prune(result[rows[rg.start]]) {
+				kept = append(kept, rg)
+			}
+		}
+		ranges = kept
+	}
 	if volThresholdOK {
 		ranges = reconcilePriceShiftsWithVolume(vol, ranges, up, down, volThreshold, false)
 	}
-	applyPriceShiftRanges(result, rows, ranges, true, true)
+	applyPriceShiftRanges(result, rows, ranges, true, opt.correctDividend)
 
 	return result
 }

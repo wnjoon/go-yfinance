@@ -2,6 +2,7 @@ package repair
 
 import (
 	"strings"
+	"time"
 
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
@@ -34,6 +35,23 @@ type Options struct {
 	FixSplits       bool // Fix bad stock split adjustments
 	FixDividends    bool // Fix bad dividend adjustments
 	FixCapitalGains bool // Fix capital gains double-counting (ETF/MutualFund only)
+
+	// FixLevelShifts fixes split-like level shifts in daily data that have
+	// no matching split, measuring the multiple with 1h data fetched via
+	// FetchHourly. It only applies to interval "1d", tickers without '=',
+	// and needs FetchHourly; otherwise it is skipped.
+	FixLevelShifts bool
+
+	// FetchHourly fetches the 1h data used by FixLevelShifts. It is called
+	// at most once per Repair, and only when a candidate shift is found.
+	// nil disables the level-shift repair, so Repair never touches the
+	// network on its own. [github.com/wnjoon/go-yfinance/pkg/ticker.Ticker.History]
+	// sets it when Repair is requested.
+	FetchHourly HourlyFetcher
+
+	// Now returns the current time, used to limit level-shift checks to the
+	// last 729 days for which Yahoo serves 1h data. nil uses time.Now.
+	Now func() time.Time
 }
 
 // DefaultOptions returns options with all repairs enabled.
@@ -45,6 +63,7 @@ func DefaultOptions() Options {
 		FixSplits:       true,
 		FixDividends:    true,
 		FixCapitalGains: true,
+		FixLevelShifts:  true,
 	}
 }
 
@@ -60,15 +79,19 @@ func New(opts Options) *Repairer {
 	}
 }
 
-// Repair applies all enabled repair operations to the bar data.
+// Repair applies all enabled repair operations to the bar data, which must be
+// sorted oldest first.
 // The order of operations matters:
-//  1. Fix dividend adjustments (must come before price-level errors)
-//  2. Fix 100x unit errors
-//  3. Fix stock split errors
-//  4. Fix zero/missing values
-//  5. Fix capital gains double-counting (last, needs clean adjustment data)
+//  1. Fix unexplained level shifts (daily data, needs Options.FetchHourly)
+//  2. Fix dividend adjustments (must come before price-level errors)
+//  3. Fix 100x unit errors
+//  4. Fix stock split errors
+//  5. Fix zero/missing values
+//  6. Fix capital gains double-counting (last, needs clean adjustment data)
 //
-// Returns the repaired bars and any error encountered.
+// Returns the repaired bars and any error encountered. The only error is a
+// rate-limit error from Options.FetchHourly (see [HourlyFetcher]), returned
+// unchanged with nil bars; other fetch errors skip the level-shift step.
 func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 	if len(bars) == 0 {
 		return bars, nil
@@ -86,32 +109,42 @@ func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 	result, r.opts.Currency, pricesScaled = standardiseCurrency(result, originalCurrency)
 	defer func() { r.opts.Currency = originalCurrency }()
 
+	// Unit, split and level-shift repairs depend on volume, which is
+	// meaningless for FX tickers (upstream #2908: skipped when '=' is in the
+	// ticker).
+	isFX := strings.Contains(r.opts.Ticker, "=")
+
 	// Apply repairs in order (order matters!)
-	// 1. Dividend adjustments first
+	// 1. Unexplained level shifts, before dividend repair (upstream 1.8.0)
+	if r.opts.FixLevelShifts && !isFX {
+		var err error
+		result, err = r.repairLevelShifts(result)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 2. Dividend adjustments
 	if r.opts.FixDividends {
 		result = r.repairDividends(result)
 	}
 
-	// 2 & 3: unit and split repairs depend on volume, which is meaningless for
-	// FX tickers (upstream #2908: skipped when '=' is in the ticker).
-	isFX := strings.Contains(r.opts.Ticker, "=")
-
-	// 2. 100x unit errors
+	// 3. 100x unit errors
 	if r.opts.FixUnitMixups && !isFX {
 		result = r.repairUnitMixups(result)
 	}
 
-	// 3. Stock split errors
+	// 4. Stock split errors
 	if r.opts.FixSplits && !isFX {
 		result = r.repairStockSplits(result)
 	}
 
-	// 4. Zero/missing values
+	// 5. Zero/missing values
 	if r.opts.FixZeroes {
 		result = r.repairZeroes(result)
 	}
 
-	// 5. Capital gains double-counting (only for ETF/MutualFund)
+	// 6. Capital gains double-counting (only for ETF/MutualFund)
 	if r.opts.FixCapitalGains && r.isCapitalGainsApplicable() {
 		result = r.repairCapitalGains(result)
 	}
@@ -128,6 +161,8 @@ func (r *Repairer) Repair(bars []models.Bar) ([]models.Bar, error) {
 func (r *Repairer) isCapitalGainsApplicable() bool {
 	return r.opts.QuoteType == QuoteTypeETF || r.opts.QuoteType == QuoteTypeMutualFund
 }
+
+// repairLevelShifts is implemented in level_shift.go
 
 // repairDividends is implemented in dividend.go
 
