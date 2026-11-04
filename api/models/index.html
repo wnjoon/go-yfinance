@@ -9740,23 +9740,32 @@
 <p>ScreenerParams represents parameters for the Screen function.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-188-1" name="__codelineno-188-1" href="#__codelineno-188-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">ScreenerParams</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-188-2" name="__codelineno-188-2" href="#__codelineno-188-2"></a><span class="w">    </span><span class="c1">// Offset is the result offset for pagination (default 0).</span>
-<a id="__codelineno-188-3" name="__codelineno-188-3" href="#__codelineno-188-3"></a><span class="w">    </span><span class="nx">Offset</span><span class="w"> </span><span class="kt">int</span>
-<a id="__codelineno-188-4" name="__codelineno-188-4" href="#__codelineno-188-4"></a>
-<a id="__codelineno-188-5" name="__codelineno-188-5" href="#__codelineno-188-5"></a><span class="w">    </span><span class="c1">// Count is the number of results to return (default 25, max 250).</span>
-<a id="__codelineno-188-6" name="__codelineno-188-6" href="#__codelineno-188-6"></a><span class="w">    </span><span class="nx">Count</span><span class="w"> </span><span class="kt">int</span>
-<a id="__codelineno-188-7" name="__codelineno-188-7" href="#__codelineno-188-7"></a>
-<a id="__codelineno-188-8" name="__codelineno-188-8" href="#__codelineno-188-8"></a><span class="w">    </span><span class="c1">// SortField is the field to sort by (default "ticker").</span>
-<a id="__codelineno-188-9" name="__codelineno-188-9" href="#__codelineno-188-9"></a><span class="w">    </span><span class="nx">SortField</span><span class="w"> </span><span class="kt">string</span>
-<a id="__codelineno-188-10" name="__codelineno-188-10" href="#__codelineno-188-10"></a>
-<a id="__codelineno-188-11" name="__codelineno-188-11" href="#__codelineno-188-11"></a><span class="w">    </span><span class="c1">// SortAsc sorts in ascending order if true (default false/descending).</span>
-<a id="__codelineno-188-12" name="__codelineno-188-12" href="#__codelineno-188-12"></a><span class="w">    </span><span class="nx">SortAsc</span><span class="w"> </span><span class="kt">bool</span>
-<a id="__codelineno-188-13" name="__codelineno-188-13" href="#__codelineno-188-13"></a>
-<a id="__codelineno-188-14" name="__codelineno-188-14" href="#__codelineno-188-14"></a><span class="w">    </span><span class="c1">// UserID is the user identifier (default "").</span>
-<a id="__codelineno-188-15" name="__codelineno-188-15" href="#__codelineno-188-15"></a><span class="w">    </span><span class="nx">UserID</span><span class="w"> </span><span class="kt">string</span>
+<a id="__codelineno-188-3" name="__codelineno-188-3" href="#__codelineno-188-3"></a><span class="w">    </span><span class="c1">// Screen switches predefined screeners to the POST endpoint when Offset &gt; 0.</span>
+<a id="__codelineno-188-4" name="__codelineno-188-4" href="#__codelineno-188-4"></a><span class="w">    </span><span class="nx">Offset</span><span class="w"> </span><span class="kt">int</span>
+<a id="__codelineno-188-5" name="__codelineno-188-5" href="#__codelineno-188-5"></a>
+<a id="__codelineno-188-6" name="__codelineno-188-6" href="#__codelineno-188-6"></a><span class="w">    </span><span class="c1">// Count is the number of results to return (default 25, max 250).</span>
+<a id="__codelineno-188-7" name="__codelineno-188-7" href="#__codelineno-188-7"></a><span class="w">    </span><span class="nx">Count</span><span class="w"> </span><span class="kt">int</span>
+<a id="__codelineno-188-8" name="__codelineno-188-8" href="#__codelineno-188-8"></a>
+<a id="__codelineno-188-9" name="__codelineno-188-9" href="#__codelineno-188-9"></a><span class="w">    </span><span class="c1">// Size is Yahoo's "size" field for the screener POST endpoint (max 250).</span>
+<a id="__codelineno-188-10" name="__codelineno-188-10" href="#__codelineno-188-10"></a><span class="w">    </span><span class="c1">// Zero means unset. For ScreenWithQuery it is sent as "size" in addition</span>
+<a id="__codelineno-188-11" name="__codelineno-188-11" href="#__codelineno-188-11"></a><span class="w">    </span><span class="c1">// to "count". When Screen switches a predefined screener to the POST</span>
+<a id="__codelineno-188-12" name="__codelineno-188-12" href="#__codelineno-188-12"></a><span class="w">    </span><span class="c1">// endpoint because Offset &gt; 0, the result count is sent as "size": Size</span>
+<a id="__codelineno-188-13" name="__codelineno-188-13" href="#__codelineno-188-13"></a><span class="w">    </span><span class="c1">// if set, otherwise Count. On the predefined GET endpoint a non-zero Size</span>
+<a id="__codelineno-188-14" name="__codelineno-188-14" href="#__codelineno-188-14"></a><span class="w">    </span><span class="c1">// overrides Count, mirroring Python yfinance.</span>
+<a id="__codelineno-188-15" name="__codelineno-188-15" href="#__codelineno-188-15"></a><span class="w">    </span><span class="nx">Size</span><span class="w"> </span><span class="kt">int</span>
 <a id="__codelineno-188-16" name="__codelineno-188-16" href="#__codelineno-188-16"></a>
-<a id="__codelineno-188-17" name="__codelineno-188-17" href="#__codelineno-188-17"></a><span class="w">    </span><span class="c1">// UserIDType is the type of user ID (default "guid").</span>
-<a id="__codelineno-188-18" name="__codelineno-188-18" href="#__codelineno-188-18"></a><span class="w">    </span><span class="nx">UserIDType</span><span class="w"> </span><span class="kt">string</span>
-<a id="__codelineno-188-19" name="__codelineno-188-19" href="#__codelineno-188-19"></a><span class="p">}</span>
+<a id="__codelineno-188-17" name="__codelineno-188-17" href="#__codelineno-188-17"></a><span class="w">    </span><span class="c1">// SortField is the field to sort by (default "ticker").</span>
+<a id="__codelineno-188-18" name="__codelineno-188-18" href="#__codelineno-188-18"></a><span class="w">    </span><span class="nx">SortField</span><span class="w"> </span><span class="kt">string</span>
+<a id="__codelineno-188-19" name="__codelineno-188-19" href="#__codelineno-188-19"></a>
+<a id="__codelineno-188-20" name="__codelineno-188-20" href="#__codelineno-188-20"></a><span class="w">    </span><span class="c1">// SortAsc sorts in ascending order if true (default false/descending).</span>
+<a id="__codelineno-188-21" name="__codelineno-188-21" href="#__codelineno-188-21"></a><span class="w">    </span><span class="nx">SortAsc</span><span class="w"> </span><span class="kt">bool</span>
+<a id="__codelineno-188-22" name="__codelineno-188-22" href="#__codelineno-188-22"></a>
+<a id="__codelineno-188-23" name="__codelineno-188-23" href="#__codelineno-188-23"></a><span class="w">    </span><span class="c1">// UserID is the user identifier (default "").</span>
+<a id="__codelineno-188-24" name="__codelineno-188-24" href="#__codelineno-188-24"></a><span class="w">    </span><span class="nx">UserID</span><span class="w"> </span><span class="kt">string</span>
+<a id="__codelineno-188-25" name="__codelineno-188-25" href="#__codelineno-188-25"></a>
+<a id="__codelineno-188-26" name="__codelineno-188-26" href="#__codelineno-188-26"></a><span class="w">    </span><span class="c1">// UserIDType is the type of user ID (default "guid").</span>
+<a id="__codelineno-188-27" name="__codelineno-188-27" href="#__codelineno-188-27"></a><span class="w">    </span><span class="nx">UserIDType</span><span class="w"> </span><span class="kt">string</span>
+<a id="__codelineno-188-28" name="__codelineno-188-28" href="#__codelineno-188-28"></a><span class="p">}</span>
 </code></pre></div>
 <p><a name="DefaultScreenerParams"></a></p>
 <h3 id="func-defaultscreenerparams">func DefaultScreenerParams</h3>
