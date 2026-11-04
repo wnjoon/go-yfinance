@@ -37,9 +37,11 @@ type Ticker struct {
 	valuationCache        map[string]*models.ValuationMeasures
 	holdersCache          *holdersCache
 	calendarCache         *models.Calendar
-	newsCache             []models.NewsArticle
-	newsCacheCount        int
-	newsCacheTab          models.NewsTab
+	newsCache             map[newsCacheKey][]models.NewsArticle
+
+	// newsURL overrides the news GraphQL endpoint (tests only); empty means
+	// endpoints.NewsGraphQLURL.
+	newsURL string
 
 	// Ownership tracking for cleanup
 	ownsClient bool
@@ -151,8 +153,6 @@ func (t *Ticker) ClearCache() {
 	t.holdersCache = nil
 	t.calendarCache = nil
 	t.newsCache = nil
-	t.newsCacheCount = 0
-	t.newsCacheTab = ""
 }
 
 // GetHistoryMetadata returns the cached history metadata.
