@@ -103,6 +103,20 @@ func ohlcValue(b models.Bar, j int) float64 {
 	}
 }
 
+// adjustmentFactor is the dividend-adjustment factor Adj Close / Close used
+// on detector prices. As upstream, it is 1 when Close is 0, and a NaN Adj
+// Close yields NaN (so that row's changes denoise to "no change"). Go has no
+// separate "missing" value for a float field, so an AdjClose of exactly 0 --
+// the zero value of bars built without Adj Close, e.g. by direct callers of
+// [Repairer.Repair] -- means "unadjusted" (factor 1) instead of scaling every
+// price to 0, which would disable detection.
+func adjustmentFactor(b models.Bar) float64 {
+	if b.Close == 0 || b.AdjClose == 0 {
+		return 1
+	}
+	return b.AdjClose / b.Close
+}
+
 // detectPriceShifts ports _detect_price_shifts. change == 0 means upstream's
 // change=None: signals are day-to-day changes beyond minChange. Otherwise the
 // threshold depends on change and the global price volatility. It returns
@@ -133,11 +147,8 @@ func detectPriceShifts(rows []models.Bar, interval string, change float64, perCo
 	}
 	prices := make([][]float64, n)
 	for i, b := range rows {
-		adj := 1.0
-		if b.Close != 0 {
-			adj = b.AdjClose / b.Close
-		}
 		prices[i] = make([]float64, len(cols))
+		adj := adjustmentFactor(b)
 		for k, j := range cols {
 			v := ohlcValue(b, j)
 			if v == 0 {

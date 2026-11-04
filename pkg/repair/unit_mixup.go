@@ -84,10 +84,19 @@ func (r *Repairer) repairRandomUnitMixups(bars []models.Bar) []models.Bar {
 	return result
 }
 
+// ohlcMatrix returns the High, Open, Low, Close, AdjClose cells of each bar
+// (upstream's data_cols order). An AdjClose of exactly 0 is Go's zero value
+// for bars built without Adj Close, so it is checked as if it equalled Close
+// rather than excluding the row as a zero price; applyCellCorrections leaves
+// it unset.
 func ohlcMatrix(bars []models.Bar) [][]float64 {
 	data := make([][]float64, len(bars))
 	for i, bar := range bars {
-		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, bar.AdjClose}
+		adjClose := bar.AdjClose
+		if adjClose == 0 {
+			adjClose = bar.Close
+		}
+		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, adjClose}
 	}
 	return data
 }
@@ -138,7 +147,7 @@ func applyCellCorrections(bar *models.Bar, corrections []float64) {
 	anyUp, anyDown := false, false
 	for k, field := range fields {
 		c := corrections[k]
-		if c == 1.0 || !validPrice(c) {
+		if c == 1.0 || !validPrice(c) || *field == 0 {
 			continue
 		}
 		*field *= c
@@ -257,11 +266,7 @@ func (r *Repairer) AnalyzeUnitMixups(bars []models.Bar) UnitMixupStats {
 		return stats
 	}
 
-	// Extract OHLC data
-	data := make([][]float64, len(bars))
-	for i, bar := range bars {
-		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, bar.AdjClose}
-	}
+	data := ohlcMatrix(bars)
 
 	// Check for random mixups
 	corrections := detectAndCorrectMixups(data)
@@ -285,11 +290,7 @@ func DetectUnitMixups(bars []models.Bar) []int {
 		return badIndices
 	}
 
-	// Extract OHLC data
-	data := make([][]float64, len(bars))
-	for i, bar := range bars {
-		data[i] = []float64{bar.High, bar.Open, bar.Low, bar.Close, bar.AdjClose}
-	}
+	data := ohlcMatrix(bars)
 
 	corrections := detectAndCorrectMixups(data)
 	for i, c := range corrections {
