@@ -55,8 +55,9 @@ const (
 	// Calendars (Earnings, IPO, Economic Events, Splits)
 	CalendarURL = Query1URL + "/v1/finance/visualization"
 
-	// News
-	NewsURL = RootURL + "/xhr/ncp"
+	// News (GraphQL gateway behind finance.yahoo.com/quote/<symbol>/news/;
+	// replaces the retired /xhr/ncp endpoint)
+	NewsGraphQLURL = "https://nexus-finance-prod.media.yahoo.com/"
 
 	// WebSocket (real-time)
 	WebSocketURL = "wss://streamer.finance.yahoo.com/?version=2"

@@ -71,7 +71,8 @@
 // News:
 //   - [NewsArticle]: News article with title, publisher, link, thumbnail
 //   - [NewsThumbnail]: Thumbnail image with multiple resolutions
-//   - [NewsTab]: News type (all/news/press releases)
+//   - [NewsTab]: News type (all/news/press releases) and its Yahoo list slug
+//   - [ErrInvalidNewsTab]: Error for an unknown news tab
 //   - [NewsParams]: News query parameters
 //
 // # History Parameters
