@@ -32,6 +32,10 @@ func loadBarsCSV(t *testing.T, name string) []models.Bar {
 	}
 
 	parseF := func(s string) float64 {
+		if s == "" {
+			// pandas writes NaN as an empty field.
+			return math.NaN()
+		}
 		v, err := strconv.ParseFloat(s, 64)
 		if err != nil {
 			t.Fatalf("fixture %s: bad float %q: %v", name, s, err)
@@ -109,5 +113,32 @@ func TestRepairUnitMixupASAIGolden(t *testing.T) {
 
 	if repairedCount != 1 {
 		t.Errorf("expected exactly 1 repaired bar, got %d", repairedCount)
+	}
+}
+
+// TestRepairStockSplitsNFEGolden ports the Python yfinance 1.8.0 NFE fixture
+// (upstream commits aec8332 and 5b63983). A 1:50 reverse split was not
+// applied to the older rows, the split-day row has no prices, and volume
+// genuinely spiked for a few days after the split, so the volume ratio alone
+// (about 5.8x) misses the ~10.8x threshold. The range is kept only by the
+// >15-standard-deviation fallback.
+func TestRepairStockSplitsNFEGolden(t *testing.T) {
+	bad := loadBarsCSV(t, "NFE-1d-bad-stock-split.csv")
+	fixed := loadBarsCSV(t, "NFE-1d-bad-stock-split-fixed.csv")
+	opts := DefaultOptions()
+	opts.Interval = "1d"
+	got := New(opts).repairStockSplits(bad)
+	assertSplitGolden(t, "NFE", got, fixed)
+
+	// Upstream marks every row before the split repaired; the NaN split-day
+	// row is set aside before repair and restored untouched.
+	for i := range got {
+		want := i < 14
+		if got[i].Repaired != want {
+			t.Errorf("row=%d (%s) Repaired=%v, want %v", i, got[i].Date.Format("2006-01-02"), got[i].Repaired, want)
+		}
+	}
+	if !math.IsNaN(got[14].Close) || got[14].Splits != 0.02 {
+		t.Errorf("split-day row changed: %+v", got[14])
 	}
 }
