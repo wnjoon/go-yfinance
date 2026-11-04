@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -661,15 +662,7 @@ func parseEPSRevisions(module map[string]interface{}, m models.EPSMethodology) [
 		}
 		hasData = hasData || estimateHasData(epsRevisions, "epsRevisionsCurrency")
 
-		rev := models.EPSRevision{
-			Period:         getString(itemMap, "period"),
-			Currency:       getNestedString(epsRevisions, "epsRevisionsCurrency"),
-			UpLast7Days:    getNestedInt(epsRevisions, "upLast7days"),
-			UpLast30Days:   getNestedInt(epsRevisions, "upLast30days"),
-			DownLast7Days:  getNestedInt(epsRevisions, "downLast7days"),
-			DownLast30Days: getNestedInt(epsRevisions, "downLast30days"),
-		}
-		result = append(result, rev)
+		result = append(result, parseEPSRevision(getString(itemMap, "period"), epsRevisions))
 	}
 
 	if hasData {
@@ -680,6 +673,45 @@ func parseEPSRevisions(module map[string]interface{}, m models.EPSMethodology) [
 	}
 
 	return result
+}
+
+// parseEPSRevision builds one EPSRevision from a trend item's epsRevisions
+// object.
+//
+// Yahoo is inconsistent about the capitalisation of these keys: it currently
+// sends "upLast7days", "upLast30days" and "downLast30days" but "downLast7Days"
+// (capital D). The counts are therefore looked up case-insensitively, preferring
+// the documented spelling when both are present, so DownLast7Days is no longer
+// always 0.
+func parseEPSRevision(period string, epsRevisions map[string]interface{}) models.EPSRevision {
+	return models.EPSRevision{
+		Period:         period,
+		Currency:       getNestedString(epsRevisions, "epsRevisionsCurrency"),
+		UpLast7Days:    getNestedIntFold(epsRevisions, "upLast7days"),
+		UpLast30Days:   getNestedIntFold(epsRevisions, "upLast30days"),
+		DownLast7Days:  getNestedIntFold(epsRevisions, "downLast7days"),
+		DownLast30Days: getNestedIntFold(epsRevisions, "downLast30days"),
+	}
+}
+
+// getNestedIntFold is getNestedInt with a case-insensitive key match. An exact
+// key match wins; otherwise the first key (in sorted order, for determinism)
+// that equals key under Unicode case folding is used.
+func getNestedIntFold(m map[string]interface{}, key string) int {
+	if _, ok := m[key]; ok {
+		return getNestedInt(m, key)
+	}
+	matches := make([]string, 0, 1)
+	for k := range m {
+		if strings.EqualFold(k, key) {
+			matches = append(matches, k)
+		}
+	}
+	if len(matches) == 0 {
+		return 0
+	}
+	sort.Strings(matches)
+	return getNestedInt(m, matches[0])
 }
 
 // parseEarningsHistory parses an earningsHistory{,Gaap,NonGaap} module.
