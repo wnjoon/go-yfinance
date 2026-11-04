@@ -41,6 +41,9 @@ const (
 
 	// Screener
 	ScreenerURL = Query1URL + "/v1/finance/screener"
+	// ScreenerPredefinedURL serves Yahoo's saved (predefined) screeners, selected
+	// with the scrIds query parameter.
+	ScreenerPredefinedURL = ScreenerURL + "/predefined/saved"
 
 	// Market Summary
 	MarketSummaryURL = Query1URL + "/v6/finance/quote/marketSummary"

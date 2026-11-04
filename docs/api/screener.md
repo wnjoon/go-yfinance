@@ -247,11 +247,13 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 
 Screen uses a predefined screener to find matching stocks.
 
-Without an offset, Screen calls Yahoo's predefined GET endpoint with the count, offset, and sort parameters. That endpoint ignores offset, so when params.Offset \> 0 and the screener has an entry in PredefinedScreenerQueries, Screen switches to the custom\-query POST endpoint using the predefined query \(matching Python yfinance's screen\(\)\). In that case the predefined sort field and direction are used unless params.SortField is set to something other than "" or "ticker" \(or params.SortAsc is true\), and the number of results is sent as Yahoo's "size" field: params.Size if set, otherwise params.Count.
+Without an offset, Screen calls Yahoo's predefined GET endpoint \(/v1/finance/screener/predefined/saved?scrIds=\<name\>, as Python yfinance does\) with the count, offset, and sort parameters. That endpoint ignores offset, so when params.Offset \> 0 and the screener has an entry in PredefinedScreenerQueries, Screen switches to the custom\-query POST endpoint using the predefined query \(matching Python yfinance's screen\(\)\). In that case the predefined sort field and direction are used unless params.SortField is set to something other than "" or "ticker" \(or params.SortAsc is true\), and the number of results is sent as Yahoo's "size" field: params.Size if set, otherwise params.Count.
 
 Python switches endpoints whenever offset is given, including offset=0. Go cannot distinguish an explicit zero from an unset int, and an offset of 0 returns the first page on either endpoint, so Go switches only for Offset \> 0.
 
 If params.Size is set on the GET path it takes precedence over params.Count, mirroring Python's deprecated handling of size for predefined screens. Count and Size must not exceed 250 \(Yahoo's limit\). The caller's params are never modified.
+
+Requests are sent with Yahoo cookie \+ crumb authentication. HTTP failures return the pkg/client error types \(for example client.IsRateLimitError for HTTP 429 and client.IsNotFoundError for an unknown screener name\).
 
 Example:
 
