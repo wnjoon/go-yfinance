@@ -10,6 +10,9 @@ A variant whose 4% dividend is missing from Adj Close
 (chart_missing_div_adj.json) is run with actions=True, keepna=False and
 repair / auto_adjust on and off (expected_missing_div_adj.json).
 
+Needs python-yfinance 1.8.0's dependencies plus scipy and scikit-learn
+(imported by its 100x and reconstruction repairs). Output is deterministic.
+
 usage: YFINANCE_UPSTREAM=/path/to/python-yfinance python -I gen_history_oracle.py
 """
 import datetime as dt
