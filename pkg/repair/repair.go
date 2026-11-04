@@ -20,6 +20,10 @@ const (
 )
 
 // Options configures the repair behavior.
+//
+// Repair expects bars prepared as described under "Input Bars" in the
+// package documentation: missing prices as NaN, AdjClose 0 meaning
+// unadjusted, and the dividend/split/capital-gain fields filled.
 type Options struct {
 	// Data context
 	Ticker    string    // Ticker symbol
@@ -87,7 +91,7 @@ func New(opts Options) *Repairer {
 }
 
 // Repair applies all enabled repair operations to the bar data, which must be
-// sorted oldest first.
+// sorted oldest first (see "Input Bars" in the package documentation).
 // The order of operations matters:
 //  1. Fix unexplained level shifts (daily data, needs Options.FetchHourly)
 //  2. Fix dividend adjustments (must come before price-level errors)

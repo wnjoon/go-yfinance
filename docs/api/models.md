@@ -2008,20 +2008,29 @@ type HistoryParams struct {
     // Include pre/post market data
     PrePost bool `json:"prepost,omitempty"`
 
-    // Automatically adjust OHLC for splits/dividends
+    // AutoAdjust scales Open, High and Low by Adj Close / Close and sets
+    // Close to Adj Close. With Repair it is applied after repair, from the
+    // repaired values.
     AutoAdjust bool `json:"autoAdjust,omitempty"`
 
-    // Include dividend and split events
+    // Actions fills the Dividends, DividendCurrency, Splits and
+    // CapitalGains fields of each bar. Repair parses these events
+    // regardless and clears them afterwards when Actions is false.
     Actions bool `json:"actions,omitempty"`
 
-    // Repair bad data (100x errors, missing data)
+    // Repair fixes known Yahoo data errors (100x errors, bad split and
+    // dividend adjustments, level shifts, missing data) on the unadjusted
+    // prices, before AutoAdjust; see package repair. Null prices are NaN
+    // during repair and reported as 0 afterwards unless repaired.
     Repair bool `json:"repair,omitempty"`
 
     // RepairOptions provides fine-grained control over repair operations.
     // If nil, all repairs are enabled when Repair is true.
     RepairOptions *RepairOptions `json:"repairOptions,omitempty"`
 
-    // Keep NaN rows
+    // KeepNA keeps bars whose Open, High, Low and Close are all missing
+    // (null in Yahoo's response, reported as 0). Otherwise they are dropped
+    // before repair.
     KeepNA bool `json:"keepna,omitempty"`
 }
 ```
