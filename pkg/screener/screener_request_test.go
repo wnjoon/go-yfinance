@@ -101,8 +101,8 @@ func TestScreenPredefinedOffsetSendsSizeNotCount(t *testing.T) {
 	if req.url != endpoints.ScreenerURL {
 		t.Errorf("url = %s, want %s", req.url, endpoints.ScreenerURL)
 	}
-	if len(req.params) != 0 {
-		t.Errorf("unexpected query params: %v", req.params)
+	if !reflect.DeepEqual(req.params, baseParams()) {
+		t.Errorf("query params = %v, want %v", req.params, baseParams())
 	}
 
 	if _, ok := req.body["count"]; ok {
@@ -365,12 +365,16 @@ func TestScreenPredefinedWithoutOffsetUsesGet(t *testing.T) {
 			if req.method != "GET" {
 				t.Fatalf("method = %s, want GET", req.method)
 			}
-			wantURL := endpoints.ScreenerURL + "/predefined/" + string(tt.screener)
-			if req.url != wantURL {
-				t.Errorf("url = %s, want %s", req.url, wantURL)
+			if req.url != endpoints.ScreenerPredefinedURL {
+				t.Errorf("url = %s, want %s", req.url, endpoints.ScreenerPredefinedURL)
 			}
-			if !reflect.DeepEqual(req.params, tt.wantParams) {
-				t.Errorf("params = %v, want %v", req.params, tt.wantParams)
+			wantParams := baseParams()
+			wantParams.Set("scrIds", string(tt.screener))
+			for k, v := range tt.wantParams {
+				wantParams[k] = v
+			}
+			if !reflect.DeepEqual(req.params, wantParams) {
+				t.Errorf("params = %v, want %v", req.params, wantParams)
 			}
 			if len(result.Quotes) != 1 {
 				t.Errorf("expected 1 quote, got %d", len(result.Quotes))
@@ -518,8 +522,11 @@ func TestScreenConvenienceMethodsUseGet(t *testing.T) {
 				t.Fatalf("%s: %v", tt.name, err)
 			}
 			req := onlyRequest(t, f)
-			if req.method != "GET" || req.url != endpoints.ScreenerURL+"/predefined/"+string(tt.screener) {
+			if req.method != "GET" || req.url != endpoints.ScreenerPredefinedURL {
 				t.Errorf("request = %s %s", req.method, req.url)
+			}
+			if got := req.params.Get("scrIds"); got != string(tt.screener) {
+				t.Errorf("scrIds = %s, want %s", got, tt.screener)
 			}
 			if got := req.params.Get("count"); got != "7" {
 				t.Errorf("count = %s, want 7", got)

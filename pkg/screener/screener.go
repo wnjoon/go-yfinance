@@ -14,19 +14,36 @@ import (
 // maxScreenerResults is Yahoo's per-request limit for count and size.
 const maxScreenerResults = 250
 
-// httpDoer is the subset of *client.Client used by Screener. It exists so
-// tests can capture outgoing requests without network access.
+// httpDoer is the request transport used by Screener. It exists so tests can
+// capture outgoing requests without network access.
 type httpDoer interface {
 	Get(rawURL string, params url.Values) (*client.Response, error)
 	PostJSON(rawURL string, params url.Values, body []byte) (*client.Response, error)
 }
 
+// crumbDoer sends screener requests with Yahoo cookie + crumb authentication.
+// Yahoo rejects crumb-less screener POSTs with "Unauthorized - Invalid Crumb",
+// and Python yfinance sends both screener requests through its crumb-aware
+// YfData session.
+type crumbDoer struct {
+	auth *client.AuthManager
+}
+
+func (d crumbDoer) Get(rawURL string, params url.Values) (*client.Response, error) {
+	return d.auth.GetWithCrumb(rawURL, params)
+}
+
+func (d crumbDoer) PostJSON(rawURL string, params url.Values, body []byte) (*client.Response, error) {
+	return d.auth.PostJSONWithCrumb(rawURL, params, body)
+}
+
 // Screener provides Yahoo Finance stock screener functionality.
 type Screener struct {
 	client     *client.Client
+	auth       *client.AuthManager
 	ownsClient bool
 
-	// http performs requests; nil means use client.
+	// http performs requests; nil means crumb-authenticated requests via auth.
 	http httpDoer
 }
 
@@ -35,7 +52,18 @@ func (s *Screener) doer() httpDoer {
 	if s.http != nil {
 		return s.http
 	}
-	return s.client
+	return crumbDoer{auth: s.auth}
+}
+
+// baseParams returns the query parameters Python yfinance sends with every
+// screener request.
+func baseParams() url.Values {
+	return url.Values{
+		"corsDomain": {"finance.yahoo.com"},
+		"formatted":  {"false"},
+		"lang":       {"en-US"},
+		"region":     {"US"},
+	}
 }
 
 // Option is a function that configures a Screener instance.
@@ -74,6 +102,7 @@ func New(opts ...Option) (*Screener, error) {
 		}
 		s.client = c
 	}
+	s.auth = client.NewAuthManager(s.client)
 
 	return s, nil
 }
@@ -87,8 +116,9 @@ func (s *Screener) Close() {
 
 // Screen uses a predefined screener to find matching stocks.
 //
-// Without an offset, Screen calls Yahoo's predefined GET endpoint with the
-// count, offset, and sort parameters. That endpoint ignores offset, so when
+// Without an offset, Screen calls Yahoo's predefined GET endpoint
+// (/v1/finance/screener/predefined/saved?scrIds=<name>, as Python yfinance
+// does) with the count, offset, and sort parameters. That endpoint ignores offset, so when
 // params.Offset > 0 and the screener has an entry in PredefinedScreenerQueries,
 // Screen switches to the custom-query POST endpoint using the predefined query
 // (matching Python yfinance's screen()). In that case the predefined sort field
@@ -104,6 +134,10 @@ func (s *Screener) Close() {
 // mirroring Python's deprecated handling of size for predefined screens.
 // Count and Size must not exceed 250 (Yahoo's limit). The caller's params are
 // never modified.
+//
+// Requests are sent with Yahoo cookie + crumb authentication. HTTP failures
+// return the pkg/client error types (for example client.IsRateLimitError for
+// HTTP 429 and client.IsNotFoundError for an unknown screener name).
 //
 // Example:
 //
@@ -133,15 +167,12 @@ func (s *Screener) Screen(screener models.PredefinedScreener, params *models.Scr
 		}
 	}
 
-	// Build URL for predefined screener
-	screenerURL := fmt.Sprintf("%s/predefined/%s", endpoints.ScreenerURL, string(screener))
-
-	resp, err := s.doer().Get(screenerURL, buildPredefinedParams(&p))
+	resp, err := s.doer().Get(endpoints.ScreenerPredefinedURL, buildPredefinedParams(screener, &p))
 	if err != nil {
 		return nil, fmt.Errorf("screener request failed: %w", err)
 	}
 
-	return s.parseResponse(resp.Body, p.Offset)
+	return s.parseHTTPResponse(resp, p.Offset)
 }
 
 // ScreenWithQuery uses a custom query to find matching stocks or funds.
@@ -197,14 +228,15 @@ func sortType(asc bool) string {
 }
 
 // buildPredefinedParams builds the query string for the predefined GET endpoint.
-func buildPredefinedParams(p *models.ScreenerParams) url.Values {
+func buildPredefinedParams(screener models.PredefinedScreener, p *models.ScreenerParams) url.Values {
 	count := p.Count
 	if p.Size > 0 {
 		// Python treats size as a deprecated alias for count here.
 		count = p.Size
 	}
 
-	urlParams := url.Values{}
+	urlParams := baseParams()
+	urlParams.Set("scrIds", string(screener))
 	urlParams.Set("count", strconv.Itoa(count))
 	urlParams.Set("offset", strconv.Itoa(p.Offset))
 	if p.SortField != "" {
@@ -276,12 +308,44 @@ func (s *Screener) postQuery(body map[string]any, offset int) (*models.ScreenerR
 		return nil, fmt.Errorf("failed to marshal query: %w", err)
 	}
 
-	resp, err := s.doer().PostJSON(endpoints.ScreenerURL, nil, bodyBytes)
+	resp, err := s.doer().PostJSON(endpoints.ScreenerURL, baseParams(), bodyBytes)
 	if err != nil {
 		return nil, fmt.Errorf("screener request failed: %w", err)
 	}
 
-	return s.parseResponse(resp.Body, offset)
+	return s.parseHTTPResponse(resp, offset)
+}
+
+// parseHTTPResponse checks the HTTP status and parses the response body.
+//
+// Yahoo returns JSON error envelopes ({"finance":{"error":...}}) with 4xx
+// statuses, and HTML pages for some failures. A JSON error keeps its Yahoo
+// code and description in the message; for HTTP >= 400 the error also wraps
+// the matching pkg/client error type so callers can use errors.Is.
+func (s *Screener) parseHTTPResponse(resp *client.Response, offset int) (*models.ScreenerResult, error) {
+	if resp == nil {
+		return nil, fmt.Errorf("screener request failed: %w", client.ErrInvalidResponse)
+	}
+	if resp.StatusCode < 400 {
+		return s.parseResponse(resp.Body, offset)
+	}
+
+	statusErr := client.HTTPStatusToError(resp.StatusCode, truncateBody(resp.Body))
+	var rawResp models.ScreenerResponse
+	if err := json.Unmarshal([]byte(resp.Body), &rawResp); err == nil && rawResp.Finance.Error != nil {
+		return nil, fmt.Errorf("screener API error: %s - %s: %w",
+			rawResp.Finance.Error.Code, rawResp.Finance.Error.Description, statusErr)
+	}
+	return nil, fmt.Errorf("screener request failed: %w", statusErr)
+}
+
+// truncateBody shortens a response body for inclusion in an error message.
+func truncateBody(body string) string {
+	const limit = 200
+	if len(body) > limit {
+		return body[:limit] + "..."
+	}
+	return body
 }
 
 // DayGainers returns stocks with the highest percentage gain today.
