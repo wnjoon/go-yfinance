@@ -39,6 +39,10 @@
 //	// Download history for all
 //	result, _ := tickers.History(nil)
 //
+//	// Fetch info and calendar for all, in parallel (up to 4 at once)
+//	infos, _ := tickers.Info()
+//	calendars, _ := tickers.Calendar(multi.WithWorkers(2))
+//
 // # Thread Safety
 //
 // All multi package functions are safe for concurrent use.
@@ -61,6 +65,10 @@ type Tickers struct {
 	client     *client.Client
 	ownsClient bool
 	mu         sync.RWMutex
+
+	// Test seams for Info and Calendar; nil means the Ticker method is used.
+	infoFetcher     attrFetcher[*models.Info]
+	calendarFetcher attrFetcher[*models.Calendar]
 }
 
 // Option is a function that configures Tickers.
