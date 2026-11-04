@@ -92,3 +92,94 @@ func (r *MultiTickerResult) SuccessCount() int {
 func (r *MultiTickerResult) ErrorCount() int {
 	return len(r.Errors)
 }
+
+// TickersInfoResult is the result of fetching Info for every symbol of a
+// multi.Tickers collection (Python yfinance Tickers.info / get_info).
+//
+// Every requested symbol appears in exactly one of Data or Errors.
+type TickersInfoResult struct {
+	// Data maps each successfully fetched symbol to its Info.
+	Data map[string]*Info
+
+	// Errors maps each failed or skipped symbol to its error.
+	Errors map[string]error
+
+	// Symbols lists the successfully fetched symbols in Tickers order.
+	Symbols []string
+}
+
+// Get returns the Info for a symbol, or nil if it was not fetched.
+func (r *TickersInfoResult) Get(symbol string) *Info {
+	if r == nil || r.Data == nil {
+		return nil
+	}
+	return r.Data[symbol]
+}
+
+// HasErrors returns true if any symbol failed or was skipped.
+func (r *TickersInfoResult) HasErrors() bool {
+	return r != nil && len(r.Errors) > 0
+}
+
+// SuccessCount returns the number of successfully fetched symbols.
+func (r *TickersInfoResult) SuccessCount() int {
+	if r == nil {
+		return 0
+	}
+	return len(r.Symbols)
+}
+
+// ErrorCount returns the number of failed or skipped symbols.
+func (r *TickersInfoResult) ErrorCount() int {
+	if r == nil {
+		return 0
+	}
+	return len(r.Errors)
+}
+
+// TickersCalendarResult is the result of fetching Calendar for every symbol
+// of a multi.Tickers collection (Python yfinance Tickers.calendar /
+// get_calendar).
+//
+// Python returns one DataFrame row per ticker with a NaN row for failures;
+// Go returns one Calendar per successful symbol and the error for the rest.
+// Every requested symbol appears in exactly one of Data or Errors.
+type TickersCalendarResult struct {
+	// Data maps each successfully fetched symbol to its Calendar.
+	Data map[string]*Calendar
+
+	// Errors maps each failed or skipped symbol to its error.
+	Errors map[string]error
+
+	// Symbols lists the successfully fetched symbols in Tickers order.
+	Symbols []string
+}
+
+// Get returns the Calendar for a symbol, or nil if it was not fetched.
+func (r *TickersCalendarResult) Get(symbol string) *Calendar {
+	if r == nil || r.Data == nil {
+		return nil
+	}
+	return r.Data[symbol]
+}
+
+// HasErrors returns true if any symbol failed or was skipped.
+func (r *TickersCalendarResult) HasErrors() bool {
+	return r != nil && len(r.Errors) > 0
+}
+
+// SuccessCount returns the number of successfully fetched symbols.
+func (r *TickersCalendarResult) SuccessCount() int {
+	if r == nil {
+		return 0
+	}
+	return len(r.Symbols)
+}
+
+// ErrorCount returns the number of failed or skipped symbols.
+func (r *TickersCalendarResult) ErrorCount() int {
+	if r == nil {
+		return 0
+	}
+	return len(r.Errors)
+}

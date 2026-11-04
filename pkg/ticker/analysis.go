@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/wnjoon/go-yfinance/internal/endpoints"
+	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/config"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
@@ -409,6 +410,17 @@ func estimateHasData(est map[string]interface{}, currencyKey string) bool {
 	return false
 }
 
+// quoteSummaryStatusError builds the error for a failed quoteSummary HTTP
+// status. HTTP 429 wraps client.ErrRateLimit so callers such as
+// multi.Tickers.Calendar can detect Yahoo's rate limit with
+// client.IsRateLimitError.
+func quoteSummaryStatusError(statusCode int) error {
+	if statusCode == 429 {
+		return fmt.Errorf("API error: status %d: %w", statusCode, client.WrapRateLimitError())
+	}
+	return fmt.Errorf("API error: status %d", statusCode)
+}
+
 // fetchQuoteSummary fetches data from quoteSummary API.
 func (t *Ticker) fetchQuoteSummary(modules []string) (map[string]interface{}, error) {
 	apiURL := fmt.Sprintf("%s/%s", endpoints.QuoteSummaryURL, t.symbol)
@@ -432,7 +444,7 @@ func (t *Ticker) fetchQuoteSummary(modules []string) (map[string]interface{}, er
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("API error: status %d", resp.StatusCode)
+		return nil, quoteSummaryStatusError(resp.StatusCode)
 	}
 
 	var rawResp map[string]interface{}
