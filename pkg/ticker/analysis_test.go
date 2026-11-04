@@ -3,8 +3,27 @@ package ticker
 import (
 	"testing"
 
+	"github.com/wnjoon/go-yfinance/pkg/client"
 	"github.com/wnjoon/go-yfinance/pkg/models"
 )
+
+func TestQuoteSummaryStatusErrorRateLimit(t *testing.T) {
+	err := quoteSummaryStatusError(429)
+	if !client.IsRateLimitError(err) {
+		t.Fatalf("429 error %v should be detectable with client.IsRateLimitError", err)
+	}
+	if got := err.Error(); got != "API error: status 429: rate limited by Yahoo Finance" {
+		t.Errorf("429 message = %q", got)
+	}
+
+	err = quoteSummaryStatusError(500)
+	if client.IsRateLimitError(err) {
+		t.Errorf("500 error %v must not be a rate-limit error", err)
+	}
+	if got := err.Error(); got != "API error: status 500" {
+		t.Errorf("500 message = %q", got)
+	}
+}
 
 func TestRecommendationTotal(t *testing.T) {
 	rec := models.Recommendation{
